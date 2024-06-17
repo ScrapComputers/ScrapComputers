@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 0.80729166666666663 0.78148148148148144" name="BackPanel">
+        <Widget type="TextBox" skin="TextBox" position_real="0 0.023696682464454975 1 0.062796208530805683" align="Center Top" name="Title">
+            <Property key="TextAlign" value="Center"/>
+            <Property key="FontName" value="SM_ButtonLarge"/>
+            <Property key="TextShadow" value="true"/>
+            <Property key="Caption" value="SCRAPCOMPUTERS CONFIGURATOR"/>
+        </Widget>
+        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.016129032258064516 0.11848341232227488 0.22516129032258064 0.77606635071090047" align="Right Top" name="List">
+            <Property key="TextAlign" value="Left Top"/>
+            <Property key="MultiLine" value="true"/>
+            <Property key="TabPrinting" value="true"/>
+            <Property key="ReadOnly" value="true"/>
+            <Property key="MaxTextLength" value="999999999"/>
+            <Property key="Caption" value="Why can u see this? The script defendly broke."/>
+            <Property key="WordWrap" value="true"/>
+        </Widget>
+        <Widget type="Button" skin="PrimaryButton" position_real="0.8193548387096774 0.90047393364928907 0.17096774193548386 0.078199052132701424" align="HStretch Top" name="ChangeValueButton">
+            <Property key="Caption" value="Change Value"/>
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+        <Widget type="Button" skin="PrimaryButton" position_real="0.64838709677419359 0.90047393364928907 0.17096774193548386 0.078199052132701424" align="HStretch Top" name="LoadDefaultsButton">
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="TextAlign" value="Center"/>
+            <Property key="Caption" value="Revert to Defaults"/>
+        </Widget>
+        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.016129032258064516 0.90639810426540279 0.22516129032258064 0.062796208530805683" name="SelectedOption">
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+        <Widget type="EditBox" skin="EditBoxEmpty" position_real="0.24838709677419354 0.11848341232227488 0.73870967741935489 0.77606635071090047" name="Description">
+            <Property key="TextAlign" value="Left Top"/>
+            <Property key="MultiLine" value="true"/>
+            <Property key="TabPrinting" value="true"/>
+            <Property key="ReadOnly" value="true"/>
+            <Property key="MaxTextLength" value="999999999"/>
+            <Property key="Caption" value=""/>
+            <Property key="WordWrap" value="true"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position_real="0.24838709677419354 0.90639810426540279 0.40000000000000002 0.065165876777251192" name="CurrentValue">
+            <Property key="Caption" value=""/>
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings>
+        <Property key="IncludeDirectory" value=""/>
+        <Property key="PanelName" value=""/>
+        <Property key="PanelNamespace" value=""/>
+        <Property key="SourceDirectory" value=""/>
+    </CodeGeneratorSettings>
+</MyGUI>

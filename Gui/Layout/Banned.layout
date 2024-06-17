@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="BackgroundLiftExport" position_real="0 0 0.71354166666666663 0.77314814814814814" name="BackPanel">
+        <Widget type="TextBox" skin="TextBox" position_real="0 0 1 0.083832335329341312" align="HStretch Top" name="Title">
+            <Property key="Caption" value="ScrapComputers has detected a banned mod/addon!"/>
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+        <Widget type="Button" skin="PrimaryButton" position_real="0.28102189781021897 0.91017964071856283 0.43795620437956206 0.071856287425149698" align="HCenter Bottom" name="ExitButton">
+            <Property key="Caption" value="Close Popup"/>
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+        <Widget type="EditBox" skin="EditBoxEmpty" position_real="0.058394160583941604 0.083832335329341312 0.8941605839416058 0.80838323353293418" align="Stretch" name="Message">
+            <Property key="TextAlign" value="Left Top"/>
+            <Property key="Caption" value="The mod is fucked up! Someone caused a fucking error breaking this popup!"/>
+            <Property key="MultiLine" value="true"/>
+            <Property key="WordWrap" value="true"/>
+            <Property key="ReadOnly" value="true"/>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

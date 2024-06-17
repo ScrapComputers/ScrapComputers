@@ -1,0 +1,7 @@
+--Additonal features for [MODULE NAME]
+sc.MODULE = {}
+
+---Prints hello world!
+sc.MODULE.helloWorld = function()
+    print("Hello world!")
+end

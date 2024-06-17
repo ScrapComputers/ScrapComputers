@@ -1,0 +1,49 @@
+Copyright (c) 2024-present - ScrapComputers Team
+
+This license is a custom, permissive open source (Source Available) license with strict conditions.
+
+TERMS AND CONDITIONS:
+    Permission and Use: Permission is required from the ScrapComputers Team for redistributing,
+                        using (with exceptions), or modifying this software or its components.
+                        Please contact the ScrapComputers Team for permission.
+
+    End-User Exception: End-users do not need permission to use the software as-is. However,
+                        permission is required if you plan to use the software as part of another
+                        project or for modification.
+
+    Redistribution and Modification: If you receive permission to redistribute or modify the
+                                     software, you agree that the ScrapComputers Team retains
+                                     control over the entire software and any modifications.
+                                     You will be credited for any features we use from your
+                                     modifications.
+
+    Extending the Software: Any modifications or extensions of this software must comply with this license.
+                            This includes all derivative works or projects that integrate our software.
+
+    License for Add-ons and Derivatives: Any add-ons, extensions, or derivative works that have received
+                                         permission to use our software must use this license and cannot
+                                         use any other license.
+
+    Use of Tools: Our tools provided with this software cannot be used in other projects without explicit
+                  permission from the ScrapComputers Team. These tools are proprietary and remain under
+                  our control.
+
+    Violation Consequences: Violation of this license allows the ScrapComputers Team to use features from
+                            the infringing modification without permission or credit. Violators may be
+                            permanently barred from obtaining permission in the future, though exceptions
+                            may apply in some cases.
+
+    GitHub Repository Use:
+        When using this software in GitHub repositories:
+            Forking: You may fork this repository, but redistribution of the fork requires permission.
+            Pull Requests: Contributions via pull requests must comply with this license. Accepted
+                           contributions become part of the project and fall under this license.
+            Issues and Discussions: Use of the software for raising issues or discussions is permitted
+                                    without requiring additional permission.
+
+    Inclusion of Copyright Notice:
+        The above copyright notice must be included in all copies or substantial portions of the software.
+
+Disclaimer: We are not responsible for any damages to your data, system, or projects that result from using
+            this software. This includes, but is not limited to, data loss, project corruption, or system
+            malfunction.

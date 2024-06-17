@@ -1,0 +1,11 @@
+# ComputerCodeToWritableCode
+
+### This folder is used to convert code that gets interpettered by the computer to code that u can use in Visual Studio Code
+
+The reason why is because how ScrapComputers handle the \ character due to MyGui interpettering this `Hello \\n` as like this `Hello \[NEW LINE CHARACTER]`.
+
+ScrapComputers converts the code from \ to be this unicode character to prevent MyGui from formatting it: ⁄. But since it does that, Visual Studio code wouldnt understand it so thats what this
+script uses to fix it. (By converting the `⁄` uuid to a `\`)
+
+script.py = Converts `⁄` to `\`
+script_reverse.py = Converts `\` to`⁄`

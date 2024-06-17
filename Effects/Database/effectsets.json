@@ -1,0 +1,9 @@
+{
+	"effectSetList":
+	[
+		"$CONTENT_DATA/Effects/Database/EffectSets/Pixels.json",
+		"$CONTENT_DATA/Effects/Database/EffectSets/Hologram.json",
+		"$CONTENT_DATA/Effects/Database/EffectSets/Audio.json",
+		"$CONTENT_DATA/Effects/Database/EffectSets/AllTheSMAudio.json" // Please don't look at this file. You will kill me -VeraDev.
+	]
+}

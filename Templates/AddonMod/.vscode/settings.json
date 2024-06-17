@@ -1,0 +1,32 @@
+{
+    "Lua.runtime.version": "LuaJIT",
+    "Lua.workspace.library": [
+        "sm.lua",
+        "moddatabase.lua"
+    ],
+    "Lua.diagnostics.disable": [
+        "duplicate-set-field",
+        "lowercase-global",
+        "redundant-parameter",
+        "need-check-nil",
+        "undefined-field",
+        "unbalanced-assignments",
+        "undefined-global",
+        "param-type-mismatch",
+        "inject-field",
+        "missing-parameter"
+    ],
+    "files.associations": {
+        "*.layout": "xml",
+        "*.json": "jsonc",
+        "*.shapeset": "jsonc",
+        "*.shapedb": "jsonc",
+        "*.rotationset": "jsonc",
+        "*.rend": "jsonc",
+        "*.effectset": "jsonc",
+        "*.tooldb": "jsonc",
+        "*.toolset": "jsonc",
+        "*.scmf": "jsonc",
+        "*.lua.template": "lua"
+    }
+}

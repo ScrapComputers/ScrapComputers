@@ -1,0 +1,46 @@
+{
+    "partList": [
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "AAAAAA",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Pixel.rend",
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "cd943f04-96c7-43f0-852c-b2d68c7fc157",
+            "showInInventory": false,
+            "rotationSet": "PropXYZ"
+        },
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "000000",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/HologramObjects/Cube.rend",
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "0a331ed9-2bc8-4c5b-a523-20cefe1dd8e8",
+            "showInInventory": false,
+            "rotationSet": "PropXYZ"
+        },
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "000000",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/HologramObjects/Sphere.rend",
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "7e293356-7c15-4238-bb73-467cd80b7558",
+            "showInInventory": false,
+            "rotationSet": "PropXYZ"
+        }
+    ]
+}

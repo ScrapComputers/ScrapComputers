@@ -1,0 +1,1802 @@
+{
+	"event:/amb/2D/amb_2D_cave": {
+		"Parameters": {
+			"distancetocave": {
+				"default": 0.0,
+				"maximum": 100.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/amb/2D/amb_2D_field_day_night": {
+		"Parameters": {
+			"amb_day_night": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"fadeoutambience": {
+				"default": 0.0,
+				"maximum": 100.0,
+				"minimum": 0.0
+			},
+			"height": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"wind": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/amb/2D/amb_2D_warehouse": {},
+	"event:/amb/2D/amb_2D_water": {},
+	"event:/amb/2D/downedship_int": {},
+	"event:/amb/2D/underwater": {},
+	"event:/amb/3D/amb_3D_crashsitefire": {
+		"Parameters": {
+			"fire_intensity": {
+				"default": 1.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/amb/3D/amb_3D_crashsitefire_metalcreak": {
+		"Parameters": {
+			"fire_intensity": {
+				"default": 1.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/amb/3D/amb_3D_crashsitefire_small": {
+		"Parameters": {
+			"fire_intensity": {
+				"default": 1.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/amb/3D/amb_3D_elevator": {},
+	"event:/amb/3D/amb_3D_tree": {},
+	"event:/amb/3D/birds/amb_3D_birds_blackbird": {},
+	"event:/amb/3D/birds/amb_3D_birds_raven": {},
+	"event:/amb/3D/birds/amb_3D_birds_smallbird": {},
+	"event:/amb/3D/bubbles": {},
+	"event:/amb/3D/downedship_ext": {},
+	"event:/amb/3D/electric_spark": {},
+	"event:/amb/3D/electric_spark_randomloop": {},
+	"event:/amb/3D/fire_extinguish": {},
+	"event:/amb/3D/oilgeyser_loop": {},
+	"event:/amb/3D/water_leak": {},
+	"event:/amb/3D/water_splash": {},
+	"event:/amb/birds": {},
+	"event:/amb/challenge": {},
+	"event:/amb/field": {
+		"Parameters": {
+			"wind": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/consumtion/eat_generic": {},
+	"event:/char/consumtion/eat_sandwich": {},
+	"event:/char/consumtion/swallow": {},
+	"event:/char/crouch": {},
+	"event:/char/footstep": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/footstep_crouching": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/getup": {},
+	"event:/char/health/burn": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/death": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/exhausted": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/hurt_drown": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/hurt_hunger": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/impact": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/ko": {},
+	"event:/char/health/lowair": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/lowfood": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/poison": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/health/shock": {
+		"Parameters": {
+			"char": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"damage": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/jump": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/land": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/movement/water/swim_backwards": {},
+	"event:/char/movement/water/swim_forwards": {},
+	"event:/char/npc/animals/glowgorp/eat": {},
+	"event:/char/npc/animals/glowgorp/footstep": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/animals/glowgorp/hit": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/animals/glowgorp/idle": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/animals/glowgorp/jump": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/animals/glowgorp/pickup": {},
+	"event:/char/npc/bots/confettibot": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_attack_02": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_attack_03": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_attack_04": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_explode": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_explode_buildup": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_ff_heavy": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_ff_light": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_ff_mid": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_move_body_alert_idle": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_move_body_heavy": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_move_body_light": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_move_head": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_move_legs": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_move_scythe": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_noticeplayer": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_shoot": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_takedamage": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_voice_alert_idle": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_voice_idle": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_voice_roaming": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_voice_run": {},
+	"event:/char/npc/bots/enemies/farmbot/farmbot_voice_sprint": {},
+	"event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_alert_idle_loop": {},
+	"event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_idle_loop": {},
+	"event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_roaming_loop": {},
+	"event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_sprint_loop": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_attack_01": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_attack_02": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_attack_03": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_attack_sprint": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_explode": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_ff": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/haybot/haybot_foley_forkimpact": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_foley_metal": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_foley_servo": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_idle_special_long": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_idle_special_short": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_noticeplayer": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_takedamage": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_walk_chaseplayer": {},
+	"event:/char/npc/bots/enemies/haybot/haybot_walk_chaseplayer_loop": {},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_explode": {},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_ff": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			},
+			"tapebot_ff_intensity": {
+				"default": 0.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_foley_gunrattle": {
+		"Parameters": {
+			"tapebot_ff_intensity": {
+				"default": 0.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_foley_scissor": {
+		"Parameters": {
+			"tapebot_ff_intensity": {
+				"default": 0.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_foley_servo": {
+		"Parameters": {
+			"tapebot_ff_intensity": {
+				"default": 0.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_noticeplayer": {},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_shoot": {},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_shoot_projectile": {},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_takedamage": {},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_walk_aggro": {},
+	"event:/char/npc/bots/enemies/tapebot/tapebot_walk_chaseplayer": {},
+	"event:/char/npc/bots/enemies/totebot/totebot_attack": {
+		"Parameters": {
+			"totebot_color": {
+				"default": 0.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/totebot/totebot_explode": {
+		"Parameters": {
+			"totebot_color": {
+				"default": 0.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/totebot/totebot_ff": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/totebot/totebot_foley_servo": {},
+	"event:/char/npc/bots/enemies/totebot/totebot_noticeplayer": {
+		"Parameters": {
+			"totebot_color": {
+				"default": 0.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/totebot/totebot_takedamage": {
+		"Parameters": {
+			"totebot_color": {
+				"default": 0.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/totebot/totebot_walk_chaseplayer": {
+		"Parameters": {
+			"totebot_color": {
+				"default": 0.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/enemies/totebot/totebot_walk_chaseplayer_loop": {
+		"Parameters": {
+			"totebot_color": {
+				"default": 0.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/observerbot_move": {},
+	"event:/char/npc/bots/observerbot_write": {},
+	"event:/char/npc/bots/utility/cookbot/cob_craft": {
+		"Parameters": {
+			"craftbot": {
+				"default": 1.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/utility/cookbot/cob_craft_finished": {},
+	"event:/char/npc/bots/utility/cookbot/cob_craft_start": {},
+	"event:/char/npc/bots/utility/cookbot/cob_craft_startloopfinished": {
+		"Parameters": {
+			"craftbot": {
+				"default": 1.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/utility/cookbot/cob_idle": {},
+	"event:/char/npc/bots/utility/cookbot/cob_idle_special01": {},
+	"event:/char/npc/bots/utility/cookbot/cob_idle_special02": {},
+	"event:/char/npc/bots/utility/cookbot/cob_unpack": {},
+	"event:/char/npc/bots/utility/craftinbot/cb_craft": {
+		"Parameters": {
+			"craftbot": {
+				"default": 1.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/utility/craftinbot/cb_craft_finished": {},
+	"event:/char/npc/bots/utility/craftinbot/cb_craft_start": {},
+	"event:/char/npc/bots/utility/craftinbot/cb_craft_startloopfinished": {
+		"Parameters": {
+			"craftbot": {
+				"default": 1.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/utility/craftinbot/cb_idle": {},
+	"event:/char/npc/bots/utility/craftinbot/cb_idle_special01": {},
+	"event:/char/npc/bots/utility/craftinbot/cb_idle_special02": {},
+	"event:/char/npc/bots/utility/craftinbot/cb_small_craft": {},
+	"event:/char/npc/bots/utility/craftinbot/cb_small_idle": {},
+	"event:/char/npc/bots/utility/craftinbot/cb_unpack": {},
+	"event:/char/npc/bots/utility/dressbot/db_craft": {
+		"Parameters": {
+			"craftbot": {
+				"default": 1.0,
+				"maximum": 3.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/bots/utility/dressbot/db_craft_finished": {},
+	"event:/char/npc/bots/utility/dressbot/db_craft_start": {},
+	"event:/char/npc/bots/utility/dressbot/db_craft_startloopfinished": {
+		"Parameters": {
+			"dressbot": {
+				"default": 1.0,
+				"maximum": 2.0,
+				"minimum": 1.0
+			}
+		}
+	},
+	"event:/char/npc/bots/utility/dressbot/db_door_close": {},
+	"event:/char/npc/bots/utility/dressbot/db_door_open": {},
+	"event:/char/npc/bots/utility/dressbot/db_idle": {},
+	"event:/char/npc/bots/utility/dressbot/db_unpack": {},
+	"event:/char/npc/bots/utility/refinery/refinery_unpack": {},
+	"event:/char/npc/bots/utility/refinery/refinery_use": {},
+	"event:/char/npc/bots/utility/refinery/refinery_use_end": {},
+	"event:/char/npc/bots/utility/refinery/refinery_use_start": {},
+	"event:/char/npc/human/farmer/farmer_male_old/bored": {
+		"Parameters": {
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/human/farmer/farmer_male_old/bye": {},
+	"event:/char/npc/human/farmer/farmer_male_old/cage_struggle": {},
+	"event:/char/npc/human/farmer/farmer_male_old/greet": {},
+	"event:/char/npc/human/farmer/farmer_male_old/help": {},
+	"event:/char/npc/human/farmer/farmer_male_old/rolling": {
+		"Parameters": {
+			"dummy": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/human/farmer/farmer_male_old/thanks": {},
+	"event:/char/npc/supervisor/monitor_bravo": {},
+	"event:/char/npc/supervisor/monitor_generic": {},
+	"event:/char/npc/supervisor/monitor_next": {},
+	"event:/char/npc/woc/woc_chewing": {},
+	"event:/char/npc/woc/woc_confetti": {},
+	"event:/char/npc/woc/woc_ff_run": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/woc/woc_ff_walk": {
+		"Parameters": {
+			"surface": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/char/npc/woc/woc_moo_idle": {},
+	"event:/char/npc/woc/woc_moo_panic": {},
+	"event:/char/npc/woc/woc_moo_ragdoll": {},
+	"event:/char/wind": {
+		"Parameters": {
+			"velocity": {
+				"default": 0.0,
+				"maximum": 100.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/collapse/beehive": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/collapse/clam": {},
+	"event:/coll/collapse/corn": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/collapse/fence": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/collapse/oilgeyser": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/collapse/plant": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/collapse/stone": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/collapse/tree_burnt": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/dust_rocket": {
+		"Parameters": {
+			"ground_distance": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"material": {
+				"default": 0.0,
+				"maximum": 30.0,
+				"minimum": 0.0
+			},
+			"power": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/impact_debris": {
+		"Parameters": {
+			"material": {
+				"default": 0.0,
+				"maximum": 30.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/impact_multiple": {
+		"Parameters": {
+			"material": {
+				"default": 0.0,
+				"maximum": 15.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/impact_rolling": {
+		"Parameters": {
+			"material": {
+				"default": 0.0,
+				"maximum": 30.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/impact_single": {
+		"Parameters": {
+			"material": {
+				"default": 0.0,
+				"maximum": 30.0,
+				"minimum": 0.0
+			},
+			"phys_energy": {
+				"default": 470.0,
+				"maximum": 500.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/impact_sliding": {
+		"Parameters": {
+			"material": {
+				"default": 1.0,
+				"maximum": 20.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/impact_vehicle": {
+		"Parameters": {
+			"material": {
+				"default": 0.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			},
+			"parts": {
+				"default": 0.0,
+				"maximum": 20.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/impact_weapon": {
+		"Parameters": {
+			"material": {
+				"default": 0.0,
+				"maximum": 30.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/coll/stress/stone": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/combat": {
+		"Parameters": {
+			"music": {
+				"default": 0.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/creative": {},
+	"event:/music/elevator": {},
+	"event:/music/environment": {
+		"Parameters": {
+			"music": {
+				"default": 0.0,
+				"maximum": 10.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/menu": {},
+	"event:/music/robotheads/dance/dancebass": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/dance/dancedrum": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/dance/dancelead": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/dance/dancepad": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/piano": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/retrobass": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/retrodrum": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/retrofmblip": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/retrovoice": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/music/robotheads/retrowildblip": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/props/beehive": {},
+	"event:/props/bot_unbox": {},
+	"event:/props/bot_unbox_big": {},
+	"event:/props/can_drink": {},
+	"event:/props/can_open": {},
+	"event:/props/challengeball_rolling": {
+		"Parameters": {
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/props/challengeball_slot": {
+		"Parameters": {
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/props/challengeball_spawn": {
+		"Parameters": {
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/props/challengecrowd_jump": {
+		"Parameters": {
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/props/installations/downedship_poweron": {},
+	"event:/props/installations/elevator/elevator_button": {},
+	"event:/props/installations/elevator/elevator_ding": {},
+	"event:/props/installations/elevator/elevator_keycard_use": {},
+	"event:/props/installations/elevator/elevator_move_outside": {},
+	"event:/props/installations/elevator/elevator_move_stereo": {},
+	"event:/props/installations/elevator/elevatordoor_close": {},
+	"event:/props/installations/elevator/elevatordoor_open": {},
+	"event:/props/installations/farmerhideout/hideout_close": {},
+	"event:/props/installations/farmerhideout/hideout_open": {},
+	"event:/props/installations/farmerhideout/hideout_vacuum": {},
+	"event:/props/installations/mechanicstation/ms_craft": {},
+	"event:/props/installations/mechanicstation/ms_open": {},
+	"event:/props/installations/packingstation/ps_load": {},
+	"event:/props/installations/packingstation/ps_pack": {},
+	"event:/props/installations/packingstation/ps_roller": {},
+	"event:/props/installations/packingstation/ps_throw": {},
+	"event:/props/installations/powercore_insert": {},
+	"event:/props/logs_appear": {},
+	"event:/props/logs_smash": {},
+	"event:/props/lootcrate_smash": {},
+	"event:/props/mapinspector/mi_off": {
+		"Parameters": {
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/props/mapinspector/mi_on": {
+		"Parameters": {
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/props/plants/plant_finished": {},
+	"event:/props/plants/plant_seed": {},
+	"event:/props/sharktrophy": {},
+	"event:/props/tree_creak": {
+		"Parameters": {
+			"tree_creaking": {
+				"default": 1.0,
+				"maximum": 4.0,
+				"minimum": 1.0
+			}
+		}
+	},
+	"event:/props/tree_fall": {
+		"Parameters": {
+			"velocity_tree": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/props/tree_impact_ground": {},
+	"event:/props/tree_impact_leafrattle": {
+		"Parameters": {
+			"velocity_max_50": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/tools/alarmclock": {
+		"Parameters": {
+			"alarm": {
+				"default": 1.0,
+				"maximum": 10.0,
+				"minimum": 1.0
+			}
+		}
+	},
+	"event:/tools/builderguide/activate": {},
+	"event:/tools/builderguide/complete": {},
+	"event:/tools/builderguide/deactivate": {},
+	"event:/tools/builderguide/finish_section": {},
+	"event:/tools/builderguide/loop": {},
+	"event:/tools/connectiontool/connectiontool_direction": {},
+	"event:/tools/connectiontool/connectiontool_equip": {},
+	"event:/tools/connectiontool/connectiontool_fire": {},
+	"event:/tools/connectiontool/connectiontool_idle": {},
+	"event:/tools/connectiontool/connectiontool_putdown": {},
+	"event:/tools/connectiontool/connectiontool_rotate": {},
+	"event:/tools/crowbar": {},
+	"event:/tools/drill": {},
+	"event:/tools/fertilizer": {},
+	"event:/tools/glowstick/gs_bounce": {},
+	"event:/tools/glowstick/gs_flying": {
+		"Parameters": {
+			"velocity": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/tools/glowstick/gs_open": {},
+	"event:/tools/glowstick/gs_pool": {},
+	"event:/tools/glowstick/gs_throw": {},
+	"event:/tools/handbook/handbook_close": {},
+	"event:/tools/handbook/handbook_open": {},
+	"event:/tools/handbook/handbook_pickup": {},
+	"event:/tools/handbook/handbook_putdown": {},
+	"event:/tools/handbook/handbook_turnpage": {},
+	"event:/tools/lift_pickup": {},
+	"event:/tools/lift_place": {},
+	"event:/tools/lift_use": {
+		"Parameters": {
+			"height": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"stretch": {
+				"default": 1.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/tools/logbook/close": {},
+	"event:/tools/logbook/open": {},
+	"event:/tools/multitool_refine": {
+		"Parameters": {
+			"material": {
+				"default": 0.0,
+				"maximum": 30.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/tools/painttool/pt_colourabort": {},
+	"event:/tools/painttool/pt_colourmenu": {},
+	"event:/tools/painttool/pt_colourpick": {},
+	"event:/tools/painttool/pt_equip": {},
+	"event:/tools/painttool/pt_erase": {},
+	"event:/tools/painttool/pt_paint": {},
+	"event:/tools/painttool/pt_putdown": {},
+	"event:/tools/painttool/pt_reload": {},
+	"event:/tools/radio": {},
+	"event:/tools/saw_material_old": {
+		"Parameters": {
+			"saw_material": {
+				"default": 0.9999999403953552,
+				"maximum": 16.0,
+				"minimum": 0.0
+			},
+			"saw_material_off_on": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/tools/sledgehammer_pickup": {},
+	"event:/tools/sledgehammer_putdown": {},
+	"event:/tools/sledgehammer_swing": {},
+	"event:/tools/vacuum/vacuum_blowout": {},
+	"event:/tools/vacuum/vacuum_suction": {},
+	"event:/tools/waterbucket_fill": {},
+	"event:/tools/waterbucket_throw": {},
+	"event:/tools/weldtool/wt_bearing": {
+		"Parameters": {
+			"weld=1": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/tools/weldtool/wt_equip": {},
+	"event:/tools/weldtool/wt_error": {},
+	"event:/tools/weldtool/wt_object": {
+		"Parameters": {
+			"weld=1": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/tools/weldtool/wt_putdown": {},
+	"event:/tools/weldtool/wt_sparks": {},
+	"event:/tools/weldtool/wt_weld": {},
+	"event:/ui/attach": {},
+	"event:/ui/attach_default": {},
+	"event:/ui/blueprint/bp_build": {},
+	"event:/ui/blueprint/bp_camera": {},
+	"event:/ui/blueprint/bp_close": {},
+	"event:/ui/blueprint/bp_delete": {},
+	"event:/ui/blueprint/bp_open": {},
+	"event:/ui/blueprint/bp_save": {},
+	"event:/ui/blueprint/bp_share": {},
+	"event:/ui/challenge/chall_activation": {},
+	"event:/ui/challenge/chall_fall": {},
+	"event:/ui/challenge/chall_start": {},
+	"event:/ui/challenge/complete": {},
+	"event:/ui/challenge/complete_collect": {},
+	"event:/ui/click": {},
+	"event:/ui/detach_default": {},
+	"event:/ui/drag": {},
+	"event:/ui/drop": {},
+	"event:/ui/enlarge": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/ui/equip_clothes": {},
+	"event:/ui/error": {},
+	"event:/ui/garment_unbox": {},
+	"event:/ui/health_restored": {},
+	"event:/ui/highlight": {},
+	"event:/ui/inventory_close_old": {},
+	"event:/ui/inventory_select_old": {},
+	"event:/ui/item_collect": {},
+	"event:/ui/item_pickup": {},
+	"event:/ui/item_projectile": {},
+	"event:/ui/item_spawn": {},
+	"event:/ui/logbook_entry": {},
+	"event:/ui/logbook_entryactivate": {},
+	"event:/ui/menu_change_screen": {},
+	"event:/ui/menu_close": {},
+	"event:/ui/menu_open": {},
+	"event:/ui/notification": {},
+	"event:/ui/openclose/backpack_close": {},
+	"event:/ui/openclose/backpack_open": {},
+	"event:/ui/openclose/chest_close": {},
+	"event:/ui/openclose/chest_open": {},
+	"event:/ui/paus": {},
+	"event:/ui/reduce": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/ui/rotate": {},
+	"event:/ui/scroll": {
+		"Parameters": {
+			"height": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/ui/steering_attach": {},
+	"event:/ui/steering_select": {},
+	"event:/ui/upgrade_part": {},
+	"event:/vehicle/beacon": {},
+	"event:/vehicle/brake": {
+		"Parameters": {
+			"strength": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/controller": {
+		"Parameters": {
+			"level": {
+				"default": 5.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			},
+			"load": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/drill": {
+		"Parameters": {
+			"impact": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/elengines/elengine01": {
+		"Parameters": {
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/elengines/elengine02": {
+		"Parameters": {
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/elengines/elengine03": {
+		"Parameters": {
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/elengines/elengine04": {
+		"Parameters": {
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/elengines/elengine05": {
+		"Parameters": {
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/fans/fan_arena": {},
+	"event:/vehicle/gasengines/gasengine01": {
+		"Parameters": {
+			"gas": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/gasengines/gasengine02": {
+		"Parameters": {
+			"gas": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/gasengines/gasengine03": {
+		"Parameters": {
+			"gas": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/gasengines/gasengine04": {
+		"Parameters": {
+			"gas": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/gasengines/gasengine05": {
+		"Parameters": {
+			"gas": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/gasengines/scrapengine": {
+		"Parameters": {
+			"gas": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"load": {
+				"default": 0.5,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"rpm": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/horns/clownhorn": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.5018050670623779,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/horns/phaserhorn": {
+		"Parameters": {
+			"pitch": {
+				"default": 0.5250000357627869,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/piston": {
+		"Parameters": {
+			"height": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"level": {
+				"default": 5.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			},
+			"stretch": {
+				"default": 1.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/resourcecollector_insert": {},
+	"event:/vehicle/resourcecollector_takeout": {},
+	"event:/vehicle/saw": {
+		"Parameters": {
+			"impact": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/seats/default": {},
+	"event:/vehicle/seats/toilet": {},
+	"event:/vehicle/suspension": {
+		"Parameters": {
+			"level": {
+				"default": 5.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": -20.0,
+				"maximum": 20.0,
+				"minimum": -20.0
+			}
+		}
+	},
+	"event:/vehicle/thrusters/thruster01": {
+		"Parameters": {
+			"power": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": -1.0
+			}
+		}
+	},
+	"event:/vehicle/thrusters/thruster02": {
+		"Parameters": {
+			"power": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": -1.0
+			}
+		}
+	},
+	"event:/vehicle/thrusters/thruster03": {
+		"Parameters": {
+			"power": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": -1.0
+			}
+		}
+	},
+	"event:/vehicle/thrusters/thruster04": {
+		"Parameters": {
+			"power": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": -1.0
+			}
+		}
+	},
+	"event:/vehicle/thrusters/thruster05": {
+		"Parameters": {
+			"power": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			},
+			"velocity": {
+				"default": 0.0,
+				"maximum": 50.0,
+				"minimum": -1.0
+			}
+		}
+	},
+	"event:/vehicle/triggers/encryptor_off": {},
+	"event:/vehicle/triggers/encryptor_on": {},
+	"event:/vehicle/triggers/trigger_sensor_off": {
+		"Parameters": {
+			"level": {
+				"default": 5.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/triggers/trigger_sensor_on": {
+		"Parameters": {
+			"level": {
+				"default": 5.0,
+				"maximum": 5.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/vehicle/triggers/trigger_switch_off": {},
+	"event:/vehicle/triggers/trigger_switch_on": {},
+	"event:/vehicle/triggers/trigger_toggle_off": {},
+	"event:/vehicle/triggers/trigger_toggle_on": {},
+	"event:/vo/straggler/vo_straggler_01": {},
+	"event:/vo/straggler/vo_straggler_02": {},
+	"event:/vo/straggler/vo_straggler_03": {},
+	"event:/vo/straggler/vo_straggler_04": {},
+	"event:/vo/straggler/vo_straggler_05": {},
+	"event:/vo/straggler/vo_straggler_06": {},
+	"event:/vo/straggler/vo_straggler_07": {},
+	"event:/vo/straggler/vo_straggler_08": {},
+	"event:/vo/straggler/vo_straggler_09": {},
+	"event:/vo/straggler/vo_straggler_10": {},
+	"event:/vo/straggler/vo_straggler_11": {},
+	"event:/vo/straggler/vo_straggler_12": {},
+	"event:/weapons/chemcannon/chem_cloud": {},
+	"event:/weapons/chemcannon/chem_explode": {},
+	"event:/weapons/chemcannon/chem_flying": {
+		"Parameters": {
+			"velocity": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/weapons/explosion_gas": {
+		"Parameters": {
+			"size": {
+				"default": 0.08000000566244125,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/weapons/explosion_gasleak": {
+		"Parameters": {
+			"progress": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/weapons/spudgun/frier_fire": {},
+	"event:/weapons/spudgun/sg_fire": {},
+	"event:/weapons/spudgun/sg_noammo": {},
+	"event:/weapons/spudgun/sg_reload": {},
+	"event:/weapons/spudgun/spinner_fire": {},
+	"event:/weapons/spudgun/spinner_spin": {
+		"Parameters": {
+			"velocity": {
+				"default": 0.0,
+				"maximum": 1.0,
+				"minimum": 0.0
+			}
+		}
+	},
+	"event:/weapons/watercannon_fire": {},
+	"snapshot:/combat": {},
+	"snapshot:/headphones": {},
+	"snapshot:/loading": {},
+	"snapshot:/nomusic": {},
+	"snapshot:/paus": {},
+	"snapshot:/reverb/arena": {},
+	"snapshot:/reverb/field": {},
+	"snapshot:/reverb/small room": {},
+	"snapshot:/reverb/underwater": {},
+	"snapshot:/reverb/underwater end": {},
+	"snapshot:/reverb/warehouse": {},
+	"snapshot:/sidechain": {
+		"Parameters": {
+			"Intensity": {
+				"default": 0.0,
+				"maximum": 100.0,
+				"minimum": 0.0
+			}
+		}
+	}
+}

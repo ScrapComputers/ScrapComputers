@@ -1,0 +1,15 @@
+{
+   "allow_add_mods" : true,
+   "custom_icons" : false,
+   "description" : "This mod doesn't have a description",
+   "localId" : "130f6849-466b-4507-8df9-bf98c28829ee",
+   "name" : "SC Addon Testing",
+   "type" : "Blocks and Parts",
+   "version" : 1,
+   "dependencies" : [
+      {
+         "fileId" : 3238484039,
+         "localId" : "3660881a-a6b8-40e5-a348-27b368a742e9"
+      }
+   ]
+}

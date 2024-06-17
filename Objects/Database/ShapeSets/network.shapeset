@@ -1,0 +1,38 @@
+{
+    "partList": [
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "eeeeee",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/NetworkPort.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "NetworkPort",
+                "filename": "$CONTENT_DATA/Scripts/Network/NetworkPort.lua"
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "afd0a82c-3d88-46fb-acad-7ab902acf6e1"
+        },
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "eeeeee",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Antenna.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "Antenna",
+                "filename": "$CONTENT_DATA/Scripts/Network/Antenna.lua"
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "ed6875f0-a29d-4849-b496-1a7a441fd98f"
+        }
+    ]
+}

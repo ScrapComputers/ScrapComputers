@@ -1,0 +1,122 @@
+{
+    "ScrapComputers - AUDIO0": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/dance/dancebass",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO1": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/dance/dancedrum",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO2": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/dance/dancelead",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO3": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/dance/dancepad",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO4": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/piano",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO5": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrobass",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO6": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrodrum",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO7": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrofmblip",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO8": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrovoice",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    },
+    "ScrapComputers - AUDIO9": {
+        "parameterList":  { "pitch": 0.0 },
+        "effectList":
+        [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrowildblip",
+                "offset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                "parameters": [ "pitch" ]
+            }
+        ]
+    }
+}

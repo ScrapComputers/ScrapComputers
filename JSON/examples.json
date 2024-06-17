@@ -1,0 +1,90 @@
+[
+    {
+        "name": "Script Template",
+        "script": "-- Any variables outside the main functions are global! (As programmer perspective) The code only gets ran once!\n\n-- Gets called when the computer starts up\nfunction onLoad()\n\t\nend\n\n-- Gets called every tick\nfunction onUpdate()\n\t\nend\n\n-- Gets called when the computer error's out.\nfunction onError(err)\n\t\nend\n\n-- Gets called when the computer shuts down.\nfunction onDestroy()\n\t\nend"
+    },
+    {
+        "name": "Terminal Example",
+        "script": "local terminal = sc.getTerminals()[1]\n\nfunction onLoad()\n\tterminal.clear()\n\tterminal.send(\"#3A96DDComputer: Send a input and il echo it back to you!\")\nend\n\nfunction onUpdate()\n\tif terminal.receivedInputs() then\n\t\tlocal text = terminal.getInput()\n\n\t\tterminal.send(\"> \"..text)\n\tend\nend\n\nfunction onDestroy()\n\tterminal.clear()\n\tterminal.clearInputHistory()\nend"
+    },
+    {
+        "name": "Harddrive Example (Writer)",
+        "script": "local harddrive = sc.getDrives()[1]\nlocal data = {} -- Whatever inside this table will be stored to the harddrive!\n\nfunction onLoad()\n\tharddrive.save(data)\n\t\n\tprint(\"Saved Data!\")\nend"
+    },
+    {
+        "name": "Harddrive Example (Reader)",
+        "script": "local drive = sc.getDrives()[1]\n\nfunction onLoad()\n\tlocal data = drive.load()\n\tlocal jsonString = sm.json.writeJsonString(data)\n\n\tprint(jsonString)\nend"
+    },
+    {
+        "name": "Hologram Example",
+        "script": "local hologram = sc.getHolograms()[1]\n\nlocal UUID = \"6ad29c0e-8209-4dca-9133-20d7a2fc2d63\"\nlocal Scale = sm.vec3.new(1,1,1)\nlocal Position = sm.vec3.new(0,1,0)\nlocal Rotation = sm.vec3.new(45,25,15)\nlocal Color = sm.color.new(\"4A4A4A\")\n\nfunction onLoad()\n\thologram.createCustomObject(UUID, Position, Rotation, Scale, Color)\nend"
+    },
+    {
+        "name": "Radar Example",
+        "script": "local Radar = sc.getRadars()[1]\nlocal VAngle = 35\nlocal HAngle = 35\n\nfunction onLoad()\n\tRadar.setVerticalScanAngle(VAngle)\n\tRadar.setHorizontalScanAngle(HAngle)\nend\n\nfunction onUpdate()\n\tlocal Targets = Radar.getTargets()\n\n\tprint(\"Total Targets: \"..tostring(#Targets))\n\n\tfor _, Target in pairs(Targets) do\n\t\tlocal RoundedPosition = sm.vec3.new(\n\t\t\tmath.floor(Target.position.x),\n\t\t\tmath.floor(Target.position.y),\n\t\t\tmath.floor(Target.position.z)\n\t\t)\n\t\t\n\t\tlocal TargetPositionStr = \"(\"..RoundedPosition.x..\", \"..RoundedPosition.y..\", \"..RoundedPosition.z..\")\"\n\t\tlocal TargetSurfaceAreaStr = tostring(Target.surfaceArea)\n\n\t\tprint(\"\t\"..TargetPositionStr..\" | \"..TargetSurfaceAreaStr)\n\tend\nend"
+    },
+    {
+        "name": "Network Port Example (Sender)",
+        "script": "local networkPort = sc.getNetworkPorts()[1]\n\nfunction onLoad()\n\tif not networkPort.hasConnection() then\n\t\tprint(\"No connection found!\")\n\t\treturn\n\tend\n\n\tnetworkPort.sendPacket(\"Hello World!\")\n\tprint(\"Sent packet!\")\nend"
+    },
+    {
+        "name": "Network Port Example (Receiver)",
+        "script": "local networkPort = sc.getNetworkPorts()[1]\n\nfunction onLoad()\n\tif not networkPort.hasConnection() then\n\t\tprint(\"No connection found!\")\n\t\treturn\n\tend\n\n\tif networkPort.getTotalPackets() > 0 then\n\t\tlocal packet = networkPort.receivePacket()\n\t\tprint(\"received \"..tostring(packet))\n\telse\n\t\tprint(\"No packets received!\")\n\tend\nend"
+    },
+    {
+        "name": "Display Touch Screen Example",
+        "script": "local display = sc.getDisplays()[1]\n\nfunction onLoad()\n\tdisplay.enableTouchScreen(true)\nend\n\nfunction onUpdate()\n\tlocal data = display.getTouchData()\n\n\tif data and data.state ~= 3 then\n\t\tdisplay.drawPixel(data.x, data.y, \"eeeeee\")\n\tend\n\n\tdisplay.update()\nend\n\nfunction onDestroy()\n\tdisplay.clear()\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Display Mandlebrot Fractal Example",
+        "script": "local display = sc.getDisplays()[1]\nlocal width, height = display.getDimensions()\n\nfunction drawBurningShip()\n\tlocal maxIterations = 1000 --change for fidelity, 1000 gets you a solid fidelity but its more costly on render time\n\tlocal zoom = 1 --[[20000]]\n\tlocal offsetX = 0 --[[-0.7497]]\n\tlocal offsetY = 0 --[[0.0315]]\n\n\tfor x = 1, width do\n\t\tfor y = 1, height do\n\t\t\tlocal zx, zy = (x - width / 2) / (0.5 * zoom * width) + offsetX, (y - height / 2) / (0.5 * zoom * height) + offsetY\n\t\t\tlocal cRe, cIm = zx, zy\n\t\t\tlocal iteration = 0\n\n\t\t\twhile (zx * zx + zy * zy < 4) and (iteration < maxIterations) do\n\t\t\t\tlocal newZx = zx * zx - zy * zy + cRe\n\t\t\t\tlocal newZy = 2 * zx * zy + cIm\n\t\t\t\tzx, zy = newZx, newZy\n\t\t\t\titeration = iteration + 1\n\t\t\tend\n\n\t\t\tlocal brightness = iteration / maxIterations\n\t\t\tlocal color\n\n\t\t\tif iteration == maxIterations then\n\t\t\t\tcolor = sm.color.new(0, 0, 0)\n\t\t\telse\n\t\t\t\tcolor = sm.color.new(brightness, brightness, brightness) * 2 --adjust number for brightness control\n\t\t\tend\n\n\t\t\tdisplay.drawPixel(x, y, color)\n\t\tend\n\tend\nend\n\nfunction onLoad()\n\tdrawBurningShip()\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Display Optimization Tester",
+        "script": "local display = sc.getDisplays()[1]\nlocal width, height = display.getDimensions()\n\nfunction onLoad()\n\tfor x = 1, width do\n\t\tfor y = 1, height do\n\t\t\tdisplay.drawPixel(x, y, sc.color.random0to1())\n\t\tend\n\tend\n\t\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Noise Generator (Display + Terminal)",
+        "script": "local terminal = sc.getTerminals()[1]\nlocal display = sc.getDisplays()[1]\nlocal width, height = display.getDimensions()\n\nfunction onLoad()\n\t-- Clear and send in information\n\tterminal.clear()\n\tterminal.send(\"#3A96DCInput must be a number!\")\n\tterminal.send(\"#3A96DCDisplay size: (\"..tostring(width)..\"x\"..tostring(height)..\")\")\nend\n\nfunction onUpdate()\n\t-- Check if theres inputs received.\n\tif terminal.receivedInputs() then\n\t\t-- Since there is a input. Get the input text\n\t\tlocal text = terminal.getInput()\n\n\t\t-- If its empty, return since its blank.\n\t\tif text == \"\" then return end\n\n\t\t-- Send text showing it has been received\n\t\tterminal.send(\"> \"..text)\n\n\t\t-- Convert text to a number\n\t\tlocal seedNumber = tonumber(text)\n\t\tif seedNumber == nil then -- tonumber returns nil if it wasen't a number. Here we are checking if its nil, If so then send a error message!\n\t\t\tterminal.send(\"#E74856Not a number!\")\n\t\telse\n\t\t\t-- Since we know its a number. Send message\n\t\t\tterminal.send(\"received seed!\")\n\t\t\tdisplay.clear() -- Clear display\n\n\t\t\t-- Loop through all pixels\n\t\t\tfor x = 1, width, 1 do\n\t\t\t\tfor y = 1, height, 1 do\n\t\t\t\t\t-- Draw a pixel based of a octaveNoise2d output\n\t\t\t\t\tdisplay.drawPixel(x, y, sc.color.newSingluar(sm.noise.octaveNoise2d(x, y, 7.5, seedNumber)))\n\t\t\t\tend\n\t\t\tend\n\n\t\t\t-- Update it.\n\t\t\tdisplay.update()\n\t\tend\n\tend\nend\n\nfunction onDestroy()\n\t-- Clear the terminal entirly\n\tterminal.clear()\n\tterminal.clearInputHistory()\n\n\t-- Clear the display\n\tdisplay.clear()\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Picture Example (Display + Camera)",
+        "script": "local display = sc.getDisplays()[1]\nlocal camera = sc.getCameras()[1]\nlocal width, height = display.getDimensions()\n\nfunction onLoad()\n\tcamera.toggleRandom(true)\n\n\tlocal frame = camera.getFrame(width, height, 100, 100)\n\n\tdisplay.drawFromTable(frame)\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Video Example (Display + Camera)",
+        "script": "local display = sc.getDisplays()[1]\nlocal camera = sc.getCameras()[1]\nlocal width, height = display.getDimensions()\n\nfunction onUpdate()\n\tlocal frame = camera.getVideo(width, height, 100, 100, 2)\n\n\tdisplay.drawFromTable(frame)\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Speaker Example",
+        "script": "local speaker = sc.getSpeakers()[1]\n\nfunction onLoad()\n\t-- See https://github.com/Vajdani/sm_docs/blob/master/Lists/Audio.json for full list\n\tspeaker.playNoteEffect(\"event:/music/robotheads/dance/dancebass\")\nend"
+    },
+    {
+        "name": "Keyboard Example",
+        "script": "local keyboard = sc.getKeyboards()[1]\nlocal display = sc.getDisplays()[1]\n\nfunction onLoad()\n\tlastKeystroke = \"\"\n\ttext = \"\"\nend\n\nfunction onUpdate()\n\tlocal keystroke = keyboard.getLatestKeystroke()\n\tlocal pressed = keyboard.isPressed()\n\tlocal rapidPress\n\tlocal clock = os.clock()\n\n\tif pressed then\n\t\tif keystroke == lastKeystroke then\n\t\t\tif not pressClock then\n\t\t\t\tpressClock = clock\n\t\t\tend\n\n\t\t\tif pressClock + 0.3 <= clock then\n\t\t\t\trapidPress = true\n\t\t\tend\n\t\telse\n\t\t\trapidPress = false\n\t\t\tpressClock = nil\n\t\tend\n\telse\n\t\trapidPress = false\n\t\tpressClock = nil\n\t\tnotPress = true\n\tend\n\n\tif (pressed and notPress or keystroke ~= lastKeystroke) or rapidPress then\n\t\tlastKeystroke = keystroke\n\t\tnotPress = false\n\n\t\tif keystroke == \"backSpace\" then\n\t\t\tif #text > 0 then\n\t\t\t\ttext = text:sub(1, #text - 1)\n\t\t\tend\n\t\telse\n\t\t\ttext = text..keystroke\n\t\tend\n\t\t\n\t\tdisplay.clear()\n\t\tdisplay.drawText(2, 2, text, \"eeeeee\")\n\t\tdisplay.update()\n\tend\nend\n\nfunction onDestroy()\n\tdisplay.clear()\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Motor example",
+        "script": "local motor = sc.getMotors()[1]\n\nfunction onLoad()\n\tmotor.setBearingSpeed(600)\n\tmotor.setTorque(1000)\nend"
+    },
+    {
+        "name": "Encryiption Example - Base64",
+        "script": "function onLoad()\n\t-- Message\n\tlocal msg = \"Hello World!\"\n\tprint(\"Message: \"..msg)\n\n\t-- Encoded Message\n\tlocal encodedMessage = sc.base64.encode(msg)\n\tprint(\"Encoded: \"..encodedMessage)\n\n\t-- Decoded Message\n\tlocal decodedMessage = sc.base64.decode(encodedMessage)\n\tprint(\"Decoded: \"..decodedMessage)\nend"
+    },
+    {
+        "name": "Encryiption Example - MD5",
+        "script": "function onLoad()\n\t-- Message\n\tlocal msg = \"Hello World!\"\n\tprint(\"Message: \"..msg)\n\n\t-- Encoded message\n\tlocal encodedMessage = sc.md5.sumhexa(msg)\n\tprint(\"MD5 Encoded: \"..encodedMessage)\n\n\t-- Stream example\n\tlocal stream = sc.md5.new()\n\tstream:update('some bytes')\n\tstream:update('some more bytes')\n\tstream:update('etc')\n\tprint(\"MD5 Stream Encoded:\"..sc.md5.tohex(stream:finish()))\nend"
+    },
+    {
+        "name": "Encryiption Example - SHA256",
+        "script": "function onLoad()\n\t-- Message\n\tlocal msg = \"Hello World!\"\n\tprint(\"Message: \"..msg)\n\n\t-- Encoded message\n\tlocal encodedMessage = sc.sha256.encode(msg)\n\tprint(\"SHA256 Encoded: \"..encodedMessage)\nend"
+    },
+    {
+        "name": "Laser Example",
+        "script": "local Laser = sc.getLasers()[1]\nlocal Distance = 100\n\nfunction onLoad()\n\tLaser.setDistance(Distance) -- Distance is in Meters\nend\n\nfunction onUpdate()\n\tlocal hit, result = Laser.getLaserData()\n\n\tif hit then\n\t\t-- \"result.fraction\" is the distance that is 0 to 1. so we mutiply that by Distance so its 0 to DISTANCE\n\t\tlocal RoundedDistance = math.floor(result.fraction * Distance)\n\n\t\tprint(\"Hit! Distance is \"..RoundedDistance.. \" Meter(s)\")\n\tend\nend"
+    },
+    {
+        "name": "GPS Example",
+        "script": "-- This prints out the current speed\n\nlocal GPS = sc.getGPSs()[1]\n\nfunction onUpdate()\n\tlocal data = GPS.getGPSData()\n\n\tprint(\"Current Speed: \"..math.floor(data.speed)..\" m/s\")\nend\n"
+    }
+]

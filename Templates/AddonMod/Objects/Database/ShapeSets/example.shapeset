@@ -1,0 +1,21 @@
+{
+    "partList": [
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "ffffff",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$GAME_DATA/Objects/Renderable/Interactive/obj_interactive_logicgate.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "Component",
+                "filename": "$CONTENT_DATA/Scripts/Component.lua"
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "e012a94b-c4c2-4fd8-8a59-0a48b69227dd"
+        }
+    ]
+}

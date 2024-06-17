@@ -1,0 +1,5 @@
+{
+    "toolSetList" : [
+        "$CONTENT_DATA/Tools/Database/ToolSets/main.toolset"
+    ]
+}

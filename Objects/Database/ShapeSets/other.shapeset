@@ -1,0 +1,21 @@
+{
+    "partList": [
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "9a44b7",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Configurator.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "Configurator",
+                "filename": "$CONTENT_DATA/Scripts/Configurator.lua"
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "ed71e591-79bf-4bff-b88b-73885298601e"
+        }
+    ]
+}

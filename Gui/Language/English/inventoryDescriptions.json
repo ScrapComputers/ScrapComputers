@@ -1,0 +1,209 @@
+{
+    // Computer
+    "c44f6e8e-b0b8-4821-83a5-7928c1446df0": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Lua Computer",
+        "description": "The main part of the ScrapComputers mod! You can write your own programs, and the computer will excecute whatever has been written inside of it!"
+    },
+
+    // Registers
+    "cac86f35-50dd-47b1-8a26-76cc86195555": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Input register",
+        "description": "This component allows you to read any number input value from an interactable and convert it into something the computer can understand."
+    },
+    "045b633f-77c9-41d7-bd82-dae29383c167": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Output register",
+        "description": "This component allows you to output any number from the computer to a physical interactable."
+    },
+
+    // Configurator
+    "ed71e591-79bf-4bff-b88b-73885298601e": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Mod Configurator",
+        "description": "This is the configurator for ScrapComputers. It allows you to configure how the mod will work in your world, Such as: Setting the env to be unsafe!"
+    },
+
+    // Storage
+    "d89e6c4e-7455-4ccf-8fc8-4f4ef4acb598": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] HDD",
+        "description": "A harddrive where you can store in data!\n\n#646464Note: This is basicly a reimplementation of sm.storage or self.storage!"
+    },
+
+    // Radar
+    "37a1945a-0b31-4e64-8556-a5fe92b387be": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Radar",
+        "description": "Want to detect objects? With the radar you can! It can find objects around itself with customisable vertical and horizonal FOV's!"
+    },
+
+    // Terminals
+    "5e4bfb11-c378-4a08-b310-565ee3a379f2": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Terminal (White)",
+        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!"
+    },
+    "6ad29c0e-8209-4dca-9133-20d7a2fc2d63": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Terminal (Black)",
+        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!"
+    },
+
+    // Hologram
+    "94a220da-97c2-4b08-bfd2-24a5802c422e": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Hologram",
+        "description": "Want to render 3d objects? With the hologram you can! Choose whatever shape you want and it will render it!"
+    },
+
+    // Networking
+    "afd0a82c-3d88-46fb-acad-7ab902acf6e1": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Network Port",
+        "description": "Allows you to transfer packets between network ports! You can connect a computer to a network port and connect that network port to another, this will allow you to send packets of information through those ports and they can get recieved by a computer on the other end!"
+    },
+    "ed6875f0-a29d-4849-b496-1a7a441fd98f": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Antenna",
+        "description": "This component connects to a Network Port and has the ability to wirelessly transmit the network ports data to another antenna similarly to WiFi!"
+    },
+
+    // Camera
+    "c438b4f8-9c65-4341-b407-b68106a59f12": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Raycast Camera",
+        "description": "The camera allows you to take screen shots and capture video. Other functions include a depth map and advanced functions with shadows!"
+    },
+
+    // Keyboards
+    "be791e80-ee66-4284-83f1-d91faf15bb4b": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Keyboard (Black)",
+        "description": "Allows you to type! Keystrokes and press state can be accessed which allows you to make some really cool stuff!\n\n#e6d927Keyboard Color: #eeeeeeBlack Keys"
+    },
+
+    "86b84f8d-0a62-4ffc-aafd-17e29b781484": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Keyboard (White)",
+        "description": "Allows you to type! Keystrokes and press state can be accessed which allows you to make some really cool stuff!\n\n#e6d927Keyboard Color: #eeeeeeBlack White"
+    },
+
+    // Speaker
+    "c9259b11-9100-421e-871a-f00ed56484d8": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Speaker",
+        "description": "Plays ANY kind of audio. Like want to play a character drowning sound? Sure! Note: Playing music may be frustrating to write!"
+    },
+    "310c1d41-420c-48a0-a631-f16c52d1bf06": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Mini-Speaker",
+        "description": "Plays ANY kind of audio. Like want to play a character drowning sound? Sure! Note: Playing music may be frustrating to write!"
+    },
+
+    // Motor
+    "a9e443ab-f33b-408c-ae08-981249b2dfc3": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Motor",
+        "description": "Let's you control bearings and pistons however you want! Very similar to The Modpack's smart engine but can be fully edited via the computer"
+    },
+
+    // Laser
+    "875b7675-2365-49c2-a7b0-9b6a09a0a001": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Laser",
+        "description": "The Laser allows you to perform a raycast and get the data from it such as the hit type, pointWorld, normalWorld, you name it!"
+    },
+
+    // GPS
+    "dd4967a9-dfd1-42eb-b48c-414a123bffe2": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] GPS",
+        "description": "The GPS allows you to get important telemetry about itself like a real GPS! This includes things like position, acceleration, velocity and rotation!"
+    },
+
+    // Seat Controller
+    "e0f54d87-49e1-43e0-b5fc-c9f562840a76": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Seat Controller",
+        "description": "This component allows you to connect a seat and interact with it. You can access information like the WS & AD powers, you can also interact with the seats connected buttons and switches"
+    },
+
+
+    // 1x1 Displays
+    "a1c2dde3-45d4-43eb-b95a-32e4ff3b6e36": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (1x1 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 16x16\nObject Size: 1x1"
+    },
+    "f2a0dc3c-9bde-4f53-bc1a-70506a5e1c50": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (1x1 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 32x32\nObject Size: 1x1"
+    },
+    "58765a74-fe13-497b-8916-562e4c4cbd6f": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (1x1 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 64x64\nObject Size: 1x1"
+    },
+    "277d508a-26b2-4986-a15f-6a2c0ffcd4bf": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (1x1 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 128x128\nObject Size: 1x1"
+    },
+    "6120601f-1254-4c8d-8226-fb67626b32b0": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (1x1 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 256x256\nObject Size: 1x1"
+    },
+
+    // 2x2 Displays
+    "f4e4d700-d0df-4bce-a1ec-096b03a781c8": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (2x2 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 16x16\nObject Size: 2x2"
+    },
+    "6c9f96ba-50a1-4650-b1fa-fb3e754748df": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (2x2 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 32x32\nObject Size: 2x2"
+    },
+    "741db0dd-f144-47cb-86f9-967046b26bb6": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (2x2 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 64x64\nObject Size: 2x2"
+    },
+    "c5572003-cf4d-4943-ae2b-2b37347f6c3d": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (2x2 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 128x128\nObject Size: 2x2"
+    },
+    "c32baf39-3884-4048-9a78-de450f6056b3": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (2x2 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 256x256\nObject Size: 2x2"
+    },
+
+    // 3x3 Displays
+    "baf3e4cb-c98a-4024-840d-a3972ac96f43": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (3x3 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 16x16\nObject Size: 3x3"
+    },
+    "32363673-3fea-477d-965a-9e71766e337e": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (3x3 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 32x32\nObject Size: 3x3"
+    },
+    "e93e2bb0-3683-4ef3-8641-213cd8ed5aea": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (3x3 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 64x64\nObject Size: 3x3"
+    },
+    "5685e8fc-0b38-40f6-8af3-e53102424d11": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (3x3 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 128x128\nObject Size: 3x3"
+    },
+    "b12ad37a-ff81-4b80-a605-ccb397cfb1c3": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (3x3 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 256x256\nObject Size: 3x3"
+    },
+
+    // 4x4 Displays
+    "d79f2f3b-e173-48fb-be19-99870bb9c3fd": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (4x4 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 16x16\nObject Size: 4x4"
+    },
+    "4402539e-b44c-4f52-8b04-b06bd8710deb": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (4x4 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 32x32\nObject Size: 4x4"
+    },
+    "e3d2193b-4c7a-437d-ab34-dd508212ff62": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (4x4 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 64x64\nObject Size: 4x4"
+    },
+    "6baf3290-3f8b-4b5a-8745-b40f03e9dbdd": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (4x4 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 128x128\nObject Size: 4x4"
+    },
+    "319e03b4-dc20-4535-b4f3-a1ea525a644e": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (4x4 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 256x256\nObject Size: 4x4"
+    },
+    "d05b6e4a-43e0-4ba2-bee9-9ca6fa9281c5": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 512x512 Display (4x4 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 512x512\nObject Size: 4x4"
+    },
+    "13a8d04f-f5d6-4285-9874-ee6f3f283bd4": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 1024x1024 Display (4x4 Size)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 1024x1024\nObject Size: 4x4"
+    }
+}

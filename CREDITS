@@ -1,0 +1,31 @@
+All projects used by ScrapComputers would be credited. These include like the fonts we used and etc
+
+
+                                                     ALL CREDITS ARE BELOW HERE
+==================================================================================================================================
+
+Credits to Yueliang for the Lua bytecode interperter and FiOne for the Interperter to actually execute the bytecode. They are the
+reason of how we made our Lua Virtual Machine very fast! (more than 10x faster than LuaInLua which Scriptable)
+
+NOTE: Also credits to ScrapVM! Why? Because we are actually using the yueliang from them because for some reason there is no github
+repo. and i could only fine one at a archive website...
+
+Yueliang repository: https://web.archive.org/web/20220326223720/http://files.luaforge.net/releases/yueliang/yueliang
+                     https://steamcommunity.com/sharedfiles/filedetails/?id=2791874023 (The one we've used)
+
+FiOne    repository: https://github.com/Rerumu/FiOne
+
+==================================================================================================================================
+
+This section contains all fonts we've used for our font collection. You cannot use our fonts we have in our mod but we have provided
+the sources from here so aslong you dont use our fonts we have but download them from the sources, You are fine!
+
+| Name                 | Size  | Source                                     | Version Used | Why we can use that font without issues                            |
+|----------------------|----------------------------------------------------|--------------| -------------------------------------------------------------------|
+| Lexis                | 6x8   | https://github.com/damianvila/font-lexis   | 1.1          | Licensed with: CC0 1.0 Universal License (No Copyright in context) |
+| BESCII               | 8x8   | https://github.com/damianvila/font-bescii  | 2.0          | Licensed with: CC0 1.0 Universal License (No Copyright in context) |
+| CPC464               | 8x8   | https://github.com/damianvila/font-cpc464  | 1.4          | Licensed with: CC0 1.0 Universal License (No Copyright in context) |
+| ATASCII              | 8x8   | https://github.com/damianvila/font-atascii | 1.1          | Licensed with: CC0 1.0 Universal License (No Copyright in context) |
+| More Perfect DOS VGA | 8x16  | https://laemeur.sdf.org/fonts/             | Unknown      | Bottom of the website mentions its free to use                     |
+| Pixel Operator       | Multi | https://www.dafont.com/pixel-operator.font | 2018.10.04-4 | Licensed with: CC0 1.0 Universal License (No Copyright in context) |
+| Commodore 64         | 8x8   | https://style64.org/c64-truetype           | 1.2.1        | Compattable with our license                                       |

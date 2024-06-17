@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="BackgroundLiftExport" position_real="0 0 0.4375 0.14814814814814814" name="BackPanel">
+        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.041666666666666664 0.46875 0.6785714285714286 0.375" name="Input">
+            <Property key="FontName" value="SM_Header"/>
+            <Property key="TextAlign" value="Default"/>
+            <Property key="MultiLine" value="false"/>
+            <Property key="MaxTextLength" value="32"/>
+        </Widget>
+        <Widget type="Button" skin="PrimaryButton" position_real="0.72619047619047616 0.4375 0.24404761904761904 0.4375" name="Button">
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="TextAlign" value="Center"/>
+            <Property key="Caption" value="Save and Close"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position_real="0 0 1 0.375" name="Title">
+            <Property key="Caption" value="NO_TITLE_SPECIFIED"/>
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

@@ -1,0 +1,24 @@
+dofile("$CONTENT_DATA/Scripts/Config.lua")
+
+---@class ComponentTemplate : ShapeClass
+ComponentTemplate = class()
+ComponentTemplate.maxParentCount = 1
+ComponentTemplate.maxChildCount = 0
+ComponentTemplate.connectionInput = sm.interactable.connectionType.compositeIO
+ComponentTemplate.connectionOutput = sm.interactable.connectionType.none
+ComponentTemplate.colorNormal = sm.color.new(0x696969ff)
+ComponentTemplate.colorHighlight = sm.color.new(0x969696ff)
+
+-- SERVER --
+
+function ComponentTemplate:sv_createData()
+    return {
+        helloWorld = function()
+            print("Hello World!")
+        end
+    }
+end
+
+-- Convert the class to a component
+dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
+sc.componentManager.ToComponent(ComponentTemplate, "DATA_TYPE_HERE", true)

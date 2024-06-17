@@ -1,0 +1,22 @@
+# TTFToSCF
+
+It converts any KIND of TTF Font to a SCF font, Or a font that ScrapComputers can understand. This is how we can import any TTF font.
+
+SCF stands for "ScrapComputers Font"
+
+# How does it work? (--auto flag)
+
+By default. you have to input a font name and the size and it will generate you a SCF font. But theres additional code to generate mass amounts of fonts. Add a --auto parameter and it will generate mass of them. But how does it work?
+
+So on the Fonts folder. you see fonts and text files. Each font has the TTF font and the text file. The text file tells what size it is.
+
+Afther generating them. They will be inside the Generated Folder. The names of the files inside there are the font name.
+
+# Default font sizes
+
+All fonts that were provided in the Fonts folder by default
+
+| Font Name | Font Size | Source                                                           |
+|-----------|-----------|------------------------------------------------------------------|
+| IBM BIOS  | 6x8       | https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_bios     |
+| HP 100LX  | 6x8       | https://int10h.org/oldschool-pc-fonts/fontlist/font?hp_100lx_6x8 |

@@ -1,0 +1,18 @@
+{
+    "ScrapComputers - HologramEffect": {
+        "parameterList": {
+            "uuid": "null",
+            "color": 0
+        },
+        "effectList": [
+            {
+                "type": "shapeRenderable",
+                "name": "",
+                "parameters": [
+                    "uuid",
+                    "color"
+                ]
+            }
+        ]
+    }
+}

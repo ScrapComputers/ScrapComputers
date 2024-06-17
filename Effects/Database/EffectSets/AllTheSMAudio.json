@@ -1,0 +1,6828 @@
+// Please forgive me
+//  - Veradev
+
+{
+    "ScrapComputers - event:/amb/2D/amb_2D_cave": {
+        "parameterList": {
+            "distancetocave": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/2D/amb_2D_cave",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "distancetocave"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/2D/amb_2D_field_day_night": {
+        "parameterList": {
+            "amb_day_night": 0.0,
+            "fadeoutambience": 0.0,
+            "height": 0.0,
+            "wind": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/2D/amb_2D_field_day_night",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "amb_day_night",
+                    "fadeoutambience",
+                    "height",
+                    "wind"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/2D/amb_2D_warehouse": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/2D/amb_2D_warehouse",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/2D/amb_2D_water": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/2D/amb_2D_water",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/2D/downedship_int": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/2D/downedship_int",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/2D/underwater": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/2D/underwater",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/amb_3D_crashsitefire": {
+        "parameterList": {
+            "fire_intensity": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/amb_3D_crashsitefire",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "fire_intensity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/amb_3D_crashsitefire_metalcreak": {
+        "parameterList": {
+            "fire_intensity": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/amb_3D_crashsitefire_metalcreak",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "fire_intensity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/amb_3D_crashsitefire_small": {
+        "parameterList": {
+            "fire_intensity": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/amb_3D_crashsitefire_small",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "fire_intensity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/amb_3D_elevator": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/amb_3D_elevator",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/amb_3D_tree": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/amb_3D_tree",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/birds/amb_3D_birds_blackbird": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/birds/amb_3D_birds_blackbird",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/birds/amb_3D_birds_raven": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/birds/amb_3D_birds_raven",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/birds/amb_3D_birds_smallbird": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/birds/amb_3D_birds_smallbird",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/bubbles": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/bubbles",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/downedship_ext": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/downedship_ext",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/electric_spark": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/electric_spark",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/electric_spark_randomloop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/electric_spark_randomloop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/fire_extinguish": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/fire_extinguish",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/oilgeyser_loop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/oilgeyser_loop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/water_leak": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/water_leak",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/3D/water_splash": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/3D/water_splash",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/birds": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/birds",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/challenge": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/challenge",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/amb/field": {
+        "parameterList": {
+            "wind": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/amb/field",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "wind"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/consumtion/eat_generic": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/consumtion/eat_generic",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/consumtion/eat_sandwich": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/consumtion/eat_sandwich",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/consumtion/swallow": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/consumtion/swallow",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/crouch": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/crouch",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/footstep": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/footstep",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/footstep_crouching": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/footstep_crouching",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/getup": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/getup",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/burn": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/burn",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/death": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/death",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/exhausted": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/exhausted",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/hurt_drown": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/hurt_drown",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/hurt_hunger": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/hurt_hunger",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/impact": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/impact",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/ko": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/ko",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/lowair": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/lowair",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/lowfood": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/lowfood",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/poison": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/poison",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/health/shock": {
+        "parameterList": {
+            "char": 1.0,
+            "damage": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/health/shock",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "char",
+                    "damage"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/jump": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/jump",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/land": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/land",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/movement/water/swim_backwards": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/movement/water/swim_backwards",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/movement/water/swim_forwards": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/movement/water/swim_forwards",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/animals/glowgorp/eat": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/animals/glowgorp/eat",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/animals/glowgorp/footstep": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/animals/glowgorp/footstep",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/animals/glowgorp/hit": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/animals/glowgorp/hit",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/animals/glowgorp/idle": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/animals/glowgorp/idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/animals/glowgorp/jump": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/animals/glowgorp/jump",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/animals/glowgorp/pickup": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/animals/glowgorp/pickup",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/confettibot": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/confettibot",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_attack_02": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_attack_02",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_attack_03": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_attack_03",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_attack_04": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_attack_04",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_explode": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_explode",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_explode_buildup": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_explode_buildup",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_ff_heavy": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_ff_heavy",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_ff_light": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_ff_light",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_ff_mid": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_ff_mid",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_move_body_alert_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_move_body_alert_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_move_body_heavy": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_move_body_heavy",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_move_body_light": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_move_body_light",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_move_head": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_move_head",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_move_legs": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_move_legs",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_move_scythe": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_move_scythe",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_noticeplayer": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_noticeplayer",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_shoot": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_shoot",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_takedamage": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_takedamage",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_voice_alert_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_voice_alert_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_voice_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_voice_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_voice_roaming": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_voice_roaming",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_voice_run": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_voice_run",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/farmbot_voice_sprint": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/farmbot_voice_sprint",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_alert_idle_loop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_alert_idle_loop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_idle_loop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_idle_loop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_roaming_loop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_roaming_loop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_sprint_loop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/farmbot/loops/farmbot_voice_sprint_loop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_attack_01": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_attack_01",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_attack_02": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_attack_02",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_attack_03": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_attack_03",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_attack_sprint": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_attack_sprint",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_explode": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_explode",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_ff": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_ff",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_foley_forkimpact": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_foley_forkimpact",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_foley_metal": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_foley_metal",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_foley_servo": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_foley_servo",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_idle_special_long": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_idle_special_long",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_idle_special_short": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_idle_special_short",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_noticeplayer": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_noticeplayer",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_takedamage": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_takedamage",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_walk_chaseplayer": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_walk_chaseplayer",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/haybot/haybot_walk_chaseplayer_loop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/haybot/haybot_walk_chaseplayer_loop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_explode": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_explode",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_ff": {
+        "parameterList": {
+            "surface": 0.0,
+            "tapebot_ff_intensity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_ff",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface",
+                    "tapebot_ff_intensity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_foley_gunrattle": {
+        "parameterList": {
+            "tapebot_ff_intensity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_foley_gunrattle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "tapebot_ff_intensity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_foley_scissor": {
+        "parameterList": {
+            "tapebot_ff_intensity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_foley_scissor",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "tapebot_ff_intensity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_foley_servo": {
+        "parameterList": {
+            "tapebot_ff_intensity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_foley_servo",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "tapebot_ff_intensity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_noticeplayer": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_noticeplayer",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_shoot": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_shoot",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_shoot_projectile": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_shoot_projectile",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_takedamage": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_takedamage",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_walk_aggro": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_walk_aggro",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/tapebot/tapebot_walk_chaseplayer": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/tapebot/tapebot_walk_chaseplayer",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/totebot/totebot_attack": {
+        "parameterList": {
+            "totebot_color": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/totebot/totebot_attack",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "totebot_color"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/totebot/totebot_explode": {
+        "parameterList": {
+            "totebot_color": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/totebot/totebot_explode",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "totebot_color"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/totebot/totebot_ff": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/totebot/totebot_ff",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/totebot/totebot_foley_servo": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/totebot/totebot_foley_servo",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/totebot/totebot_noticeplayer": {
+        "parameterList": {
+            "totebot_color": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/totebot/totebot_noticeplayer",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "totebot_color"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/totebot/totebot_takedamage": {
+        "parameterList": {
+            "totebot_color": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/totebot/totebot_takedamage",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "totebot_color"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/totebot/totebot_walk_chaseplayer": {
+        "parameterList": {
+            "totebot_color": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/totebot/totebot_walk_chaseplayer",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "totebot_color"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/enemies/totebot/totebot_walk_chaseplayer_loop": {
+        "parameterList": {
+            "totebot_color": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/enemies/totebot/totebot_walk_chaseplayer_loop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "totebot_color"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/observerbot_move": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/observerbot_move",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/observerbot_write": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/observerbot_write",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/cookbot/cob_craft": {
+        "parameterList": {
+            "craftbot": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/cookbot/cob_craft",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "craftbot"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/cookbot/cob_craft_finished": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/cookbot/cob_craft_finished",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/cookbot/cob_craft_start": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/cookbot/cob_craft_start",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/cookbot/cob_craft_startloopfinished": {
+        "parameterList": {
+            "craftbot": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/cookbot/cob_craft_startloopfinished",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "craftbot"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/cookbot/cob_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/cookbot/cob_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/cookbot/cob_idle_special01": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/cookbot/cob_idle_special01",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/cookbot/cob_idle_special02": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/cookbot/cob_idle_special02",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/cookbot/cob_unpack": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/cookbot/cob_unpack",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_craft": {
+        "parameterList": {
+            "craftbot": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_craft",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "craftbot"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_craft_finished": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_craft_finished",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_craft_start": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_craft_start",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_craft_startloopfinished": {
+        "parameterList": {
+            "craftbot": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_craft_startloopfinished",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "craftbot"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_idle_special01": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_idle_special01",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_idle_special02": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_idle_special02",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_small_craft": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_small_craft",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_small_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_small_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/craftinbot/cb_unpack": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/craftinbot/cb_unpack",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/dressbot/db_craft": {
+        "parameterList": {
+            "craftbot": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/dressbot/db_craft",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "craftbot"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/dressbot/db_craft_finished": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/dressbot/db_craft_finished",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/dressbot/db_craft_start": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/dressbot/db_craft_start",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/dressbot/db_craft_startloopfinished": {
+        "parameterList": {
+            "dressbot": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/dressbot/db_craft_startloopfinished",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "dressbot"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/dressbot/db_door_close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/dressbot/db_door_close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/dressbot/db_door_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/dressbot/db_door_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/dressbot/db_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/dressbot/db_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/dressbot/db_unpack": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/dressbot/db_unpack",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/refinery/refinery_unpack": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/refinery/refinery_unpack",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/refinery/refinery_use": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/refinery/refinery_use",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/refinery/refinery_use_end": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/refinery/refinery_use_end",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/bots/utility/refinery/refinery_use_start": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/bots/utility/refinery/refinery_use_start",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/human/farmer/farmer_male_old/bored": {
+        "parameterList": {
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/human/farmer/farmer_male_old/bored",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/human/farmer/farmer_male_old/bye": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/human/farmer/farmer_male_old/bye",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/human/farmer/farmer_male_old/cage_struggle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/human/farmer/farmer_male_old/cage_struggle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/human/farmer/farmer_male_old/greet": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/human/farmer/farmer_male_old/greet",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/human/farmer/farmer_male_old/help": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/human/farmer/farmer_male_old/help",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/human/farmer/farmer_male_old/rolling": {
+        "parameterList": {
+            "dummy": 0.0,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/human/farmer/farmer_male_old/rolling",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "dummy",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/human/farmer/farmer_male_old/thanks": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/human/farmer/farmer_male_old/thanks",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/supervisor/monitor_bravo": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/supervisor/monitor_bravo",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/supervisor/monitor_generic": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/supervisor/monitor_generic",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/supervisor/monitor_next": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/supervisor/monitor_next",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/woc/woc_chewing": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/woc/woc_chewing",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/woc/woc_confetti": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/woc/woc_confetti",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/woc/woc_ff_run": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/woc/woc_ff_run",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/woc/woc_ff_walk": {
+        "parameterList": {
+            "surface": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/woc/woc_ff_walk",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "surface"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/woc/woc_moo_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/woc/woc_moo_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/woc/woc_moo_panic": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/woc/woc_moo_panic",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/npc/woc/woc_moo_ragdoll": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/npc/woc/woc_moo_ragdoll",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/char/wind": {
+        "parameterList": {
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/char/wind",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/collapse/beehive": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/collapse/beehive",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/collapse/clam": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/collapse/clam",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/collapse/corn": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/collapse/corn",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/collapse/fence": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/collapse/fence",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/collapse/oilgeyser": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/collapse/oilgeyser",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/collapse/plant": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/collapse/plant",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/collapse/stone": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/collapse/stone",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/collapse/tree_burnt": {
+        "parameterList": {
+            "size": 0.08000000566244125,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/collapse/tree_burnt",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/dust_rocket": {
+        "parameterList": {
+            "ground_distance": 0.0,
+            "material": 0.0,
+            "power": 0.0,
+            "size": 0.08000000566244125,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/dust_rocket",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "ground_distance",
+                    "material",
+                    "power",
+                    "size",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/impact_debris": {
+        "parameterList": {
+            "material": 0.0,
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/impact_debris",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "material",
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/impact_multiple": {
+        "parameterList": {
+            "material": 0.0,
+            "size": 0.08000000566244125,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/impact_multiple",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "material",
+                    "size",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/impact_rolling": {
+        "parameterList": {
+            "material": 0.0,
+            "size": 0.08000000566244125,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/impact_rolling",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "material",
+                    "size",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/impact_single": {
+        "parameterList": {
+            "material": 0.0,
+            "phys_energy": 470.0,
+            "size": 0.08000000566244125,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/impact_single",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "material",
+                    "phys_energy",
+                    "size",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/impact_sliding": {
+        "parameterList": {
+            "material": 1.0,
+            "size": 0.08000000566244125,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/impact_sliding",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "material",
+                    "size",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/impact_vehicle": {
+        "parameterList": {
+            "material": 0.0,
+            "parts": 0.0,
+            "size": 0.08000000566244125,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/impact_vehicle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "material",
+                    "parts",
+                    "size",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/impact_weapon": {
+        "parameterList": {
+            "material": 0.0,
+            "size": 0.08000000566244125,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/impact_weapon",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "material",
+                    "size",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/coll/stress/stone": {
+        "parameterList": {
+            "size": 0.08000000566244125,
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/coll/stress/stone",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size",
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/combat": {
+        "parameterList": {
+            "music": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/combat",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "music"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/creative": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/creative",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/elevator": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/elevator",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/environment": {
+        "parameterList": {
+            "music": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/environment",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "music"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/menu": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/menu",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/dance/dancebass": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/dance/dancebass",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/dance/dancedrum": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/dance/dancedrum",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/dance/dancelead": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/dance/dancelead",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/dance/dancepad": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/dance/dancepad",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/piano": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/piano",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/retrobass": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrobass",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/retrodrum": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrodrum",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/retrofmblip": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrofmblip",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/retrovoice": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrovoice",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/music/robotheads/retrowildblip": {
+        "parameterList": {
+            "pitch": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/music/robotheads/retrowildblip",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/beehive": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/beehive",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/bot_unbox": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/bot_unbox",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/bot_unbox_big": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/bot_unbox_big",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/can_drink": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/can_drink",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/can_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/can_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/challengeball_rolling": {
+        "parameterList": {
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/challengeball_rolling",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/challengeball_slot": {
+        "parameterList": {
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/challengeball_slot",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/challengeball_spawn": {
+        "parameterList": {
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/challengeball_spawn",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/challengecrowd_jump": {
+        "parameterList": {
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/challengecrowd_jump",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/downedship_poweron": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/downedship_poweron",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/elevator/elevator_button": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/elevator/elevator_button",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/elevator/elevator_ding": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/elevator/elevator_ding",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/elevator/elevator_keycard_use": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/elevator/elevator_keycard_use",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/elevator/elevator_move_outside": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/elevator/elevator_move_outside",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/elevator/elevator_move_stereo": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/elevator/elevator_move_stereo",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/elevator/elevatordoor_close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/elevator/elevatordoor_close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/elevator/elevatordoor_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/elevator/elevatordoor_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/farmerhideout/hideout_close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/farmerhideout/hideout_close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/farmerhideout/hideout_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/farmerhideout/hideout_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/farmerhideout/hideout_vacuum": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/farmerhideout/hideout_vacuum",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/mechanicstation/ms_craft": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/mechanicstation/ms_craft",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/mechanicstation/ms_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/mechanicstation/ms_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/packingstation/ps_load": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/packingstation/ps_load",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/packingstation/ps_pack": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/packingstation/ps_pack",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/packingstation/ps_roller": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/packingstation/ps_roller",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/packingstation/ps_throw": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/packingstation/ps_throw",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/installations/powercore_insert": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/installations/powercore_insert",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/logs_appear": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/logs_appear",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/logs_smash": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/logs_smash",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/lootcrate_smash": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/lootcrate_smash",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/mapinspector/mi_off": {
+        "parameterList": {
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/mapinspector/mi_off",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/mapinspector/mi_on": {
+        "parameterList": {
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/mapinspector/mi_on",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/plants/plant_finished": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/plants/plant_finished",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/plants/plant_seed": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/plants/plant_seed",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/sharktrophy": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/sharktrophy",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/tree_creak": {
+        "parameterList": {
+            "tree_creaking": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/tree_creak",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "tree_creaking"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/tree_fall": {
+        "parameterList": {
+            "velocity_tree": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/tree_fall",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_tree"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/tree_impact_ground": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/tree_impact_ground",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/props/tree_impact_leafrattle": {
+        "parameterList": {
+            "velocity_max_50": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/props/tree_impact_leafrattle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity_max_50"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/alarmclock": {
+        "parameterList": {
+            "alarm": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/alarmclock",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "alarm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/builderguide/activate": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/builderguide/activate",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/builderguide/complete": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/builderguide/complete",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/builderguide/deactivate": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/builderguide/deactivate",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/builderguide/finish_section": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/builderguide/finish_section",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/builderguide/loop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/builderguide/loop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/connectiontool/connectiontool_direction": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/connectiontool/connectiontool_direction",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/connectiontool/connectiontool_equip": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/connectiontool/connectiontool_equip",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/connectiontool/connectiontool_fire": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/connectiontool/connectiontool_fire",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/connectiontool/connectiontool_idle": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/connectiontool/connectiontool_idle",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/connectiontool/connectiontool_putdown": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/connectiontool/connectiontool_putdown",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/connectiontool/connectiontool_rotate": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/connectiontool/connectiontool_rotate",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/crowbar": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/crowbar",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/drill": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/drill",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/fertilizer": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/fertilizer",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/glowstick/gs_bounce": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/glowstick/gs_bounce",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/glowstick/gs_flying": {
+        "parameterList": {
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/glowstick/gs_flying",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/glowstick/gs_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/glowstick/gs_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/glowstick/gs_pool": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/glowstick/gs_pool",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/glowstick/gs_throw": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/glowstick/gs_throw",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/handbook/handbook_close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/handbook/handbook_close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/handbook/handbook_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/handbook/handbook_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/handbook/handbook_pickup": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/handbook/handbook_pickup",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/handbook/handbook_putdown": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/handbook/handbook_putdown",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/handbook/handbook_turnpage": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/handbook/handbook_turnpage",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/lift_pickup": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/lift_pickup",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/lift_place": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/lift_place",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/lift_use": {
+        "parameterList": {
+            "height": 0.0,
+            "stretch": 1.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/lift_use",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "height",
+                    "stretch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/logbook/close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/logbook/close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/logbook/open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/logbook/open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/multitool_refine": {
+        "parameterList": {
+            "material": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/multitool_refine",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "material"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/painttool/pt_colourabort": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/painttool/pt_colourabort",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/painttool/pt_colourmenu": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/painttool/pt_colourmenu",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/painttool/pt_colourpick": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/painttool/pt_colourpick",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/painttool/pt_equip": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/painttool/pt_equip",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/painttool/pt_erase": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/painttool/pt_erase",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/painttool/pt_paint": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/painttool/pt_paint",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/painttool/pt_putdown": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/painttool/pt_putdown",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/painttool/pt_reload": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/painttool/pt_reload",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/radio": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/radio",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/saw_material_old": {
+        "parameterList": {
+            "saw_material": 0.9999999403953552,
+            "saw_material_off_on": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/saw_material_old",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "saw_material",
+                    "saw_material_off_on"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/sledgehammer_pickup": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/sledgehammer_pickup",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/sledgehammer_putdown": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/sledgehammer_putdown",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/sledgehammer_swing": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/sledgehammer_swing",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/vacuum/vacuum_blowout": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/vacuum/vacuum_blowout",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/vacuum/vacuum_suction": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/vacuum/vacuum_suction",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/waterbucket_fill": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/waterbucket_fill",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/waterbucket_throw": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/waterbucket_throw",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/weldtool/wt_bearing": {
+        "parameterList": {
+            "weld=1": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/weldtool/wt_bearing",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "weld=1"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/weldtool/wt_equip": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/weldtool/wt_equip",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/weldtool/wt_error": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/weldtool/wt_error",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/weldtool/wt_object": {
+        "parameterList": {
+            "weld=1": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/weldtool/wt_object",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "weld=1"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/weldtool/wt_putdown": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/weldtool/wt_putdown",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/weldtool/wt_sparks": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/weldtool/wt_sparks",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/tools/weldtool/wt_weld": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/tools/weldtool/wt_weld",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/attach": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/attach",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/attach_default": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/attach_default",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/blueprint/bp_build": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/blueprint/bp_build",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/blueprint/bp_camera": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/blueprint/bp_camera",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/blueprint/bp_close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/blueprint/bp_close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/blueprint/bp_delete": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/blueprint/bp_delete",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/blueprint/bp_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/blueprint/bp_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/blueprint/bp_save": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/blueprint/bp_save",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/blueprint/bp_share": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/blueprint/bp_share",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/challenge/chall_activation": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/challenge/chall_activation",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/challenge/chall_fall": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/challenge/chall_fall",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/challenge/chall_start": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/challenge/chall_start",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/challenge/complete": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/challenge/complete",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/challenge/complete_collect": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/challenge/complete_collect",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/click": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/click",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/detach_default": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/detach_default",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/drag": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/drag",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/drop": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/drop",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/enlarge": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/enlarge",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/equip_clothes": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/equip_clothes",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/error": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/error",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/garment_unbox": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/garment_unbox",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/health_restored": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/health_restored",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/highlight": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/highlight",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/inventory_close_old": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/inventory_close_old",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/inventory_select_old": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/inventory_select_old",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/item_collect": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/item_collect",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/item_pickup": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/item_pickup",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/item_projectile": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/item_projectile",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/item_spawn": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/item_spawn",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/logbook_entry": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/logbook_entry",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/logbook_entryactivate": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/logbook_entryactivate",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/menu_change_screen": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/menu_change_screen",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/menu_close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/menu_close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/menu_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/menu_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/notification": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/notification",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/openclose/backpack_close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/openclose/backpack_close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/openclose/backpack_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/openclose/backpack_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/openclose/chest_close": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/openclose/chest_close",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/openclose/chest_open": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/openclose/chest_open",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/paus": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/paus",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/reduce": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/reduce",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/rotate": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/rotate",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/scroll": {
+        "parameterList": {
+            "height": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/scroll",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "height"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/steering_attach": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/steering_attach",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/steering_select": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/steering_select",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/ui/upgrade_part": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/ui/upgrade_part",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/beacon": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/beacon",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/brake": {
+        "parameterList": {
+            "strength": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/brake",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "strength"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/controller": {
+        "parameterList": {
+            "level": 5.0,
+            "load": 0.0,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/controller",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "level",
+                    "load",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/drill": {
+        "parameterList": {
+            "impact": 0.0,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/drill",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "impact",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/elengines/elengine01": {
+        "parameterList": {
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/elengines/elengine01",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/elengines/elengine02": {
+        "parameterList": {
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/elengines/elengine02",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/elengines/elengine03": {
+        "parameterList": {
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/elengines/elengine03",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/elengines/elengine04": {
+        "parameterList": {
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/elengines/elengine04",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/elengines/elengine05": {
+        "parameterList": {
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/elengines/elengine05",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/fans/fan_arena": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/fans/fan_arena",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/gasengines/gasengine01": {
+        "parameterList": {
+            "gas": 0.0,
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/gasengines/gasengine01",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "gas",
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/gasengines/gasengine02": {
+        "parameterList": {
+            "gas": 0.0,
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/gasengines/gasengine02",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "gas",
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/gasengines/gasengine03": {
+        "parameterList": {
+            "gas": 0.0,
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/gasengines/gasengine03",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "gas",
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/gasengines/gasengine04": {
+        "parameterList": {
+            "gas": 0.0,
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/gasengines/gasengine04",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "gas",
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/gasengines/gasengine05": {
+        "parameterList": {
+            "gas": 0.0,
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/gasengines/gasengine05",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "gas",
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/gasengines/scrapengine": {
+        "parameterList": {
+            "gas": 0.0,
+            "load": 0.5,
+            "rpm": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/gasengines/scrapengine",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "gas",
+                    "load",
+                    "rpm"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/horns/clownhorn": {
+        "parameterList": {
+            "pitch": 0.5018050670623779
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/horns/clownhorn",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/horns/phaserhorn": {
+        "parameterList": {
+            "pitch": 0.5250000357627869
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/horns/phaserhorn",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "pitch"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/piston": {
+        "parameterList": {
+            "height": 0.0,
+            "level": 5.0,
+            "stretch": 1.0,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/piston",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "height",
+                    "level",
+                    "stretch",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/resourcecollector_insert": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/resourcecollector_insert",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/resourcecollector_takeout": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/resourcecollector_takeout",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/saw": {
+        "parameterList": {
+            "impact": 0.0,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/saw",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "impact",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/seats/default": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/seats/default",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/seats/toilet": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/seats/toilet",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/suspension": {
+        "parameterList": {
+            "level": 5.0,
+            "velocity": -20.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/suspension",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "level",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/thrusters/thruster01": {
+        "parameterList": {
+            "power": 0.0,
+            "size": 0.08000000566244125,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/thrusters/thruster01",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "power",
+                    "size",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/thrusters/thruster02": {
+        "parameterList": {
+            "power": 0.0,
+            "size": 0.08000000566244125,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/thrusters/thruster02",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "power",
+                    "size",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/thrusters/thruster03": {
+        "parameterList": {
+            "power": 0.0,
+            "size": 0.08000000566244125,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/thrusters/thruster03",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "power",
+                    "size",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/thrusters/thruster04": {
+        "parameterList": {
+            "power": 0.0,
+            "size": 0.08000000566244125,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/thrusters/thruster04",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "power",
+                    "size",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/thrusters/thruster05": {
+        "parameterList": {
+            "power": 0.0,
+            "size": 0.08000000566244125,
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/thrusters/thruster05",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "power",
+                    "size",
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/triggers/encryptor_off": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/triggers/encryptor_off",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/triggers/encryptor_on": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/triggers/encryptor_on",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/triggers/trigger_sensor_off": {
+        "parameterList": {
+            "level": 5.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/triggers/trigger_sensor_off",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "level"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/triggers/trigger_sensor_on": {
+        "parameterList": {
+            "level": 5.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/triggers/trigger_sensor_on",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "level"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/triggers/trigger_switch_off": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/triggers/trigger_switch_off",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/triggers/trigger_switch_on": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/triggers/trigger_switch_on",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/triggers/trigger_toggle_off": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/triggers/trigger_toggle_off",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vehicle/triggers/trigger_toggle_on": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vehicle/triggers/trigger_toggle_on",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_01": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_01",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_02": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_02",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_03": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_03",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_04": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_04",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_05": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_05",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_06": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_06",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_07": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_07",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_08": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_08",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_09": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_09",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_10": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_10",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_11": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_11",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/vo/straggler/vo_straggler_12": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/vo/straggler/vo_straggler_12",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/chemcannon/chem_cloud": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/chemcannon/chem_cloud",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/chemcannon/chem_explode": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/chemcannon/chem_explode",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/chemcannon/chem_flying": {
+        "parameterList": {
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/chemcannon/chem_flying",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/explosion_gas": {
+        "parameterList": {
+            "size": 0.08000000566244125
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/explosion_gas",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "size"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/explosion_gasleak": {
+        "parameterList": {
+            "progress": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/explosion_gasleak",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "progress"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/spudgun/frier_fire": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/spudgun/frier_fire",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/spudgun/sg_fire": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/spudgun/sg_fire",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/spudgun/sg_noammo": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/spudgun/sg_noammo",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/spudgun/sg_reload": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/spudgun/sg_reload",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/spudgun/spinner_fire": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/spudgun/spinner_fire",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/spudgun/spinner_spin": {
+        "parameterList": {
+            "velocity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/spudgun/spinner_spin",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "velocity"
+                ]
+            }
+        ]
+    },
+    "ScrapComputers - event:/weapons/watercannon_fire": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "event:/weapons/watercannon_fire",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/combat": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/combat",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/headphones": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/headphones",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/loading": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/loading",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/nomusic": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/nomusic",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/paus": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/paus",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/reverb/arena": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/reverb/arena",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/reverb/field": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/reverb/field",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/reverb/small room": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/reverb/small room",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/reverb/underwater": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/reverb/underwater",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/reverb/underwater end": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/reverb/underwater end",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/reverb/warehouse": {
+        "parameterList": {},
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/reverb/warehouse",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": []
+            }
+        ]
+    },
+    "ScrapComputers - snapshot:/sidechain": {
+        "parameterList": {
+            "Intensity": 0.0
+        },
+        "effectList": [
+            {
+                "type": "audio",
+                "name": "snapshot:/sidechain",
+                "offset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "parameters": [
+                    "Intensity"
+                ]
+            }
+        ]
+    }
+}

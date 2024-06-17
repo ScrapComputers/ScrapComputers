@@ -1,0 +1,21 @@
+-- Any variables outside the main functions are global! (As programmer perspective) The code only gets ran once!
+
+-- Gets called when the computer starts up
+function onLoad()
+	
+end
+
+-- Gets called every tick
+function onUpdate()
+	
+end
+
+-- Gets called when the computer error's out.
+function onError(err)
+	
+end
+
+-- Gets called when the computer shuts down.
+function onDestroy()
+	
+end

@@ -1,0 +1,5 @@
+# GenerateDisplays
+
+It generates display's with just 2 inputs for 1 display. Display resolution and selected Display model.
+
+It also automaticly calculates the scale so u don't have to do it manually.

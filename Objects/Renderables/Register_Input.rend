@@ -1,0 +1,27 @@
+{
+   "lodList": [
+      {
+         "includes": [
+            "POSITION",
+            "UV0",
+            "UV1",
+            "NORMAL",
+            "TANGENTS",
+            "BLEND_INDICES",
+            "BLEND_WEIGHTS"
+         ],
+         "mesh": "$CONTENT_DATA/Objects/Mesh/Register.obj",
+         "minViewSize": 20,
+         "subMeshList": [
+            {
+               "material": "Dif",
+               "textureList": [
+                  "$CONTENT_DATA/Objects/Textures/Register_Input_dif.png",
+                  "$CONTENT_DATA/Objects/Textures/transparent.tga",
+                  "$CONTENT_DATA/Objects/Textures/transparent.tga"
+               ]
+            }
+         ]
+      }
+   ]
+}

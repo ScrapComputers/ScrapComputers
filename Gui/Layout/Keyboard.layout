@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="EditBox" skin="EditBox" position_real="0 0 0.23645833333333333 0.16666666666666666" name="TextBox">
+        <Property key="FontName" value="Default"/>
+        <Property key="FontHeight" value="10"/>
+        <Property key="TabPrinting" value="true"/>
+        <Property key="MaxTextLength" value="999999"/>
+        <Property key="MultiLine" value="true"/>
+        <Property key="Visible" value="false"/>
+    </Widget>
+    <Widget type="Button" skin="StyledButtonSmall" position_real="0.44791666666666669 0.86111111111111116 0.11979166666666667 0.06851851851851852" name="Exit">
+        <Property key="FontName" value="Default"/>
+        <Property key="TextAlign" value="Center"/>
+        <Property key="FontHeight" value="20"/>
+        <Property key="Caption" value="Press to stop typing"/>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

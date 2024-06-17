@@ -1,0 +1,114 @@
+{
+    "partList": [
+        {
+            "box": {
+                "x": 1,
+                "y": 2,
+                "z": 2
+            },
+            "color": "323232",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display2x2.rend",
+            "rotationSet": "PropNegY",
+            "scripted": {
+                "classname": "Display",
+                "filename": "$CONTENT_DATA/Scripts/Display.lua",
+                "data": {
+                    "width": 16,
+                    "height": 16,
+                    "scale": 0.5
+                }
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "f4e4d700-d0df-4bce-a1ec-096b03a781c8"
+        },
+        {
+            "box": {
+                "x": 1,
+                "y": 2,
+                "z": 2
+            },
+            "color": "323232",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display2x2.rend",
+            "rotationSet": "PropNegY",
+            "scripted": {
+                "classname": "Display",
+                "filename": "$CONTENT_DATA/Scripts/Display.lua",
+                "data": {
+                    "width": 32,
+                    "height": 32,
+                    "scale": 0.5
+                }
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "6c9f96ba-50a1-4650-b1fa-fb3e754748df"
+        },
+        {
+            "box": {
+                "x": 1,
+                "y": 2,
+                "z": 2
+            },
+            "color": "323232",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display2x2.rend",
+            "rotationSet": "PropNegY",
+            "scripted": {
+                "classname": "Display",
+                "filename": "$CONTENT_DATA/Scripts/Display.lua",
+                "data": {
+                    "width": 64,
+                    "height": 64,
+                    "scale": 0.5
+                }
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "741db0dd-f144-47cb-86f9-967046b26bb6"
+        },
+        {
+            "box": {
+                "x": 1,
+                "y": 2,
+                "z": 2
+            },
+            "color": "323232",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display2x2.rend",
+            "rotationSet": "PropNegY",
+            "scripted": {
+                "classname": "Display",
+                "filename": "$CONTENT_DATA/Scripts/Display.lua",
+                "data": {
+                    "width": 128,
+                    "height": 128,
+                    "scale": 0.5
+                }
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "c5572003-cf4d-4943-ae2b-2b37347f6c3d"
+        },
+        {
+            "box": {
+                "x": 1,
+                "y": 2,
+                "z": 2
+            },
+            "color": "323232",
+            "physicsMaterial": "Mechanical",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display2x2.rend",
+            "rotationSet": "PropNegY",
+            "scripted": {
+                "classname": "Display",
+                "filename": "$CONTENT_DATA/Scripts/Display.lua",
+                "data": {
+                    "width": 256,
+                    "height": 256,
+                    "scale": 0.5
+                }
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "c32baf39-3884-4048-9a78-de450f6056b3"
+        }
+    ]
+}

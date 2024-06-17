@@ -1,0 +1,109 @@
+
+[
+	
+	{
+		"builtIn" : true,
+		"name" : "Blank content"
+	},
+	
+	{
+		"builtIn" : true,
+		"data" : 
+		{
+			"directory" : 
+			{
+				"fileInDirectory.txt" : "Hai! im in a directory!!!",
+				"subdirectory" : 
+				{
+					"veradevPasswords.txt.lua" : "print(\"Did u really try wanting my passwords? Sadly ur game going to crash!\")\n\nwhile true do end"
+				},
+				"sussyData.html" : "<h1>Extreme high quality page</h1><p>Much more high qualitier than any other website</p>"
+			},
+			"exampleFile.txt" : "Hello world!",
+			"helloWorld.lua" : "print(\"Hello World!\")",
+			"killGame.lua" : "while true do end"
+		},
+		"name" : "Filesystem Example"
+	},
+	
+	{
+		"builtIn" : true,
+		"data" : 
+		{
+			"contents" : 
+			[
+				
+				{
+					"contents" : 
+					[
+						
+						{
+							"contents" : "Hai! im in a directory!!!",
+							"createdTime" : 1718107873.0,
+							"isDirectory" : false,
+							"modifiedTime" : 1718115170.0,
+							"name" : "fileInDirectory.txt"
+						},
+						
+						{
+							"contents" : 
+							[
+								
+								{
+									"contents" : "print(\"Did u really try wanting my passwords? Sadly ur game going to crash!\")\n\nwhile true do end",
+									"createdTime" : 1718107873.0,
+									"isDirectory" : false,
+									"modifiedTime" : 1718115170.0,
+									"name" : "veradevPasswords.txt.lua"
+								}
+							],
+							"createdTime" : 1718107873.0,
+							"isDirectory" : true,
+							"modifiedTime" : 1718115170.0,
+							"name" : "subdirectory"
+						},
+						
+						{
+							"contents" : "<h1>Extreme high quality page</h1><p>Much more high qualitier than any other website</p>",
+							"createdTime" : 1718107873.0,
+							"isDirectory" : false,
+							"modifiedTime" : 1718115170.0,
+							"name" : "sussyData.html"
+						}
+					],
+					"createdTime" : 1718107873.0,
+					"isDirectory" : true,
+					"modifiedTime" : 1718115170.0,
+					"name" : "directory"
+				},
+				
+				{
+					"contents" : "Hello world!",
+					"createdTime" : 1718107873.0,
+					"isDirectory" : false,
+					"modifiedTime" : 1718115170.0,
+					"name" : "exampleFile.txt"
+				},
+				
+				{
+					"contents" : "print(\"Hello World!\")",
+					"createdTime" : 1718107873.0,
+					"isDirectory" : false,
+					"modifiedTime" : 1718115170.0,
+					"name" : "helloWorld.lua"
+				},
+				
+				{
+					"contents" : "while true do end",
+					"createdTime" : 1718107873.0,
+					"isDirectory" : false,
+					"modifiedTime" : 1718115170.0,
+					"name" : "killGame.lua"
+				}
+			],
+			"dataMaxSize" : 512000.0,
+			"label" : "Example Drive"
+		},
+		"name" : "Advanced Filesystem Example"
+	}
+]
