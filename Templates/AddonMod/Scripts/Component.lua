@@ -1,4 +1,4 @@
-dofile("$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Scripts/AddonConfig.lua")
+dofile("$CONTENT_DATA/Scripts/AddonConfig.lua")
 
 ---@class Component : ShapeClass
 Component = class()

@@ -14,7 +14,7 @@ sc.__INTERNALS = {}
 -- Load all the modules
 local modules = {"Audio", "Base64", "Color", "JSON", "Math", "MD5", "SHA256", "Table", "Util", "Vector3"}
 for _, module in pairs(modules) do
-    local modulePath = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Scripts/Modules/"..module..".lua"
+    local modulePath = "$CONTENT_DATA/Scripts/Modules/"..module..".lua"
 
     dofile(modulePath)
     sm.log.info("ScrapComputers: Loaded Module: "..modulePath)
@@ -75,21 +75,21 @@ sc.dataList = {
 
 ---This table contains all layout files from $CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout. You could also just write the names independenly.
 sc.layoutFiles = {
-    Computer     = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Computer.layout",
-    Terminal     = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Terminal.layout",
-    Register     = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Register.layout",
-    Configurator = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Configurator.layout",
-    Harddrive    = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Harddrive.layout",
-    Keyboard     = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Keyboard.layout",
-    Banned       = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Banned.layout",
+    Computer     = "$CONTENT_DATA/Gui/Layout/Computer.layout",
+    Terminal     = "$CONTENT_DATA/Gui/Layout/Terminal.layout",
+    Register     = "$CONTENT_DATA/Gui/Layout/Register.layout",
+    Configurator = "$CONTENT_DATA/Gui/Layout/Configurator.layout",
+    Harddrive    = "$CONTENT_DATA/Gui/Layout/Harddrive.layout",
+    Keyboard     = "$CONTENT_DATA/Gui/Layout/Keyboard.layout",
+    Banned       = "$CONTENT_DATA/Gui/Layout/Banned.layout",
 }
 
 ---Contains json files that are uesd on scrapcomputers.
 sc.jsonFiles = {
-    ExamplesList      = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/JSON/examples.json",
-    HarddriveExamples = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/JSON/hdd_examples.json",
-    AudioList         = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/JSON/audio.json",
-    BuiltInFonts      = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/JSON/fonts.json"
+    ExamplesList      = "$CONTENT_DATA/JSON/examples.json",
+    HarddriveExamples = "$CONTENT_DATA/JSON/hdd_examples.json",
+    AudioList         = "$CONTENT_DATA/JSON/audio.json",
+    BuiltInFonts      = "$CONTENT_DATA/JSON/fonts.json"
 }
 
 ---This is the prefix for private data for a component.
