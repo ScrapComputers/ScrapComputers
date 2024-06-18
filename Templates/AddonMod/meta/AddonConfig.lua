@@ -69,7 +69,7 @@ function sc.addon.CreateComponent(classData, dataType)
     end
 end
 
----This table contains all layout files from $CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout. You could also just write the names independenly.
+---This table contains all layout files from $CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout. You could also just write the names independenly.
 sc.layoutFiles = {
     Computer     = "$CONTENT_DATA/Gui/Layout/Computer.layout",
     Terminal     = "$CONTENT_DATA/Gui/Layout/Terminal.layout",

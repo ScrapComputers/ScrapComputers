@@ -1,7 +1,7 @@
 -- Did you know? You cannot fucking sync a variable between 2 fucking mods! I dont understand
 -- why you cant do that! Also the fact that 
 
-dofile("$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Scripts/Config.lua")
+dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Config.lua")
 
 local oldsc = sc
 
