@@ -13,7 +13,7 @@ sm.scrapcomputers = {}
 -- Load all the modules
 local modules = {"Audio", "Base64", "Color", "JSON", "Math", "MD5", "SHA256", "Table", "Util", "Vector3", "BitStream", "VPBS"}
 for _, module in pairs(modules) do
-    local modulePath = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Scripts/Modules/"..module..".lua"
+    local modulePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Modules/"..module..".lua"
 
     dofile(modulePath)
     sm.log.info("ScrapComputers: Loaded Module: "..modulePath)
@@ -70,23 +70,23 @@ sm.scrapcomputers.dataList = {
     ["NetworkInterfaces"] = {}
 }
 
----This table contains all layout files from $CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout. You could also just write the names independenly.
+---This table contains all layout files from $CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout. You could also just write the names independenly.
 sm.scrapcomputers.layoutFiles = {
-    Computer     = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Computer.layout",
-    Terminal     = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Terminal.layout",
-    Register     = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Register.layout",
-    Configurator = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Configurator.layout",
-    Harddrive    = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Harddrive.layout",
-    Keyboard     = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Keyboard.layout",
-    Banned       = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Gui/Layout/Banned.layout",
+    Computer     = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Computer.layout",
+    Terminal     = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Terminal.layout",
+    Register     = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Register.layout",
+    Configurator = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Configurator.layout",
+    Harddrive    = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Harddrive.layout",
+    Keyboard     = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Keyboard.layout",
+    Banned       = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Banned.layout",
 }
 
 ---Contains json files that are uesd on scrapcomputers.
 sm.scrapcomputers.jsonFiles = {
-    ExamplesList      = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/JSON/examples.json",
-    HarddriveExamples = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/JSON/hdd_examples.json",
-    AudioList         = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/JSON/audio.json",
-    BuiltInFonts      = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/JSON/fonts.json"
+    ExamplesList      = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/examples.json",
+    HarddriveExamples = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/hdd_examples.json",
+    AudioList         = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/audio.json",
+    BuiltInFonts      = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/fonts.json"
 }
 
 ---This is the prefix for private data for a component.
@@ -356,9 +356,9 @@ sm.log.info("ScrapComputers: Loaded sm.scrapcomputers.config")
 --                            AUTOMATICLY LOAD LIBRARIES                             --
 ---------------------------------------------------------------------------------------
 
-dofile("$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Scripts/Managers/EnvManager.lua")
-dofile("$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Scripts/Managers/ComponentManager.lua")
-dofile("$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/Scripts/Managers/FontManager.lua")
+dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Managers/EnvManager.lua")
+dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Managers/ComponentManager.lua")
+dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Managers/FontManager.lua")
 
 ---------------------------------------------------------------------------------------
 --          INTELISENSE RELATED - NOT USED FOR CODING BUT FOR DOCUMENTATION          --
