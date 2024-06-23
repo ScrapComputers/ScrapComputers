@@ -152,7 +152,7 @@ function Motor:server_onFixedUpdate()
 
             -- This is such a bad method but it works.
             -- Checks if the shape's looking direction is the same as the joint.
-            self.sv.valid = sc.toString(shapeLookingDirection) == sc.toString(jointLookingDirection)
+            self.sv.valid = sm.scrapcomputers.toString(shapeLookingDirection) == sm.scrapcomputers.toString(jointLookingDirection)
             self.sv.firstTickSinceConnection = true -- Toggle this
         end
     else
@@ -178,7 +178,7 @@ function Motor:server_onFixedUpdate()
     end
 
     -- Check if it's invalid, has a connection and the configuration allows it. If so then send a iliegal joint message to all players.
-    if not self.sv.valid and sc.config.configurations[4].selectedOption == 1 and self:svcl_hasConnection() then
+    if not self.sv.valid and sm.scrapcomputers.config.configurations[4].selectedOption == 1 and self:svcl_hasConnection() then
         self.network:sendToClients("client_sendIliegalJointMsg")
     end
 end
@@ -213,5 +213,4 @@ function Motor:svcl_hasConnection()       return self:svcl_getSingleChild     (s
 function Motor:svcl_getSingleChild(flags) return self.interactable:getChildren(flags                                 )[1]     end -- Get the first child thats connected.
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Motor, "Motors", true)
+sm.scrapcomputers.components.ToComponent(Motor, "Motors", true)

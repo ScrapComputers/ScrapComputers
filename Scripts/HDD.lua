@@ -42,7 +42,7 @@ function HDD:sv_createData()
                 -- Loop through root table.
                 for index, value in pairs(root) do
                     -- Get the type of the value
-                    local errorMessage = "Path=[\""..(rootPath == "" and "ROOT" or rootPath:sub(1, #rootPath - 1)).."\"] Name=[\""..sc.toString(index).."\"] Type="..(invalid == 1 and type(index) or type(value))
+                    local errorMessage = "Path=[\""..(rootPath == "" and "ROOT" or rootPath:sub(1, #rootPath - 1)).."\"] Name=[\""..sm.scrapcomputers.toString(index).."\"] Type="..(invalid == 1 and type(index) or type(value))
 
                     -- Check if the type of the index matches with anything in validIndexTypes table. If not, send error message
                     if not validIndexTypes[type(index)] then
@@ -65,7 +65,7 @@ function HDD:sv_createData()
             jsonCompattiblityChecker(data, "")
             
             -- Convert the table to a string and check if its not above a limit. else error!
-            local dataSize = #sc.json.toString(data, false)
+            local dataSize = #sm.scrapcomputers.json.toString(data, false)
             if dataSize > byteLimit then
                 error("Data too big! (Max is "..byteLimit..", The data's size is "..dataSize..")")
             end
@@ -137,7 +137,7 @@ function HDD:client_onInteract(_, state)
     self.cl.inputText = self.cl.hddContentText -- Update input text
     self.cl.exampleInputText = "" -- Clear example input text
     
-    self.cl.gui = sm.gui.createGuiFromLayout(sc.layoutFiles.Harddrive, true, { backgroundAlpha = 0.5 }) -- Create the gui
+    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Harddrive, true, { backgroundAlpha = 0.5 }) -- Create the gui
     
     local safeInput = self.cl.hddContentText:gsub("\\", "⁄")
 
@@ -170,7 +170,7 @@ end
 ---@param text string
 function HDD:cl_updateSelectedExample(_, text)
     ---@type DriveExample[] Get all drive examples
-    local examples = sm.json.open(sc.jsonFiles.HarddriveExamples)
+    local examples = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples)
     ---@type DriveExample?
     local selectedExample = nil
 
@@ -215,12 +215,16 @@ end
 
 -- Called when the user will delete a example
 function HDD:cl_onDeleteExampleBtn()
-    local contents = sm.json.open(sc.jsonFiles.HarddriveExamples) ---@type DriveExample[] Get all examples
+    local contents = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples) ---@type DriveExample[] Get all examples
 
+    -- Loop through all examples
     for index, example in pairs(contents) do
+        -- Check if they match
         if example.name:lower() == self.cl.exampleInputText:lower() then
-            table.remove(contents, index)
-            sm.json.save(contents, sc.jsonFiles.HarddriveExamples)
+            table.remove(contents, index) -- Remove it
+
+            -- Save it
+            sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples)
 
             -- Send the log message
             self.cl.gui:setText("Log", "#3A96DDDeleted \""..self.cl.exampleInputText.."\" Example")
@@ -251,7 +255,7 @@ function HDD:cl_onImportExampleBtn()
         -- Convert it to a string to update the DriveContents EditBox
         -- We need to check if the next item in data is nil. In that case its empty! else it has someting in!
         --                                    Empty table since theres nothing | Convert the data to a string       Dont color the text   Replace real \ with fake \
-        newText = next(data) == nil and "{}"                             or sc.json.toString(data, false, true):gsub("#", "##")    :gsub("\\", "⁄") 
+        newText = next(data) == nil and "{}"                             or sm.scrapcomputers.json.toString(data, false, true):gsub("#", "##")    :gsub("\\", "⁄") 
     end
 
     self.cl.inputText = newText -- Update the input text
@@ -273,9 +277,9 @@ function HDD:cl_onExportExampleBtn()
     end
 
     -- Open the examples
-    local contents = sm.json.open(sc.jsonFiles.HarddriveExamples) ---@type DriveExample[] Get all examples
+    local contents = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples) ---@type DriveExample[] Get all examples
     local newInput = self.cl.inputText:gsub("⁄", "\\")            -- Convert fake \ to real \
-    local newData = sc.json.toTable(newInput, false)              -- Convert it to a table
+    local newData = sm.scrapcomputers.json.toTable(newInput, false)              -- Convert it to a table
 
     -- Check if it selected a example
     if self.cl.selectedExample then
@@ -285,7 +289,7 @@ function HDD:cl_onExportExampleBtn()
             if example.name:lower() == self.cl.exampleInputText:lower() then
                 -- Overwrite it
                 contents[index].data = newData
-                sm.json.save(contents, sc.jsonFiles.HarddriveExamples) -- Save it
+                sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples) -- Save it
 
                 -- Send the log message
                 self.cl.gui:setText("Log", "#3A96DDOverwritten \""..self.cl.selectedExample.name.."\" Example")
@@ -295,7 +299,7 @@ function HDD:cl_onExportExampleBtn()
         end
     else
         table.insert(contents, {builtIn = false, data = newData, name = self.cl.exampleInputText}) -- Add it to the bitch
-        sm.json.save(contents, sc.jsonFiles.HarddriveExamples) -- Save it
+        sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples) -- Save it
 
         -- Send the log message
         self.cl.gui:setText("Log", "#3A96DDCreated \""..self.cl.exampleInputText.."\" Example")
@@ -316,11 +320,11 @@ function HDD:cl_onSaveBtn()
 
     -- Convert JSON data to a Lua table (used for error checking and updating the new data)
     ---@type boolean,string|table
-    local success, result = pcall(sc.json.toTable, newInput)
+    local success, result = pcall(sm.scrapcomputers.json.toTable, newInput)
 
     if success then
         -- Convert it back to a string
-        local dataSize = sc.json.toString(result, false)
+        local dataSize = sm.scrapcomputers.json.toString(result, false)
         
         --  Check if its not over the byte limit
         if #dataSize > byteLimit then
@@ -392,7 +396,7 @@ function HDD:cl_updateDriveData(newData)
     if not next(newData) then
         self.cl.hddContentText = "{}"
     else
-        self.cl.hddContentText = sc.json.toString(newData, false, true):gsub("#", "##")
+        self.cl.hddContentText = sm.scrapcomputers.json.toString(newData, false, true):gsub("#", "##")
     end
 end
 
@@ -400,7 +404,7 @@ end
 function HDD:cl_updateExamples()
     -- Get all examples
     ---@type DriveExample[]
-    local examples = sm.json.open(sc.jsonFiles.HarddriveExamples)
+    local examples = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples)
     local text = ""
 
     -- Loop through them and put it into text variable
@@ -439,5 +443,4 @@ end
 
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(HDD, "Harddrives", true)
+sm.scrapcomputers.components.ToComponent(HDD, "Harddrives", true)

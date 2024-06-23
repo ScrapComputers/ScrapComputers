@@ -1,6 +1,5 @@
 dofile("$CONTENT_DATA/Scripts/Config.lua")
 dofile("$CONTENT_DATA/Scripts/LuaVM/Main.lua")
-dofile("$CONTENT_DATA/Scripts/Enviroment.lua")
 
 ---@class Computer : ShapeClass
 Computer = class()
@@ -18,7 +17,7 @@ function Computer:server_onCreate()
     self.sv = {
         exception = false, -- Check if theres a exception or not
         lastActive = false, -- Last active state of interactable
-        env = sc.envManager.createEnv(self), -- The enviroment variables them self
+        env = sm.scrapcomputers.envManager.createEnv(self), -- The enviroment variables them self
         firstTick = 0 -- Is true when the computer is only on for 1 tick
     }
 
@@ -89,7 +88,7 @@ function Computer:server_onFixedUpdate()
         self.sv.lastActive = active
 
         if active then
-            self.sv.env = sc.envManager.createEnv(self)
+            self.sv.env = sm.scrapcomputers.envManager.createEnv(self)
             self.sv.firstTick = 1
 
             -- Check if theres no exception
@@ -219,7 +218,7 @@ function Computer:client_onInteract(_, state)
     self.cl.allowLoadingExample = true
     
     -- Create the GUI and update callbacks and set text's
-    self.computerGui = sm.gui.createGuiFromLayout(sc.layoutFiles.Computer, true, { backgroundAlpha = 0.5 })
+    self.computerGui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Computer, true, { backgroundAlpha = 0.5 })
     self.computerGui:setTextChangedCallback("ScriptData", "cl_TextChangedCallbackScriptData")
     self.computerGui:setTextChangedCallback("ExamplesList_Number", "cl_onTextChangedCallbackExamplesList")
     self.computerGui:setButtonCallback("ScriptSave", "cl_ScriptSave_ButtonCallback")
@@ -238,12 +237,12 @@ end
 function Computer:cl_updateExampleList()
     -- Get all examples
     ---@type CodeExample[]
-    local json = sm.json.open(sc.jsonFiles.ExamplesList)
+    local json = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)
 
     -- Loop through them, format it and put it inside the text value
     local text = ""
     for key, value in pairs(json) do
-        text = text.."\n"..sc.toString(key)..": "..value.name
+        text = text.."\n"..sm.scrapcomputers.toString(key)..": "..value.name
     end
 
     -- Remove the first character so theres no \n at the beginning.
@@ -269,7 +268,7 @@ function Computer:cl_onLoadExamplePressed(widget, name)
     else
         -- Get the example
         ---@type CodeExample
-        local example = sm.json.open(sc.jsonFiles.ExamplesList)[self.cl.selectedExample]
+        local example = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)[self.cl.selectedExample]
         local code = example.script:gsub("#", "##") -- Get the code and format it to prevent hex colors to getting formatted.
 
         -- Set ScriptData to the example code
@@ -286,7 +285,7 @@ function Computer:cl_onTextChangedCallbackExamplesList(_, text)
     -- Convert the text to a number and get all examples
     local result = tonumber(text)
     ---@type CodeExample[]
-    local json = sm.json.open(sc.jsonFiles.ExamplesList)
+    local json = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)
 
     -- Check if result is nil
     if type(result) == "nil" then

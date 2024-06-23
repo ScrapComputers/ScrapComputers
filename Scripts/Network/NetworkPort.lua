@@ -14,7 +14,7 @@ NetworkPort.colorHighlight = sm.color.new(0x0586ffff)
 function NetworkPort:sv_createData()
     return {
         -- Gets the connected antenna
-        getAntenna = function () return sc.table.getItemAt(sc.getObjects(sc.filters.dataType.Antennas, self.interactable, true, sm.interactable.connectionType.networkingIO, true), 1) end,
+        getAntenna = function () return sm.scrapcomputers.table.getItemAt(sm.scrapcomputers.components.getComponents(sm.scrapcomputers.filters.dataType.Antennas, self.interactable, true, sm.interactable.connectionType.networkingIO, true), 1) end,
 
         -- Returns true if theres a connection.
         hasConnection = function () return (#self.interactable:getChildren(sm.interactable.connectionType.networkingIO) > 0 or #self.interactable:getParents(sm.interactable.connectionType.networkingIO) > 0)  end,
@@ -22,12 +22,12 @@ function NetworkPort:sv_createData()
         -- Sends a packet to the connected Antenna or Network Port
         sendPacket = function (data)
             -- Get Parent's Interfaces and Children's Interfaces.
-            local parentInterfaces = sc.getObjects(sc.filters.dataType.NetworkInterfaces, self.interactable, false, sm.interactable.connectionType.networkingIO, true)
-            local childInterfaces = sc.getObjects(sc.filters.dataType.NetworkInterfaces, self.interactable, true, sm.interactable.connectionType.networkingIO, true)
+            local parentInterfaces = sm.scrapcomputers.components.getComponents(sm.scrapcomputers.filters.dataType.NetworkInterfaces, self.interactable, false, sm.interactable.connectionType.networkingIO, true)
+            local childInterfaces = sm.scrapcomputers.components.getComponents(sm.scrapcomputers.filters.dataType.NetworkInterfaces, self.interactable, true, sm.interactable.connectionType.networkingIO, true)
 
             -- Get the first element
             ---@type ShapeClass
-            local obj = sc.table.getItemAt(parentInterfaces, 1) or sc.table.getItemAt(childInterfaces, 1)
+            local obj = sm.scrapcomputers.table.getItemAt(parentInterfaces, 1) or sm.scrapcomputers.table.getItemAt(childInterfaces, 1)
 
             -- If its nil. Error it since there is NO connection!
             if not obj then error("No connection found!") end
@@ -39,13 +39,13 @@ function NetworkPort:sv_createData()
         -- Sends a packet to a specified antenna.
         sendPacketToAntenna = function(name, data)
             -- Check if theres a antenna connected. else error it!
-            if sc.table.getTotalItems(sc.getObjects(sc.filters.dataType.Antennas, self.interactable, true, sm.interactable.connectionType.networkingIO), 1, true) == 0 then
+            if sm.scrapcomputers.table.getTotalItems(sm.scrapcomputers.components.getComponents(sm.scrapcomputers.filters.dataType.Antennas, self.interactable, true, sm.interactable.connectionType.networkingIO), 1, true) == 0 then
                 error("No antenna connected!")
             end
 
             -- Loop through the network interfaces
             ---@param antenna ShapeClass
-            for _, antenna in pairs(sc.dataList["NetworkInterfaces"]) do
+            for _, antenna in pairs(sm.scrapcomputers.dataList["NetworkInterfaces"]) do
                 -- Check if its a antenna and not the same antenna as the script running
                 if antenna.sv.isAntenna and antenna.interactable:getId() ~= self.interactable:getId() then
                     -- Check if they both math
@@ -75,6 +75,8 @@ function NetworkPort:sv_createData()
 
         -- Clears the packets.
         clearPackets = function () self.sv.packets = {} end
+
+        -- Creates/Overwrites the messa
     }
 end
 
@@ -84,16 +86,14 @@ function NetworkPort:server_onCreate()
         -- Where all packets are stored
         packets = {},
         -- Constant variable, If its true, then its a antenna, else a network port.
-        isAntenna = false
+        isAntenna = false,
     }
 
-    -- Add api to the dataList
-    sc.dataList["NetworkInterfaces"][self.interactable:getId()] = self
+    sm.scrapcomputers.dataList["NetworkInterfaces"][self.interactable.id] = self
 end
 
 function NetworkPort:server_onDestroy()
-    -- Remove api from the dataList
-    sc.dataList["NetworkInterfaces"][self.interactable:getId()] = nil
+    sm.scrapcomputers.dataList["NetworkInterfaces"][self.interactable.id] = nil
 end
 
 -- SERVER API (NOT FOR COMPTUER) --
@@ -128,5 +128,4 @@ function NetworkPort:client_getAvailableChildConnectionCount()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(NetworkPort, "NetworkPorts", true)
+sm.scrapcomputers.components.ToComponent(NetworkPort, "NetworkPorts", true)

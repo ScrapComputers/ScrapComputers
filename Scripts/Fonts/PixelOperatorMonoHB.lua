@@ -763,4 +763,4 @@ data.charset = {
 	["ﬂ"] = {".......",".......",".......","###....","#.#....","#.#....","#.#....","###....","......."},
 	["�"] = {".......",".......",".......","###....","#.#....","#.#....","#.#....","###....","......."}
 }
-sc.fontmanager.fonts["PixelOperatorMonoHB"] = data
+sm.scrapcomputers.fontmanager.fonts["PixelOperatorMonoHB"] = data

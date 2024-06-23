@@ -1,10 +1,10 @@
 ---Additional JSON features that sm.json dosen't have.
-sc.json = {}
+sm.scrapcomputers.json = {}
 
 ---Returns a boolean to see if the root (table) is vaild and dosent cause a crash when u use it in functions
 ---@param root table
 ---@return boolean
-sc.json.isSafe = function(root)
+sm.scrapcomputers.json.isSafe = function(root)
     assert(type(root) == "table", "Expected table. Got "..type(root).." instead")
 
     local defualtIndexType = nil
@@ -21,9 +21,9 @@ sc.json.isSafe = function(root)
             return false
         end
 
-        -- If the valuse is a table. Run sc.json.isSafe again but for that table.
+        -- If the valuse is a table. Run sm.scrapcomputers.json.isSafe again but for that table.
         if type(value) == "table" then
-            local isSafe = sc.json.isSafe(value)
+            local isSafe = sm.scrapcomputers.json.isSafe(value)
 
             -- If isSafe is false. We already know that the table would be dangerous to use so return false.
             if not isSafe then
@@ -42,17 +42,17 @@ end
 ---@param prettify boolean
 ---@param indent string?
 ---@return string
-sc.json.toString = function (root, safeMode, prettify, indent)
+sm.scrapcomputers.json.toString = function (root, safeMode, prettify, indent)
     safeMode = safeMode or true
     prettify = prettify or false
 
-    assert(type(root) == "table", "bad argument #1. Expected table, Got "..type(root).." instead.")
-    assert(type(safeMode) == "boolean", "bad argument #1. Expected boolean or nil, Got "..type(safeMode).." instead.")
-    assert(type(prettify) == "boolean", "bad argument #1. Expected boolean or nil, Got "..type(prettify).." instead.")
-    assert(type(safeMode) == "boolean", "bad argument #1. Expected boolean or nil, Got "..type(safeMode).." instead.")
+    assert(type(root) == "table", "bad argument #1. Expected table, Got "..type(root).." instead!")
+    assert(type(safeMode) == "boolean", "bad argument #1. Expected boolean or nil, Got "..type(safeMode).." instead!")
+    assert(type(prettify) == "boolean", "bad argument #1. Expected boolean or nil, Got "..type(prettify).." instead!")
+    assert(type(safeMode) == "boolean", "bad argument #1. Expected boolean or nil, Got "..type(safeMode).." instead!")
 
     -- If safe mode is eanbled. then use the sm.json.safeWriteJsonString function.
-    if safeMode and not sc.json.isSafe(root) then error("Iliegal Table! (If not checked, will cause the game to crash!)") end
+    if safeMode and not sm.scrapcomputers.json.isSafe(root) then error("Iliegal Table! (If not checked, will cause the game to crash!)") end
 
     if prettify then
         local function prettify_json(json_str, indent)
@@ -105,17 +105,17 @@ end
 ---@param root string
 ---@param safeMode boolean
 ---@return table
-sc.json.toTable = function (root, safeMode)
+sm.scrapcomputers.json.toTable = function (root, safeMode)
     safeMode = safeMode or true
     
-    assert(type(root) == "string", "bad argument #1. Expected string, Got "..type(root).." instead.")
-    assert(type(safeMode) == "boolean", "bad argument #1. Expected boolean or nil, Got "..type(safeMode).." instead.")
+    assert(type(root) == "string", "bad argument #1. Expected string, Got "..type(root).." instead!")
+    assert(type(safeMode) == "boolean", "bad argument #1. Expected boolean or nil, Got "..type(safeMode).." instead!")
     
     -- Convert it to a table
     local newRoot = sm.json.parseJsonString(root)
 
     -- If safe mode is enabled. Check if it is safe and if not. errot it out.
-    if safeMode and not sc.json.isSafe(newRoot) then error("Iliegal Table! (If not checked, will cause the game to crash!)") end
+    if safeMode and not sm.scrapcomputers.json.isSafe(newRoot) then error("Iliegal Table! (If not checked, will cause the game to crash!)") end
     
     -- Return the new root.
     return newRoot

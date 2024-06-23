@@ -1,7 +1,7 @@
 -- Source: https://devforum.roblox.com/t/base64-encoding-and-decoding-in-lua/1719860
-sc.base64 = {}
+sm.scrapcomputers.base64 = {}
 
-function sc.base64.encode(data)
+function sm.scrapcomputers.base64.encode(data)
     assert(type(data) == "string", "Expected string! Got "..type(data).." instead!")
 
     local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -17,7 +17,7 @@ function sc.base64.encode(data)
     end)..({ '', '==', '=' })[#data%3+1])
 end
 
-function sc.base64.decode(data)
+function sm.scrapcomputers.base64.decode(data)
     assert(type(data) == "string", "Expected string! Got "..type(data).." instead!")
     
     local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'

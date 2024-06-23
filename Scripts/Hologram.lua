@@ -160,10 +160,13 @@ end
 function Hologram:sv_createData()
     -- Creates a object
     local function createObject(uuid, position, rotation, scale, color)
+        -- Get the max objects cofnig fro hologram
+        local maxObjectsConfig = sm.scrapcomputers.config.getConfig("scrapcomputers.hologram.max_objects")
+        
         -- Check if it has a limit
-        if sc.config.configurations[3].selectedOption ~= 1 then
+        if maxObjectsConfig.selectedOption ~= 1 then
             -- It has one! Convert the selected option from string to number.
-            local maxStr = sc.config.configurations[3].options[sc.config.configurations[3].selectedOption]:gsub(" Max", "")
+            local maxStr = maxObjectsConfig.options[maxObjectsConfig.selectedOption]:gsub(" Max", "")
             
             if self.sv.index == tonumber(maxStr) then
                 error("Too many objects! (Max is: "..maxStr.."! Change in Configurator to increase it or setting it to Unlimited!)")
@@ -407,5 +410,4 @@ function Hologram:client_deleteObject(index)
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Hologram, "Holograms", true)
+sm.scrapcomputers.components.ToComponent(Hologram, "Holograms", true)

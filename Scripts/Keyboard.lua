@@ -61,7 +61,7 @@ end
 
 function Keyboard:client_onCreate()
     self.cl = {
-        gui = sm.gui.createGuiFromLayout(sc.layoutFiles.Keyboard)
+        gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Keyboard)
     }
 
     self.cl.gui:setTextChangedCallback("TextBox", "cl_onKeystroke")
@@ -112,5 +112,4 @@ function Keyboard:cl_onExit()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Keyboard, "Keyboards", true)
+sm.scrapcomputers.components.ToComponent(Keyboard, "Keyboards", true)

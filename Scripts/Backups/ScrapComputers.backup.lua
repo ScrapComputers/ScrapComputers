@@ -133,14 +133,14 @@ SPEAKER_COMPONENT.playNoteQueue = function(pitch, note, durationTicks) end
 
 ---Plays whatever event effect you specify!
 ---@param name string The name of the audio to play
----@param params sc.audio.AudioParameter[] Audio parameters to use
+---@param params sm.scrapcomputers.audio.AudioParameter[] Audio parameters to use
 ---@param durationTicks interger The duration of how long it should play in ticks!
 SPEAKER_COMPONENT.playNoteEffect = function(name, params, durationTicks) end
 
 ---Plays whatever event effect you specify!
 ---NOTE: This won't actually play! it is added to a queue so u have to flush the queue to play it!
 ---@param name string The name of the audio to play
----@param params sc.audio.AudioParameter[] Audio parameters to use
+---@param params sm.scrapcomputers.audio.AudioParameter[] Audio parameters to use
 ---@param durationTicks interger The duration of how long it should play in ticks!
 ---@return interger beepIndex The index where the queue is located.
 SPEAKER_COMPONENT.playNoteEffectQueue = function(name, params, durationTicks) end
@@ -816,95 +816,95 @@ GPS_COMPONENT.getGPSData = function() end
 ---SC MODULES --
 
 ---Additional JSON features that sm.json dosen't have.
-sc.json = {}
+sm.scrapcomputers.json = {}
 
 ---Returns a boolean to see if the root (table) is vaild and dosent cause a crash when u use it in functions
 ---@param root table
 ---@return boolean
-sc.json.isSafe = function(root) end
+sm.scrapcomputers.json.isSafe = function(root) end
 
 ---Converts a lua table to a json string. This is the reccommended function as it provides more features and security
 ---@param root table         The table to be converted to.
 ---@param prettify boolean   If true, The output would have indentation.
 ---@param indent string?     The character used for the indentation. Default is a tab.
 ---@return string JSONString The JSON string generated from the table
-sc.json.toString = function (root, prettify, indent) end
+sm.scrapcomputers.json.toString = function (root, prettify, indent) end
 
 ---Converts a json string to a lua table. This is the reccommended function as it provides more features and security
 ---@param root string The JSON string
 ---@return table TableFromJSONString The table that was generated from the JSON string
-sc.json.toTable = function (root) end
+sm.scrapcomputers.json.toTable = function (root) end
 
 ---Additional features that sm.color dosen't have
-sc.color = {}
+sm.scrapcomputers.color = {}
 
 ---Generates a random color.
 ---@param from number The starting range
 ---@param to number The ending range
 ---@return Color color The generated color
-sc.color.random = function(from, to) end
+sm.scrapcomputers.color.random = function(from, to) end
 
 ---Generates a random color. (0 to 1 as a float)
 ---@return Color color The generated color
-sc.color.random0to1 = function() end
+sm.scrapcomputers.color.random0to1 = function() end
 
 ---A function like sm.color.new but its 1 argument.
 ---Its just simply sm.color.new(rgbNum, rgbNum, rgbNum) and also why its called "newSingluar".
 ---@param rgbNum number The value to be on R, G and B.
 ---@return Color color The generated color
-sc.color.newSingluar = function(rgbNum) end
+sm.scrapcomputers.color.newSingluar = function(rgbNum) end
 
 ---This is a manager for the Audio json file for ScrapComputers
-sc.audio = {}
+sm.scrapcomputers.audio = {}
 
 ---Returns all audio's that u can use.
 ---@return string[]
-function sc.audio.getAudioNames() end
+function sm.scrapcomputers.audio.getAudioNames() end
 
 ---Returns true if the name exists.
 ---
 ---<h2>NOTE: The name must be full path! else it will NOT work!</h2>
 ---@param name string The name of the audio (FULL ONLY!)
 ---@return boolean audioExists If true, the name that was passed did exist as audio. else false (Doesn't exist)
-function sc.audio.exists(name) end
+function sm.scrapcomputers.audio.exists(name) end
 
----@class sc.audio.AudioParameter
+---@class sm.scrapcomputers.audio.AudioParameter
 ---@field default number The default value of the Parameter
 ---@field maximum number The maximum value of the Parameter
 ---@field minimum number The minimum value of the Parameter
 
 ---This will return the parameters you can set by the audio name
 ---@param name string The name of the audio to get it's paramters
----@return sc.audio.AudioParameter[]?
-function sc.audio.getParams(name) end
+---@return sm.scrapcomputers.audio.AudioParameter[]?
+function sm.scrapcomputers.audio.getParams(name) end
 
----@class sc.audio.ParamsIncorrectTable
+---@class sm.scrapcomputers.audio.ParamsIncorrectTable
 ---@field hasNoParamsUsableIssue boolean If true, then this audio doesn't have any paramaters.
 ---@field issues string[][] Contains all issues that have issue with the parameters
 
 ---This will return the parameters you can set by the audio name
 ---@param name string The name of the audio to get it's paramters
----@param params sc.audio.AudioParameter[] The paramaters of the audio that it will contain
----@return sc.audio.ParamsIncorrectTable? validAudioParamaters If nil, then all of your paramters are valid. Else its a table that will contain the issues
-function sc.audio.areParamsCorrect(name, params) end
+---@param params sm.scrapcomputers.audio.AudioParameter[] The paramaters of the audio that it will contain
+---@return sm.scrapcomputers.audio.ParamsIncorrectTable? validAudioParamaters If nil, then all of your paramters are valid. Else its a table that will contain the issues
+function sm.scrapcomputers.audio.areParamsCorrect(name, params) end
 
 ---Base64 Encoder/Decoder module
-sc.base64 = {}
+sm.scrapcomputers.base64 = {}
 
 ---Convert's a string to base64 string.
 ---@param data string The data to be converted to.
 ---@return string base64Data The data in base64
 
-sc.base64.encode = function(data) end
+sm.scrapcomputers.base64.encode = function(data) end
 ---Convert's a base64 string to raw string.
 ---@param data string The data to be converted to.
 ---@return string base64Data The data from the conversion.
-sc.base64.decode = function(data) end
+sm.scrapcomputers.base64.decode = function(data) end
 
 ---MD5 Encryption module
-sc.md5 = {}
+sm.scrapcomputers.md5 = {}
 
----@class sc.md5.Stream
+---@class sm.scrapcomputers.md5.Stream
 local MD5_Module_Stream = {}
 MD5_Module_Stream.a = 0x67452301
 MD5_Module_Stream.b = 0xefcdab89
@@ -922,96 +922,96 @@ MD5_Module_Stream.update = function(data) end
 MD5_Module_Stream.finish = function() end
 
 ---Creates a fresh strean.
----@return sc.md5.Stream MD5Stream The stream
-function sc.md5.new() end
+---@return sm.scrapcomputers.md5.Stream MD5Stream The stream
+function sm.scrapcomputers.md5.new() end
 
 ---Converts MD5-Raw-Bytes String to a MD5-Encrypted String
 ---@param rawBytes string The raw bytes
 ---@return string MD5EncryptedString The MD5-Encrypted string
-function sc.md5.tohex(rawBytes) end
+function sm.scrapcomputers.md5.tohex(rawBytes) end
 
 ---Converts a string to a MD5-Raw-Bytes String
 ---@param str string The string
 ---@return string MD5RawBytes The MD5-Raw-Bytes String string
-function sc.md5.sum(str) end
+function sm.scrapcomputers.md5.sum(str) end
 
 ---Converts string to a MD5-Encrypted String
 ---@param str string The string
 ---@return string MD5EncryptedString The MD5-Encrypted string
-function sc.md5.sumhexa(str) end
+function sm.scrapcomputers.md5.sumhexa(str) end
 
 ---SHA256 Encryption Module
-sc.sha256 = {}
+sm.scrapcomputers.sha256 = {}
 
 ---Converts a string to a SHA256 string
 ---@param str string The string to be converted
 ---@return string base64String The string in Base64
-function sc.sha256.encode(str) end
+function sm.scrapcomputers.sha256.encode(str) end
 
 ---Math Module
-sc.math = {}
+sm.scrapcomputers.math = {}
 
 ---Clamps value.
 ---@param value number The value to be clamped
 ---@param min number The lowest allowed number
 ---@param max number The highest allowed number
 ---@return number clampedValue The clamped value.
-sc.math.clamp = function (value, min, max) end
+sm.scrapcomputers.math.clamp = function (value, min, max) end
 
 --Additonal features for table's.
-sc.table = {}
+sm.scrapcomputers.table = {}
 
 ---Clones a table
 ---@param tbl table The table to clone
 ---@return table clonedTable The cloned table
-sc.table.clone = function (tbl) end
+sm.scrapcomputers.table.clone = function (tbl) end
 
 ---Gets a element from table, Unlike `tbl[index]` If like the starting element has index 2, doing `tbl[1]` won't work. This fixes that issue.
 ---@param tbl table The table
 ---@param index number The index to look at
 ---@return any item The item from the table. nil if it wasen't found or is like that
-sc.table.getItemAt = function(tbl, index) end
+sm.scrapcomputers.table.getItemAt = function(tbl, index) end
 
 ---Gets the total elements from a table. Unlike doing #tbl, If the table wasen't using number's as index. the # wouldn't get anything but return 0. This fixes that issue.
 ---@param tbl table The table
 ---@return number tableSize The size of the table
-sc.table.getTotalItems = function(tbl) end
+sm.scrapcomputers.table.getTotalItems = function(tbl) end
 
----Like sc.table.getTotalItems but works with dictonaries.
+---Like sm.scrapcomputers.table.getTotalItems but works with dictonaries.
 ---@param tbl table The dictionary table
 ---@return number dictionaryTableSize The size of the dictionary
-sc.table.getTotalItemsDict = function(tbl) end
+sm.scrapcomputers.table.getTotalItemsDict = function(tbl) end
 
 ---Merges 2 tables into 1
 ---@param table1 table The 1st table
 ---@param table2 table The 2nd table
 ---@return table mergedTable The merged table
-sc.table.merge = function(table1, table2) end
+sm.scrapcomputers.table.merge = function(table1, table2) end
 
 ---Converts a table to a lua table string
 ---@param tbl table The table
 ---@return string luaTableStr The lua table as string.
-sc.table.toString = function(tbl) end
+sm.scrapcomputers.table.toString = function(tbl) end
 
 ---Additional features that sm.util dosen't have.
-sc.util = {}
+sm.scrapcomputers.util = {}
 
 ---Gets the remainder of division. This function is more safer than sm.util.postiveModule as for some reason, Scrap Mechanic
 ---dosent handle division by 0 for sm.util.postiveModule so it crashes.
 ---@param a number Number to divide
 ---@param b number The amount to divide
 ---@return number The divided number
-sc.util.postiveModulo = function (a, b) end
+sm.scrapcomputers.util.postiveModulo = function (a, b) end
 
 ---Additional features that sm.vec3 dosen't have
-sc.vec3 = {}
+sm.scrapcomputers.vec3 = {}
 
 ---A function like sm.vec3.new but its 1 argument.
 ---
 ---Its just simply sm.vec3.new(xyzNum, xyzNum, xyzNum) and also why its called "newSingluar".
 ---@param xyzNum number The value for xyz.
 ---@return Vec3 newVec3 The new vector3
-sc.vec3.newSingluar = function (xyzNum) end
+sm.scrapcomputers.vec3.newSingluar = function (xyzNum) end
 
 ---Returns a new vector3 with the added numbers
 ---@param vec3 Vec3 The vector to modify
@@ -1019,7 +1019,7 @@ sc.vec3.newSingluar = function (xyzNum) end
 ---@param y number The value to add for vec3.y
 ---@param z number The value to add for vec3.z
 ---@return Vec3 newVec3 The new vector3
-sc.vec3.add = function(vec3, x, y, z) end
+sm.scrapcomputers.vec3.add = function(vec3, x, y, z) end
 
 ---Returns a new vector3 with the subtracted numbers
 ---@param vec3 Vec3 The vector to modify
@@ -1027,7 +1027,7 @@ sc.vec3.add = function(vec3, x, y, z) end
 ---@param y number The value to subtract for vec3.y
 ---@param z number The value to subtract for vec3.z
 ---@return Vec3 newVec3 The new vector3
-sc.vec3.subtract = function(vec3, x, y, z) end
+sm.scrapcomputers.vec3.subtract = function(vec3, x, y, z) end
 
 ---Returns a new vector3 with the divided numbers
 ---@param vec3 Vec3 The vector to modify
@@ -1035,7 +1035,7 @@ sc.vec3.subtract = function(vec3, x, y, z) end
 ---@param y number The value to divide for vec3.y
 ---@param z number The value to divide for vec3.z
 ---@return Vec3 newVec3 The new vector3
-sc.vec3.divide = function(vec3, x, y, z) end
+sm.scrapcomputers.vec3.divide = function(vec3, x, y, z) end
 
 ---Returns a new vector3 with the multiplied numbers
 ---@param vec3 Vec3 The vector to modify
@@ -1043,10 +1043,10 @@ sc.vec3.divide = function(vec3, x, y, z) end
 ---@param y number The value to mulitply for vec3.y
 ---@param z number The value to mulitply for vec3.z
 ---@return Vec3 newVec3 The new vector3
-sc.vec3.mulitply = function(vec3, x, y, z) end
+sm.scrapcomputers.vec3.mulitply = function(vec3, x, y, z) end
 
 ---Gets the distance between 2 vector's.
 ---@param vec1 Vec3 The first point
 ---@param vec2 Vec3 The seccond point
 ---@return number distance The distance between the 2 vector3's.
-sc.vec3.distance = function (vec1, vec2) end
+sm.scrapcomputers.vec3.distance = function (vec1, vec2) end

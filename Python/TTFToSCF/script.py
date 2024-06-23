@@ -58,7 +58,7 @@ def CreateMap(FontPath, FontName, FontWidth, FontHeight, AdditionalPadding, Outp
         f.write(f"data.characters = \"{FontCharacters.replace("\\", "\\\\").replace("\"", "\\\"")}\"\n")
         f.write(f"data.errorChar = {CreateErrorCharacter(FontWidth + AdditionalPadding, FontHeight)}\n\n")
         f.write(f"data.charset = {result}\n")
-        f.write(f"sc.fontmanager.fonts[\"{FontName}\"] = data")
+        f.write(f"sm.scrapcomputers.fontmanager.fonts[\"{FontName}\"] = data")
 
 def main():
     if len(sys.argv) > 1 and sys.argv[1].lower() == "--auto":

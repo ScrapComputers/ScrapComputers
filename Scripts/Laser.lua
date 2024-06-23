@@ -62,5 +62,4 @@ function Laser:sv_laserRaycast()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Laser, "Lasers", true)
+sm.scrapcomputers.components.ToComponent(Laser, "Lasers", true)

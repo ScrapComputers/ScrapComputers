@@ -29,6 +29,8 @@ local userdataColors = {
     ["harvestable"] = sm.color.new("383112")
 }
 
+local sunDir = -sm.vec3.new(-0.232843, -0.688331, 0.687011)
+
 local function createErrorStr(type, checkType, arg)
     return "bad argument #" .. arg .. ". Expected " .. checkType .. ". Got " .. type .. " instead."
 end
@@ -52,9 +54,13 @@ local function getObjCol(raycastResult, type, randomizationEnabled, i)
             local trigger = raycastResult:getAreaTrigger()
             local data = trigger:getUserData()
 
-            if data.water then
-                return sm.color.new("3fadc7")
+            if data then
+                if data.water then
+                    return sm.color.new("346eeb")
+                end
             end
+
+            return sm.color.new("699e00")
         elseif type == "terrainSurface" or type == "terrainAsset" then
             local materialsTable = (type == "terrainSurface") and groundMaterials or assetMaterials
             local tblMaterial = materialsTable[material]
@@ -113,21 +119,39 @@ function Camera:sv_createData()
     return {
         getFrame = function(width, height, fovX, fovY, xOffset, yOffset)
             validateFrameParams(width, height, fovX, fovY, xOffset, yOffset)
-            return self:sv_getFrame(false, width, height, fovX / 400, fovY / 400, nil, nil, nil, xOffset, yOffset)
-        end,
-
-        getDepthMap = function(width, height, fovX, fovY, focalLength, xOffset, yOffset)
-            validateFrameParams(width, height, fovX, fovY, xOffset, yOffset)
-            assert(type(focalLength) == "number", createErrorStr(type(focalLength), "number", 5))
-            assert(focalLength > 0 , "bad argument #5, focal length must be above 0")
-            return self:sv_getFrame(false, width, height, fovX / 400, fovY / 400, nil, true, focalLength, xOffset, yOffset)
+            return self:sv_getFrame(width, height, fovX / 400, fovY / 400, xOffset, yOffset)
         end,
 
         getVideo = function(width, height, fovX, fovY, sliceWidth, xOffset, yOffset)
             validateFrameParams(width, height, fovX, fovY, xOffset, yOffset)
             assert(type(sliceWidth) == "number", createErrorStr(type(sliceWidth), "number", 5))
             assert(sliceWidth > 0 and sliceWidth <= width, "bad argument #5, slice width out of bounds")
-            return self:sv_getFrame(true, width, height, fovX / 400, fovY / 400, sliceWidth, nil, nil, xOffset, yOffset)
+            return self:sv_getFrame(width, height, fovX / 400, fovY / 400, xOffset, yOffset, "video", sliceWidth)
+        end,
+
+        getDepthFrame = function(width, height, fovX, fovY, focalLength, xOffset, yOffset)
+            validateFrameParams(width, height, fovX, fovY, xOffset, yOffset)
+            assert(type(focalLength) == "number", createErrorStr(type(focalLength), "number", 5))
+            assert(focalLength > 0 , "bad argument #5, focal length must be above 0")
+            return self:sv_getFrame(width, height, fovX / 400, fovY / 400, xOffset, yOffset, "depthMap", focalLength)
+        end,
+
+        getMaskedFrame = function(width, height, fovX, fovY, mask, xOffset, yOffset)
+            validateFrameParams(width, height, fovX, fovY, xOffset, yOffset)
+            assert(type(mask) == "string" or type(mask) == "table", createErrorStr(type(mask), "string or table", 5))
+            return self:sv_getFrame(width, height, fovX / 400, fovY / 400, xOffset, yOffset, "masked", mask)
+        end,
+
+        getAdvancedFrame = function(width, height, fovX, fovY, xOffset, yOffset)
+            validateFrameParams(width, height, fovX, fovY, xOffset, yOffset)
+            return self:sv_getFrame(width, height, fovX / 400, fovY / 400, xOffset, yOffset, "advanced")
+        end,
+
+        getAdvancedVideo = function(width, height, fovX, fovY, sliceWidth, xOffset, yOffset)
+            validateFrameParams(width, height, fovX, fovY, xOffset, yOffset)
+            assert(type(sliceWidth) == "number", createErrorStr(type(sliceWidth), "number", 5))
+            assert(sliceWidth > 0 and sliceWidth <= width, "bad argument #5, slice width out of bounds")
+            return self:sv_getFrame(width, height, fovX / 400, fovY / 400, xOffset, yOffset, "advanced", sliceWidth)
         end,
 
         toggleRandom = function(toggle)
@@ -144,9 +168,9 @@ function Camera:server_onCreate()
     }
 end
 
-local brightness = 0.9
+local brightness = 1
 
-function Camera:sv_getFrame(sliced, width, height, fovX, fovY, sliceWidth, depthMap, focalLength, xOffset, yOffset)
+function Camera:sv_getFrame(width, height, fovX, fovY, xOffset, yOffset, type_, data)
     local worldPos = self.shape.worldPosition
     local worldRot = self.shape.worldRotation
 
@@ -156,13 +180,14 @@ function Camera:sv_getFrame(sliced, width, height, fovX, fovY, sliceWidth, depth
 
     local multicastTbl = {}
     local indexTbl = {}
+    local pointTbl = {}
 
-    local v1 = worldPos + (up * fovY / 2) + (right * fovX / 2) + at * 0.125
+    local v1 = worldPos + (up * fovY / 2) + (right * fovX / 2) + at * 0.25
     local v2 = -up * fovY / height
     local v3 = -right * fovX / width
 
-    if sliced then
-        for i = 1, sliceWidth do 
+    if (type_ == "video" or type_ == "advanced") and data then
+        for i = 1, data do 
             for y = 1, height do
                 local startPos = v1 + v2 * (y - 1) + v3 * (self.sv.sliceIndex - 1)
                 local endPos = startPos + (startPos - worldPos) * 20000
@@ -177,23 +202,19 @@ function Camera:sv_getFrame(sliced, width, height, fovX, fovY, sliceWidth, depth
             for y = 1, height do
                 local startPos = v1 + v2 * (y - 1) + v3 * (x - 1)
                 local endPos = startPos + (startPos - worldPos) * 20000
-                table.insert(multicastTbl, {type = "ray", startPoint = startPos, endPoint = endPos})
+                table.insert(multicastTbl, {type = "ray", startPoint = startPos, endPoint = endPos, mask = -1})
                 table.insert(indexTbl, {x, y})
             end
         end
     end
 
-    return self:sv_getRayData(multicastTbl, indexTbl, depthMap, focalLength, xOffset, yOffset)
-end
-
-function Camera:sv_getRayData(multicastTbl, indexTbl, depthMap, focalLength, xOffset, yOffset)
     xOffset = xOffset or 0
     yOffset = yOffset or 0
     
     local resultTbl = sm.physics.multicast(multicastTbl)
     local highestFrac, lowestFrac
 
-    if not depthMap then
+    if type_ ~= "depthMap" then
         for _, data in ipairs(resultTbl) do
             if data[1] then
                 local fraction = data[2].fraction
@@ -205,26 +226,49 @@ function Camera:sv_getRayData(multicastTbl, indexTbl, depthMap, focalLength, xOf
 
     local diffBig
 
-    if not depthMap then
-        diffBig = math.abs(lowestFrac - highestFrac) > 0.4
+    if type_ ~= "depthMap" then
+        diffBig = math.abs(lowestFrac - highestFrac) > 0.2
     end
 
     local pixelTbl = {}
     local time = math.abs(sm.game.getTimeOfDay() + 0.5)
+    local pointTbl = {}
 
-    for i, data in ipairs(resultTbl) do
-        local hit, result = unpack(data)
+    for i, data_ in ipairs(resultTbl) do
+        local hit, result = unpack(data_)
         if hit then
             local color
+            local modifier = (math.abs(sm.vec3.new(0, 0, 1):dot(result.normalWorld)) * 0.5) + 0.5
 
-            if depthMap then
-                color = sm.color.new(1, 1, 1, 1) * (1 - (result.fraction / (focalLength / 20000)))
+            if type_ == "depthMap" then
+                color = sm.color.new(1, 1, 1, 1) * (1 - (result.fraction / (data / 20000)))
+            elseif type_ == "masked" then
+                if type(data) == "table" then
+                    local broke
+
+                    for i, mask in pairs(data) do
+                        if mask == result.type then
+                            color = sm.color.new(1, 1, 1, 1) * modifier * (1 - (result.fraction / highestFrac))
+                            broke = true
+                            break
+                        end
+                    end
+
+                    if not broke then
+                        color = sm.color.new("222222") * modifier * (1 - (result.fraction / highestFrac))
+                    end
+                else
+                    if result.type == mask then
+                        color = sm.color.new(1, 1, 1, 1) * modifier * (1 - (result.fraction / highestFrac))
+                    else
+                        color = sm.color.new("222222") * modifier * (1 - (result.fraction / highestFrac))
+                    end
+                end
             else
                 color = getObjCol(result, result.type, self.sv.randomizationEnabled, i) * brightness * time 
-                local modifier = (math.abs(sm.vec3.new(0, 0, 1):dot(result.normalWorld)) * 0.7) + 0.5
 
                 if result.type ~= "limiter" then
-                    if diffBig then
+                    if diffBig or type_ == "video" or type_ == "advanced" then
                         color = color * modifier * (1 - (result.fraction / highestFrac))
                     else
                         color = color * modifier
@@ -232,9 +276,45 @@ function Camera:sv_getRayData(multicastTbl, indexTbl, depthMap, focalLength, xOf
                 end
             end
 
-            local x, y = unpack(indexTbl[i])
-            table.insert(pixelTbl, {x = x + xOffset, y = y + yOffset, scale = {x = 1, y = 1}, color = color})
+            if type_ == "advanced" and result.type ~= "limiter" then
+                table.insert(pointTbl, {point = result.pointWorld, color = color, index = i})
+            else
+                local x, y = unpack(indexTbl[i])
+                table.insert(pixelTbl, {x = x + xOffset, y = y + yOffset, scale = {x = 1, y = 1}, color = color})
+            end
         end
+    end
+
+    if type_ ~= "advanced" then
+        return pixelTbl
+    end
+
+    local rayTraceTbl = {}
+
+    if #pointTbl > 0 then
+        local offset = 100
+
+        for i, tbl in pairs(pointTbl) do
+            local startPos = tbl.point + -sunDir * offset
+            table.insert(rayTraceTbl, {type = "ray", startPoint = startPos, endPoint = startPos + sunDir * offset})
+        end
+    end
+
+    local rayTraceResults = sm.physics.multicast(rayTraceTbl)
+    local shadowMult = 0.4
+
+    for i, raycast in pairs(rayTraceResults) do
+        local hit, result = unpack(raycast)
+
+        if hit then
+            if (result.pointWorld - pointTbl[i].point):length() > 0.025 then
+                pointTbl[i].color = pointTbl[i].color * shadowMult
+            end
+        end
+
+        local x, y = unpack(indexTbl[pointTbl[i].index])
+
+        table.insert(pixelTbl, {x = x + xOffset, y = y + yOffset, scale = {x = 1, y = 1}, color = pointTbl[i].color})
     end
 
     return pixelTbl
@@ -242,5 +322,4 @@ end
 
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Camera, "Cameras", true)
+sm.scrapcomputers.components.ToComponent(Camera, "Cameras", true)

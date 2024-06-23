@@ -1,7 +1,7 @@
 --Additonal features for [MODULE NAME]
-sc.MODULE = {}
+sm.scrapcomputers.MODULE = {}
 
 ---Prints hello world!
-sc.MODULE.helloWorld = function()
+sm.scrapcomputers.MODULE.helloWorld = function()
     print("Hello world!")
 end

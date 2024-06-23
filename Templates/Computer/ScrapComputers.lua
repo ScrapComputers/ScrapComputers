@@ -65,6 +65,10 @@ function sc.getMotors() end
 ---@return Laser[] lasers All connected lasers from the computer
 function sc.getLasers() end
 
+---Gets all connected GPSs
+---@return GPS[]
+function sc.getGPSs() end
+
 ---Gets all connected seatcontrollers from the computer
 ---@return SeatController[] seatcontroller All connected seatcontrollers from the computer
 function sc.getSeatControllers() end
@@ -351,6 +355,144 @@ function sc.vec3.distance( vec1, vec2 ) end
 ---@return Vec3 newVec3 The new vector3
 function sc.vec3.newSingluar( xyz ) end
 
+-- VPBS allows you to convert a lua table to a packet buffer. Use this if you do NOT wanna deal with BitStreams and want to do every packet as a string.
+sc.VPBS = {}
+
+---Converts a table to a VPBS string
+---@param tbl table The table to convert
+---@return string vpbsStr The converted string.
+function sc.VPBS.tostring(tbl) end
+
+---Converts a VPBS string to a table
+---@param data string The VPBS string.
+---@return table tbl The table from the string
+function sc.VPBS.totable(data) end
+
+---Checks if the string is a VPBS formatted string
+---@param data string The data to check
+---@return boolean isVPBS True if its a VPBS string, else not.
+function sc.VPBS.isVPBSstring(data) end
+
+---@diagnostic disable: return-type-mismatch
+-- A BitStream Module that lets you make packet data (for example)
+sc.BitStream = {}
+
+-- A Bitstream that is a stream of bits! (What did you expect!)
+---@class sc.bitstream.Stream
+local BitStream = {}
+
+-- The position in the string itself (Bit by Bit!)
+BitStream.pos = 1
+-- The position in the string itself (Byte by Byte!)
+BitStream.bytePos = 1
+-- The size of the stream.
+BitStream.size = 0
+
+---Dumps the string
+---@return string dumpedString The dumped string
+function BitStream:dumpString() end
+
+---Dumps the string (as base64)
+---@return string dumpedString The dumped string
+function BitStream:dumpBase64() end
+
+---Dumps the string (as hex)
+---@return string dumpedString The dumped string
+function BitStream:dumpHex() end
+
+---Writes a bit
+---@param bit boolean|integer The bit value to write
+function BitStream:writeBit(bit) end
+
+---Reads a bit
+---@return integer? 0 or 1 for bit value. Nil if it overflows.
+function BitStream:readBit() end
+
+---Writes a byte
+---@param byte integer The byte to write (Integer because it must be as ASCII char)
+function BitStream:writeByte(byte) end
+
+---Reads a byte
+---@return string? byte The byte it has read.
+function BitStream:readByte() end
+
+---Writes a signed 8-bit integer.
+---@param integer integer The integer to write
+function BitStream:writeInt8(integer) end
+
+---Reads a signed 8-bit integer.
+---@return integer? The signed 8-bit integer read.
+function BitStream:readInt8() end
+
+---Writes an unsigned 8-bit integer.
+---@param uinteger integer The unsigned integer to write.
+function BitStream:writeUInt8(uinteger) end
+
+---Reads an unsigned 8-bit integer.
+---@return integer? The unsigned 8-bit integer read.
+function BitStream:readUInt8() end
+
+---Writes a signed 16-bit integer.
+---@param integer integer The signed integer to write.
+function BitStream:writeInt16(integer) end
+
+---Reads a signed 16-bit integer.
+---@return integer? The signed 16-bit integer read.
+function BitStream:readInt16() end
+
+---Writes an unsigned 16-bit integer.
+---@param uinteger integer The unsigned integer to write.
+function BitStream:writeUInt16(uinteger) end
+
+---Reads an unsigned 16-bit integer.
+---@return integer? The unsigned 16-bit integer read.
+function BitStream:readUInt16() end
+
+---Writes a signed 24-bit integer.
+---@param integer integer The signed integer to write.
+function BitStream:writeInt24(integer) end
+
+---Reads a signed 24-bit integer.
+---@return integer? The signed 24-bit integer read.
+function BitStream:readInt24() end
+
+---Writes an unsigned 24-bit integer.
+---@param uinteger integer The unsigned integer to write.
+function BitStream:writeUInt24(uinteger) end
+
+---Reads an unsigned 24-bit integer.
+---@return integer? The unsigned 24-bit integer read.
+function BitStream:readUInt24() end
+
+---Writes a signed 32-bit integer.
+---@param integer integer The signed integer to write.
+function BitStream:writeInt32(integer) end
+
+---Reads a signed 32-bit integer.
+---@return integer? The signed 32-bit integer read.
+function BitStream:readInt32() end
+
+---Writes an unsigned 32-bit integer.
+---@param uinteger integer The unsigned integer to write.
+function BitStream:writeUInt32(uinteger) end
+
+---Reads an unsigned 32-bit integer.
+---@return integer? The unsigned 32-bit integer read.
+function BitStream:readUInt32() end
+
+---Writes a string.
+---@param str string The string to write.
+function BitStream:writeString(str) end
+
+---Reads a string.
+---@return string? The string read.
+function BitStream:readString() end
+
+---Creates a new BitStream Stream
+---@param data string? Pre-appended binary data.
+---@return sc.bitstream.Stream bitStream The bitstream itself.
+function sc.bitstream.new(data) end
+
 ---@class Antenna
 ---The antenna component is connected to a network port. If connected, You would be able to send data to other antenna’s wireless!
 local Antenna = {}
@@ -396,7 +538,7 @@ function Camera.getFrame( width, height, fovX, fovY, xOffset, yOffset ) end
 ---@param xOffset integer The applied x offset for the frame. By default, it’s at 0 so at the top, it would be rendered there
 ---@param yOffset integer The applied y offset for the frame. By default, it’s at 0 so at the left, it would be rendered there
 ---@return Display.DisplayPixelTable frame The pixels of the frame
-function Camera.getDepthMap( width, height, fovX, fovY, focalLength, xOffset, yOffset ) end
+function Camera.getDepthFrame( width, height, fovX, fovY, focalLength, xOffset, yOffset ) end
 
 ---Takes a depth map frame (aka a screenshot) and returns it
 ---@param width integer The width of the frame
@@ -409,7 +551,7 @@ function Camera.getDepthMap( width, height, fovX, fovY, focalLength, xOffset, yO
 ---@return Display.DisplayPixelTable frame The pixels of the frame
 function Camera.getVideo( width, height, fovX, fovY, sliceWidth , xOffset, yOffset ) end
 
----Takes a frame (aka a screenshot)
+---Takes a advanced frame (aka a screenshot)
 ---@param width integer The width of the frame
 ---@param height integer The height of the frame
 ---@param fovX number The FOV on x-axis
@@ -417,18 +559,7 @@ function Camera.getVideo( width, height, fovX, fovY, sliceWidth , xOffset, yOffs
 ---@param xOffset integer The applied x offset for the frame. By default, it’s at 0 so at the top, it would be rendered there
 ---@param yOffset integer The applied y offset for the frame. By default, it’s at 0 so at the left, it would be rendered there
 ---@return Display.DisplayPixelTable frame The pixels of the frame
-function Camera.getFrame( width, height, fovX, fovY, xOffset, yOffset ) end
-
----Takes a frame (aka a screenshot)
----@param width integer The width of the frame
----@param height integer The height of the frame
----@param fovX number The FOV on x-axis
----@param fovY number The FOV on y-axis
----@param focalLength integer The focal’s length
----@param xOffset integer The applied x offset for the frame. By default, it’s at 0 so at the top, it would be rendered there
----@param yOffset integer The applied y offset for the frame. By default, it’s at 0 so at the left, it would be rendered there
----@return Display.DisplayPixelTable frame The pixels of the frame
-function Camera.getAdvancedFrame( width, height, fovX, fovY, focalLength, xOffset, yOffset ) end
+function Camera.getAdvancedFrame( width, height, fovX, fovY, xOffset, yOffset ) end
 
 ---Like getFrame but it’s as slices meaning you could make CCTV cameras without lagging a lot! It’s just that the refresh rate would be lower.
 ---@param width integer The width of the frame
@@ -466,7 +597,7 @@ local Display = {}
 ---Draws a single pixel at the specified coordinates with the given color.
 ---@param x number The x-coordinate of the pixel.
 ---@param y number The y-coordinate of the pixel.
----@param color Color|string? The color of the pixel in hexadecimal format.
+---@param color Color|string The color of the pixel in hexadecimal format.
 function Display.drawPixel( x, y, color ) end
 
 ---Draws shapes and text based on data provided in a table.
@@ -474,7 +605,7 @@ function Display.drawPixel( x, y, color ) end
 function Display.drawFromTable( tbl ) end
 
 ---Clears the display with the specified color.
----@param color Color|string? The color to clear the display with, in hexadecimal format. (If nil, It will clear the screen with the default color)
+---@param color Color|string The color to clear the display with, in hexadecimal format. (If nil, It will clear the screen with the default color)
 function Display.clear( color ) end
 
 ---Draw a line between two points with the specified color.
@@ -482,21 +613,21 @@ function Display.clear( color ) end
 ---@param y number The y-coordinate of the starting point.
 ---@param x1 number The x-coordinate of the ending point.
 ---@param y1 number The y-coordinate of the ending point.
----@param color Color|string? The color of the line in hexadecimal format.
+---@param color Color|string The color of the line in hexadecimal format.
 function Display.drawLine( x, y, x1, y1, color ) end
 
 ---Draws a circle with the specified center coordinates, radius, and color.
 ---@param x number The x-coordinate of the center of the circle.
 ---@param y number The y-coordinate of the center of the circle.
 ---@param radius number The radius of the circle.
----@param color Color|string? The color of the circle in hexadecimal format.
+---@param color Color|string The color of the circle in hexadecimal format.
 function Display.drawCircle( x, y, radius, color ) end
 
 ---Draws a filled circle with the specified center coordinates, radius, and color.
 ---@param x number The x-coordinate of the center of the circle.
 ---@param y number The y-coordinate of the center of the circle.
 ---@param radius number The radius of the circle.
----@param color Color|string? The color of the circle in hexadecimal format.
+---@param color Color|string The color of the circle in hexadecimal format.
 function Display.drawFilledCircle( x, y, radius, color ) end
 
 ---Draws a triangle with the specified vertices and color.
@@ -506,7 +637,7 @@ function Display.drawFilledCircle( x, y, radius, color ) end
 ---@param y2 number The y-coordinate of the second vertex.
 ---@param x3 number The x-coordinate of the third vertex.
 ---@param y3 number The y-coordinate of the third vertex.
----@param color Color|string? The color of the triangle in hexadecimal format.
+---@param color Color|string The color of the triangle in hexadecimal format.
 function Display.drawTriangle( x1, y1, x2, y2, x3, y3, color ) end
 
 ---Draws a filled triangle with the specified vertices and color.
@@ -516,7 +647,7 @@ function Display.drawTriangle( x1, y1, x2, y2, x3, y3, color ) end
 ---@param y2 number The y-coordinate of the second vertex.
 ---@param x3 number The x-coordinate of the third vertex.
 ---@param y3 number The y-coordinate of the third vertex.
----@param color Color|string? The color of the triangle in hexadecimal format.
+---@param color Color|string The color of the triangle in hexadecimal format.
 function Display.drawFilledTriangle( x1, y1, x2, y2, x3, y3, color ) end
 
 ---Draws a rectangle with the specified position, width, height, and color.
@@ -524,7 +655,7 @@ function Display.drawFilledTriangle( x1, y1, x2, y2, x3, y3, color ) end
 ---@param y number The y-coordinate of the top-left corner of the rectangle.
 ---@param width number The width of the rectangle.
 ---@param height number The height of the rectangle.
----@param color Color|string? The color of the rectangle in hexadecimal format.
+---@param color Color|string The color of the rectangle in hexadecimal format.
 function Display.drawRect( x, y, width, height, color ) end
 
 ---Draws a filled rectangle with the specified position, width, height, and color.
@@ -532,14 +663,14 @@ function Display.drawRect( x, y, width, height, color ) end
 ---@param y number The y-coordinate of the top-left corner of the rectangle.
 ---@param width number The width of the rectangle.
 ---@param height number The height of the rectangle.
----@param color Color|string? The color of the rectangle in hexadecimal format.
+---@param color Color|string The color of the rectangle in hexadecimal format.
 function Display.drawFilledRect( x, y, width, height, color ) end
 
 ---Draws text at the specified position with the specified color.
 ---@param x number The x-coordinate of the text.
 ---@param y number The y-coordinate of the text.
 ---@param string string The text to draw.
----@param color Color|string? The color of the text in hexadecimal format.
+---@param color Color|string The color of the text in hexadecimal format.
 ---@param fontName string? The font to use. (defaults to whatever the default font the font manager is using)
 function Display.drawText( x, y, string, color, fontName ) end
 
@@ -731,6 +862,10 @@ local Motor = {}
 ---Sets the bearing(s) speed
 ---@param speed number The speed to set to bearing(s)
 function Motor.setBearingSpeed( speed ) end
+
+---Sets the bearing(s) angle
+---@param angle number The angle to set to bearing(s)
+function Motor.setBearingAngle(angle) end
 
 ---Sets the piston(s) speed
 ---@param speed number The speed to set to piston(s)
@@ -924,3 +1059,25 @@ function Terminal.receivedInputs() end
 ---Gets the latest user input
 ---@return string inputText The input that the user has entered.
 function Terminal.getInput() end
+
+---@class GPS
+local GPS = {}
+
+---Data for GPS
+---@class GPS.Data
+---@field worldPosition Vec3 The world position
+---@field worldRotation Quat The world rotation
+---@field bearing number The bearing rotation (Degrees!)
+---@field velocity Vec3 The velocity
+---@field speed number The speed
+---@field forwardVelocity number The forwards velocity
+---@field horizontalVelocity number The horizontal velocity
+---@field verticalVelocity number The vertical velocity
+---@field acceleration number The acceleration
+---@field forwardAcceleration number The forwards acceleration
+---@field horizontalAcceleration number The horizontal acceleration
+---@field verticalAcceleration number The vertical acceleration
+
+---Gets GPS Data
+---@return GPS.Data gpsData The GPS Data
+function GPS.getGPSData() end

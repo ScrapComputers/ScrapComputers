@@ -1,12 +1,12 @@
 ---Additional features for math related operations.
-sc.math = {}
+sm.scrapcomputers.math = {}
 
 ---Clamps a value from min to max
 ---@param value number The value to clamp
 ---@param min number The maximun
 ---@param max number The minimun
 ---@return number clampedValue The clamped number value.
-sc.math.clamp = function(value, min, max)
+sm.scrapcomputers.math.clamp = function(value, min, max)
     -- Asserts, Asserts. More fucking assertion.
     assert(type(value) == "number", "bad argument #1, Expected number, Got "..type(value).." instead!")
     assert(type(min) == "number", "bad argument #2, Expected number, Got "..type(min).." instead!")

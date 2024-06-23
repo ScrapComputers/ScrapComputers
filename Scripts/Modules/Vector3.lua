@@ -1,5 +1,5 @@
 ---Additional features that sm.vec3 dosen't have
-sc.vec3 = {}
+sm.scrapcomputers.vec3 = {}
 
 ---Since the add,subtract,divide and mulitply have same asserts. To reduce amount of code. this is all in 1 function now
 local function peformASDMAsserts(vec3, x, y, z)
@@ -14,7 +14,7 @@ end
 ---Its just simply sm.vec3.new(xyzNum, xyzNum, xyzNum) and also why its called "newSingluar".
 ---@param xyzNum any
 ---@return Vec3
-sc.vec3.newSingluar = function (xyzNum)
+sm.scrapcomputers.vec3.newSingluar = function (xyzNum)
     assert(type(xyzNum) == "number", "Expected number. Got "..type(xyzNum).." instead!")
 
     return sm.vec3.new(xyzNum, xyzNum, xyzNum)
@@ -26,7 +26,7 @@ end
 ---@param y number
 ---@param z number
 ---@return Vec3
-sc.vec3.add = function(vec3, x, y, z)
+sm.scrapcomputers.vec3.add = function(vec3, x, y, z)
     peformASDMAsserts(vec3, x, y, z) -- Perform checks
     return sm.vec3.new(vec3.x + x, vec3.y + y, vec3.z + z) -- Return new vec3 with the new values
 end
@@ -37,7 +37,7 @@ end
 ---@param y number
 ---@param z number
 ---@return Vec3
-sc.vec3.subtract = function(vec3, x, y, z)
+sm.scrapcomputers.vec3.subtract = function(vec3, x, y, z)
     peformASDMAsserts(vec3, x, y, z) -- Perform checks
     return sm.vec3.new(vec3.x - x, vec3.y - y, vec3.z - z) -- Return new vec3 with the new values
 end
@@ -48,7 +48,7 @@ end
 ---@param y number
 ---@param z number
 ---@return Vec3
-sc.vec3.divide = function(vec3, x, y, z)
+sm.scrapcomputers.vec3.divide = function(vec3, x, y, z)
     peformASDMAsserts(vec3, x, y, z) -- Perform checks
     return sm.vec3.new(vec3.x / x, vec3.y / y, vec3.z / z) -- Return new vec3 with the new values
 end
@@ -59,7 +59,7 @@ end
 ---@param y number
 ---@param z number
 ---@return Vec3
-sc.vec3.mulitply = function(vec3, x, y, z)
+sm.scrapcomputers.vec3.mulitply = function(vec3, x, y, z)
     peformASDMAsserts(vec3, x, y, z) -- Perform checks
     return sm.vec3.new(vec3.x * x, vec3.y * y, vec3.z * z) -- Return new vec3 with the new values
 end
@@ -68,7 +68,7 @@ end
 ---@param vec1 Vec3 The first point
 ---@param vec2 Vec3 The seccond point
 ---@return number The distance between the 2 vector3's.
-sc.vec3.distance = function (vec1, vec2)
+sm.scrapcomputers.vec3.distance = function (vec1, vec2)
     assert(type(vec1) == "Vec3", "bad argument #1. Expected Vec3, Got "..type(vec1).." instead!")
     assert(type(vec2) == "Vec3", "bad argument #2. Expected Vec3, Got "..type(vec2).." instead!")
     

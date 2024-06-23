@@ -11,13 +11,14 @@ Speaker.colorHighlight = sm.color.new(0xb66ffcff)
 
 -- SERVER --
 local AUDIO_START_NAME = "ScrapComputers - AUDIO"
+local BEEP_AUDIO = AUDIO_START_NAME.."1"
 
 function Speaker:sv_createData()
     ---This checks parameters if they are correct. else they error
     ---@param name string The name of the audio
-    ---@param params sc.audio.AudioParameter[] The parameters for it
+    ---@param params sm.scrapcomputers.audio.AudioParameter[] The parameters for it
     local function checkParameters(name, params)
-        local validParamsCheck = sc.audio.areParamsCorrect(name, params) -- Check if the parameters are correct
+        local validParamsCheck = sm.scrapcomputers.audio.areParamsCorrect(name, params) -- Check if the parameters are correct
         if validParamsCheck then
             -- Its not correct! Merge all issues into 1 big ass string and error it out.
             local issuesAsText = "\t"
@@ -46,7 +47,7 @@ function Speaker:sv_createData()
         ---Play's a beep sound
         beep = function ()
             -- Add it
-            table.insert(self.sv.buffer, {"cl_playNote", {AUDIO_START_NAME.." ", 10, {pitch = 100}}})
+            table.insert(self.sv.buffer, {"cl_playNote", {BEEP_AUDIO, 10, {pitch = 100}}})
         end,
 
         ---Play's a beep sound
@@ -54,7 +55,7 @@ function Speaker:sv_createData()
         ---@return number beepIndex The index where the queue is located.
         beepQueue = function ()
             -- Add it and return ít's index
-            table.insert(self.sv.bufferQueue, {"cl_playNote", {AUDIO_START_NAME.." ", 10, {pitch = 100}}})
+            table.insert(self.sv.bufferQueue, {"cl_playNote", {BEEP_AUDIO, 10, {pitch = 100}}})
             return #self.sv.bufferQueue
         end,
 
@@ -105,7 +106,7 @@ function Speaker:sv_createData()
             assert(durationTicks       >  0       , "bad argument #3, Expected higher number than 0")
 
             -- Do validation for the name and paramters
-            assert(sc.audio.exists(name), "bad argument #1, Invalid audio name!")
+            assert(sm.scrapcomputers.audio.exists(name), "bad argument #1, Invalid audio name!")
 
             checkParameters(name, params)
 
@@ -128,7 +129,7 @@ function Speaker:sv_createData()
             assert(durationTicks       >  0       , "bad argument #3, Expected higher number than 0")
 
             -- Do validation for the name and paramters
-            assert(sc.audio.exists(name), "bad argument #1, Invalid audio name!")
+            assert(sm.scrapcomputers.audio.exists(name), "bad argument #1, Invalid audio name!")
 
             checkParameters(name, params)
 
@@ -278,5 +279,4 @@ function Speaker:cl_playNote(params)
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Speaker, "Speakers", true)
+sm.scrapcomputers.components.ToComponent(Speaker, "Speakers", true)

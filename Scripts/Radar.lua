@@ -239,5 +239,4 @@ function Radar:server_onFixedUpdate()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Radar, "Radars", true)
+sm.scrapcomputers.components.ToComponent(Radar, "Radars", true)

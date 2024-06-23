@@ -14,41 +14,43 @@ SeatController.colorHighlight = sm.color.new(0x969696ff)
 function SeatController:sv_createData()
     return {
         ---Gets seat data
-        ---@return table data The seat data
+        ---@return table? data The seat data
         getSeatData = function()
-            assert(self.sv.seat, "No seat found!") -- Check if theres a seat connected
-
-            -- Get the ass
-            return self.sv.data
+            if self.sv.seat then
+                -- Get the ass
+                return self.sv.data
+            end
         end,
 
         ---Gets joints data
-        ---@return table[] data The joints data
+        ---@return table[]? data The joints data
         getJointData = function()
-            assert(self.sv.seat, "No seat found!") -- Check if theres a seat connected
-            
+            if not self.sv.seat then return end
+
             -- GET THE MOTHERFUCKING ASS
             return self:sv_getJointData()
         end,
 
         ---Presses a button
-        ---@param index integer The button to press
+        ---@param index integer? The button to press
         pressButton = function (index)
-            assert(self.sv.seat, "No seat found!")                     -- Check if theres a seat connected
             assert(index > -1, "bad argument #1. Index out of range.") -- Range check
 
-            -- Do the fucking action
-            self.sv.seat:pressSeatInteractable(index)
+            if self.sv.seat then
+                -- Do the fucking action
+                self.sv.seat:pressSeatInteractable(index)
+            end
         end,
 
         ---Releases a button
-        ---@param index integer THe button to release
+        ---@param index integer? THe button to release
         releaseButton = function (index)
-            assert(self.sv.seat, "No seat found!")                     -- Check if theres a seat connected
             assert(index > -1, "bad argument #1. Index out of range.") -- Range check
 
-            -- Do the fucking action
-            self.sv.seat:releaseSeatInteractable(index)
+            if self.sv.seat then
+                -- Do the fucking action
+                self.sv.seat:releaseSeatInteractable(index)
+            end
         end,
     }
 end
@@ -114,5 +116,4 @@ function SeatController:sv_getJointData()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(SeatController, "SeatControllers", true)
+sm.scrapcomputers.components.ToComponent(SeatController, "SeatControllers", true)

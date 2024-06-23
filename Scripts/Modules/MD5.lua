@@ -404,9 +404,9 @@ end
 
 ----------------------------------------------------------------
 
-sc.md5 = {}
+sm.scrapcomputers.md5 = {}
 
-function sc.md5.new()
+function sm.scrapcomputers.md5.new()
     return {
         a = CONSTS[65],
         b = CONSTS[66],
@@ -419,21 +419,21 @@ function sc.md5.new()
     }
 end
 
-function sc.md5.tohex(rawBytes)
+function sm.scrapcomputers.md5.tohex(rawBytes)
     assert(type(rawBytes) == "string", "Expected string! Got "..type(rawBytes).." instead!")
 
     return format("%08x%08x%08x%08x", str2bei(sub(rawBytes, 1, 4)), str2bei(sub(rawBytes, 5, 8)), str2bei(sub(rawBytes, 9, 12)),
         str2bei(sub(rawBytes, 13, 16)))
 end
 
-function sc.md5.sum(str)
+function sm.scrapcomputers.md5.sum(str)
     assert(type(str) == "string", "Expected string! Got "..type(str).." instead!")
 
-    return sc.md5.new():update(str):finish()
+    return sm.scrapcomputers.md5.new():update(str):finish()
 end
 
-function sc.md5.sumhexa(str)
+function sm.scrapcomputers.md5.sumhexa(str)
     assert(type(str) == "string", "Expected string! Got "..type(str).." instead!")
     
-    return sc.md5.tohex(sc.md5.sum(str))
+    return sm.scrapcomputers.md5.tohex(sm.scrapcomputers.md5.sum(str))
 end

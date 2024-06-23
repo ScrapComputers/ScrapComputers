@@ -7,16 +7,16 @@ Configurator = class()
 
 function Configurator:sv_setConfig(params)
     -- Unpack params to 2 paramaters
-    --      name: The name of the config
+    --      id: The id of the config
     --      selectedOption: The new option being selected
-    local name, selectedOption = unpack(params)
+    local id, selectedOption = unpack(params)
 
     -- Update the config
-    sc.config.setConfig(name, selectedOption)
+    sm.scrapcomputers.config.setConfig(id, selectedOption)
 end
 
 function Configurator:sv_resetConfig()
-    sc.config.resetConfiguration()
+    sm.scrapcomputers.config.resetConfiguration()
 end
 
 -- CLIENT --
@@ -39,14 +39,14 @@ end
 
 function Configurator:cl_onChangeValue()
     -- Get current config and its next value
-    local currentConfig = sc.config.configurations[self.cl.currentIndex]
+    local currentConfig = sm.scrapcomputers.config.configurations[self.cl.currentIndex]
     local value = next(currentConfig.options, currentConfig.selectedOption)
     
     -- If it is nil, set it to 1 so it loops back to 1 (next function returns nil if theres nothing on the next item)
     if not value then value = 1 end
 
     -- Send it to the server to be updated and update the gui to be the new option.
-    self.network:sendToServer("sv_setConfig", {self.cl.currentIndex, value})
+    self.network:sendToServer("sv_setConfig", {currentConfig.id, value})
     self.cl.gui:setText("CurrentValue", currentConfig.options[value])
 
     -- Play sound effect
@@ -106,7 +106,7 @@ function Configurator:cl_updateGui(text)
         self.cl.gui:setVisible("ChangeValueButton", true)
 
         -- Get the config
-        local config = sc.config.configurations[self.cl.currentIndex]
+        local config = sm.scrapcomputers.config.configurations[self.cl.currentIndex]
 
         -- Update the description with the new current config
         self.cl.gui:setText("Description", config.description)
@@ -124,7 +124,7 @@ function Configurator:cl_updateGui(text)
         self.cl.gui:setVisible("ChangeValueButton", false)
     else
         -- Show error message and hide Description and ChangeValueButton (Out of bounds error)
-        self.cl.gui:setText("CurrentValue", "#E74856Out-of-Bounds (Must be 1-"..sc.table.getTotalItems(sc.config.configurations)..")")
+        self.cl.gui:setText("CurrentValue", "#E74856Out-of-Bounds (Must be 1-"..sm.scrapcomputers.table.getTotalItems(sm.scrapcomputers.config.configurations)..")")
         self.cl.gui:setVisible("Description", false)
         self.cl.gui:setVisible("ChangeValueButton", false)
     end
@@ -141,10 +141,10 @@ end
 function Configurator:cl_createGui()
     if sm.exists(self.cl.gui) then self.cl.gui:close() end -- If the gui exists. close it
 
-    self.cl.gui = sm.gui.createGuiFromLayout(sc.layoutFiles.Configurator, true, { backgroundAlpha = 0.5 }) -- Create the gui
+    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Configurator, true, { backgroundAlpha = 0.5 }) -- Create the gui
 
     self.cl.gui:setText("List", self:svcl_formatList()) -- Get the list and put it inside the List Widget
-    self.cl.gui:setText("SelectedOption", sc.toString(self.cl.currentIndex)) -- Update SelectedOption to be the new one
+    self.cl.gui:setText("SelectedOption", sm.scrapcomputers.toString(self.cl.currentIndex)) -- Update SelectedOption to be the new one
 
     self.cl.gui:setTextChangedCallback("SelectedOption", "cl_onNewInput") -- Create a text change callback to SelectedOption
 
@@ -161,7 +161,7 @@ function Configurator:client_onInteract(_, state)
     if not state then return end
 
     -- If the current config for "Admin-only accessable Configurator" is "Only Host" and the client isn't a host, We cant allow him to change it so send a alert and stop further execution.
-    if sc.config.configurations[2].selectedOption == 1 and not sm.isHost then
+    if sm.scrapcomputers.config.getConfig("scrapcomputers.configurator.admin_only").selectedOption == 1 and not sm.isHost then
         sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: You do not have access to the Configurator!")
         return
     end
@@ -185,9 +185,9 @@ function Configurator:svcl_formatList()
     local index = 1 -- We do NOT use the index system from table!
                     -- This is because let say the fourth item's index is 1004. We do NOT want 1004 on the list but 4!
     -- Loop through all configurations
-    for _, config in ipairs(sc.config.configurations) do
+    for _, config in ipairs(sm.scrapcomputers.config.configurations) do
         -- Format it to a string and add it to the text (string) variable
-        text = text..sc.toString(index)..": "..config.name.."\n"
+        text = text..sm.scrapcomputers.toString(index)..": "..config.name.."\n"
 
         index = index + 1 -- Increase the index by 1
     end
@@ -196,7 +196,7 @@ function Configurator:svcl_formatList()
     return text
 end
 
--- Used to check if num is a number and in-bounds of the sc.config.configurations
+-- Used to check if num is a number and in-bounds of the sm.scrapcomputers.config.configurations
 function Configurator:svcl_isIndexValid(num)
     -- Convert it to a number (if possible)
     local actualNumber = tonumber(num)
@@ -207,7 +207,7 @@ function Configurator:svcl_isIndexValid(num)
     end
 
     -- If its below 0 or above the total amount of configurations, return -2. (Invalid: Out-of-Bounds)
-    if actualNumber < 0 or actualNumber > sc.table.getTotalItems(sc.config.configurations) then
+    if actualNumber < 0 or actualNumber > sm.scrapcomputers.table.getTotalItems(sm.scrapcomputers.config.configurations) then
         return -2
     end
 
@@ -216,5 +216,4 @@ function Configurator:svcl_isIndexValid(num)
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Configurator, "", false)
+sm.scrapcomputers.components.ToComponent(Configurator, "", false)

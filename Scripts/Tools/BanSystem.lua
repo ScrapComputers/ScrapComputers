@@ -63,14 +63,14 @@ end
 function BanSystem:server_onFixedUpdate()
     -- Check if its 3
     if self.isBanned == 3 then
-        -- Loop through sc.dataList and clear it
-        for index, _ in pairs(sc.dataList) do
-            sc.dataList[index] = {}
+        -- Loop through sm.scrapcomputers.dataList and clear it
+        for index, _ in pairs(sm.scrapcomputers.dataList) do
+            sm.scrapcomputers.dataList[index] = {}
         end
 
-        -- Change sc.modDisabled to true if it isnt true
-        if sc.modDisabled ~= true then
-            sc.modDisabled = true
+        -- Change sm.scrapcomputers.modDisabled to true if it isnt true
+        if sm.scrapcomputers.modDisabled ~= true then
+            sm.scrapcomputers.modDisabled = true
         end
     end
 end
@@ -115,7 +115,7 @@ function BanSystem:cl_preventUserFromPlaying(bannedLevel)
     self.isGuiActive = true
     
     -- Create the gui
-    self.gui = sm.gui.createGuiFromLayout(sc.layoutFiles.Banned)
+    self.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Banned)
 
     -- Create the callbacks
     self.gui:setButtonCallback("ExitButton", "cl_exitButton")

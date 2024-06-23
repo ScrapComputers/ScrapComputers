@@ -23,6 +23,21 @@ function Motor:sv_createData()
             self.sv.updateBearingValues = true
         end,
 
+        ---Sets the bearing(s) angle
+        ---@param angle number The angle to set to bearing(s)
+        setBearingAngle = function(angle)
+            assert(type(angle) == "number" or type(angle) == "nil",  "bad argument #1. Expected number or nil, got "..type(angle).." instead!") -- Assert my ass!
+
+            -- Update the value and tell that bearings need updating.
+            if not angle then
+                self.sv.targetAngle = nil
+            else
+                self.sv.targetAngle = angle
+            end
+
+            self.sv.updateBearingValues = true
+        end,
+
         ---Sets the piston(s) speed
         ---@param speed number The speed to set to piston(s)
         setPistonSpeed = function(speed)
@@ -89,12 +104,12 @@ function Motor:server_onFixedUpdate()
         -- Loop through all bearings
         for i, bearing in pairs(self.sv.bearings) do
             -- Check if the targetAngle is 0 (Which means if true, We need to change it via velocity)
-            if self.sv.targetAngle == 0 then
+            if not self.sv.targetAngle then
                 -- Since we are changing by velocitry, Convert the bearing speed to radians (Scrap Mechanic loves Radians, Such a stupid bitch) and update the velocity with the amount of torque to use. 
                 bearing:setMotorVelocity(math.rad(self.sv.bearingSpeed), self.sv.torque)
             else
                 -- Since we are changing it by angle, Update the angle by speed and torque
-                bearing:setTargetAngle(self.sv.targetAngle, self.sv.speed, self.sv.torque)
+                bearing:setTargetAngle(math.rad(self.sv.targetAngle), math.rad(self.sv.bearingSpeed), self.sv.torque)
             end
         end
 
@@ -116,9 +131,8 @@ end
 function Motor:server_onCreate()
     -- Server-side variables
     self.sv = {
-        bearingSpeed = 0, -- (BEARING) The bearing speed
-        torque = 0,       -- (BEARING) The torque to use
-        targetAngle = 0,  -- (BEARING) The angle to set
+        bearingSpeed = 100, -- (BEARING) The bearing speed
+        torque = 1000,      -- (BEARING) The torque to use
 
         pistonSpeed = 0, -- (PISTON) The piston speed
         length = 0,      -- (PISTON) The length to set
@@ -135,5 +149,4 @@ function Motor:server_onCreate()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Motor, "Motors", true)
+sm.scrapcomputers.components.ToComponent(Motor, "Motors", true)

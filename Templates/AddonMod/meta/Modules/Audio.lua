@@ -1,17 +1,17 @@
 ---@diagnostic disable: duplicate-doc-field
 -- This is a manager for the Audio json file for ScrapComputers
-sc.audio = {}
+sm.scrapcomputers.audio = {}
 
 ---Returns all audio's that u can use.
 ---@return string[]
-function sc.audio.getAudioNames()
+function sm.scrapcomputers.audio.getAudioNames()
     -- Check if the file exists
-    if not sm.json.fileExists(sc.jsonFiles.AudioList) then
+    if not sm.json.fileExists(sm.scrapcomputers.jsonFiles.AudioList) then
         error("Corrupted Mod! Audio json file not found!")
     end
 
     -- Open it
-    local data = sm.json.open(sc.jsonFiles.AudioList)
+    local data = sm.json.open(sm.scrapcomputers.jsonFiles.AudioList)
     local output = {}
 
     -- Loop through it and add the name to the output
@@ -28,17 +28,17 @@ end
 ---<h2>NOTE: The name must be full path! else it will NOT work!</h2>
 ---@param name string The name of the audio (FULL ONLY!)
 ---@return boolean audioExists If true, the name that was passed did exist as audio. else false (Doesn't exist)
-function sc.audio.exists(name)
+function sm.scrapcomputers.audio.exists(name)
     -- Vaildation
-    assert(type(name) == "string", "Expected string, Got "..type(name).." instead.")
+    assert(type(name) == "string", "Expected string, Got "..type(name).." instead!")
 
     -- Check if the file exists
-    if not sm.json.fileExists(sc.jsonFiles.AudioList) then
+    if not sm.json.fileExists(sm.scrapcomputers.jsonFiles.AudioList) then
         error("Corrupted Mod! Audio json file not found!")
     end
 
     -- Open it
-    local data = sm.json.open(sc.jsonFiles.AudioList)
+    local data = sm.json.open(sm.scrapcomputers.jsonFiles.AudioList)
 
     -- Loop through it
     for audioName, _ in pairs(data) do
@@ -52,21 +52,21 @@ function sc.audio.exists(name)
     return false
 end
 
----@class sc.audio.AudioParameter
+---@class sm.scrapcomputers.audio.AudioParameter
 ---@field default number The default value of the Parameter
 ---@field maximum number The maximum value of the Parameter
 ---@field minimum number The minimum value of the Parameter
 
 ---This will return the parameters you can set by the audio name
 ---@param name string The name of the audio to get it's paramters
----@return sc.audio.AudioParameter[]?
-function sc.audio.getParams(name)
+---@return sm.scrapcomputers.audio.AudioParameter[]?
+function sm.scrapcomputers.audio.getParams(name)
     -- Vaildation
-    assert(type(name) == "string", "Expected string, Got "..type(name).." instead.")
-    assert(sc.audio.exists(name), "Audio doesn't exist!") -- Important!
+    assert(type(name) == "string", "Expected string, Got "..type(name).." instead!")
+    assert(sm.scrapcomputers.audio.exists(name), "Audio doesn't exist!") -- Important!
 
     -- Open it
-    local data = sm.json.open(sc.jsonFiles.AudioList)
+    local data = sm.json.open(sm.scrapcomputers.jsonFiles.AudioList)
 
     -- Loop through it
     for audioName, audioContents in pairs(data) do
@@ -82,27 +82,27 @@ function sc.audio.getParams(name)
     return nil
 end
 
----@class sc.audio.ParamsIncorrectTable
+---@class sm.scrapcomputers.audio.ParamsIncorrectTable
 ---@field hasNoParamsUsableIssue boolean If true, then this audio doesn't have any paramaters.
 ---@field issues string[][] Contains all issues that have issue with the parameters
 
 ---This will return the parameters you can set by the audio name
 ---@param name string The name of the audio to get it's paramters
----@param params sc.audio.AudioParameter[] The paramaters of the audio that it will contain
----@return sc.audio.ParamsIncorrectTable? validAudioParamaters If nil, then all of your paramters are valid. Else its a table that will contain the issues
-function sc.audio.areParamsCorrect(name, params)
+---@param params sm.scrapcomputers.audio.AudioParameter[] The paramaters of the audio that it will contain
+---@return sm.scrapcomputers.audio.ParamsIncorrectTable? validAudioParamaters If nil, then all of your paramters are valid. Else its a table that will contain the issues
+function sm.scrapcomputers.audio.areParamsCorrect(name, params)
     -- Vaildation
-    assert(type(name)   == "string", "bad argument #1, Expected string, Got "..type(name  ).." instead.")
-    assert(type(params) == "table" , "bad argument #2, Expected string, Got "..type(params).." instead.")
-    assert(sc.audio.exists(name), "Audio doesn't exist!") -- Important!
+    assert(type(name)   == "string", "bad argument #1, Expected string, Got "..type(name  ).." instead!")
+    assert(type(params) == "table" , "bad argument #2, Expected string, Got "..type(params).." instead!")
+    assert(sm.scrapcomputers.audio.exists(name), "Audio doesn't exist!") -- Important!
 
-    local existingAudioParams = sc.audio.getParams(name) -- Get the parameters
+    local existingAudioParams = sm.scrapcomputers.audio.getParams(name) -- Get the parameters
 
-    ---@type sc.audio.ParamsIncorrectTable
+    ---@type sm.scrapcomputers.audio.ParamsIncorrectTable
     local issuesTable = {hasNoParamsUsableIssue = false, issues = {}}
     
     if not existingAudioParams then
-        if sc.table.getTotalItemsDict(params) > 0 then
+        if sm.scrapcomputers.table.getTotalItemsDict(params) > 0 then
             issuesTable.hasNoParamsUsableIssue = true
             return issuesTable
         end
@@ -140,13 +140,13 @@ function sc.audio.areParamsCorrect(name, params)
         end
 
         -- Check if it has any issues. if so then add it to the issuesTable
-        if sc.table.getTotalItemsDict(issues) > 0 then
-            issuesTable.issues[sc.toString(index)] = issues
+        if sm.scrapcomputers.table.getTotalItemsDict(issues) > 0 then
+            issuesTable.issues[sm.scrapcomputers.toString(index)] = issues
         end
     end
 
     -- Return nil if theres no issues. else return the issuesTable
-    if sc.table.getTotalItemsDict(issuesTable.issues) == 0 then
+    if sm.scrapcomputers.table.getTotalItemsDict(issuesTable.issues) == 0 then
         return nil
     end
     return issuesTable

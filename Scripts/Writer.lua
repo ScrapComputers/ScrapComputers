@@ -22,9 +22,9 @@ function Writer:server_onCreate()
     local name = self.storage:load() or ""
     
     -- Add to datalist
-    sc.dataList["Writers"][self.interactable:getId()] = {name = name, power = 0, SC_PRIVATE_id = self.interactable:getId()}
+    sm.scrapcomputers.dataList["Writers"][self.interactable:getId()] = {name = name, power = 0, SC_PRIVATE_id = self.interactable:getId()}
     -- Create interactable accessability for the power updating
-    sc.dataList["WriterInters"][self.interactable:getId()] = self.interactable
+    sm.scrapcomputers.dataList["WriterInters"][self.interactable:getId()] = self.interactable
 
     -- Update the clients to have the new name
     self.network:sendToClients("cl_setWriterName", name)
@@ -32,7 +32,7 @@ end
 
 function Writer:sv_setWriterName(name)
     -- Set the writer name to be the new one and save the new data.
-    sc.dataList["Writers"][self.interactable:getId()].name = name
+    sm.scrapcomputers.dataList["Writers"][self.interactable:getId()].name = name
     self.storage:save(name)
 end
 
@@ -43,7 +43,7 @@ function Writer:sv_onRecievePowerUpdate(power)
         self.cl.lastPower = power
 
         -- Update it
-        sc.dataList["Writers"][self.interactable:getId()].power = power
+        sm.scrapcomputers.dataList["Writers"][self.interactable:getId()].power = power
 
         -- Set the interactable power and active state to be power. For active, it will be true if power is higher than 0
         self.interactable.power = power
@@ -53,8 +53,8 @@ end
 
 function Writer:server_onDestroy()
     -- Remove it from datalist
-    sc.dataList["Writers"][self.interactable:getId()] = nil
-    sc.dataList["WriterInters"][self.interactable:getId()] = nil
+    sm.scrapcomputers.dataList["Writers"][self.interactable:getId()] = nil
+    sm.scrapcomputers.dataList["WriterInters"][self.interactable:getId()] = nil
 end
 
 -- Dev mode related
@@ -66,7 +66,7 @@ function Writer:client_onCreate()
     -- Create client side variables
     self.cl = {
         -- The actual GUI
-        gui = sm.gui.createGuiFromLayout(sc.layoutFiles.Register, nil, { backgroundAlpha = 0.5 }),
+        gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, nil, { backgroundAlpha = 0.5 }),
         -- The text used for the GUI
         text = "",
         -- The name of the register
@@ -115,5 +115,4 @@ function Writer:cl_onSave()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Writer, "", false)
+sm.scrapcomputers.components.ToComponent(Writer, "", false)

@@ -17,7 +17,7 @@ function Terminal:sv_createData()
         ---@param msg string
         send = function (msg)
             -- Convert the msg variable to a string and change ## to #
-            local newMsg = sc.toString(msg):gsub("##", "#")
+            local newMsg = sm.scrapcomputers.toString(msg):gsub("##", "#")
 
             -- Insert it to self.sv.text
             table.insert(self.sv.text, newMsg)
@@ -152,7 +152,7 @@ function Terminal:client_onInteract(character, state)
     self.cl.inputtedString = ""
 
     -- Create the Graphical User Interface
-    self.cl.gui = sm.gui.createGuiFromLayout(sc.layoutFiles.Terminal, true,  { backgroundAlpha = 0.5 })
+    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Terminal, true,  { backgroundAlpha = 0.5 })
 
     -- Set Widget captions
     self.cl.gui:setText("TerminalData", self:client_formatText())
@@ -252,5 +252,4 @@ function Terminal:client_setInputHistory(inputHistory)
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Terminal, "Terminals", true)
+sm.scrapcomputers.components.ToComponent(Terminal, "Terminals", true)

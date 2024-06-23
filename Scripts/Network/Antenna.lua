@@ -35,7 +35,7 @@ function Antenna:sv_createData()
         hasConnection = function ()
             -- Loop through the network interfaces
             ---@param antenna ShapeClass
-            for _, antenna in pairs(sc.dataList["NetworkInterfaces"]) do
+            for _, antenna in pairs(sm.scrapcomputers.dataList["NetworkInterfaces"]) do
                 -- Check if its a antenna and not the same antenna as the script running
                 if antenna.sv.isAntenna and antenna.interactable:getId() ~= self.interactable:getId() then
                     -- Check if the antenna that its looking at has the same name as this antenna's name
@@ -57,7 +57,7 @@ function Antenna:sv_createData()
             
             -- Loop through the network interfaces
             ---@param antenna ShapeClass
-            for _, antenna in pairs(sc.dataList["NetworkInterfaces"]) do
+            for _, antenna in pairs(sm.scrapcomputers.dataList["NetworkInterfaces"]) do
                 -- Check if its a antenna and not the same antenna as the script running
                 if antenna.sv.isAntenna and antenna.interactable:getId() ~= self.interactable:getId() then
                     table.insert(names, antenna.sv.saved.name)
@@ -85,7 +85,6 @@ function Antenna:server_onCreate()
         saved = self.storage:load(),
         -- Constant variable, If its true, then its a antenna, else a network port.
         isAntenna = true,
-        -- Basicly self:server_updateClientName, but
     }
 
     -- Check if theres no saved data.
@@ -93,7 +92,7 @@ function Antenna:server_onCreate()
         -- Update the saved data.
         self.sv.saved = {
             -- Name is a random number between 0 up to 100
-            name = sc.toString(math.random(0,100))
+            name = sm.scrapcomputers.toString(math.random(0,100))
         }
 
         -- Save it.
@@ -101,12 +100,12 @@ function Antenna:server_onCreate()
     end
 
     -- Add api to the dataList
-    sc.dataList["NetworkInterfaces"][self.interactable:getId()] = self
+    sm.scrapcomputers.dataList["NetworkInterfaces"][self.interactable:getId()] = self
 end
 
 function Antenna:server_onDestroy()
     -- Remove api from the dataList
-    sc.dataList["NetworkInterfaces"][self.interactable:getId()] = nil
+    sm.scrapcomputers.dataList["NetworkInterfaces"][self.interactable:getId()] = nil
 end
 
 function Antenna:server_setName(name)
@@ -127,7 +126,7 @@ end
 -- SERVER API (NOT FOR COMPUTER!) --
 function Antenna:server_sendActualPacket(data)
     -- Get connected Network Interface.
-    local networkPort = sc.table.getItemAt(sc.getObjects(sc.filters.dataType.NetworkInterfaces, self.interactable, false, sm.interactable.connectionType.networkingIO, true), 1)
+    local networkPort = sm.scrapcomputers.table.getItemAt(sm.scrapcomputers.components.getComponents(sm.scrapcomputers.filters.dataType.NetworkInterfaces, self.interactable, false, sm.interactable.connectionType.networkingIO, true), 1)
     
     -- Send a packet to it.
     networkPort:server_sendPacket(data)
@@ -136,7 +135,7 @@ end
 function Antenna:server_sendPacket(data)
     -- Loop through the network interfaces
     ---@param antenna ShapeClass
-    for _, antenna in pairs(sc.dataList["NetworkInterfaces"]) do
+    for _, antenna in pairs(sm.scrapcomputers.dataList["NetworkInterfaces"]) do
         -- Check if its a antenna and not the same antenna as the script running
         if antenna.sv.isAntenna == true and antenna.interactable:getId() ~= self.interactable:getId() then
             -- Check if the antenna that its looking at has the same name as this antenna's name
@@ -176,7 +175,7 @@ function Antenna:client_onInteract(character, state)
     self.network:sendToServer("server_updateClientName")
 
     -- Create the GUI
-    self.cl.gui = sm.gui.createGuiFromLayout(sc.layoutFiles.Register, true, { backgroundAlpha = 0.5 })
+    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, true, { backgroundAlpha = 0.5 })
     self.cl.gui:setText("Title", "Antenna") -- Update the title to be "Antenna"
     self.cl.gui:setText("Input", self.cl.name) -- Update the Input to be the self.cl.name
 
@@ -225,5 +224,4 @@ function Antenna:client_setName(name)
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Antenna, "Antennas", true)
+sm.scrapcomputers.components.ToComponent(Antenna, "Antennas", true)

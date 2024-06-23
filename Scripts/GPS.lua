@@ -103,5 +103,4 @@ function GPS:sv_getGPSData()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(GPS, "GPSs", true)
+sm.scrapcomputers.components.ToComponent(GPS, "GPSs", true)

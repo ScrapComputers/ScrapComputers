@@ -1,12 +1,12 @@
 {
-	"toolList": []
-		//{
-		//	"uuid": "269c7d0e-6bce-4a98-bd23-d97166b768ac",
-		//	"previewRenderable": "$GAME_DATA/Character/Char_Tools/char_connecttool_preview.rend",
-		//	"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
-		//	"showInInventory": true,
-		//	"autoTool": true,
-		//	"script": { "class": "ToolTest", "file": "$CONTENT_DATA/Scripts/ToolTest.lua", "data": {} }
-		//}
-	//]
+	"toolList": [
+		{
+			"uuid": "269c7d0e-6bce-4a98-bd23-d97166b768ac",
+			"previewRenderable": "$GAME_DATA/Character/Char_Tools/char_connecttool_preview.rend",
+			"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
+			"showInInventory": true,
+			"autoTool": true,
+			"script": { "class": "ToolTest", "file": "$CONTENT_DATA/Scripts/ToolTest.lua", "data": {} }
+		}
+	]
 }

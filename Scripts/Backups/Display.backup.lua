@@ -5,7 +5,6 @@
 -- If you ever make your own display's. You will actually kill yourself. We are NOT joking.
 
 dofile("$CONTENT_DATA/Scripts/Config.lua")
-dofile("$CONTENT_DATA/Scripts/FontManager.lua")
 
 ---@class Display : ShapeClass
 Display = class()
@@ -560,9 +559,9 @@ function Display:sv_createData()
             -- Check if the color is actually a color or string.
             assert(type(color) == "Color" or type(color) == "string", "bad argument #4. Expected Color or string. Got "..type(color).." instead!")
 
-            local font, _ = sc.fontmanager.getFont(fontName)
+            local font, _ = sm.scrapcomputers.fontmanager.getFont(fontName)
             if not font then
-                fontName = sc.fontmanager.getDefaultFontName()
+                fontName = sm.scrapcomputers.fontmanager.getDefaultFontName()
             end
 
             -- Add instruction to buffer
@@ -664,20 +663,20 @@ function Display:sv_createData()
         ---@return number width The width of the text that it will use
         ---@return number height The height of the text that it will use
         calcTextSize = function (text, font)
-            font = font or sc.fontmanager.getDefaultFontName()
+            font = font or sm.scrapcomputers.fontmanager.getDefaultFontName()
 
             -- Check if text is string.
             assert(type(text) == "string", "bad argument #1. Expected string. Got " .. type(text) .. " instead!")
 
             -- Get the font
-            local font, err = sc.fontmanager.getFont(font)
+            local font, err = sm.scrapcomputers.fontmanager.getFont(font)
             if not font then
                 -- Send a fucking error message
                 error("Failed getting font! Error message: "..err)
             end
 
             -- Do some math fuckery to calculate the text size.
-            local usedWidth = sc.math.clamp(#text * font.fontWidth, 0, 256)
+            local usedWidth = sm.scrapcomputers.math.clamp(#text * font.fontWidth, 0, 256)
             local usedHeight = (1 + math.floor((#text * font.fontWidth) / self.data.width)) * font.fontHeight
 
             -- Return the usedWidth and usedHeight
@@ -1123,8 +1122,8 @@ function Display:client_onFixedUpdate() --checks to see if the display needs to 
 
             -- Convert the shape position to pixel position
             local x, y = shapePosToPixelPos(point, self.cl.display.widthScale, self.cl.display.heightScale, self.cl.pixel.pixelScale, borderOffsetX, borderOffsetY)
-            x = sc.math.clamp(x, 1, self.data.width)
-            y = sc.math.clamp(y, 1, self.data.height)
+            x = sm.scrapcomputers.math.clamp(x, 1, self.data.width)
+            y = sm.scrapcomputers.math.clamp(y, 1, self.data.height)
 
             -- Check if theres no interaction state. if so then set it to 1
             if not self.cl.display.interactState then self.cl.display.interactState = 1 end
@@ -1874,7 +1873,7 @@ end
 ---@param params {x: number, y: number, string: string, color: Color, font: string} The parameters
 function Display:cl_drawText(params)
     -- Get the font
-    local font, err = sc.fontmanager.getFont(params.font)
+    local font, err = sm.scrapcomputers.fontmanager.getFont(params.font)
 
     -- Check if it doesn't exist's
     if not font then
@@ -2115,5 +2114,4 @@ function Display:cl_destroyEffect(effect, effectData)
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Display, "Displays", true)
+sm.scrapcomputers.components.ToComponent(Display, "Displays", true)

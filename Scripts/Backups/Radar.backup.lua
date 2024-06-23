@@ -203,7 +203,7 @@ function Radar:sv_createData()
 
             -- Update it.
             self.sv.radius = radius
-            self.sv.areaTrigger:setSize(sc.vec3.newSingluar(radius))
+            self.sv.areaTrigger:setSize(sm.scrapcomputers.vec3.newSingluar(radius))
         end,
 
         -- Get the objects inside the areaTrigger
@@ -267,5 +267,4 @@ function Radar:server_onAreaTriggerStay(_, results)
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
 ComponentManager.ToComponent(Radar, "Radars", true)

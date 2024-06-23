@@ -122,9 +122,9 @@ local function sha256(str)
 		num2s(H[5], 4) .. num2s(H[6], 4) .. num2s(H[7], 4) .. num2s(H[8], 4))
 end
 
-sc.sha256 = {}
+sm.scrapcomputers.sha256 = {}
 
-sc.sha256.encode = function(str)
+sm.scrapcomputers.sha256.encode = function(str)
 	assert(type(str) == "string", "Expected string! Got "..type(str).." instead!")
 	
 	return sha256(str)

@@ -20,5 +20,4 @@ function ComponentTemplate:sv_createData()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(ComponentTemplate, "DATA_TYPE_HERE", true)
+sm.scrapcomputers.components.ToComponent(ComponentTemplate, "DATA_TYPE_HERE", true)

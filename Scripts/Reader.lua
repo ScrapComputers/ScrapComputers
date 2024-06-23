@@ -22,7 +22,7 @@ function Reader:server_onCreate()
     local name = self.storage:load() or ""
 
     -- Add it to datalist
-    sc.dataList["Readers"][self.interactable:getId()] = {name = name, power = 0}
+    sm.scrapcomputers.dataList["Readers"][self.interactable:getId()] = {name = name, power = 0}
 
     -- Update the name from all clients to be the same as the server one
     self.network:sendToClients("cl_setReaderName", name)
@@ -48,7 +48,7 @@ function Reader:server_onFixedUpdate()
             self.sv.lastPower = power
             
             -- Update the API
-            sc.dataList["Readers"][self.interactable:getId()].power = power
+            sm.scrapcomputers.dataList["Readers"][self.interactable:getId()].power = power
 
             -- Update the interactable's power and active state
             self.interactable.power = power
@@ -59,12 +59,12 @@ end
 
 function Reader:server_onDestroy()
     -- Remove it from the datalist
-    sc.dataList["Readers"][self.interactable:getId()] = nil
+    sm.scrapcomputers.dataList["Readers"][self.interactable:getId()] = nil
 end
 
 function Reader:sv_setReaderName(name)
     -- Update server-side reader name.
-    sc.dataList["Readers"][self.interactable:getId()].name = name
+    sm.scrapcomputers.dataList["Readers"][self.interactable:getId()].name = name
     self.storage:save(name)
 end
 
@@ -74,7 +74,7 @@ function Reader:client_onCreate()
     -- Create client-side variables
     self.cl = {
         -- The GUI
-        gui = sm.gui.createGuiFromLayout(sc.layoutFiles.Register, nil, { backgroundAlpha = 0.5 }),
+        gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, nil, { backgroundAlpha = 0.5 }),
         -- The text from user input
         text = "",
         -- The name of the register
@@ -122,5 +122,4 @@ function Reader:cl_onSave()
 end
 
 -- Convert the class to a component
-dofile("$CONTENT_DATA/Scripts/ComponentManager.lua")
-sc.componentManager.ToComponent(Reader, "", false)
+sm.scrapcomputers.components.ToComponent(Reader, "", false)
