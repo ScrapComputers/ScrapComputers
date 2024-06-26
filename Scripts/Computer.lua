@@ -376,3 +376,5 @@ end
 function Computer:cl_alert(data)
     sm.gui.displayAlertText(unpack(data))
 end
+
+sm.scrapcomputers.components.ToComponent(Computer, nil, false)

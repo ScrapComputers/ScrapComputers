@@ -19,8 +19,6 @@ sm.scrapcomputers.components.ToComponent = function (classData, dataType, should
     -- For anyone reading this, Your about to get brain-cancer from this. Please forgive VeraDev
     -- because he wrote this.
 
-    local allowExecuting = true
-    
     if shouldBeComponent then
         sm.scrapcomputers.dataList[dataType] = sm.scrapcomputers.dataList[dataType] or {}
     end
@@ -32,31 +30,7 @@ sm.scrapcomputers.components.ToComponent = function (classData, dataType, should
                 return {}
             end
 
-            local data = _sv_createData(self)
-
-            local function hookTable(tbl, hook)
-                local output = {}
-                for key, value in pairs(tbl) do
-                    if type(value) == "table" then
-                        output[key] = hookTable(value, hook)
-                    elseif type(value) == "function" then
-                        output[key] = function (...)
-                            return hook(value, {...})
-                        end
-                    else
-                        output[key] = value
-                    end
-                end
-                return output
-            end
-
-            return hookTable(data, function(orginFunc, args)
-                if allowExecuting then
-                    return orginFunc(unpack(args))
-                else
-                    error("Failed to find component!")
-                end
-            end)
+            return _sv_createData(self)
         end
     end
 
@@ -99,7 +73,7 @@ sm.scrapcomputers.components.ToComponent = function (classData, dataType, should
         classData.client_onInteract = function (self, character, state)
             if self.__do_not_use___ModDisabled then
                 if state then
-                    sm.gui.displayAlertText("[#3A96DDS#3b78ffC#eeeeee]: ScrapComputers is disabled! You cannot interact with this part!")
+                    sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: ScrapComputers is disabled! You cannot interact with this!")
                 end
 
                 return
@@ -107,12 +81,10 @@ sm.scrapcomputers.components.ToComponent = function (classData, dataType, should
 
             _client_onInteract(self, character, state)
         end
+    end
 
-        classData.cl__do_not_use___disableMod = function (self)
-            self.__do_not_use___ModDisabled = true
-        end
-    else
-        classData.cl__do_not_use___disableMod = function (self) end
+    classData.cl__do_not_use___disableMod = function (self)
+        self.__do_not_use___ModDisabled = true
     end
 
     local _client_onRefresh = classData.client_onRefresh
@@ -130,53 +102,6 @@ sm.scrapcomputers.components.ToComponent = function (classData, dataType, should
         
         if _server_onRefresh then
             _server_onRefresh(self)
-        end
-    end
-
-    local allowConnect = false
-    local prevComputers = {}
-    local _server_onFixedUpdate = classData.server_onFixedUpdate
-    classData.server_onFixedUpdate = function (self)
-        if shouldBeComponent then
-            local parents = self.interactable:getParents(sm.interactable.connectionType.compositeIO)
-            local state = 0
-            
-            if #parents ~= #prevComputers then
-                for _, parent in pairs(prevComputers) do
-                    if sm.exists(parent) and sm.exists(parent.shape) and tostring(parent.shape.uuid) == Computer_UUID then
-                        state = 1
-                        break
-                    end
-                end
-
-                if state == 0 then
-                    for _, parent in pairs(parents) do
-                        if sm.exists(parent) and sm.exists(parent.shape) and tostring(parent.shape.uuid) == Computer_UUID then
-                            state = 2
-                            break
-                        end
-                    end
-                end
-            end
-
-            if state ~= 0 then
-                if state == 1 then
-                    -- Disconnect
-                    allowExecuting = false
-                elseif allowConnect then
-                    -- Connect 
-                    sm.scrapcomputers.dataList[dataType][self.interactable.id] = classData.sv_createData(self)
-                    allowExecuting = true
-                else
-                    allowConnect = true
-                end
-            end
-
-            prevComputers = sm.scrapcomputers.table.clone(parents)
-        end
-
-        if _server_onFixedUpdate then
-            _server_onFixedUpdate(self)
         end
     end
 

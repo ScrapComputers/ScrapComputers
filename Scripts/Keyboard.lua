@@ -2,9 +2,9 @@ dofile("$CONTENT_DATA/Scripts/Config.lua")
 
 ---@class ObjectTemplate : ShapeClass
 Keyboard = class()
-Keyboard.maxParentCount = 1
+Keyboard.maxParentCount = 2
 Keyboard.maxChildCount = 0
-Keyboard.connectionInput = sm.interactable.connectionType.compositeIO
+Keyboard.connectionInput = sm.interactable.connectionType.compositeIO + sm.interactable.connectionType.seated
 Keyboard.connectionOutput = sm.interactable.connectionType.none
 Keyboard.colorNormal = sm.color.new(0xaa00aaff)
 Keyboard.colorHighlight = sm.color.new(0xff00ffff)
@@ -96,7 +96,15 @@ function Keyboard:client_onInteract(char, state)
     end
 end
 
+function Keyboard:client_getAvailableParentConnectionCount(flags)
+    return 1 - #self.interactable:getParents(flags)
+end
+
 function Keyboard:cl_onKeystroke(_, text)
+    if #text == 1 then
+        sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: Invalid keystroke!")    
+        return
+    end
     local keystroke = (#text == 0 and "backSpace" or getUTF8Character(text, 2))
     
     self.cl.pressTimer = sm.game.getCurrentTick()

@@ -895,8 +895,7 @@ function Display:client_onCreate()
     -- Update the scale of the backpannel
     self.cl.backPannel.effect:setScale(bgScale)
 
-    -- Loop and start it.
-    self.cl.backPannel.effect:setAutoPlay(true)
+    -- Start it.
     self.cl.backPannel.effect:start()
 end
 
@@ -1040,7 +1039,6 @@ function Display:client_onFixedUpdate() --checks to see if the display needs to 
             if not self.cl.display.isHidden and effectData.lastStoppedTick + 1 <= tick then
                 -- Start the effect
                 effect:start()
-                effect:setAutoPlay(true)
 
                 -- Update the pixel data's lastStartedTick
                 self.cl.pixel.pixelData[x][y].lastStartedTick = tick
@@ -1072,9 +1070,8 @@ function Display:client_onFixedUpdate() --checks to see if the display needs to 
         if sm.exists(effect) then
             -- Check if lastStartedTick + 1 is lower than tick
             if effectData.lastStartedTick + 1 <= tick then
-                -- Sstop the effect
+                -- Stop the effect
                 effect:stop()
-                effect:setAutoPlay(false)
 
                 -- Update the pixel data's lastStoppedTick
                 self.cl.pixel.pixelData[x][y].lastStoppedTick = tick
@@ -1985,7 +1982,6 @@ function Display:cl_clearDisplay(params)
     self.cl.backPannel.currentColor = color
 
     -- Play it again.
-    self.cl.backPannel.effect:setAutoPlay(true)
     self.cl.backPannel.effect:start()
 end
 
@@ -2039,7 +2035,6 @@ function Display:cl_startEffect(effect, effectData)
                 if not self.cl.display.isHidden and effectData.lastStoppedTick + 1 <= tick then
                     -- Start it
                     effect:start()
-                    effect:setAutoPlay(true)
 
                     -- Update the lastStartedTick
                     self.cl.pixel.pixelData[x][y].lastStartedTick = tick
@@ -2070,7 +2065,6 @@ function Display:cl_stopEffect(effect, effectData)
                 if effectData.lastStartedTick + 1 <= tick then
                     -- Stop the bitch
                     effect:stop()
-                    effect:setAutoPlay(false)
 
                     -- Update the bitch's data
                     self.cl.pixel.pixelData[x][y].lastStoppedTick = tick
@@ -2105,8 +2099,7 @@ function Display:cl_destroyEffect(effect, effectData)
 
                 effect:destroy() -- Destroy it
             else
-                --effect:stop() -- stop effect to avoid the pixels ghosting
-                --effect:setAutoPlay(false)
+                effect:stop() -- stop effect to avoid the pixels ghosting
 
                 -- Add it to the buffer
                 self.cl.destroyBuffer[effect.id] = {effect, created, lastStarted, lastStopped}
