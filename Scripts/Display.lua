@@ -654,6 +654,14 @@ function Display:sv_createData()
             table.insert(self.sv.networkBuffer, {"SET_THRESHOLD", {int}})
         end,
 
+        setMaxBuffer = function (buffer)
+            assert(type(buffer) == "number", "bad argument #1. Expected number. Got "..type(buffer).." instead!")
+            assert(buffer > 0, "bad argument #1. Buffer must be positive")
+
+            -- Update the value
+            self.sv.maxBuffer = buffer
+        end,
+
         -- Calculates the text size.
         ---@param text string The text to be calculated
         ---@param font string The font to use.
@@ -704,41 +712,56 @@ function Display:server_onFixedUpdate()
 
     -- Checks to see if display.update() has been called or if autoUpdate has been enabled, also if there is actually instructions in the stack
     if (self.sv.allowUpdate or self.sv.autoUpdate) and #self.sv.buffer > 0 then
+        -- Initialize bool to check if the loop breaks
+        local broke
+        local processedCount = 0 -- Counter for processed items
+    
         -- Loop through the buffer
-        for _, data in pairs(self.sv.buffer) do
-            -- Unpack the data
-            local instruction, params = unpack(data)
+        for i, data in pairs(self.sv.buffer) do
 
-            -- If the instrcution is draw table then we have to split the string as it could be larger than the packet limit
-            if instruction == "DRAW_TABLE" then
-                -- Loop through the param's and check if pixel.color is not a string
-                for _, pixel in pairs(params) do
-                    if type(pixel.color) ~= "string" then
-                        -- Its not a string so convert it to be one!
-                        pixel.color = tostring(pixel.color)
+            -- Check if the number of processed items is within maxBuffer size
+            if processedCount < self.sv.maxBuffer or self.sv.maxBuffer == 0 then
+                -- Unpack the data
+                local instruction, params = unpack(data)
+    
+                -- If the instruction is draw table then we have to split the string as it could be larger than the packet limit
+                if instruction == "DRAW_TABLE" then
+                    -- Loop through the params and check if pixel.color is not a string
+                    for _, pixel in pairs(params) do
+                        if type(pixel.color) ~= "string" then
+                            -- It's not a string so convert it to be one!
+                            pixel.color = tostring(pixel.color)
+                        end
                     end
+    
+                    -- Convert it to JSON and split it by byte limit chunks.
+                    local jsonStr = sm.json.writeJsonString(params)
+                    local strings = splitString(jsonStr, byteLimit)
+    
+                    -- Loop through them and send them to the client's ass.
+                    for i, string in pairs(strings) do
+                        local finished = i == #strings -- Is true when i is the size of the string
+                        self.network:sendToClients("cl_rebuildParams", {string = string, finished = finished, i = i})
+                    end
+                else -- Sends data to the correct func with the required params
+                    local dest = bufferInstructions[instruction]
+                    self.network:sendToClients(dest, params)
                 end
-
-                -- Convert it to json and split it by bitelimit chunks.
-                local jsonStr = sm.json.writeJsonString(params)
-                local strings = splitString(jsonStr, byteLimit)
-
-                -- Loop through them and send them to the client's ass.
-                for i, string in pairs(strings) do
-                    local finished = i == #strings -- Is true when i is the size of the string
-                    self.network:sendToClients("cl_rebuildParams", {string = string, finished = finished, i = i})
-                end
-            else -- Sends data to the correct func with the required params
-                local dest = bufferInstructions[instruction]
-                self.network:sendToClients(dest, params)
+    
+                self.sv.buffer[i] = nil -- Sets current buffer index to nil
+                processedCount = processedCount + 1 -- Increment the processed counter
+            else
+                broke = true
+                break
             end
         end
 
         self.network:sendToClients("cl_drawBuffer") -- Calls the func that draws the pixels that have been processed
-        --self.network:sendToClients("cl_optimizeDisplayEffects")
 
-        self.sv.buffer = {} -- Clear the buffer
-        self.sv.allowUpdate = false -- Disable allowUpdate
+        -- Checks to see if loop broke
+        if not broke then
+            self.sv.allowUpdate = false -- Disable allowUpdate
+        end
     end
 end
 
@@ -747,7 +770,8 @@ function Display:server_onCreate()
     self.sv = {
         buffer = {},        -- The buffer for all draw shit
         networkBuffer = {}, -- The optimized related buffer shit.
-        display = {}        -- Display information
+        display = {},       -- Display information
+        maxBuffer = 0       -- The max buffer size
     }
 end
 
@@ -1955,9 +1979,6 @@ end
 -- Clears display
 ---@param params [Color]
 function Display:cl_clearDisplay(params)
-    -- Get the color
-    local color = params[1]
-
     -- Loop through all axis's
     for x, axis in pairs(self.cl.pixel.pixels) do
         -- Loop through all pixel effects inside the axis
@@ -1975,14 +1996,16 @@ function Display:cl_clearDisplay(params)
     self.cl.pixel.pixels = {}
     self.cl.pixel.pixelData = {}
 
-    -- Updat the backpanel's color
-    self.cl.backPannel.effect:setParameter("color",  color)
+    -- Get the color
+    local color = params[1]
 
-    -- Update the current color
-    self.cl.backPannel.currentColor = color
+    if color then
+        -- Updat the backpanel's color
+        self.cl.backPannel.effect:setParameter("color",  color)
 
-    -- Play it again.
-    self.cl.backPannel.effect:start()
+        -- Update the current color
+        self.cl.backPannel.currentColor = color
+    end
 end
 
 -- Loops through pixels to hide/show them
