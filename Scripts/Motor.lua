@@ -131,7 +131,7 @@ end
 function Motor:server_onCreate()
     -- Server-side variables
     self.sv = {
-        bearingSpeed = 100, -- (BEARING) The bearing speed
+        bearingSpeed = 0, -- (BEARING) The bearing speed
         torque = 1000,      -- (BEARING) The torque to use
 
         pistonSpeed = 0, -- (PISTON) The piston speed
