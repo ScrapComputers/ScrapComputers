@@ -1,6 +1,6 @@
 dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Config.lua")
 
----@class ComponentTest : ShapeClass
+---@class ComponentTestClass : ShapeClass
 ComponentTest = class()
 ComponentTest.maxParentCount = 1
 ComponentTest.maxChildCount = 0
@@ -16,8 +16,8 @@ function ComponentTest:sv_createData()
         getState = function ()
             return sm.scrapcomputers.config.getConfig("test_config").selectedOption
         end
-    }
+}
 end
 
 -- Convert the class to a component
-sm.scrapcomputers.components.ToComponent(ComponentTest, "ComponentTest", true)
+sm.scrapcomputers.componentManager.toComponent(ComponentTest, "ComponentTest", true)

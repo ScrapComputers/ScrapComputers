@@ -1,380 +1,399 @@
-dofile("$CONTENT_DATA/Scripts/Config.lua")
-dofile("$CONTENT_DATA/Scripts/LuaVM/Main.lua")
+local noExceptionsMessage = "No exceptions!"
+local byteLimit = 65000
 
----@class Computer : ShapeClass
-Computer = class()
-Computer.maxParentCount = -1
-Computer.maxChildCount = -1
-Computer.connectionInput = sm.interactable.connectionType.logic + sm.interactable.connectionType.power + sm.interactable.connectionType.compositeIO
-Computer.connectionOutput = sm.interactable.connectionType.compositeIO
-Computer.colorNormal = sm.color.new(0xaaaaaaff)
-Computer.colorHighlight = sm.color.new(0xffffffff)
+---@class ComputerClass : ShapeClass
+ComputerClass = class()
+ComputerClass.maxParentCount = -1
+ComputerClass.maxChildCount = -1
+ComputerClass.connectionInput = sm.interactable.connectionType.logic + sm.interactable.connectionType.compositeIO
+ComputerClass.connectionOutput = sm.interactable.connectionType.compositeIO
+ComputerClass.colorNormal = sm.color.new(0xaaaaaaff)
+ComputerClass.colorHighlight = sm.color.new(0xffffffff)
+
+-- SERVER + CLIENT --
+
+local function parseErrorMessage(errorMessage)
+    local lineNumbers = {}
+    local rawErrorMessage = errorMessage:gsub("%[string%s+\"[^\"]-\"%]:%d+:", ""):gsub("@?input:%d+:", ""):match("^%s*(.-)%s*$")
+
+    for lineNumber in errorMessage:gmatch("input:(%d+):") do
+        table.insert(lineNumbers, lineNumber)
+    end
+
+    if errorMessage:find("input:%d+:") and not errorMessage:find("@input:%d+:") then
+        return "#e74856ERROR: On parsing: [LuaVM]: " .. lineNumbers[1] .. ":" .. rawErrorMessage:gsub("#", "##")
+    end
+
+    local errorPaths = {}
+    for errorPath in errorMessage:gmatch("%[string%s+\"[^\"]-\"%]:%d+:") do
+        local filePath, line = errorPath:match("%[string%s+\"(.-)\"%]:(%d+):")
+        table.insert(errorPaths, {filePath, line})
+    end
+
+    local output = "#e74856ERROR: " .. errorPaths[#errorPaths][1] .. ":" .. errorPaths[#errorPaths][2] .. ": " .. rawErrorMessage:gsub("#", "##") .. "\n#f9f1a5----- Lua Error Traceback -----\n"
+
+    for index, lineNumber in pairs(lineNumbers) do
+        output = output .. "\t\t[LuaVM] in " .. (index == 1 and "" or "function ") .. ":" .. lineNumber .. ":\n"
+    end
+
+    for _, errorPath in pairs(errorPaths) do
+        output = output .. "\t\t" .. errorPath[1] .. ":" .. errorPath[2] .. ":" .. "\n"
+    end
+
+    return output
+end
 
 -- SERVER --
 
-function Computer:server_onCreate()
-    -- Server side variables
+function ComputerClass:server_onCreate()
     self.sv = {
-        exception = false, -- Check if theres a exception or not
-        lastActive = false, -- Last active state of interactable
-        env = sm.scrapcomputers.envManager.createEnv(self), -- The enviroment variables them self
-        firstTick = 0 -- Is true when the computer is only on for 1 tick
-    }
-
-    -- Server side variables that will be saved
+        exceptionMessage = noExceptionsMessage,
+        alwaysOnDisabled = false,
+        env = sm.scrapcomputers.enviromentManager.createEnv(self),
+        wait1Tick = false,
+        previousActive = false,
+        canResetError = false,
+}
     self.sv.saved = self.storage:load()
 
-    -- If theres no data. create new date and save it.
     if not self.sv.saved then
         self.sv.saved = {
-            code = ""
+            code = "",
+            alwaysOn = false,
         }
 
         self.storage:save(self.sv.saved)
     end
 
-    self.network:sendToClients("cl_onNewCode", self.sv.saved.code)
+    self:sv_syncClients()
 end
 
----Used for updating the text for all client's exception messages
----@param err string
-function Computer:sv_onFixedUpdateException(err)
-    -- Clone it
-    local errmsg = err
-
-    -- The actual run function
-    local function run()
-        if type(self.sv.env.onError) == "function" then
-            self.sv.env.onError(err)
-        end
+function ComputerClass:server_onFixedUpdate(deltaTime)
+    if self.sv.wait1Tick then
+        self.sv.wait1Tick = false
+        return
     end
 
-    -- Run the "run" function inside a pcall.
-    ---@type boolean, any|string
-    local success, errr = pcall(run)
-    if not success then
-        errmsg = errr
-    end
-
-    -- Format and send!
-    self:sv_sendException("#E74856ERROR: "..errmsg:gsub("#", "##"):gsub("\t", "    "))
-end
-
-function Computer:server_onFixedUpdate()
-    -- Get all parents filted by logic connections.
-    local parents = self.interactable:getParents(sm.interactable.connectionType.logic)
     local active = false
+    local parents = self.interactable:getParents(sm.interactable.connectionType.logic)
 
-    -- Loop through parents and check if one of them are active
     if #parents > 0 then
         for _, parent in pairs(parents) do
-            if parent:isActive() then
+            if parent.active then
                 active = true
                 break
             end
         end
+    elseif not self.sv.saved.alwaysOn then
+        return
     end
 
-    -- DO NOT REMOVE IF STATEMENT!
-    -- Removing it will be worsen the performance. See: https://scrapmechanicdocs.com/docs/Game-Script-Environment/Userdata/Interactable#setactive    
-    --
-    -- Checks if self.interactable.active is not the same as the active variable
+    if not self.sv.alwaysOnDisabled and self.sv.saved.alwaysOn then
+        active = true
+    end
+
+    if sm.scrapcomputers.config.getConfig("scrapcomputers.computer.reset_error_on_restart").selectedOption == 2 then
+        if self:sv_hasException() and self.sv.previousActive ~= active then
+            if active then
+                if self.sv.canResetError then
+                    self.sv.alwaysOnDisabled = false
+                    self.interactable.active = false
+                    self.sv.exceptionMessage = noExceptionsMessage
+
+                    self.sv.wait1Tick = true
+                end
+                self.sv.canResetError = true
+            end
+            self.sv.previousActive = active
+        end
+    end
+
+    if self:sv_hasException() then
+        self.interactable.active = false
+        return
+    end
+
     if self.interactable.active ~= active then
-        -- Since its diffirent, Change the active of interactable to be the active variable
-        self.interactable.active = active
-    end
-    
-    if active ~= self.sv.lastActive then
-        self.sv.lastActive = active
-
         if active then
-            self.sv.env = sm.scrapcomputers.envManager.createEnv(self)
-            self.sv.firstTick = 1
+            self.sv.env = sm.scrapcomputers.enviromentManager.createEnv(self)
+            self.sv.exceptionMessage = noExceptionsMessage
 
-            -- Check if theres no exception
-            if not self.sv.exception then
-                 -- The actual run function
-                local function run()
-                    -- Change the unicode / to be a normal /
-                    local newCode = self.sv.saved.code:gsub("⁄", "\\"):gsub("##", "#")
+            self:sv_syncClients()
 
-                    -- Run the script
-                    ---@type function?,any
-                    local func, err = sm.luavm.loadstring(newCode, self.sv.env)
+            local function run()
+                local func, errorMessage = sm.scrapcomputers.luavm.loadstring(self.sv.saved.code, self.sv.env)
+                if not func then error(errorMessage) end
 
-                    if type(func) ~= "function" then
-                        error(err)
-                    end
-                
-                    func()
+                func()
 
-                    if type(self.sv.env.onLoad) == "function" and self.sv.firstTick == 1 then
-                        self.sv.env.onLoad()
-                        self.sv.firstTick = 2
-                    end
-                end
-            
-                -- Run the "run" function inside a pcall.
-                ---@type boolean, any|string
-                local success, err = pcall(run)
-            
-                -- If it failed. Set exception to true and set ExceptionData to the error with # formatted to ##
-                if not success then
-                    self:sv_onFixedUpdateException(err)
-                end
+                self:sv_runFunction(self.sv.env.onLoad)
+            end
+
+            local success, errorMessage = pcall(run)
+            if not success then
+                self:sv_callException(errorMessage)
             end
         else
-            -- The actual run function
-            local function run()
-                if type(self.sv.env.onDestroy) == "function" then
-                    self.sv.env.onDestroy()
-                end
-            end
-
-            -- Run the "run" function inside a pcall.
-            ---@type boolean, any|string
-            local success, err = pcall(run)
-
-            -- If it failed. Set exception to true and set ExceptionData to the error with # formatted to ##
-            if not success then
-                self:sv_onFixedUpdateException(err)
-            end
-            self.sv.firstTick = 0
+            self:sv_runFunction(self.sv.env.onDestroy)
         end
+
+        self.interactable.active = active
     end
 
-    if active and not self.sv.exception then
-        -- The actual run function
-        local function run()
-            if type(self.sv.env.onUpdate) == "function" then
-                self.sv.env.onUpdate()
-            end
-        end
-
-        -- Run the "run" function inside a pcall.
-        ---@type boolean, any|string
-        local success, err = pcall(run)
-
-        -- If it failed. Set exception to true and set ExceptionData to the error with # formatted to ##
-        if not success then
-            self:sv_onFixedUpdateException(err)
-        end
+    if active then
+        self:sv_runFunction(self.sv.env.onUpdate, deltaTime)
     end
 end
 
-function Computer:sv_sendException(err)
-    -- Enable exception
-    self.sv.exception = true
-
-    -- Send data
-    self.network:sendToClients("cl_setExceptionData", err)
+function ComputerClass:sv_hasException()
+    return self.sv.exceptionMessage ~= noExceptionsMessage
 end
 
-function Computer:sv_saveScript(code)
-    -- Update code and set exception to false
-    self.sv.saved.code = code
-    self.sv.exception = false
-    self.sv.lastActive = false
-    self.interactable:setActive(false)
+function ComputerClass:sv_serverSync(data)
+    if data.type == 1 then
+        self.sv.saved.code = data.packet.i == 1 and data.packet.string or self.sv.saved.code .. data.packet.string
 
-    -- Save it
+        if not data.packet.finished then return end
+
+        self.sv.alwaysOnDisabled = false
+        self.interactable.active = false
+        self.sv.wait1Tick = true
+        self.sv.exceptionMessage = noExceptionsMessage
+    elseif data.type == 2 then
+        self.sv.saved.alwaysOn = data.packet
+    else
+        sm.log.warning("ScrapComputers: Unknown server sync data on Computer! Type=[" .. sm.scrapcomputers.toString(data.type) .. "]\n\tData: " .. sm.scrapcomputers.toString(data.packet))
+        return
+    end
+
     self.storage:save(self.sv.saved)
-
-    -- Update client side code value to the new code.
-    self.network:sendToClients("cl_onNewCode", code)
+    self:sv_syncClients()
 end
 
-function Computer:sv_updateclCodeFromServer()
-    self.network:sendToClients("cl_onNewCode", self.sv.saved.code)
+function ComputerClass:sv_syncClients()
+    local strings = sm.scrapcomputers.string.splitString(self.sv.saved.code, byteLimit)
+
+    for i, string in pairs(strings) do
+        self.network:sendToClients("cl_rebuildCode", {string = string, i = i})
+    end
+
+    self.network:sendToClients("cl_clientSync", {alwaysOn = self.sv.saved.alwaysOn, exceptionMessage = self.sv.exceptionMessage})
 end
+
+function ComputerClass:sv_resyncClient(data, player)
+    local strings = sm.scrapcomputers.string.splitString(self.sv.saved.code, byteLimit)
+
+    for i, string in pairs(strings) do
+        self.network:sendToClient(player, "cl_rebuildCode", {string = string, i = i})
+    end
+
+    self.network:sendToClient(player, "cl_clientSync", {alwaysOn = self.sv.saved.alwaysOn, exceptionMessage = self.sv.exceptionMessage})
+end
+
+function ComputerClass:sv_runFunction(func, arg)
+    local function run()
+        if type(func) == "function" then
+            func(arg)
+        end
+    end
+
+    local success, errorMessage = pcall(run)
+    if not success then
+        self:sv_callException(errorMessage)
+    end
+end
+
+function ComputerClass:sv_callException(errorMessage)
+    local function run()
+        if type(self.sv.env.onError) == "function" then
+            self.sv.env.onError(errorMessage)
+        end
+    end
+
+    local success, errorMessage2 = pcall(run)
+    self.sv.exceptionMessage = parseErrorMessage(success and errorMessage or errorMessage2)
+    self.sv.alwaysOnDisabled = true
+
+    self:sv_syncClients()
+end
+
 
 -- CLIENT --
 
-function Computer:client_onCreate()
-    -- Create a brand new table containing variables.
+function ComputerClass:client_onCreate()
     self.cl = {
-        code = "", -- The current code that's saved
-        lastCode = "", -- The code that is used before actually saving it
-        computerGui_LogDelay = 0, -- Log delay stuff. (Used to clear the logs afther a certan amount of ticks, Usally 5 secconds)
-        exceptionData = "No exceptions!", -- The exception message
-        allowLoadingExample = true, -- If true, u can load examples. else NO
-        selectedExample = 1 -- The current selecte example
+        example = {
+            selected = 1,
+            list = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)
+        },
+        exceptionMessage = "",
+        hideLogIn = 0,
+        code = "",
+        unsavedCode = "",
+        alwaysOn = false,
     }
+
+    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Computer, false, {backgroundAlpha = 0.5})
+
+    self.cl.gui:setTextChangedCallback("scriptData", "cl_scriptDataTextChange")
+    self.cl.gui:setTextChangedCallback("selectedExample", "cl_selectedExampleTextChange")
+
+    self.cl.gui:setTextAcceptedCallback("selectedExample", "cl_loadExample")
+
+    self.cl.gui:setButtonCallback("scriptSave", "cl_saveButtonBtn")
+    self.cl.gui:setButtonCallback("loadExample", "cl_loadExample")
+    self.cl.gui:setButtonCallback("revertChanges", "cl_revertChangesBtn")
+    self.cl.gui:setButtonCallback("alwaysOn", "cl_setAlwaysOnState")
+
+    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
 end
 
-function Computer:client_onInteract(_, state)
-    -- Get saved code and store it here
-    self.network:sendToServer("sv_updateclCodeFromServer")
-    
-    -- Check if the state isnt false. else return (client_Interact gets called when you push the use key down and release it)
-    -- This prevents it to being called twice.
+function ComputerClass:client_onInteract(character, state)
     if not state then return end
-    
-    -- Update last code to the latest code
-    self.cl.lastCode = self.cl.code
 
-    -- Update selectedExample to be 1 and allow loading examples
-    self.cl.selectedExample = 1
-    self.cl.allowLoadingExample = true
-    
-    -- Create the GUI and update callbacks and set text's
-    self.computerGui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Computer, true, { backgroundAlpha = 0.5 })
-    self.computerGui:setTextChangedCallback("ScriptData", "cl_TextChangedCallbackScriptData")
-    self.computerGui:setTextChangedCallback("ExamplesList_Number", "cl_onTextChangedCallbackExamplesList")
-    self.computerGui:setButtonCallback("ScriptSave", "cl_ScriptSave_ButtonCallback")
-    self.computerGui:setButtonCallback("RevertChanges", "cl_onRevertChangesPressed")
-    self.computerGui:setButtonCallback("ExamplesList_Button", "cl_onLoadExamplePressed")
-    self.computerGui:setText("ExceptionData", self.cl.exceptionData)
-    self.computerGui:setText("ScriptData", self.cl.code)
-    
-    -- Update example list
-    self:cl_updateExampleList()
+    self.network:sendToServer("sv_resyncClient")
 
-    -- Open the GUI
-    self.computerGui:open()
-end
+    self.cl.example.list = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)
+    local exampleText = ""
 
-function Computer:cl_updateExampleList()
-    -- Get all examples
-    ---@type CodeExample[]
-    local json = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)
-
-    -- Loop through them, format it and put it inside the text value
-    local text = ""
-    for key, value in pairs(json) do
-        text = text.."\n"..sm.scrapcomputers.toString(key)..": "..value.name
+    for index, example in pairs(self.cl.example.list) do
+        exampleText = exampleText .. sm.scrapcomputers.toString(index) .. ": " .. example.name.. "\n"
     end
 
-    -- Remove the first character so theres no \n at the beginning.
-    text = text:sub(2)
+    self.cl.gui:setText("examplesList", exampleText:sub(1, #exampleText - 1))
+    self.cl.gui:setText("scriptData", ({self.cl.code:gsub("\\", "⁄"):gsub("#", "##")})[1])
 
-    -- Update the example list (Check also if gui even exists)
-    if sm.exists(self.computerGui) then
-        self.computerGui:setText("ExamplesList", text)
-    end
+    self.cl.gui:open()
 end
 
-function Computer:cl_TextChangedCallbackScriptData(widget, text)
-    -- Set last code to the changed new text (And also change # to ## so you cant put in #FF00FF and expect to change the code color)
-    self.cl.lastCode = text:gsub("#", "##")
-end
-
-function Computer:cl_onLoadExamplePressed(widget, name)
-    -- Check if you can load a example
-    if not self.cl.allowLoadingExample then
-        -- Send log message
-        self.cl.computerGui_LogDelay = 3 * 40
-        self.computerGui:setText("Log", "#E74856Cannot load Example! Your inputs may be wrong.")
-    else
-        -- Get the example
-        ---@type CodeExample
-        local example = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)[self.cl.selectedExample]
-        local code = example.script:gsub("#", "##") -- Get the code and format it to prevent hex colors to getting formatted.
-
-        -- Set ScriptData to the example code
-        self.computerGui:setText("ScriptData", code) 
-        self.cl.lastCode = code
-
-        -- Send Log message
-        self.cl.computerGui_LogDelay = 3 * 40
-        self.computerGui:setText("Log", "#3A96DDLoaded \""..example.name.."\" Example.")
-    end
-end
-
-function Computer:cl_onTextChangedCallbackExamplesList(_, text)
-    -- Convert the text to a number and get all examples
-    local result = tonumber(text)
-    ---@type CodeExample[]
-    local json = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)
-
-    -- Check if result is nil
-    if type(result) == "nil" then
-        -- Send error log message (Not a number)
-        self.cl.computerGui_LogDelay = 3 * 40
-
-        self.cl.allowLoadingExample = false-- Dont allow loading examples.
-        self.computerGui:setText("Log", "#E74856Inputted Example must be a positive-number!")
-    elseif result <= 0 then -- Check if its 0 or lower.
-        -- Send error log message (Input was lower than a 1)
-        self.cl.computerGui_LogDelay = 3 * 40
-        
-        self.cl.allowLoadingExample = false -- Dont allow loading examples.
-        self.computerGui:setText("Log", "#E74856Inputted Example cannot be 0 or lower!")
-    elseif result > #json then -- Check if its more than the total examples
-        -- Send error log message (Input was higher than the total existing examples)
-        self.cl.computerGui_LogDelay = 3 * 40
-
-        self.cl.allowLoadingExample = false -- Dont allow loading examples.
-        self.computerGui:setText("Log", "#E74856Example dosen't exist! (Choose from 1 to "..#json..")")
-    else
-        -- Example exists. empty the log message and allow loading examples.
-        self.cl.computerGui_LogDelay = -1
-
-        self.cl.allowLoadingExample = true
-        self.computerGui:setText("Log", "")
-
-        self.cl.selectedExample = result
-    end
-end
-
-function Computer:cl_ScriptSave_ButtonCallback(_, _)
-    -- Set log message to say that it saved it.
-    self.cl.computerGui_LogDelay = 3 * 40
-    self.cl.exceptionData = "No exceptions!"
-    
-    self.computerGui:setText("Log", "#16C60CSaved Script!")
-    
-    -- Reset exception.
-    self.computerGui:setText("ExceptionData", self.cl.exceptionData)
-
-    -- Update code to change \ character to a unicode character and actually save it.
-    local code = self.cl.lastCode:gsub("\\", "⁄")
-    self.network:sendToServer("sv_saveScript", code)
-end
-
-function Computer:cl_onRevertChangesPressed(widget, name)
-    -- Update last code
-    self.cl.lastCode = self.cl.code
-
-    -- Create the delay and send log and scriptdata to new one's
-    self.cl.computerGui_LogDelay = 3 * 40
-    self.computerGui:setText("Log", "#16C60CReverted Changes!")
-    self.computerGui:setText("ScriptData", self.cl.lastCode)
-end
-
-function Computer:client_onFixedUpdate(dt)
-    -- Check if computerGui_LogDelay is higher than a 0. if so, -1 it.
-    -- Else check if its 0 and gui exists, then reset log message and set logDelay to -1.
-    if self.cl.computerGui_LogDelay > 0 then
-        self.cl.computerGui_LogDelay = self.cl.computerGui_LogDelay - 1
-    elseif self.cl.computerGui_LogDelay == 0 and self.computerGui ~= nil then
-        -- If the gui exist's. clear it, Else don't do that.
-        if sm.exists(self.computerGui) then
-            self.computerGui:setText("Log", "")
+function ComputerClass:client_onFixedUpdate()
+    if self.cl.hideLogIn >= 0 then
+        if self.cl.hideLogIn == 0 then
+            self.cl.gui:setText("log", "")
         end
-        self.cl.computerGui_LogDelay = -1
+
+        self.cl.hideLogIn = self.cl.hideLogIn - 1
     end
 end
 
-function Computer:cl_onNewCode(code)
-    self.cl.code = code -- Update self.cl.code to the first argument above
+function ComputerClass:cl_clientSync(data)
+    self.cl.unsavedCode = self.cl.code
+    self.cl.alwaysOn = data.alwaysOn
+
+    self.cl.exceptionMessage = data.exceptionMessage
+    self:cl_updateAlwaysOnMessage()
+
+    self.cl.gui:setText("exceptionData", data.exceptionMessage)
 end
 
-function Computer:cl_setExceptionData(data)
-    self.cl.exceptionData = data -- Update exception message to the first argument above
+function ComputerClass:cl_rebuildCode(data)
+    self.cl.code = (data.i == 1 and data.string or self.cl.code .. data.string)
+end
 
-    -- If it exist's, Set the exception data to the new one.
-    if sm.exists(self.computerGui) then
-        self.computerGui:setText("ExceptionData", self.cl.exceptionData)
+-- GUI Callbacks --
+
+function ComputerClass:cl_onGuiClose()
+    if sm.scrapcomputers.config.getConfig("scrapcomputers.computer.autosave").selectedOption == 1 then return end
+
+    self:cl_saveCode()
+    sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: Automaticly saved code!")
+end
+
+function ComputerClass:cl_scriptDataTextChange(widget, text)
+    self.cl.unsavedCode = text
+end
+
+function ComputerClass:cl_selectedExampleTextChange(widget, data)
+    local dataNumber = tonumber(data)
+    if not dataNumber then
+        self.cl.gui:setVisible("loadExample", false)
+
+        self:cl_setLogMessage(3 * 40, "e74856", "Not a number!")
+        return
+    end
+
+    if dataNumber < 1 or dataNumber > #self.cl.example.list then
+        self.cl.gui:setVisible("loadExample", false)
+
+        self:cl_setLogMessage(3 * 40, "e74856", "Out of bounds! (1-" .. #self.cl.example.list .. ")")
+        return
+    end
+
+    if math.floor(dataNumber) ~= dataNumber then
+        self.cl.gui:setVisible("loadExample", false)
+
+        self:cl_setLogMessage(3 * 40, "e74856", "Cannot be a decimal!")
+        return
+    end
+
+    self.cl.gui:setVisible("loadExample", true)
+    self.cl.example.selected = dataNumber
+
+    self:cl_setLogMessage(3 * 40, "3a96dd", "Selected example: \"" .. self.cl.example.list[dataNumber].name .. "\"")
+end
+
+function ComputerClass:cl_saveButtonBtn(widget, name)
+    self:cl_saveCode()
+    self:cl_setLogMessage(3 * 40, "16c60c", "Saved code!")
+end
+
+function ComputerClass:cl_revertChangesBtn(widget, name)
+    self.cl.unsavedCode = self.cl.code
+    self.cl.gui:setText("scriptData", self.cl.unsavedCode)
+
+    self:cl_setLogMessage(3 * 40, "3a96dd", "Reverted your code changes to current saved code!")
+end
+
+function ComputerClass:cl_loadExample(widget, name)
+    local example = self.cl.example.list[self.cl.example.selected]
+
+    self:cl_setLogMessage(3 * 40, "3a96dd", "Loaded example: \"" .. example.name .. "\"")
+
+    self.cl.unsavedCode = example.script
+    self.cl.gui:setText("scriptData", ({example.script:gsub("\\", "⁄"):gsub("#", "##")})[1])
+end
+
+function ComputerClass:cl_setAlwaysOnState(widget, name)
+    self.cl.alwaysOn = not self.cl.alwaysOn
+
+    self:cl_syncServer(2, self.cl.alwaysOn)
+    self:cl_updateAlwaysOnMessage()
+end
+
+function ComputerClass:cl_saveCode()
+    self.cl.code = self.cl.unsavedCode:gsub("⁄", "\\")
+
+    local strings = sm.scrapcomputers.string.splitString(self.cl.code, byteLimit)
+    for i, string in pairs(strings) do
+        self:cl_syncServer(1, {i = i, string = string, finished = i == #strings})
     end
 end
 
-function Computer:cl_chatMessage(msg)
-    sm.gui.chatMessage(msg) -- Send chat message
+function ComputerClass:cl_updateAlwaysOnMessage()
+    if self.cl.alwaysOn then
+        self.cl.gui:setText("alwaysOn", "Always On: #16C60CTrue")
+    else
+        self.cl.gui:setText("alwaysOn", "Always On: #E74856False")
+    end
 end
 
-function Computer:cl_alert(data)
+function ComputerClass:cl_syncServer(type, data)
+    self.network:sendToServer("sv_serverSync", {type = type, packet = data})
+end
+
+function ComputerClass:cl_setLogMessage(totalTicks, textColor, message)
+    self.cl.hideLogIn = totalTicks
+    self.cl.gui:setText("log", (textColor and "#" .. textColor or "") .. message)
+end
+
+-- Env related functions --
+
+function ComputerClass:cl_chatMessage(msg)
+    sm.gui.chatMessage(msg)
+end
+
+function ComputerClass:cl_alert(data)
     sm.gui.displayAlertText(unpack(data))
 end
 
-sm.scrapcomputers.components.ToComponent(Computer, nil, false)
+sm.scrapcomputers.componentManager.toComponent(ComputerClass, nil, false)

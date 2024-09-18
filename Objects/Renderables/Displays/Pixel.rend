@@ -10,7 +10,7 @@
                },
                "material": "DifAsg",
                "textureList": [
-                  "$CONTENT_DATA/Objects/Textures/transparent.tga",
+                  "$CONTENT_DATA/Objects/Textures/transparent.tga", /*$CONTENT_DATA/Objects/Textures/transparent_pixelDebug.tga $CONTENT_DATA/Objects/Textures/transparent.tga*/
                   "$CONTENT_DATA/Objects/Textures/Glow_asg.png",
                   "$CONTENT_DATA/Objects/Textures/transparent.tga"
                ]

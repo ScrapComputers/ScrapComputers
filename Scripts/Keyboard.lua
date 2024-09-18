@@ -1,19 +1,20 @@
-dofile("$CONTENT_DATA/Scripts/Config.lua")
-
----@class ObjectTemplate : ShapeClass
-Keyboard = class()
-Keyboard.maxParentCount = 2
-Keyboard.maxChildCount = 0
-Keyboard.connectionInput = sm.interactable.connectionType.compositeIO + sm.interactable.connectionType.seated
-Keyboard.connectionOutput = sm.interactable.connectionType.none
-Keyboard.colorNormal = sm.color.new(0xaa00aaff)
-Keyboard.colorHighlight = sm.color.new(0xff00ffff)
+---@class KeyboardClass : ShapeClass
+KeyboardClass = class()
+KeyboardClass.maxParentCount = 2
+KeyboardClass.maxChildCount = 0
+KeyboardClass.connectionInput = sm.interactable.connectionType.compositeIO + sm.interactable.connectionType.seated
+KeyboardClass.connectionOutput = sm.interactable.connectionType.none
+KeyboardClass.colorNormal = sm.color.new(0xaa00aaff)
+KeyboardClass.colorHighlight = sm.color.new(0xff00ffff)
 
 -- CLIENT / SERVER --
 
+---@param str string The character
+---@param index integer The index to get it at
+---@return string character The UTF8 character
 function getUTF8Character(str, index)
     local byte = string.byte(str, index)
-    local byteCount = 1
+    local byteCount = 1 -- The byte count
 
     if byte >= 0xC0 and byte <= 0xDF then
         byteCount = 2
@@ -26,98 +27,102 @@ function getUTF8Character(str, index)
     return string.sub(str, index, index + byteCount - 1)
 end
 
-local interactionStr = "<p textShadow='true' bg='' color='#ffffff' spacing='5'>Press"..sm.gui.getKeyBinding("Use", true).."to start typing</p>"
+local interactionStr = "<p textShadow='true' bg='' color='#ffffff' spacing='5'>Press" .. sm.gui.getKeyBinding("Use", true) .. "to start typing</p>"
 
 -- SERVER --
 
-function Keyboard:sv_createData()
+function KeyboardClass:sv_createData()
     return {
+        ---Gets the latest keystroke
+        ---@return string keystroke The keystroke
         getLatestKeystroke = function()
             return self.sv.latestKeystroke
         end,
 
+        ---Returns true if its pressed a key
+        ---@return boolean isPressing If its pressed a key
         isPressed = function()
             return self.sv.isPressed
         end
-    }
+}
 end
 
-function Keyboard:server_onCreate()
+function KeyboardClass:server_onCreate()
     self.sv = {
         isPressed = false,
         latestKeystroke = ""
     }
 end
 
-function Keyboard:sv_setLatestKeystroke(key)
+---Sets the latest keystroke
+---@param key string the keystroke
+function KeyboardClass:sv_setLatestKeystroke(key)
     self.sv.latestKeystroke = key
 end
 
-function Keyboard:sv_setPressed(bool)
+---Sets it if its pressed
+---@param bool boolean If its pressed or not.
+function KeyboardClass:sv_setPressed(bool)
     self.sv.isPressed = bool
 end
 
 -- CLIENT --
 
-function Keyboard:client_onCreate()
+function KeyboardClass:client_onCreate()
     self.cl = {
-        gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Keyboard)
+        gui = nil
     }
 
+    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Keyboard)
     self.cl.gui:setTextChangedCallback("TextBox", "cl_onKeystroke")
-    self.cl.gui:setText("TextBox", "0")
+    self.cl.gui:setText ("TextBox", "0")
 
     self.cl.gui:setButtonCallback("Exit", "cl_onExit")
 end
 
-function Keyboard:client_onUpdate()
+function KeyboardClass:client_onUpdate()
     if self.cl.gui:isActive() then
         self.cl.gui:setFocus("TextBox")
     end
 end
 
-function Keyboard:client_onFixedUpdate()
-    if self.cl.pressTimer and self.cl.pressTimer + 1 <= sm.game.getCurrentTick() then
+function KeyboardClass:client_onFixedUpdate()
+    if self.cl.pressTimer and self.cl.pressTimer + 1 < sm.game.getCurrentTick() then
         self.cl.pressTimer = nil
 
         self.network:sendToServer("sv_setPressed", false)
     end
 end
 
-function Keyboard:client_canInteract()
+function KeyboardClass:client_canInteract()
     sm.gui.setInteractionText("", interactionStr, "")
     sm.gui.setInteractionText("")
     return true
 end
 
-function Keyboard:client_onInteract(char, state)
-    if state then
-        self.cl.gui:open()
-    end
+function KeyboardClass:client_onInteract(char, state)
+    if not state then return end
+
+    self.cl.gui:open()
 end
 
-function Keyboard:client_getAvailableParentConnectionCount(flags)
+function KeyboardClass:client_getAvailableParentConnectionCount(flags)
     return 1 - #self.interactable:getParents(flags)
 end
 
-function Keyboard:cl_onKeystroke(_, text)
-    if #text == 1 then
-        sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: Invalid keystroke!")    
-        return
-    end
+function KeyboardClass:cl_onKeystroke(_, text)
+    if #text == 1 then return end
     local keystroke = (#text == 0 and "backSpace" or getUTF8Character(text, 2))
-    
     self.cl.pressTimer = sm.game.getCurrentTick()
-            
+
     self.cl.gui:setText("TextBox", "0")
 
     self.network:sendToServer("sv_setLatestKeystroke", keystroke)
     self.network:sendToServer("sv_setPressed", true)
 end
 
-function Keyboard:cl_onExit()
+function KeyboardClass:cl_onExit()
     self.cl.gui:close()
 end
 
--- Convert the class to a component
-sm.scrapcomputers.components.ToComponent(Keyboard, "Keyboards", true)
+sm.scrapcomputers.componentManager.toComponent(KeyboardClass, "Keyboards", true)

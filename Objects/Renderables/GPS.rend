@@ -16,9 +16,9 @@
             {
                "material": "DifNor",
                "textureList": [
-                  "$CONTENT_DATA/Objects/Textures/GPS_dif.png",
+                  "$CONTENT_DATA/Objects/Textures/GPS/GPS_dif.png",
                   "$CONTENT_DATA/Objects/Textures/transparent.tga",
-                  "$CONTENT_DATA/Objects/Textures/GPS_nor.png"
+                  "$CONTENT_DATA/Objects/Textures/GPS/GPS_nor.png"
                ]
             }
          ]

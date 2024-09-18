@@ -68,7 +68,7 @@
 --
 --------------------------------------------------------------------]]
 
-local luaZ = _G.luavm.luaZ
+local luaZ = sm.scrapcomputers.luavm.luaZ
 
 local luaX = {}
 
@@ -688,4 +688,4 @@ function luaX:llex(ls, Token)
   end--while
 end
 
-_G.luavm.luaX = luaX
+sm.scrapcomputers.luavm.luaX = luaX

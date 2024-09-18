@@ -57,8 +57,8 @@
 
 -- requires luaP, luaX, luaY
 local luaK = {}
-local luaP = _G.luavm.luaP
-local luaX = _G.luavm.luaX
+local luaP = sm.scrapcomputers.luavm.luaP
+local luaX = sm.scrapcomputers.luavm.luaX
 
 ------------------------------------------------------------------------
 -- constants used by code generator
@@ -1125,4 +1125,4 @@ function luaK:setlist(fs, base, nelems, tostore)
   fs.freereg = base + 1  -- free registers with list values
 end
 
-_G.luavm.luaK = function(a) luaY = a return luaK end
+sm.scrapcomputers.luavm.luaK = function(a) luaY = a return luaK end

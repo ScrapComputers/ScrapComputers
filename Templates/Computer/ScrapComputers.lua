@@ -1,1083 +1,1129 @@
+--- ScrapComputers Syntax Highlighting File (This is called a Definition File)
+--- This is used so you can have some syntax highlighting making coding easier!
+--- 
+--- We disable diagnostics because we don't need them here!
 ---@diagnostic disable
----This file is for Developing computer code in Visual Studio code!
 
----Prints text to the chat. Will be always converted to a string so you can pass in anything
----If it is a table. It will convert to be printable and you can see the contents inside.
----@param ... any[] All arguments to send to the chat
-function print( ... ) end
+------------------------------------------------------------------------------------------------------------------------------
+---  ██████╗ ██████╗ ███████╗    ██████╗ ███████╗███████╗██╗███╗   ██╗███████╗██████╗                                      ---
+---  ██╔══██╗██╔══██╗██╔════╝    ██╔══██╗██╔════╝██╔════╝██║████╗  ██║██╔════╝██╔══██╗                                     ---
+---  ██████╔╝██████╔╝█████╗█████╗██║  ██║█████╗  █████╗  ██║██╔██╗ ██║█████╗  ██║  ██║                                     ---
+---  ██╔═══╝ ██╔══██╗██╔══╝╚════╝██║  ██║██╔══╝  ██╔══╝  ██║██║╚██╗██║██╔══╝  ██║  ██║                                     ---
+---  ██║     ██║  ██║███████╗    ██████╔╝███████╗██║     ██║██║ ╚████║███████╗██████╔╝                                     ---
+---  ╚═╝     ╚═╝  ╚═╝╚══════╝    ╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═══╝╚══════╝╚═════╝                                      ---
+---                                                                                                                        ---
+---  ███████╗███████╗██╗██╗     ██████╗ ███████╗       ██╗        ██████╗██╗      █████╗ ███████╗███████╗███████╗███████╗  ---
+---  ██╔════╝██╔════╝██║██║     ██╔══██╗██╔════╝       ██║       ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝  ---
+---  █████╗  █████╗  ██║██║     ██║  ██║███████╗    ████████╗    ██║     ██║     ███████║███████╗███████╗█████╗  ███████╗  ---
+---  ██╔══╝  ██╔══╝  ██║██║     ██║  ██║╚════██║    ██╔═██╔═╝    ██║     ██║     ██╔══██║╚════██║╚════██║██╔══╝  ╚════██║  ---
+---  ██║     ███████╗██║███████╗██████╔╝███████║    ██████║      ╚██████╗███████╗██║  ██║███████║███████║███████╗███████║  ---
+---  ╚═╝     ╚══════╝╚═╝╚══════╝╚═════╝ ╚══════╝    ╚═════╝       ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝  ---
+---                                                                                                                        ---
+------------------------------------------------------------------------------------------------------------------------------
 
----Same as print but sends it as a alert message
----@param ... any[] All arguments to send to the alert popup
-function alert( ... ) end
+-- DISPLAY --
 
----Like the normal but modified to have additional features like printing lua tables!
----@param data any The variable to convert to be a string.
-function tostring( data ) end
+---@class TouchData This contains touch data when the user interacts with the display, also known as "touches the display."
+---@field x integer The position on the x-axis
+---@field y integer The position on the y-axis
+---@field state integer The state of the touch: 1 for Pressed, 2 for Hold, 3 for Released.
 
----The debug function is basically Lua’s implementation of the print function in Scrap Mechanic.
----@param ... any[] All arguments to send to the console
-function debug( ... ) end
+---@class PixelScale Contains information about a pixel's scale.
+---@field x integer The width
+---@field y integer The height
 
----The main namespace for ScrapComputers
+---@class PixelTableField An instruction for a pixel table.
+---@field x number The x-coordinate (floored)
+---@field y number The y-coordinate (floored)
+---@field scale PixelScale The scale of the pixel
+---@field color Color The color of the pixel
+
+---@alias PixelTable PixelTableField[] Pixel tables contain pixel information used to draw on the display, similar to instructions.
+---@alias MultiColorType Color|string? A Color, string, or nil.
+---@alias MultiColorTypeNonNil Color|string A Color or string (cannot be nil).
+
+-- GPS --
+
+---@class GPSData Data received from a GPS
+---@field worldPosition Vec3 The current world position
+---@field worldRotation Quat The current world rotation
+---@field bearing number The world position's bearing rotation
+---@field velocity Vec3 The current velocity
+---@field speed number The current speed (magnitude of velocity)
+---@field forwardVelocity number The forward velocity
+---@field horizontalVelocity number The horizontal velocity
+---@field verticalVelocity number The vertical velocity
+---@field angularVelocity Vec3 The angular velocity
+---@field rpm number The current RPM (depends on angular velocity)
+---@field acceleration number The current acceleration
+---@field forwardAcceleration number The forward acceleration
+---@field horizontalAcceleration number The horizontal acceleration
+---@field verticalAcceleration number The vertical acceleration
+
+-- RADAR --
+
+---@class RadarTarget A discovered target from a radar.
+---@field position Vec3 The position of the target
+---@field surfaceArea number The total surface area that the radar can detect
+
+-- SEATCONTROLLER --
+
+---@class JointData Contains data about joints.
+---@field leftSpeed integer The speed level of the joint (left side).
+---@field rightSpeed integer The speed level of the joint (right side).
+---@field leftLimit integer The max rotation limit on the left side.
+---@field rightLimit integer The max rotation limit on the right side.
+---@field bearingLock boolean If the joint is locked or not.
+
+---@class SeatData Contains data about a connected seat.
+---@field wsPower integer Power for forward or backward movement.
+---@field adPower integer Power for left or right movement.
+---@field characterName string The name of the seated player.
+
+-- LASER --
+
+---@class LaserData Data received from a laser
+---@field directionWorld Vec3 The direction world
+---@field fraction       number 0-1 range from the start point to the end point, The higher the value, the closer it is to the end point.
+---@field normalLocal    Vec3 The normal local
+---@field normalWorld    Vec3 The normmal world
+---@field originWorld    Vec3 The origin world
+---@field pointLocal     Vec3 The reflection direction in the local side
+---@field pointWorld     Vec3 The reflection direction in the world side
+---@field type           string Type of object it has hitted
+---@field valid          boolean If the raycast was valid or not
+---@field color          Color The color it has hitted.
+
+-- AUDIO --
+
+---@alias AudioEffectParameterList table<string, number>
+
+---@class AudioParamsIssues Contains information about any issues with your audio parameters
+---@field hasNoParamsUsableIssue boolean Whether the audio has no usable parameters
+---@field issues string[][] The list of parameter issues
+
+---@class AudioParameter Information about a audio parameter.
+---@field default number The default value of the parameter
+---@field maximum number The maximum value of the parameter
+---@field minimum number The minimum value of the parameter
+
+-- FONT MANAGER --
+
+---@class SCFont A SCFont (`SCF` in short, `ScrapComputers Font` for full name) is a font that has a fixed with and height for EVERY singular character.
+---@field fontWidth integer The width of the font
+---@field fontHeight integer The height of the font
+---@field characters string All characters that are usable in the font
+---@field errorChar string[] The character used for a gylph that doesn't exist.
+---@field charset table<string, string[]> Contains all gylph data for all characters.
+
+-- OTHER --
+
+---@alias MultiRotationType Vec3|Quat
+
+------------------------------------------------------------------------------------------------------------------------------------
+---                                                                                                                              ---
+---   ██████╗ ██╗      ██████╗ ██████╗  █████╗ ██╗         ██╗   ██╗ █████╗ ██████╗ ██╗ █████╗ ██████╗ ██╗     ███████╗███████╗  ---
+---  ██╔════╝ ██║     ██╔═══██╗██╔══██╗██╔══██╗██║         ██║   ██║██╔══██╗██╔══██╗██║██╔══██╗██╔══██╗██║     ██╔════╝██╔════╝  ---
+---  ██║  ███╗██║     ██║   ██║██████╔╝███████║██║         ██║   ██║███████║██████╔╝██║███████║██████╔╝██║     █████╗  ███████╗  ---
+---  ██║   ██║██║     ██║   ██║██╔══██╗██╔══██║██║         ╚██╗ ██╔╝██╔══██║██╔══██╗██║██╔══██║██╔══██╗██║     ██╔══╝  ╚════██║  ---
+---  ╚██████╔╝███████╗╚██████╔╝██████╔╝██║  ██║███████╗     ╚████╔╝ ██║  ██║██║  ██║██║██║  ██║██████╔╝███████╗███████╗███████║  ---
+---   ╚═════╝ ╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝      ╚═══╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝╚══════╝  ---
+---                                                                                                                              ---
+------------------------------------------------------------------------------------------------------------------------------------
+
+-- Prints a message to the chat.
+---@param ... any|any[] The message to send
+function print(...) end
+
+-- Prints a message to the console.
+---@param ... any|any[] The message to send
+function debug(...) end
+
+-- Sends an alert message to all players in the world.
+---@param message string The message to send
+---@param duration number The duration before the alert message fades out
+function alert(message, duration) end
+
+-- Pauses execution for the specified duration.
+-- Note that this will freeze your game during the duration, as Scrap Mechanic is single-threaded!
+---@param duration number The amount of time to sleep in seconds, max is 5 seconds.
+function sleep(duration) end
+
+-- Converts a value to a string! This function is modified by ScrapComputers to be more advanced.
+-- It allows you to convert tables to strings, for example.
+---@param value any The value to convert to a string
+---@return string str The converted string
+function tostring(value) end
+
+-- Creates a function that executes the code inside the code argument with the specified environment.
+-- You can use bytecode by setting bytecodeMode to true, BUT you need to be in unsafe environment mode for that! Otherwise, an error will be raised!
+---@param code string The code to run
+---@param env table The environment variables for the code
+---@param bytecodeMode boolean Whether to execute bytecode or not.
+---@return function? function The function to execute the code. Will be nil if there's an error.
+---@return string? message The bytecode of the code if successful, or the error message if failed.
+function loadstring(code, env, bytecodeMode) end
+
+-- The main area containing all ScrapComputers-related components and functions
 sc = {}
 
----Gets all connected displays from the computer
----@return Display[] displays All connected displays from the computer
+-- Gets all connected Displays and returns them
+---@return Display[] Displays All connected Displays
 function sc.getDisplays() end
 
----Gets all connected drives from the computer
----@return Drive[] drives All connected drives from the computer
+-- Gets all connected Drives and returns them
+---@return Harddrive[] Drives All connected Drives
 function sc.getDrives() end
 
----Gets all connected holograms from the computer
----@return Hologram[] holograms All connected holograms from the computer
+-- Gets all connected Holograms and returns them
+---@return Hologram[] Holograms All connected Holograms
 function sc.getHolograms() end
 
----Gets all connected terminals from the computer
----@return Terminal[] terminals All connected terminals from the computer
+-- Gets all connected Terminals and returns them
+---@return Terminal[] Terminals All connected Terminals
 function sc.getTerminals() end
 
----Gets all connected radars from the computer
----@return Radar[] radars All connected radars from the computer
+-- Gets all connected Radars and returns them
+---@return Radar[] Radars All connected Radars
 function sc.getRadars() end
 
----Gets all connected network ports from the computer
----@return NetworkPort[] networkPorts All connected network ports from the computer
+-- Gets all connected Network Ports and returns them
+---@return NetworkPort[] NetworkPorts All connected Network Ports
 function sc.getNetworkPorts() end
 
----Gets all connected cameras from the computer
----@return Camera[] cameras All connected cameras from the computer
+-- Gets all connected Cameras and returns them
+---@return Camera[] Cameras All connected Cameras
 function sc.getCameras() end
 
----Gets all connected speakers from the computer
----@return Speaker[] speakers All connected speakers from the computer
+-- Gets all connected Speakers and returns them
+---@return Speaker[] Speakers All connected Speakers
 function sc.getSpeakers() end
 
----Gets all connected keyboards from the computer
----@return Keyboard[] keyboards All connected keyboards from the computer
+-- Gets all connected Keyboards and returns them
+---@return KeyboardComponent[] Keyboards All connected Keyboards
 function sc.getKeyboards() end
 
----Gets all connected motors from the computer
----@return Motor[] motors All connected motors from the computer
+-- Gets all connected Motors and returns them
+---@return Motor[] Motors All connected Motors
 function sc.getMotors() end
 
----Gets all connected lasers from the computer
----@return Laser[] lasers All connected lasers from the computer
+-- Gets all connected Lasers and returns them
+---@return Laser[] Lasers All connected Lasers
 function sc.getLasers() end
 
----Gets all connected GPSs
----@return GPS[]
+-- Gets all connected GPSs and returns them
+---@return GPS[] GPSs All connected GPSs
 function sc.getGPSs() end
 
----Gets all connected seatcontrollers from the computer
----@return SeatController[] seatcontroller All connected seatcontrollers from the computer
+-- Gets all connected Seat Controllers and returns them
+---@return SeatController[] SeatControllers All connected Seat Controllers
 function sc.getSeatControllers() end
 
----Gets a value of a register.
----@param registerName string The name of the register to read.
----@return number power The value it’s receiving. (For things like logic gates: 0 is Off, 1 is On)
-function sc.getReg( registerName ) end
----Sets a value of a register.
----@param registerName string The name of the register to write.
----@param power number The value to set it to. (This is power!)
-function sc.setReg( registerName, power ) end
+-- Gets the power value of a register
+---@param registerName string The name of the register to get the power value from
+---@return number power The power value of the register
+function sc.getReg(registerName) end
 
----The Audio Module for the computer API!
+-- Sets the power value of a register
+---@param registerName string The name of the register to set the power value for
+---@param power number The power value to set
+function sc.setReg(registerName, power) end
+
+----------------------------------------------------------------------
+---                                                                ---
+--- ███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗██╗     ███████╗███████╗  ---
+--- ████╗ ████║██╔═══██╗██╔══██╗██║   ██║██║     ██╔════╝██╔════╝  ---
+--- ██╔████╔██║██║   ██║██║  ██║██║   ██║██║     █████╗  ███████╗  ---
+--- ██║╚██╔╝██║██║   ██║██║  ██║██║   ██║██║     ██╔══╝  ╚════██║  ---
+--- ██║ ╚═╝ ██║╚██████╔╝██████╔╝╚██████╔╝███████╗███████╗███████║  ---
+--- ╚═╝     ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝ ╚══════╝╚══════╝╚══════╝  ---
+---                                                                ---
+----------------------------------------------------------------------
+
+sc.json = {}
+
+-- Returns true if the table is safe for JSON conversion
+---@param root table The table to check
+---@return boolean jsonSafe Whether the table is safe for JSON usage or not
+function sc.json.isSafe(root) end
+
+-- Converts a table to a JSON string
+---@param root table The table to convert
+---@param safeMode boolean? Whether to consider safety during conversion
+---@param prettifyOutput boolean? Whether to prettify the output
+---@param indentCharacter string The character used for indentation
+---@return string jsonString The converted JSON string
+function sc.json.toString(root, prettifyOutput, indentCharacter) end
+
+-- Converts a JSON string to a table
+---@param root string The JSON string to convert
+---@param safeMode boolean Whether to check for corrupt data in the JSON string
+---@return table The converted table
+function sc.json.toTable(root, safeMode) end
+
+-- Lets you get information about SM's built in audio's! (Does not include custom ones from SM-CustomAudioExcension DLL mod)
 sc.audio = {}
 
----@class sc.audio.AudioParameter
----Results for sc.audio.getParams
----@field default number The default value
----@field maximum number The maximum value
----@field minimum number The minimum value
-
----@class sc.audio.ParamsIncorrectTable
----All issues that the provided parameters have.
----@field hasNoParamsUsableIssue boolean If true. that means there are no usable parameters for this audio
----@field issues string[][] A matrix of issues. The 1st array is the parameter’s name and the 2nd array is the issues it has for that parameter.
-
----Returns information about audio parameters in case they have any issues.
----@param name string The name of the audio to check
----@param params sc.audio.AudioParameter[] The name of the audio to check
----@return sc.audio.ParamsIncorrectTable issues All issues with those parameters.
-function sc.audio.areParamsCorrect( name, params ) end
-
----Returns true if the audio name exists in Scrap Mechanic.
----@param name string The name of the audio to check
----@return boolean audioExists If true, the audio exists in the game. Else it doesn’t!
-function sc.audio.exists( name ) end
-
----Gets every audio in existence in Scrap Mechanic and puts them all in a string[] you can access
----@return string[] audioNames Every singular audio in existence
+-- Gets all audio names
+---@return string[] audioNames All available audio names
 function sc.audio.getAudioNames() end
 
----Gets all usable parameters for that audio.
----@param name string The name of the audio to get its parameters from
----@return sc.audio.AudioParameter[] params All usable parameters for that audio.
-function sc.audio.getParams( name ) end
+-- Returns true if an audio name exists
+---@param name string The name of the audio
+---@return boolean audioExists Whether the audio name exists or not
+function sc.audio.audioExists(name) end
 
----The Base64 Module for the computer API!
+-- Gets all available parameters for a specified audio name
+---@param name string The name of the audio
+---@return table<string, AudioParameter> AudioParameters All parameters associated with the audio
+function sc.audio.getAvailableParams(name) end
+
+-- Returns any issues with the specified parameters for an audio
+---@param name string The name of the audio
+---@param params table The parameters specified
+---@return AudioParamsIssues? AudioParamsIssues The issues with the specified parameters, if any
+function sc.audio.getIssuesWithParams(name, params) end
+
+-- Base64 encoding and decoding library
 sc.base64 = {}
 
----Converts a string to be Base64 encoded
----@param data string The data to be converted
----@return string base64data The encoded data
-function sc.base64.encode( data ) end
+-- Encodes a string to Base64
+---@param data string The string to encode
+---@return string data The encoded string
+function sc.base64.encode(data) end
 
----Decodes a base64 string
----@param data string The data to be decoded
----@return string data The decoded data
-function sc.base64.decode( data ) end
+-- Decodes a Base64 string
+---@param data string The string to decode
+---@return string data The decoded string
+function sc.base64.decode(data) end
 
----The Color Module for the computer API!
+-- A stream of bits. Used for networking for example.
+---@class BitStream
+local Bitstream = {}
+
+-- Dumps the bitstream to a string
+---@return string dumpedString The dumped string
+function Bitstream:dumpString() end
+
+-- Dumps the bitstream as Base64
+---@return string dumpedString The dumped Base64 string
+function Bitstream:dumpBase64() end
+
+-- Dumps the bitstream as hex
+---@return string dumpedString The dumped hex string
+function Bitstream:dumpHex() end
+
+-- Writes a bit
+---@param bit boolean|number The bit value to write
+function Bitstream:writeBit(bit) end
+
+-- Reads a bit
+---@return integer The bit value (0 or 1), or nil if overflow
+function Bitstream:readBit() end
+
+-- Writes a byte
+---@param byte number The byte to write (must be an ASCII character)
+function Bitstream:writeByte(byte) end
+
+-- Reads a byte
+---@return integer byte The byte that was read
+function Bitstream:readByte() end
+
+-- Writes a signed 8-bit integer
+---@param integer integer The signed 8-bit integer to write
+function Bitstream:writeInt8(integer) end
+
+-- Reads a signed 8-bit integer
+---@return integer integer The signed 8-bit integer that was read
+function Bitstream:readInt8() end
+
+-- Writes an unsigned 8-bit integer
+---@param uinteger integer The unsigned 8-bit integer to write
+function Bitstream:writeUInt8(uinteger) end
+
+-- Reads an unsigned 8-bit integer
+---@return integer uinteger The unsigned 8-bit integer that was read
+function Bitstream:readUInt8() end
+
+-- Writes a signed 16-bit integer
+---@param integer integer The signed 16-bit integer to write
+function Bitstream:writeInt16(integer) end
+
+-- Reads a signed 16-bit integer
+---@return integer integer16 The signed 16-bit integer that was read
+function Bitstream:readInt16() end
+
+-- Writes an unsigned 16-bit integer
+---@param uinteger integer The unsigned 16-bit integer to write
+function Bitstream:writeUInt16(uinteger) end
+
+-- Reads an unsigned 16-bit integer
+---@return integer integer The unsigned 16-bit integer that was read
+function Bitstream:readUInt16() end
+
+-- Writes a signed 24-bit integer
+---@param integer integer The signed 24-bit integer to write
+function Bitstream:writeInt24(integer) end
+
+-- Reads a signed 24-bit integer
+---@return integer integer The signed 24-bit integer that was read
+function Bitstream:readInt24() end
+
+-- Writes an unsigned 24-bit integer
+---@param uinteger integer The unsigned 24-bit integer to write
+function Bitstream:writeUInt24(uinteger) end
+
+-- Reads an unsigned 24-bit integer
+---@return integer uinteger The unsigned 24-bit integer that was read
+function Bitstream:readUInt24() end
+
+-- Writes a signed 32-bit integer
+---@param integer integer The signed 32-bit integer to write
+function Bitstream:writeInt32(integer) end
+
+-- Reads a signed 32-bit integer
+---@return integer integer The signed 32-bit integer that was read
+function Bitstream:readInt32() end
+
+-- Writes an unsigned 32-bit integer
+---@param uinteger integer The unsigned 32-bit integer to write
+function Bitstream:writeUInt32(uinteger) end
+
+-- Reads an unsigned 32-bit integer
+---@return integer uinteger The unsigned 32-bit integer that was read
+function Bitstream:readUInt32() end
+
+-- Writes a string
+---@param string string The string to write
+function Bitstream:writeString(string) end
+
+-- Reads a string
+---@return string? str The string that was read
+function Bitstream:readString() end
+
+-- Lets you read and write via packet buffers. Useful for networking!
+sc.BitStream = {}
+
+-- Creates a new BitStream stream
+---@param data string? Optional pre-appended binary data
+---@return BitStream bitStream The created bit stream
+function sc.BitStream.new(data) end
+
+---Additional helper functions for sc.color
 sc.color = {}
 
----Creates a new color from 1 value. Whatever rgbNum’s value has will be set on R, G, and B.
----
----This means it’s grayscale only!
----@param rgbNum number The color value that will be set on R, G, and B
+---Generates a random color within a specified range.
+---@param from integer The starting range
+---@param to integer The ending range
 ---@return Color color The generated color
-function sc.color.newSingluar( rgbNum ) end
+function sc.color.random(from, to) end
 
----Generates a random color from whatever range you want
----@param from number The starting range
----@param to number The ending range
----@return Color color The generated color
-function sc.color.random( from, to ) end
-
----Generates a random color from 0 to 1
+---Creates a random color with values ranging from 0 to 1.
 ---@return Color color The generated color
 function sc.color.random0to1() end
 
----The font manager allows you to, of course, manage fonts. You can get font information, get all font names you can use, etc.
----
----<i>The font manager is NOT a module so please do not identify this as a module</i>
-sc.fontmanager = {}
+---Generates a grayscale color using a specified RGB value.
+---@param rgbNumber integer The RGB value
+---@return Color color The generated grayscale color
+function sc.color.newSingular(rgbNumber) end
 
----@class sc.fontmanager.SCFont
----A SCFont (SCF in short, ScrapComputers Font for full name) is a font that has a fixed with and height for EVERY singular character. This is in Lua so expect a massive font file size.
----@param fontWidth integer The width of the font
----@param fontHeight integer The height of the font
----@param characters string All characters used on the font
----@param errorChar string[] The error character font
----@param charset string[][] All character’s gylphs. On the first array. The index is the character! The second is the row number!
+---Allows you to create an MD5 stream for generating MD5 hashes.
+---@class MD5Stream
+local MD5Stream = {}
 
----Gets a font
----@param fontName string The name of the font to get
----@return sc.fontmanager.SCFont? font  The font it has recieved. Nil if there is an error.
----@return string? errMsg The error message it has received. Nil if there wasn’t an error.
-function sc.fontmanager.getFont( fontName ) end
+-- Current position in the buffer.
+MD5Stream.pos = 0
 
----Gets all fonts the font manager has access to
----@return string[] fontNames Every font name the font manager has access to.
-function sc.fontmanager.getFontNames() end
+-- The current buffer data.
+MD5Stream.buf = ''
 
----Gets the default font that the font manager uses. This is hard coded so you will require to hook this if you want to modify it.
----@return string defaultFontName The default font name used.
-function sc.fontmanager.getDefaultFontName() end
+---Appends new data to the MD5 stream.
+---@param str string The data to append
+---@return self MD5Stream The MD5 stream with updated data
+function MD5Stream:update(str) end
 
----Like sc.fontmanager.getDefaultFontName but calls sc.fontmanager.getFont automaticly.
----@return sc.fontmanager.SCFont defaultFont The default font used.
-function sc.fontmanager.getDefaultFont() end
+---Finalizes the MD5 stream. After calling this, the stream can no longer be used.
+---@return string md5String The final MD5 hash as a string
+function MD5Stream:finish() end
 
----The JSON Module for the computer API!
-sc.json = {}
-
----Returns true if a tlua table is safe to convert to JSON.
----@param root table The lua table to check
----@return boolean isSafe If true, That means it’s safe to convert. else not!
-function sc.json.isSafe( root ) end
-
----Converts a lua tble to a JSON string.
----@param root table The lua table to convert to a string
----@param prettify boolean If true, The JSON string would be prettier. Use this when you want to display it.
----@param indent string? The indentation character. Defaults to “\t”
----@return string jsonString The JSON string from a Lua table
-function sc.json.toString( root, prettify, indent ) end
-
----Converts a JSON string to a Lua table
----@param root string The JSON string to convert
----@return table The converted Lua table
-function sc.json.toTable( root ) end
-
----A helper module for your needs that are math-related
-sc.math = {}
-
----Clamps a number value to be ranged from the min argument to the max argument.
----@param value number The value to clamp
----@param min number The minimum for the value.
----@param max number The maximum for the value.
----@return number clampedNumber The clamped value
-function sc.math.clamp( value, min, max ) end
-
----An encryption module for MD5 only! (Even tho it’s no longer recommended to use this for encryption! )
+-- MD5 encryption library
 sc.md5 = {}
 
----@class sc.md5.MD5Stream
-local sc_md5_md5stream = {}
-sc_md5_md5stream.a = 0x67452301 ---Unknown. The Default Value is 0x67452301 (Number form: 1732584193)
-sc_md5_md5stream.b = 0xefcdab89 ---Unknown. The default value is 0xefcdab89 (Number form: 4023233417)
-sc_md5_md5stream.c = 0x98badcfe ---Unknown. The default value is 0x98badcfe (Number form: 2562383102)
-sc_md5_md5stream.d = 0x10325476 ---Unknown. The default value is 0x10325476 (Number form: 271733878)
-sc_md5_md5stream.pos = 0 ---The current position
-sc_md5_md5stream.buf = "" ---The buffer data
-
----Adds additional data to the stream
----@param data string The data to add.
-function sc_md5_md5stream.update( data ) end
-
----Finishes a buffer and returns its output data
----@return string data The stream's data
-function sc_md5_md5stream.finish() end
-
----Creates a new MD5 Stream
----@return sc.md5.MD5Stream md5stream The new MD5 stream
+---Creates a new MD5 stream.
+---@return MD5Stream The newly created MD5 stream
 function sc.md5.new() end
 
----Converts a string to a MD5 string (NOTE: Pure raw bytes!)
----@param str string The string to convert
----@return string md5rawbytes The string in a MD5 string in raw bytes format
-function sc.md5.sum( str ) end
+---Converts raw bytes to hexadecimal format.
+---@param rawBytes string The raw bytes
+---@return string hexData The converted hexadecimal data
+function sc.md5.tohex(rawBytes) end
 
----Converts a string to an MD5-encrypted string
+---Converts a string to an MD5 hash.
 ---@param str string The string to convert
----@return string md5encrypted The MD5-Encrypted string
-function sc.md5.sumhexa( str ) end
+---@return string md5Data The MD5 hash of the string
+function sc.md5.sum(str) end
 
----Converts an MD5 Raw bytes string to a Proper MD5 string that is readable
+---Converts a string to an MD5 hash in hexadecimal format.
 ---@param str string The string to convert
----@return string md5encrypted The MD5-Encrypted string
-function sc.md5.tohex( str ) end
-
----The SHA256 Module for the computer API!
----
----You can only encode. Nothing else…
+---@return string md5hexData The MD5 hash in hexadecimal format
+function sc.md5.sumhexa(str) end
+-- SHA256 Encryption library
 sc.sha256 = {}
 
----Encodes a string to be SHA256
----@param str string The string to convert to SHA256
----@return string sha256str The converted string
-function sc.sha256.encode( str ) end
+---Encodes a string to SHA256
+---@param str string The string to encrypt
+---@return string sha256String The SHA256 hash of the string
+function sc.sha256.encode(str) end
 
----The Table Module for the computer API!
+-- Additional features for strings
+sc.string = {}
+
+---Splits a string into chunks.
+---@param inputString string The string to split
+---@param chunkSize number The size of each chunk
+---@return string[] chunks The chunks of the input string
+function sc.string.splitString(inputString, chunkSize) end
+
+-- Additional functionality for tables
 sc.table = {}
 
----Clones a table
+---Merges two tables.
+---(If fullOverwrite is false) It merges the tables:
+---    - If both value1 and value2 are tables, it recursively merges them.
+---    - If value1 is a table but value2 is not, value1 will not be overwritten.
+---    - If neither of the above checks apply, value2 will be used.
+---@param table1 table The first table
+---@param table2 table The second table
+---@param fullOverwrite boolean? If true, table2 will overwrite any values in table1.
+---@return table mergedTable The merged table
+function sc.table.merge(table1, table2, fullOverwrite) end
+
+---Clones a table.
 ---@param tbl table The table to clone
 ---@return table clonedTable The cloned table
-function sc.table.clone( tbl ) end
+function sc.table.clone(tbl) end
 
----Gets an item from a table via the index. Unlike doing `tbl[index]`. This will not care if the index numbers aren’t in order.
+---Converts a Lua table to a string.
+---@param tbl table The Lua table to convert
+---@return string str The table as a string
+function sc.table.toString(tbl) end
+
+---Gets an item at a specific index, ignoring the table's actual indexing.
+---@param tbl table The table to read from
+---@param index integer The index to retrieve
+---@return any? value The retrieved value
+function sc.table.getItemAt(tbl, index) end
+
+---Gets the size of a table. Compatible with dictionaries. (Note: Using `#dict` will always return 0!)
 ---@param tbl table The table
----@param index integer The item to get
----@return any data Whatever data it has received from the index
-function sc.table.getItemAt( tbl, index ) end
+---@return integer size The total number of values in the table
+function sc.table.getTableSize(tbl) end
 
----Gets all items via a ipairs loop.
----
----Unlike doing #tbl, If the indexing was weird, #tbl would return 0. This function does not care if the indexing system is weird. Will give you the same result as if the indexing system was normal.
----
----For dictionaries. Use sc.table.getTotalItemsDict
----@param tbl table The table
----@return integer totalItems The total items in the table
-function sc.table.getTotalItems( tbl ) end
+---Shifts a table's indexes by a specified amount.
+---@param tbl table The table to shift
+---@param shiftAmount integer The amount to shift
+---@return table shiftedTable The table with shifted indexes
+function sc.table.shiftTableIndexes(tbl, shiftAmount) end
 
----Gets all items via a pairs loop. This is used for dictionaries. else use sc.table.getTotalItems
----
----Unlike doing #tbl, If the indexing was weird, #tbl would return 0. This function does not care if the indexing system is weird. Will give you the same result as if the indexing system was normal.
----@param tbl table The table
----@return integer totalItems The total items in the table
-function sc.table.getTotalItemsDict( tbl ) end
+---Returns true if the table is a dictionary.
+---@param tbl table The table to check
+---@return boolean isDict True if the table is a dictionary, false otherwise
+function sc.table.isDictionary(tbl) end
 
----Merges 2 tables in 1.
----
----**Important:** The order that you put the sc.table.merge matters! `tbl2` will override/overwrite anything inside `tbl1`!
----@param bl1 table The 1st table
----@param tbl2 table The 2nd table
----@param fullOverwrite boolean? This will make it so the merged value will be always from tbl2. Will not care about anything else. The default is false
----@return table tbl The merged table
-function sc.table.merge( tbl1, tbl2, fullOverwrite ) end
+---Creates a new table ordered by numbers (linear).
+---@param tbl table The table to order
+---@return table orderedTable The table ordered by number
+function sc.table.numberlyOrderTable(tbl) end
 
----Converts a table to the same thing but as a string. If you were to try doing this with Lua’s tostring. You would just get “table: 00A59928”. Not the actual contents of the table itself!
----@param tbl table The table
----@return string tableStr The converted lua as a string
-function sc.table.toString( tbl ) end
+---Returns true if a value exists in the table.
+---@param tbl table The table to search
+---@param item any The value to find
+---@return boolean valueExists True if the value exists, false otherwise
+---@return any? valueIndex The index where the value was found, if applicable
+function sc.table.valueExistsInList(tbl, item) end
 
----Gets the remainder of the division.
----@param a number The number to divide and get its remainder
----@param b number The division by number
----@return number remainder The remainder of a divided number.
-function sc.util.positiveModulo( a, b ) end
+---Merges two lists into one. `tbl2` is appended to `tbl1`. (Indexes will be reordered to be numerically ordered!)
+---@param tbl1 table The first list
+---@param tbl2 table The second list
+---@return table mergedList The merged list
+function sc.table.mergeLists(tbl1, tbl2) end
 
----The Vector3 Module for the computer API!
+-- Utility functions
+sc.util = {}
+
+---Reimplementation of sm.util.positiveModulo, Uncrashable.
+---@param x number The number to divide
+---@param n number The amount to divide
+---@return number remainder The remains that it is impossible to divide
+function sm.scrapcomputers.util.positiveModulo(x, n) end
+
+-- Additional features that `sm.vec3` does not have
 sc.vec3 = {}
 
----Adds a vec3 by **X, Y and Z**
----@param vec3 Vec3 The vector3 to modify
----@param x number Vec3’s x value to be added by
----@param y number Vec3’s y value to be added by
----@param z number Vec3’s z value to be added by
----@return Vec3 newVec3 The new vector3
-function sc.vec3.add( vec3, x, y, z ) end
+---A function similar to `sm.vec3.new`, but with one argument.
+---Simply put, it's equivalent to `sm.vec3.new(xyzNum, xyzNum, xyzNum)`, hence the name "newSingular".
+---@param xyzNum number The value for x, y, and z
+---@return Vec3 vector3 The created vector3
+function sc.vec3.newSingular(xyzNum) end
 
----Divides a vec3 by **X, Y and Z**
----@param vec3 Vec3 The vector3 to modify
----@param x number Vec3’s x value to be divided by
----@param y number Vec3’s y value to be divided by
----@param z number Vec3’s z value to be divided by
----@return Vec3 newVec3 The new vector3
-function sc.vec3.divide( vec3, x, y, z ) end
+---Converts a vector3 to be in radians
+---@param vec3 Vec3 The vector3 value for x, y and z
+---@return Vec3 vec3 The created vector3
+function smc.vec3.toRadians(vec3) end
 
----Multiplies a vec3 by **X, Y and Z**
----@param vec3 Vec3 The vector3 to modify
----@param x number Vec3’s x value to be multiplied by
----@param y number Vec3’s y value to be multiplied by
----@param z number Vec3’s z value to be multiplied by
----@return Vec3 newVec3 The new vector3
-function sc.vec3.mulitply( vec3, x, y, z ) end
+---Converts a vector3 to be in degrees
+---@param vec3 Vec3 The vector3 value for x, y and z
+---@return Vec3 vec3 The created vector3
+function sc.vec3.toDegrees(vec3) end
 
----Subtracts a vec3 by **X, Y and Z**
----@param vec3 Vec3 The vector3 to modify
----@param x number Vec3’s x value to be subtracted by
----@param y number Vec3’s y value to be subtracted by
----@param z number Vec3’s z value to be subtracted by
----@return Vec3 newVec3 The new vector3
-function sc.vec3.subtract( vec3, x, y, z ) end
 
----Calculates the distance between 2 vectors
----@param vec1 Vec3 The 1st vector3
----@param vec2 Vec3 The 2nd vector3
----@return number The distance between the 2 vectors
-function sc.vec3.distance( vec1, vec2 ) end
+-- VPBS allows you to convert a Lua table to a packet buffer. Use this if you prefer to handle packets as strings rather than dealing with BitStreams.
+sc.vpbs = {}
 
----Creates a vector3 by 1 number for xyz
----@param xyz number The value for the X, Y and Z
----@return Vec3 newVec3 The new vector3
-function sc.vec3.newSingluar( xyz ) end
-
--- VPBS allows you to convert a lua table to a packet buffer. Use this if you do NOT wanna deal with BitStreams and want to do every packet as a string.
-sc.VPBS = {}
-
----Converts a table to a VPBS string
+---Converts a table to a VPBS string.
 ---@param tbl table The table to convert
----@return string vpbsStr The converted string.
-function sc.VPBS.tostring(tbl) end
+---@return string vpbsStr The converted VPBS string
+function sc.vpbs.toString(tbl) end
 
----Converts a VPBS string to a table
----@param data string The VPBS string.
----@return table tbl The table from the string
-function sc.VPBS.totable(data) end
+---Converts a VPBS string to a table.
+---@param data string The VPBS string
+---@return table tbl The table created from the string
+function sc.vpbs.toTable(data) end
 
----Checks if the string is a VPBS formatted string
+---Checks if the string is in VPBS format.
 ---@param data string The data to check
----@return boolean isVPBS True if its a VPBS string, else not.
-function sc.VPBS.isVPBSstring(data) end
+---@return boolean isVPBS True if the string is in VPBS format, false otherwise
+function sc.vpbs.isVPBSstring(data) end
 
----@diagnostic disable: return-type-mismatch
--- A BitStream Module that lets you make packet data (for example)
-sc.BitStream = {}
+-- Manages fonts and lets you get the fonts
+sc.fontamanger = {}
 
--- A Bitstream that is a stream of bits! (What did you expect!)
----@class sc.bitstream.Stream
-local BitStream = {}
+---Gets a font
+---@param fontName string The font name to get
+---@return ScrapComputersFont? font The font
+---@return string? errorMessage The error message (if it failed to get the font)
+function sc.fontamanger.getFont(fontName) end
 
--- The position in the string itself (Bit by Bit!)
-BitStream.pos = 1
--- The position in the string itself (Byte by Byte!)
-BitStream.bytePos = 1
--- The size of the stream.
-BitStream.size = 0
+---Gets all font names
+---@return string[] All font names
+function sc.fontamanger.getFontNames() end
 
----Dumps the string
----@return string dumpedString The dumped string
-function BitStream:dumpString() end
+---Returns the default font name
+---@return string defualtFontName The font name
+function sc.fontamanger.getDefaultFontName() end
 
----Dumps the string (as base64)
----@return string dumpedString The dumped string
-function BitStream:dumpBase64() end
+---Returns the default font
+---@return ScrapComputersFont font The default font
+function sc.fontamanger.getDefaultFont() end
 
----Dumps the string (as hex)
----@return string dumpedString The dumped string
-function BitStream:dumpHex() end
+----------------------------------------------------------------------------------------------------
+---                                                                                              --- 
+---   ██████╗ ██████╗ ███╗   ███╗██████╗  ██████╗ ███╗   ██╗███████╗███╗   ██╗████████╗███████╗  ---
+---  ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██╔═══██╗████╗  ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝  ---
+---  ██║     ██║   ██║██╔████╔██║██████╔╝██║   ██║██╔██╗ ██║█████╗  ██╔██╗ ██║   ██║   ███████╗  ---
+---  ██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║   ██║██║╚██╗██║██╔══╝  ██║╚██╗██║   ██║   ╚════██║  ---
+---  ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ╚██████╔╝██║ ╚████║███████╗██║ ╚████║   ██║   ███████║  ---
+---   ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝  ---
+---                                                                                              ---
+----------------------------------------------------------------------------------------------------
 
----Writes a bit
----@param bit boolean|integer The bit value to write
-function BitStream:writeBit(bit) end
-
----Reads a bit
----@return integer? 0 or 1 for bit value. Nil if it overflows.
-function BitStream:readBit() end
-
----Writes a byte
----@param byte integer The byte to write (Integer because it must be as ASCII char)
-function BitStream:writeByte(byte) end
-
----Reads a byte
----@return string? byte The byte it has read.
-function BitStream:readByte() end
-
----Writes a signed 8-bit integer.
----@param integer integer The integer to write
-function BitStream:writeInt8(integer) end
-
----Reads a signed 8-bit integer.
----@return integer? The signed 8-bit integer read.
-function BitStream:readInt8() end
-
----Writes an unsigned 8-bit integer.
----@param uinteger integer The unsigned integer to write.
-function BitStream:writeUInt8(uinteger) end
-
----Reads an unsigned 8-bit integer.
----@return integer? The unsigned 8-bit integer read.
-function BitStream:readUInt8() end
-
----Writes a signed 16-bit integer.
----@param integer integer The signed integer to write.
-function BitStream:writeInt16(integer) end
-
----Reads a signed 16-bit integer.
----@return integer? The signed 16-bit integer read.
-function BitStream:readInt16() end
-
----Writes an unsigned 16-bit integer.
----@param uinteger integer The unsigned integer to write.
-function BitStream:writeUInt16(uinteger) end
-
----Reads an unsigned 16-bit integer.
----@return integer? The unsigned 16-bit integer read.
-function BitStream:readUInt16() end
-
----Writes a signed 24-bit integer.
----@param integer integer The signed integer to write.
-function BitStream:writeInt24(integer) end
-
----Reads a signed 24-bit integer.
----@return integer? The signed 24-bit integer read.
-function BitStream:readInt24() end
-
----Writes an unsigned 24-bit integer.
----@param uinteger integer The unsigned integer to write.
-function BitStream:writeUInt24(uinteger) end
-
----Reads an unsigned 24-bit integer.
----@return integer? The unsigned 24-bit integer read.
-function BitStream:readUInt24() end
-
----Writes a signed 32-bit integer.
----@param integer integer The signed integer to write.
-function BitStream:writeInt32(integer) end
-
----Reads a signed 32-bit integer.
----@return integer? The signed 32-bit integer read.
-function BitStream:readInt32() end
-
----Writes an unsigned 32-bit integer.
----@param uinteger integer The unsigned integer to write.
-function BitStream:writeUInt32(uinteger) end
-
----Reads an unsigned 32-bit integer.
----@return integer? The unsigned 32-bit integer read.
-function BitStream:readUInt32() end
-
----Writes a string.
----@param str string The string to write.
-function BitStream:writeString(str) end
-
----Reads a string.
----@return string? The string read.
-function BitStream:readString() end
-
----Creates a new BitStream Stream
----@param data string? Pre-appended binary data.
----@return sc.bitstream.Stream bitStream The bitstream itself.
-function sc.bitstream.new(data) end
-
----@class Antenna
----The antenna component is connected to a network port. If connected, You would be able to send data to other antenna’s wireless!
-local Antenna = {}
-
----Gets the name of the antenna
----@return string antennaName The name of the antenna
-function Antenna.getName() end
-
----Sets the name of the antenna
----@param name string The new name of the antenna
-function Antenna.setName( name ) end
-
----Returns true if there's a connection with anotehr antenna.
----@return boolean hasConnection True if it has a connection
-function Antenna.hasConnection() end
-
----Gets all the antenna’s of the entire world
----@return string[] discoveredAntennas All discovered antennas
-function Antenna.scanAntennas() end
-
----@class Camera
----The camera allows you to take screenshots or even render video from the world to your display! Our camera looks great while not even touching the raytracing. There’s no raytracing happening! just rays going everywhere as a multicast!
+---The camera allows you to capture frames or even render video from the world to your display! Our camera
+---performs well without the need for raytracing, using rays in a multicast fashion rather than complex
+---raytracing techniques.
 ---
----This doesn't even touch the complicated math! Just addition, subtraction, division, and multiplication.
+---The calculations are simple: addition, subtraction, division, and multiplication.
+---@class Camera
 local Camera = {}
 
----Takes a frame (aka a screenshot)
----@param width integer The width of the frame
----@param height integer The height of the frame
----@param fovX number The FOV on x-axis
----@param fovY number The FOV on y-axis
----@param xOffset integer The applied x offset for the frame. By default, it’s at 0 so at the top, it would be rendered there
----@param yOffset integer The applied y offset for the frame. By default, it’s at 0 so at the left, it would be rendered there
----@return Display.DisplayPixelTable frame The pixels of the frame
-function Camera.getFrame( width, height, fovX, fovY, xOffset, yOffset ) end
+---Captures a frame and displays it.
+---@param display Display The display to draw on
+---@param width   integer? The width of the frame
+---@param height  integer? The height of the frame
+function Camera.frame(display, width, height) end
 
----Takes a depth map frame (aka a screenshot) and returns it
----@param width integer The width of the frame
----@param height integer The height of the frame
----@param fovX number The FOV on x-axis
----@param fovY number The FOV on y-axis
----@param focalLength integer The focal’s length
----@param xOffset integer The applied x offset for the frame. By default, it’s at 0 so at the top, it would be rendered there
----@param yOffset integer The applied y offset for the frame. By default, it’s at 0 so at the left, it would be rendered there
----@return Display.DisplayPixelTable frame The pixels of the frame
-function Camera.getDepthFrame( width, height, fovX, fovY, focalLength, xOffset, yOffset ) end
+---Captures a frame with shadows and displays it.
+---@param display Display The display to draw on
+---@param width   integer? The width of the frame
+---@param height  integer? The height of the frame
+function Camera.advancedFrame(display, width, height) end
 
----Takes a depth map frame (aka a screenshot) and returns it
----@param width integer The width of the frame
----@param height integer The height of the frame
----@param fovX number The FOV on x-axis
----@param fovY number The FOV on y-axis
----@param sliceWidth  integer The width for each slice
----@param xOffset integer The applied x offset for the frame. By default, it’s at 0 so at the top, it would be rendered there
----@param yOffset integer The applied y offset for the frame. By default, it’s at 0 so at the left, it would be rendered there
----@return Display.DisplayPixelTable frame The pixels of the frame
-function Camera.getVideo( width, height, fovX, fovY, sliceWidth , xOffset, yOffset ) end
+---Captures a depth frame and displays it.
+---@param display     Display The display to draw on
+---@param focalLength number The focal length
+---@param width       integer? The width of the frame
+---@param height      integer? The height of the frame
+function Camera.depthFrame(display, focalLength, width, height) end
 
----Takes a advanced frame (aka a screenshot)
----@param width integer The width of the frame
----@param height integer The height of the frame
----@param fovX number The FOV on x-axis
----@param fovY number The FOV on y-axis
----@param xOffset integer The applied x offset for the frame. By default, it’s at 0 so at the top, it would be rendered there
----@param yOffset integer The applied y offset for the frame. By default, it’s at 0 so at the left, it would be rendered there
----@return Display.DisplayPixelTable frame The pixels of the frame
-function Camera.getAdvancedFrame( width, height, fovX, fovY, xOffset, yOffset ) end
+---Captures a masked frame and displays it.
+---@param display Display The display to draw on
+---@param mask    string The mask to apply
+---@param width   integer? The width of the frame
+---@param height  integer? The height of the frame
+function Camera.maskedFrame(display, mask, width, height) end
 
----Like getFrame but it’s as slices meaning you could make CCTV cameras without lagging a lot! It’s just that the refresh rate would be lower.
----@param width integer The width of the frame
----@param height integer The height of the frame
----@param fovX number The FOV on x-axis
----@param fovY number The FOV on y-axis
----@param sliceWidth  integer The width for each slice
----@param xOffset integer The applied x offset for the frame. By default, it’s at 0 so at the top, it would be rendered there
----@param yOffset integer The applied y offset for the frame. By default, it’s at 0 so at the left, it would be rendered there
----@return Display.DisplayPixelTable frame The pixels of the frame
-function Camera.getAdvancedVideo( width, height, fovX, fovY, sliceWidth , xOffset, yOffset ) end
+---Captures a frame and displays it. Allows for a custom drawer function to modify the result.
+---@param display Display The display to draw on
+---@param drawer  function The custom drawer function
+---@param width   integer? The width of the frame
+---@param height  integer? The height of the frame
+function Camera.customFrame(display, drawer, width, height) end
 
----Toggles the randomization shader. This is very simple but adds a lot of detail to the frame at a cost of performance when used in displays as the optimization would be gone.
----
----This randomization of the colors of a frame’s pixels a tiny bit.
----@param toggle boolean To enable or disable the randomization shader
-function Camera.toggleRandom( toggle ) end
+---Captures a frame and displays it. Designed for video rendering.
+---@param display    Display The display to draw on
+---@param sliceWidth integer The slice width. Larger values render frames faster but may impact performance.
+---@param width      integer? The width of the video
+---@param height     integer? The height of the video
+function Camera.video(display, sliceWidth, width, height) end
 
----@class Display
+---Captures a frame and displays it. Designed for video rendering with shadows.
+---@param display    Display The display to draw on
+---@param sliceWidth integer The slice width. Larger values render frames faster but may impact performance.
+---@param width      integer? The width of the video
+---@param height     integer? The height of the video
+function Camera.advancedVideo(display, sliceWidth, width, height) end
+
+---Captures a frame and displays it. Allows for a custom drawer function to modify the result. Designed for video rendering.
+---@param display    Display The display to draw on
+---@param drawer     function The custom drawer function
+---@param sliceWidth integer The slice width. Larger values render frames faster but may impact performance.
+---@param width      integer? The width of the frame
+---@param height     integer? The height of the frame
+function Camera.customVideo(display, drawer, sliceWidth, width, height) end
+
+---Sets the range of the camera. The larger the range, the further you can see.
+---@param range integer The range to set
+function Camera.setRange(range) end
+
+---Sets the shadow range of the camera. The larger the range, the larger the shadows can be.
+---@param range integer The range to set
+function Camera.setShadowRange(range) end
+
+---Sets the field of view (FOV) of the camera.
+---@param fov integer The FOV to set
+function Camera.setFov(fov) end
+
+---Sets the x position offset for rendering.
+---@param xOffset integer The x offset
+function Camera.setOffsetX(xOffset) end
+
+---Sets the y position offset for rendering.
+---@param yOffset integer The y offset
+function Camera.setOffsetY(yOffset) end
+
+---@class Display The display functions like a monitor in Scrap Mechanic, allowing you to draw anything on it using a computer.
 local Display = {}
 
----@class Display.TouchData
----This contains touch data when the user interacts with the display AKA "touches the display"
----@param x number The position on the x-axis.
----@param y number The position on the y-axis.
----@param state 1|2|3 The state that it has been pressed. 1 is Pressed, 2 is Hold, 3 is Released.
+---Draws a pixel on the screen.
+---@param x number The x-coordinate
+---@param y number The y-coordinate
+---@param color MultiColorTypeNonNil The color (cannot be nil!)
+function Display.drawPixel(x, y, color) end
 
----@class Display.PixelTable
----A pixel table is an array of pixels. Each item inside it contains the data below. Each value inside has a use case
----@field x number The position of the pixel on the X-axis
----@field y number The position of the pixel on the Y-axis
----@field scale {x : number, y : number} The size of the pixel itself.
----@field color Color The color of the pixel
+---Draws pixels from a table.
+---@param tbl PixelTable The table of pixels
+function Display.drawFromTable(tbl) end
 
----Draws a single pixel at the specified coordinates with the given color.
----@param x number The x-coordinate of the pixel.
----@param y number The y-coordinate of the pixel.
----@param color Color|string The color of the pixel in hexadecimal format.
-function Display.drawPixel( x, y, color ) end
+---Clears the display.
+---@param color MultiColorType The new background color (defaults to "#000000")
+function Display.clear(color) end
 
----Draws shapes and text based on data provided in a table.
----@param tbl [PixelTable](#pixeltable)[] All instructions to run through
-function Display.drawFromTable( tbl ) end
+---Draws a line from point A to point B.
+---@param x number The first point on the x-axis
+---@param y number The first point on the y-axis
+---@param x1 number The second point on the x-axis
+---@param y1 number The second point on the y-axis
+---@param color MultiColorType The color of the line
+function Display.drawLine(x, y, x1, y1, color) end
 
----Clears the display with the specified color.
----@param color Color|string The color to clear the display with, in hexadecimal format. (If nil, It will clear the screen with the default color)
-function Display.clear( color ) end
+---Draws a circle.
+---@param x number The x-coordinate
+---@param y number The y-coordinate
+---@param radius number The radius of the circle
+---@param color MultiColorType The color of the circle
+function Display.drawCircle(x, y, radius, color) end
 
----Draw a line between two points with the specified color.
----@param x number The x-coordinate of the starting point.
----@param y number The y-coordinate of the starting point.
----@param x1 number The x-coordinate of the ending point.
----@param y1 number The y-coordinate of the ending point.
----@param color Color|string The color of the line in hexadecimal format.
-function Display.drawLine( x, y, x1, y1, color ) end
+---Draws a filled circle.
+---@param x number The x-coordinate
+---@param y number The y-coordinate
+---@param radius number The radius of the circle
+---@param color MultiColorType The color of the filled circle
+function Display.drawFilledCircle(x, y, radius, color) end
 
----Draws a circle with the specified center coordinates, radius, and color.
----@param x number The x-coordinate of the center of the circle.
----@param y number The y-coordinate of the center of the circle.
----@param radius number The radius of the circle.
----@param color Color|string The color of the circle in hexadecimal format.
-function Display.drawCircle( x, y, radius, color ) end
+---Draws a rectangle.
+---@param x number The x-coordinate
+---@param y number The y-coordinate
+---@param width number The width of the rectangle
+---@param height number The height of the rectangle
+---@param color MultiColorType The color of the rectangle
+function Display.drawRect(x, y, width, height, color) end
 
----Draws a filled circle with the specified center coordinates, radius, and color.
----@param x number The x-coordinate of the center of the circle.
----@param y number The y-coordinate of the center of the circle.
----@param radius number The radius of the circle.
----@param color Color|string The color of the circle in hexadecimal format.
-function Display.drawFilledCircle( x, y, radius, color ) end
+---Draws a filled rectangle.
+---@param x number The x-coordinate
+---@param y number The y-coordinate
+---@param width number The width of the rectangle
+---@param height number The height of the rectangle
+---@param color MultiColorType The color of the filled rectangle
+function Display.drawFilledRect(x, y, width, height, color) end
 
----Draws a triangle with the specified vertices and color.
----@param x1 number The x-coordinate of the first vertex.
----@param y1 number The y-coordinate of the first vertex.
----@param x2 number The x-coordinate of the second vertex.
----@param y2 number The y-coordinate of the second vertex.
----@param x3 number The x-coordinate of the third vertex.
----@param y3 number The y-coordinate of the third vertex.
----@param color Color|string The color of the triangle in hexadecimal format.
-function Display.drawTriangle( x1, y1, x2, y2, x3, y3, color ) end
+---Draws text on the display.
+---@param x number The x-coordinate
+---@param y number The y-coordinate
+---@param text string The text to display
+---@param color MultiColorType The color of the text
+---@param fontName string The font to use
+function Display.drawText(x, y, text, color, fontName) end
 
----Draws a filled triangle with the specified vertices and color.
----@param x1 number The x-coordinate of the first vertex.
----@param y1 number The y-coordinate of the first vertex.
----@param x2 number The x-coordinate of the second vertex.
----@param y2 number The y-coordinate of the second vertex.
----@param x3 number The x-coordinate of the third vertex.
----@param y3 number The y-coordinate of the third vertex.
----@param color Color|string The color of the triangle in hexadecimal format.
-function Display.drawFilledTriangle( x1, y1, x2, y2, x3, y3, color ) end
-
----Draws a rectangle with the specified position, width, height, and color.
----@param x number The x-coordinate of the top-left corner of the rectangle.
----@param y number The y-coordinate of the top-left corner of the rectangle.
----@param width number The width of the rectangle.
----@param height number The height of the rectangle.
----@param color Color|string The color of the rectangle in hexadecimal format.
-function Display.drawRect( x, y, width, height, color ) end
-
----Draws a filled rectangle with the specified position, width, height, and color.
----@param x number The x-coordinate of the top-left corner of the rectangle.
----@param y number The y-coordinate of the top-left corner of the rectangle.
----@param width number The width of the rectangle.
----@param height number The height of the rectangle.
----@param color Color|string The color of the rectangle in hexadecimal format.
-function Display.drawFilledRect( x, y, width, height, color ) end
-
----Draws text at the specified position with the specified color.
----@param x number The x-coordinate of the text.
----@param y number The y-coordinate of the text.
----@param string string The text to draw.
----@param color Color|string The color of the text in hexadecimal format.
----@param fontName string? The font to use. (defaults to whatever the default font the font manager is using)
-function Display.drawText( x, y, string, color, fontName ) end
-
----This optimizes the display but more at the extreme bound.
----**NOTE:** This is only meant to be called when you're not planning to update the display for a long time. Use it when it's generally going to be static.
-function Display.optimize() end
-
----Retrieves the dimensions of the display.
+---Returns the dimensions of the display.
 ---@return number width The width of the display
 ---@return number height The height of the display
 function Display.getDimensions() end
 
----Hides the display.
+---Hides the display, making it invisible to all players.
 function Display.hide() end
 
----Shows the display.
+---Shows the display, making it visible to all players.
 function Display.show() end
 
----Sets the render distance of the display.
----@param distance number The render distance to set.
-function Display.setRenderDistance( distance ) end
+---Sets the render distance for the display. If the user goes beyond this range, the display will automatically hide itself, otherwise, it will remain visible.
+---@param distance number The new render distance to set
+function Display.setRenderDistance(distance) end
 
----Enables or disables the touchscreen functionality.
----@param bool boolean True to enable touch screen, false to disable.
-function Display.enableTouchScreen( bool ) end
+---Enables or disables touchscreen functionality, allowing the user to interact with the display.
+---@param bool boolean If true, touchscreen mode is enabled, and the end user can interact with it.
+function Display.enableTouchScreen(bool) end
 
----Retrieves touch data from the touch screen.
----@return Display.TouchData touchData A table containing touch data such as coordinates and touch state.
+---Retrieves the latest touch data. An error will occur if the touchscreen is disabled.
+---@return TouchData? touchData The touch data, or nil if the display has not been touched.
 function Display.getTouchData() end
 
----Updates the display.
+---Renders the pixels to the display.
 function Display.update() end
 
----Sets whether the display should automatically update.
----**Performance Note:** If you let's say draw a lot of things like rectangles, text, etc with this enabled. Your game would lag a LOT! And the network would be spammed with network requests! So please only use this when you're not going to draw a lot and your display doesn't get updated a lot!
----@param bool boolean True to enable auto-update, false to disable.
-function Display.autoUpdate( bool ) end
+---Automatically updates the display. This is not recommended, as it can be very laggy.
+---@param bool boolean Toggles the auto-update system.
+function Display.autoUpdate(bool) end
 
----This function sets the optimization threshold of the display. Our displays optimize the effect count by grouping similar-colored pixels together into one larger effect. The integer (ranging between 0 and 1) dictates how similar the neighboring pixels' colors have to be, with 0 requiring them to be exactly the same RGB value and 1 allowing any RGB value.
----@param int number The optimization threshold to set.
-function Display.setOptimizationThreshold( int ) end
+---Optimizes the display for performance. Optimization can be costly at first, but will significantly improve performance afterward.
+function Display.optimize() end
 
----Calculate the text's bounding box
----@param text string The text to calculate its size.
----@return number The width that the text would consume
----@return number The height that the text would consume
-function Display.calcTextSize( text ) end
+---Sets the optimization threshold. Lower values provide better quality but less optimization, while higher values provide better optimization at the cost of quality. The value should be set in decimals. The default optimization threshold is 0.05.
+---@param threshold number The new threshold
+function Display.setOptimizationThreshold(threshold) end
 
----@class Drive
----A drive allows you to store anything* inside it. You can also go interact with it to modify its data there without doing it via code.
-local Drive = {}
+---Sets the maximum buffer size.
+---@param buffer integer The maximum buffer size
+function Display.setMaxBuffer(buffer) end
 
----Receive data from the drive
----@return table driveContents The contents of the drive
-function Drive.load() end
+---Returns the display's ID.
+---@return integer id The display's shape ID.
+function Display.getId() end
 
----Saves data to the drive
----
----**NOTE:** You can only store data that JSON supports!
----@param data table The new data
-function Drive.save( data ) end
+---Returns the current optimization threshold (0 - 1).
+---@return number threshold The current optimization threshold
+function Display.getOptimizationThreshold() end
 
----@class Hologram
----The hologram are like Displays but instead of being in 2D, its in 3D. You can show objects in 3D with this
-local Hologram = {}
+---Calculates the size of the text.
+---@param text string The text to be calculated
+---@param font string The font to use
+---@return number width The width of the text
+---@return number height The height of the text
+function Display.calcTextSize(text, font) end
 
----@class Hologram.Object
+---@class GPS A GPS allows you to get rotation, position, velocities, and more!
+local GPS = {}
+
+---Gets GPS data and returns it.
+---@return GPSData gpsData The GPS data it has received
+function GPS.getGPSData() end
+
+---@class Harddrive A drive allows you to store anything* inside it. You can also interact with it to modify its data directly without using code.
+local Harddrive = {}
+
+---Loads data from the hard drive and returns it.
+---@return table contents The hard drive's contents
+function Harddrive.load() end
+
+---Saves data to the hard drive. Must be JSON compatible.
+---@param data table The data to save
+function Harddrive.save(data) end
+
+---@class HologramObject A 3D hologram object
 local HologramObject = {}
 
----Gets the ID of the object
----@return integer id The ID of the object
+---Gets the ID of the object.
+---@return number id The ID of the object
 function HologramObject.getId() end
 
----Gets the UUID of the object
+---Gets the UUID of the object.
 ---@return Uuid uuid The UUID of the object
 function HologramObject.getUUID() end
 
----Gets the position of the object
+---Gets the position of the object.
 ---@return Vec3 position The position of the object
 function HologramObject.getPosition() end
 
----Gets the rotation of the object
----@return Vec3 rotation The rotation of the object
+---Gets the rotation of the object.
+---@return Quat rotation The rotation of the object
 function HologramObject.getRotation() end
 
----Gets the scale of the object
+---Gets the scale of the object.
 ---@return Vec3 scale The scale of the object
 function HologramObject.getScale() end
 
----Gets the color of the object
+---Gets the color of the object.
 ---@return Color color The color of the object
 function HologramObject.getColor() end
 
----Sets the object’s UUID to be the argument.
+---Sets the object's UUID to the given value.
 ---@param value string|Uuid The new UUID
-function HologramObject.setUUID( value ) end
+function HologramObject.setUUID(value) end
 
----Sets the object’s Position to be the argument.
----@param value Vec3 The new Position
-function HologramObject.setPosition( value ) end
+---Sets the object's position to the given value.
+---@param value Vec3 The new position
+function HologramObject.setPosition(value) end
 
----Sets the object’s Rotation to be the argument.
----@param value Vec3 The new Rotation
-function HologramObject.setRotation( value ) end
+---Sets the object's rotation to the given value.
+---@param value MultiRotationType The new rotation
+function HologramObject.setRotation(value) end
 
----Sets the object’s Scale to be the argument.
----@param value Vec3 The new Scale
-function HologramObject.setScale( value ) end
+---Sets the object's scale to the given value.
+---@param value Vec3 The new scale
+function HologramObject.setScale(value) end
 
----Sets the object’s Color to be the argument.
----@param value Color The new Color
-function HologramObject.setColor( value ) end
+---Sets the object's color to the given value.
+---@param value MultiColorType The new color
+function HologramObject.setColor(value) end
 
----Deletes the object
+---Deletes this hologram object. You will no longer be able to use any of its functions, except `isDeleted`.
 function HologramObject.delete() end
 
----Returns true if the object has been deleted
----@return boolean isDeleted If true, the object is deleted and else it's false and it's NOT deleted.
+---Returns true if the object has been deleted.
+---@return boolean isDeleted If true, the object is deleted. Otherwise, it is not deleted.
 function HologramObject.isDeleted() end
 
----Creates a cube object
+---@class Hologram A hologram that lets you show 3D objects!
+local Hologram = {}
+
+---Creates a cube object.
 ---@param position Vec3 The position of the object
 ---@param rotation Vec3 The rotation of the object
 ---@param scale Vec3 The scale of the object
----@param color Color|string The color of the object
----@return Hologram.Object
-function Hologram.createCube( position, rotation, scale, color ) end
+---@param color MultiColorTypeNonNil The color of the object
+---@return integer id The ID of the object
+function Hologram.createCube(position, rotation, scale, color) end
 
----Creates a sphere object
+---Creates a sphere object.
 ---@param position Vec3 The position of the object
 ---@param rotation Vec3 The rotation of the object
 ---@param scale Vec3 The scale of the object
----@param color Color|string The color of the object
----@return Hologram.Object
-function Hologram.createSphere( position, rotation, scale, color ) end
+---@param color MultiColorTypeNonNil The color of the object
+---@return integer id The ID of the object
+function Hologram.createSphere(position, rotation, scale, color) end
 
----Like createCube or createSphere but u can pass any kind of object from whatever loaded mod! (Via UUID)
----@param uuid Uuid The uuid of the object
+---Creates a custom object.
+---@param uuid Uuid The UUID of the object
 ---@param position Vec3 The position of the object
 ---@param rotation Vec3 The rotation of the object
 ---@param scale Vec3 The scale of the object
----@param color Color|string The color of the object
----@return Hologram.Object
-function Hologram.createSphere( uuid, position, rotation, scale, color ) end
+---@param color MultiColorTypeNonNil The color of the object
+---@return integer id The ID of the object
+function Hologram.createCustomObject(uuid, position, rotation, scale, color) end
 
----@class Keyboard
----It’s like a virtual keyboard! You can interact with it and then type anything and the computer will be able to read it!
+---Gets the object by object ID and returns a table containing the data of that object, or nil if it doesn't exist.
+---@param index number The object you want to retrieve
+---@return HologramObject? object Returns a table (if the object exists) or nil (if the object does not exist)
+function Hologram.getObject(index) end
+
+---@class Keyboard A virtual keyboard that allows you to type. The computer can read one character at a time.
 local Keyboard = {}
 
----Returns the latest keystroke that has been sent. If it is “backSpace”, that means the user has pressed “backSpace”
----@return "backSpace"|string keystroke The keystroke
+---Returns the latest keystroke that has been pressed. If it returns "backSpace" (capitalization matters!), the user pressed the backspace key.
+---Note that Scrap Computers cannot detect all characters!
+---@return "backSpace"|string keystroke The pressed keystroke
 function Keyboard.getLatestKeystroke() end
 
----Returns true if a key is being pressed.
----@return boolean isPressed True if a key is being pressed.
+---Returns true if a key has been pressed.
+---@return boolean isPressed Returns true if a key has been pressed, false otherwise
 function Keyboard.isPressed() end
 
----@class Laser
----The Laser is like a normal scrap mechanic sensor but instead of ON or OFF, It provides more information which could be useful for things like Robot kinematics (More like Sensor-Enhanced Kinematics)
----
----Advanced users: This uses a ray cast for object detection, But this also means that there is an offset between the raycast’s starting point and the object itself. it’s small but this could cause issues with your math!
+---@class Laser A laser is like a sensor in Scrap Mechanic, but it works with a computer and has more features than a normal one.
 local Laser = {}
 
----@class Laser.LaserData
----This structure contains data that the laser has received
----@field directionWorld Vec3 The direction vector of the ray cast
----@field fraction number The fraction (0-1) of the distance reached until collision divided by the ray’s length
----@field normalLocal Vec3 The normal vector of the surface that was hit, relative to the target’s rotation.
----@field normalWorld Vec3 The normal vector of the hit surface
----@field originWorld Vec3 The starting world position of the raycast.
----@field pointLocal Vec3 The world position of the point that was hit, relative to the target’s position.
----@field pointWorld Vec3 The world position of the point that was hit.
----@field type string The physics type of the target that was hit. (See sm.physics.types)
----@field valid boolean Is true if the ray cast was even valid.
+---Sets the laser's distance.
+---@param distance integer The distance to set for the laser
+function Laser.setDistance(distance) end
 
----Sets the distance
----@param distance number The new distance (In Meters!)
-function Laser.setDistance( distance ) end
-
----Gets the data of the laser (Will send a ray cast!)
----@return boolean hit Is True if it hit something.
----@return Laser.LaserData data The laser data
+---Gets laser data and returns it.
+---@return boolean hit If the laser has hit something
+---@return LaserData data The laser data
 function Laser.getLaserData() end
 
----@class Motor
----The motor allows you to control what the bearings and pistons should do.
+---Toggles the laser beam.
+---@param bool boolean Enable or disable the laser beam
+function Laser.toggleBeam(bool) end
+
+---Returns true if the laser beam is visible, false if invisible.
+---@return boolean bool If the laser beam is visible or invisible
+function Laser.isBeamEnabled() end
+
+---Sets whether the laser ignores the current body it is placed on.
+---@param bool boolean If true, the laser will ignore the current body
+function Laser.ignoreCurrentBody(bool) end
+
+---@class Motor Allows you to control velocities and lengths of bearings and pistons!
 local Motor = {}
 
----Sets the bearing(s) speed
----@param speed number The speed to set to bearing(s)
-function Motor.setBearingSpeed( speed ) end
+---Sets the speed of the bearing(s).
+---@param speed number The speed to set for the bearing(s)
+function Motor.setBearingSpeed(speed) end
 
----Sets the bearing(s) angle
----@param angle number The angle to set to bearing(s)
+---Sets the angle of the bearing(s).
+---@param angle number The angle to set for the bearing(s)
 function Motor.setBearingAngle(angle) end
 
----Sets the piston(s) speed
----@param speed number The speed to set to piston(s)
-function Motor.setPistonSpeed( speed ) end
+---Sets the speed of the piston(s).
+---@param speed number The speed to set for the piston(s)
+function Motor.setPistonSpeed(speed) end
 
----Sets the bearing(s) torque 
----@param torque number The torque  to set to bearing(s)
-function Motor.setTorque( torque ) end
+---Sets the torque of the bearing(s).
+---@param torque number The torque to set for the bearing(s)
+function Motor.setTorque(torque) end
 
----Sets the piston(s) length
----@param length number The length to set to piston(s)
-function Motor.setLength( length ) end
+---Sets the length of the piston(s).
+---@param length number The length to set for the piston(s)
+function Motor.setLength(length) end
 
----Sets the piston(s) force
----@param force number The force to set to piston(s)
-function Motor.setForce( force ) end
+---Sets the force of the piston(s).
+---@param force number The force to set for the piston(s)
+function Motor.setForce(force) end
 
----@class NetworkPort
----The network port allows you to send data to other network ports.
-local NetworkPort = {}
-
----Gets the connected antenna
----@return Antenna antenna The antenna if it is connected, else nil
-function NetworkPort.getAntenna() end
-
----Returns true if there’s a connection.
----@return boolean hasConnection True if it has a connection
-function NetworkPort.hasConnection() end
-
----Sends a packet to an Antenna or Network Port
----@param data any The contents of the packet. Doesn’t matter what the data is. can be a number or even a functio
-function NetworkPort.sendPacket( data ) end
-
----Sends a packet to a specified antenna. (Antenna needs to be connected!)
----@param name string The antenna name.
----@param data any The contents of the packet. Doesn’t matter what the data is. can be a number or even a function!
-function NetworkPort.sendPacketToAntenna( name, data ) end
-
----Gets the total packets.
----@return integer totalPackets The total packets it has to read through.
-function NetworkPort.getTotalPackets() end
-
----Reads a packet
----**NOTE:** Check if there are any packets first! If there are none and you execute this, It will error!
----@return any packetData The content of the packet
-function NetworkPort.receivePacket() end
-
----Clears the packets that it has to read through.
-function NetworkPort.clearPackets() end
-
----@class Radar
----A target is an object detected from the radar
+---@class Radar The radar allows you to scan objects around it.
 local Radar = {}
 
----@class Radar.Target
----A target is an object detected from the radar
----@field position Vec3 The position of the target
----@field surfaceArea number The total surface area that the radar can see
-
----Gets all the targets it has detected
----@return Radar.Target[] All targets it has found
+---Gets its targets and returns them.
+---@return RadarTarget[] targets The list of detected targets
 function Radar.getTargets() end
 
----Sets its vertical angle from 10 to 90.
----@param angle number The angle to set
-function Radar.setVerticalScanAngle( angle ) end
+---Sets the vertical scan angle.
+---@param angle number The vertical scan angle (range: 10 to 90 degrees)
+function Radar.setVerticalScanAngle(angle) end
 
----Sets its horizontal  angle from 10 to 90.
----@param angle number The angle to set
-function Radar.setHorizontalScanAngle( angle ) end
+---Sets the horizontal scan angle.
+---@param angle number The horizontal scan angle (range: 10 to 90 degrees)
+function Radar.setHorizontalScanAngle(angle) end
 
----@class SeatController
+---@class SeatController Allows you to control seats.
 local SeatController = {}
 
----@class SeatController.SeatData
----Contains data on the seat.
----@field wsPower 1|0|-1 The power for WS. 1 = Forwards, 0 = None, -1 = Backwards
----@field adPower 1|0|-1 The power for AD. 1 = Left, 0 = None, -1 = Right
----@field characterName string? The characters name that is sitting.
-
----@class SeatController.JointData
----Contains data of a joint.
----@field leftSpeed number The left angle speed.
----@field rightSpeed number The right angle speed.
----@field leftLimit number The left angle limit.
----@field rightLimit number The right angle limit.
----@field bearingLock boolean Whether the joint is unlocked or not.
-
----Gets data from the connected seat
----@return SeatController.SeatData seatData The data of the seat
+---Gets the seat data and returns it.
+---@return SeatData? data The seat data. Nil if no seat has been connected
 function SeatController.getSeatData() end
 
----Gets data from connected joints from the seat
----@return SeatController.JointData[] jointData The data of multiple joints
+---Gets data for all connected joints and returns it.
+---@return JointData[]? data The connected joints' data. Nil if no seat has been connected
 function SeatController.getJointData() end
 
----Presses a button connected to the seat
----@param index integer The button to press (0 to 9)
-function SeatController.pressButton( index ) end
+---Presses a button.
+---@param index integer The index of the button to press.
+---@return boolean? success Whether the button press succeeded. Nil if no seat has been connected
+function SeatController.pressButton(index) end
 
----Releases a button connected to the seat
----@param index integer The button to release  (0 to 9)
-function SeatController.releaseButton( index ) end
+---Releases a button.
+---@param index integer The index of the button to release.
+---@return boolean? success Whether the button release succeeded. Nil if no seat has been connected
+function SeatController.releaseButton(index) end
 
----@deprecated This function is planned to be implemented but at the time is unusable!
----Sets the power for AD movement
----@param power 1|0|-1 The power for AD to set. 1 = Left, 0 = None, -1 = Right
-function SeatController.setADPower( power ) end
-
----@deprecated This function is planned to be implemented but at the time is unusable!
----Sets the power for WS movement
----@param power 1|0|-1 power [ 1|0|-1 ] The power for WS. 1 = Forwards, 0 = None, -1 = Backwards
-function SeatController.setWSPower( power ) end
-
----@class Speaker
----The speaker allows you to play ANY kind of sound and we mean ANYTHING!
+---@class Speaker The speaker allows you to play any kind of sound, and we mean anything!
 local Speaker = {}
 
---- Play’s a beep sound
+---Plays a beep sound.
 function Speaker.beep() end
 
---- Play’s a beep sound
----
----**NOTE:** This is going to be sent to the queue, Flush the queue to play it!
----@return integer index The index where the note is located in the queue.
-function Speaker.beepQueue() end
+---Plays a long beep sound.
+function Speaker.longBeep() end
 
----Play’s whatever note
----
----@param pitch number The pitch of the note
----@param note integer The note to play
----@param durationTicks integer The duration that it will play in ticks
-function Speaker.playNote( pitch, note, durationTicks ) end
+---Plays a custom note.
+---@param pitch number The pitch of the note.
+---@param note number The note value.
+---@param durationTicks number The duration of the note in ticks.
+function Speaker.playNote(pitch, note, durationTicks) end
 
----Play’s whatever note
----
----**NOTE:** This is going to be sent to the queue, Flush the queue to play it!
----@param pitch number The pitch of the note
----@param note integer The note to play
----@param durationTicks integer The duration that it will play in ticks
----@return integer index The index where the note is located in the queue.
-function Speaker.playNoteQueue( pitch, note, durationTicks ) end
+---Plays a custom sound effect.
+---@param name string The name of the sound effect.
+---@param params AudioEffectParameterList The parameters for the sound effect.
+---@param durationTicks number The duration the sound will play in ticks.
+function Speaker.playSound(name, params, durationTicks) end
 
----Plays whatever event effect you specify!
----@param name string The name of the audio to play
----@param params sc.audio.AudioParameter[] Audio parameters to use
----@param durationTicks integer The duration of how long it should play in ticks!
-function Speaker.playNoteEffect( name, params, durationTicks ) end
+---Stops all currently playing audio.
+function Speaker.stopAllAudio() end
 
----Plays whatever event effect you specify!
----
----**NOTE:** This is going to be sent to the queue, Flush the queue to play it!
----@param name string The name of the audio to play
----@param params sc.audio.AudioParameter[] Audio parameters to use
----@param durationTicks integer The duration of how long it should play in ticks!
----@return integer index The index where the note is located in the queue.
-function Speaker.playNoteEffectQueue( name, params, durationTicks ) end
-
----Flushes the queue and plays all of them whatever it’s inside at ONCE!
-function Speaker.flushQueue() end
-
----Remove a note from the queue
----@param noteIndex integer The index where the note is located
-function Speaker.removeNote( noteIndex ) end
-
----Clears the entire queue
-function Speaker.clearQueue() end
-
----Returns the size of the queue
----@return integer queueSize The size of the queue.
-function Speaker.getCurrentQueueSize() end
-
----@class Terminal
----The terminal is like a display but more like a console you can write to, Instead of effects, it uses via GUI.
+---@class Terminal A terminal is like a display but with a keyboard attached. It is an easy method for creating consoles.
 local Terminal = {}
 
----Sends a message to the terminal
----@param msg string The message to send
-function Terminal.send( msg ) end
+---Sends a message to the terminal.
+---@param message string The message to send.
+function Terminal.send(message) end
 
----Clears all data.
+---Clears the terminal display.
 function Terminal.clear() end
 
----Clears the user's input history
+---Clears the input history.
 function Terminal.clearInputHistory() end
 
----Returns true if there are available inputs.
----@return boolean hasReceivedInputs If true, then there are inputs you can read from.
+---Checks if there are any pending inputs.
+---@return boolean hasReceivedInputs Whether inputs have been received.
 function Terminal.receivedInputs() end
 
----Gets the latest user input
----@return string inputText The input that the user has entered.
+---Gets the user's input and returns it. Will error if there are no inputs.
+---@return string input The user's inputted message.
 function Terminal.getInput() end
 
----@class GPS
-local GPS = {}
+---@class Antenna The antenna component is connected to a network port. If connected, you can send data to other antennas wirelessly.
+local Antenna = {}
 
----Data for GPS
----@class GPS.Data
----@field worldPosition Vec3 The world position
----@field worldRotation Quat The world rotation
----@field bearing number The bearing rotation (Degrees!)
----@field velocity Vec3 The velocity
----@field speed number The speed
----@field forwardVelocity number The forwards velocity
----@field horizontalVelocity number The horizontal velocity
----@field verticalVelocity number The vertical velocity
----@field acceleration number The acceleration
----@field forwardAcceleration number The forwards acceleration
----@field horizontalAcceleration number The horizontal acceleration
----@field verticalAcceleration number The vertical acceleration
+---Gets the name of the antenna.
+---@return string name The name of the antenna.
+function Antenna.getName() end
 
----Gets GPS Data
----@return GPS.Data gpsData The GPS Data
-function GPS.getGPSData() end
+---Sets the name of the antenna.
+---@param name string The new name of the antenna.
+function Antenna.setName(name) end
+
+---Returns true if the antenna has a connection with another antenna.
+---@return boolean hasConnection Whether the antenna is connected to another antenna with the same name.
+function Antenna.hasConnection() end
+
+---Scans for all antennas in the world and returns them.
+---@return string[] discoveredAntennas A list of all discovered antennas.
+function Antenna.scanAntennas() end
+
+---@class NetworkPort The network port is used to send and receive data, and can be connected to an antenna.
+local NetworkPort = {}
+
+---Gets the connected antenna and returns it.
+---@return Antenna? antenna The connected antenna, or nil if no antenna is connected.
+function NetworkPort.getAntenna() end
+
+---Returns true if the network port has a connection to another network port. Note that if an antenna is connected, this always returns true. For antenna connections, use `Antenna.hasConnection` instead.
+---@return boolean hasConnection Whether the network port is connected to another port.
+function NetworkPort.hasConnection() end
+
+---Sends a packet to the connected network port or antenna.
+---@param data any The data to send.
+function NetworkPort.sendPacket(data) end
+
+---Sends a packet to a specified antenna. The name does not have to match the connected antenna's name.
+---@param name string The name of the antenna to send the packet to.
+---@param data any The data to send.
+function NetworkPort.sendPacketToAntenna(name, data) end
+
+---Returns the total number of unread packets in the buffer.
+---@return integer totalPackets The number of unread packets.
+function NetworkPort.getTotalPackets() end
+
+---Reads the next packet from the buffer and returns its data. Ensure there are packets to read, or this will cause an error.
+---@return any data The received packet data.
+function NetworkPort.receivePacket() end
+
+---Clears all unread packets from the buffer.
+function NetworkPort.clearPackets() end

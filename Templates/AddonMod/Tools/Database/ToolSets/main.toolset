@@ -6,7 +6,7 @@
 			"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
 			"showInInventory": true,
 			"autoTool": true,
-			"script": { "class": "ToolTest", "file": "$CONTENT_DATA/Scripts/ToolTest.lua", "data": {} }
+			"script": {"class": "ToolTest", "file": "$CONTENT_DATA/Scripts/ToolTest.lua", "data": {} }
 		}
 	]
 }

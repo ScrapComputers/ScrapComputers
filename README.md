@@ -3,6 +3,8 @@
 
 ScrapComptuers is a Lua Computer mod for the game **Scrap Mechanic**. Unlike other's, It is a very fast mod (Even faster than SComputers!) and is pretty advanced.
 
+**NOTE:** Pull requests will be applied on the developer repository! So if the developer closes your pull request, its ether accepted or denined of what they say!
+
 # FAQ
 <details><summary><strong>Does ScrapComputers use dependencies?</strong></summary>
 

@@ -71,9 +71,9 @@
 
 --requires luaP, luaX, luaK
 local luaY = {}
-local luaX = _G.luavm.luaX
-local luaK = _G.luavm.luaK(luaY)
-local luaP = _G.luavm.luaP
+local luaX = sm.scrapcomputers.luavm.luaX
+local luaK = sm.scrapcomputers.luavm.luaK(luaY)
+local luaP = sm.scrapcomputers.luavm.luaP
 
 --[[--------------------------------------------------------------------
 -- Expression descriptor
@@ -1749,4 +1749,4 @@ function luaY:chunk(ls)
 end
 
 -- }======================================================================
-_G.luavm.luaY = luaY
+sm.scrapcomputers.luavm.luaY = luaY

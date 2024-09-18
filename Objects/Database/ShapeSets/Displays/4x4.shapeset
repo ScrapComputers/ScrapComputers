@@ -11,7 +11,7 @@
             "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display4x4.rend",
             "rotationSet": "PropNegY",
             "scripted": {
-                "classname": "Display",
+                "classname": "DisplayClass",
                 "filename": "$CONTENT_DATA/Scripts/Display.lua",
                 "data": {
                     "width": 16,
@@ -33,7 +33,7 @@
             "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display4x4.rend",
             "rotationSet": "PropNegY",
             "scripted": {
-                "classname": "Display",
+                "classname": "DisplayClass",
                 "filename": "$CONTENT_DATA/Scripts/Display.lua",
                 "data": {
                     "width": 32,
@@ -55,7 +55,7 @@
             "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display4x4.rend",
             "rotationSet": "PropNegY",
             "scripted": {
-                "classname": "Display",
+                "classname": "DisplayClass",
                 "filename": "$CONTENT_DATA/Scripts/Display.lua",
                 "data": {
                     "width": 64,
@@ -77,7 +77,7 @@
             "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display4x4.rend",
             "rotationSet": "PropNegY",
             "scripted": {
-                "classname": "Display",
+                "classname": "DisplayClass",
                 "filename": "$CONTENT_DATA/Scripts/Display.lua",
                 "data": {
                     "width": 128,
@@ -99,7 +99,7 @@
             "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display4x4.rend",
             "rotationSet": "PropNegY",
             "scripted": {
-                "classname": "Display",
+                "classname": "DisplayClass",
                 "filename": "$CONTENT_DATA/Scripts/Display.lua",
                 "data": {
                     "width": 256,
@@ -121,7 +121,7 @@
             "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display4x4.rend",
             "rotationSet": "PropNegY",
             "scripted": {
-                "classname": "Display",
+                "classname": "DisplayClass",
                 "filename": "$CONTENT_DATA/Scripts/Display.lua",
                 "data": {
                     "width": 512,
@@ -143,7 +143,7 @@
             "renderable": "$CONTENT_DATA/Objects/Renderables/Displays/Display4x4.rend",
             "rotationSet": "PropNegY",
             "scripted": {
-                "classname": "Display",
+                "classname": "DisplayClass",
                 "filename": "$CONTENT_DATA/Scripts/Display.lua",
                 "data": {
                     "width": 1024,

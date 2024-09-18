@@ -762,4 +762,4 @@ data.charset = {
 	["ﬂ"] = {"..##.",".#.#.",".#.#.",".###.",".#.#.",".#.#.",".#.#.","....."},
 	["�"] = {".....",".....",".....",".....",".....",".....",".....","....."}
 }
-sm.scrapcomputers.fontmanager.fonts["Apple II 8C"] = data
+sm.scrapcomputers.fontManager.fonts["Apple II 8C"] = data

@@ -7,9 +7,9 @@ ToolTest = class()
 function EnvHook(self)
     return {
         sc = {
-            getTest = function () return sm.scrapcomputers.components.getComponents("ComponentTest", self.interactable, true) end
-        }
-    }
+            getTest = function () return sm.scrapcomputers.componentManager.getComponents("ComponentTest", self.interactable, true) end
+}
+}
 end
 
 table.insert(sm.scrapcomputers.envManager.envHooks, EnvHook)

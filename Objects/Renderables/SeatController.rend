@@ -14,11 +14,11 @@
           "minViewSize": 20,
           "subMeshList": [
              {
-                "material": "DifNor",
+                "material": "DifAsgNor",
                 "textureList": [
-                   "$CONTENT_DATA/Objects/Textures/SeatController_dif.png",
-                   "$CONTENT_DATA/Objects/Textures/transparent.tga",
-                   "$CONTENT_DATA/Objects/Textures/SeatController_nor.png"
+                   "$CONTENT_DATA/Objects/Textures/SeatController/SeatController_dif.png",
+                   "$CONTENT_DATA/Objects/Textures/SeatController/SeatController_asg.png",
+                   "$CONTENT_DATA/Objects/Textures/SeatController/SeatController_nor.png"
                 ]
              }
           ]

@@ -14,7 +14,9 @@
         "undefined-global",
         "param-type-mismatch",
         "inject-field",
-        "missing-parameter"
+        "missing-parameter",
+        "assign-type-mismatch",
+        "redefined-local"
     ],
     "files.associations": {
         "*.layout": "xml",

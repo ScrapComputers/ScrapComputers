@@ -36,11 +36,15 @@
     // Terminals
     "5e4bfb11-c378-4a08-b310-565ee3a379f2": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Terminal (White)",
-        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!"
+        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!\n\n#f9f1a5Terminal Color: #eeeeeeWhite"
     },
     "6ad29c0e-8209-4dca-9133-20d7a2fc2d63": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Terminal (Black)",
-        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!"
+        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!\n\n#f9f1a5Terminal Color: #eeeeeeBlack"
+    },
+    "71663a3e-e6d0-49b9-a42b-33c758813fec": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Terminal (Yellow)",
+        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!\n\n#f9f1a5Terminal Color: #eeeeeeYellow"
     },
 
     // Hologram
@@ -68,12 +72,12 @@
     // Keyboards
     "be791e80-ee66-4284-83f1-d91faf15bb4b": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Keyboard (Black)",
-        "description": "Allows you to type! Keystrokes and press state can be accessed which allows you to make some really cool stuff!\n\n#e6d927Keyboard Color: #eeeeeeBlack Keys"
+        "description": "Allows you to type! Keystrokes and press state can be accessed which allows you to make some really cool stuff!\n\n#e6d927Keyboard Color: #eeeeeeBlack"
     },
 
     "86b84f8d-0a62-4ffc-aafd-17e29b781484": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Keyboard (White)",
-        "description": "Allows you to type! Keystrokes and press state can be accessed which allows you to make some really cool stuff!\n\n#e6d927Keyboard Color: #eeeeeeBlack White"
+        "description": "Allows you to type! Keystrokes and press state can be accessed which allows you to make some really cool stuff!\n\n#e6d927Keyboard Color: #eeeeeeWhite"
     },
 
     // Speaker
@@ -101,7 +105,7 @@
     // GPS
     "dd4967a9-dfd1-42eb-b48c-414a123bffe2": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] GPS",
-        "description": "The GPS allows you to get important telemetry about itself like a real GPS! This includes things like position, acceleration, velocity and rotation!"
+        "description": "The GPS allows you to get important telemetry about itself like a real GPS! This includes things like position, acceleration, velocity and rotation!\n\n#444444Not a wheel, smoke detector or a apple airtag"
     },
 
     // Seat Controller
@@ -113,97 +117,97 @@
 
     // 1x1 Displays
     "a1c2dde3-45d4-43eb-b95a-32e4ff3b6e36": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (1x1 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 16x16\nObject Size: 1x1"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (1x1)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee16x16\n#f9f1a5Object Size: #eeeeee1x1"
     },
     "f2a0dc3c-9bde-4f53-bc1a-70506a5e1c50": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (1x1 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 32x32\nObject Size: 1x1"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (1x1)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee32x32\n#f9f1a5Object Size: #eeeeee1x1"
     },
     "58765a74-fe13-497b-8916-562e4c4cbd6f": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (1x1 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 64x64\nObject Size: 1x1"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (1x1)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee64x64\n#f9f1a5Object Size: #eeeeee1x1"
     },
     "277d508a-26b2-4986-a15f-6a2c0ffcd4bf": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (1x1 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 128x128\nObject Size: 1x1"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (1x1)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee128x128\n#f9f1a5Object Size: #eeeeee1x1"
     },
     "6120601f-1254-4c8d-8226-fb67626b32b0": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (1x1 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 256x256\nObject Size: 1x1"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (1x1)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee256x256\n#f9f1a5Object Size: #eeeeee1x1"
     },
 
     // 2x2 Displays
     "f4e4d700-d0df-4bce-a1ec-096b03a781c8": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (2x2 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 16x16\nObject Size: 2x2"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (2x2)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee16x16\n#f9f1a5Object Size: #eeeeee2x2"
     },
     "6c9f96ba-50a1-4650-b1fa-fb3e754748df": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (2x2 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 32x32\nObject Size: 2x2"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (2x2)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee32x32\n#f9f1a5Object Size: #eeeeee2x2"
     },
     "741db0dd-f144-47cb-86f9-967046b26bb6": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (2x2 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 64x64\nObject Size: 2x2"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (2x2)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee64x64\n#f9f1a5Object Size: #eeeeee2x2"
     },
     "c5572003-cf4d-4943-ae2b-2b37347f6c3d": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (2x2 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 128x128\nObject Size: 2x2"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (2x2)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee128x128\n#f9f1a5Object Size: #eeeeee2x2"
     },
     "c32baf39-3884-4048-9a78-de450f6056b3": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (2x2 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 256x256\nObject Size: 2x2"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (2x2)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee256x256\n#f9f1a5Object Size: #eeeeee2x2"
     },
 
     // 3x3 Displays
     "baf3e4cb-c98a-4024-840d-a3972ac96f43": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (3x3 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 16x16\nObject Size: 3x3"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (3x3)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee16x16\n#f9f1a5Object Size: #eeeeee3x3"
     },
     "32363673-3fea-477d-965a-9e71766e337e": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (3x3 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 32x32\nObject Size: 3x3"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (3x3)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee32x32\n#f9f1a5Object Size: #eeeeee3x3"
     },
     "e93e2bb0-3683-4ef3-8641-213cd8ed5aea": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (3x3 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 64x64\nObject Size: 3x3"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (3x3)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee64x64\n#f9f1a5Object Size: #eeeeee3x3"
     },
     "5685e8fc-0b38-40f6-8af3-e53102424d11": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (3x3 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 128x128\nObject Size: 3x3"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (3x3)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee128x128\n#f9f1a5Object Size: #eeeeee3x3"
     },
     "b12ad37a-ff81-4b80-a605-ccb397cfb1c3": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (3x3 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 256x256\nObject Size: 3x3"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (3x3)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee256x256\n#f9f1a5Object Size: #eeeeee3x3"
     },
 
     // 4x4 Displays
     "d79f2f3b-e173-48fb-be19-99870bb9c3fd": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (4x4 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 16x16\nObject Size: 4x4"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Display (4x4)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee16x16\n#f9f1a5Object Size: #eeeeee4x4"
     },
     "4402539e-b44c-4f52-8b04-b06bd8710deb": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (4x4 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 32x32\nObject Size: 4x4"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Display (4x4)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee32x32\n#f9f1a5Object Size: #eeeeee4x4"
     },
     "e3d2193b-4c7a-437d-ab34-dd508212ff62": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (4x4 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 64x64\nObject Size: 4x4"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Display (4x4)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee64x64\n#f9f1a5Object Size: #eeeeee4x4"
     },
     "6baf3290-3f8b-4b5a-8745-b40f03e9dbdd": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (4x4 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 128x128\nObject Size: 4x4"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Display (4x4)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee128x128\n#f9f1a5Object Size: #eeeeee4x4"
     },
     "319e03b4-dc20-4535-b4f3-a1ea525a644e": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (4x4 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 256x256\nObject Size: 4x4"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Display (4x4)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee256x256\n#f9f1a5Object Size: #eeeeee4x4"
     },
     "d05b6e4a-43e0-4ba2-bee9-9ca6fa9281c5": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 512x512 Display (4x4 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 512x512\nObject Size: 4x4"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 512x512 Display (4x4)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee512x512\n#f9f1a5Object Size: #eeeeee4x4"
     },
     "13a8d04f-f5d6-4285-9874-ee6f3f283bd4": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] 1024x1024 Display (4x4 Size)",
-        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: 1024x1024\nObject Size: 4x4"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 1024x1024 Display (4x4)",
+        "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee1024x1024\n#f9f1a5Object Size: #eeeeee4x4"
     }
 }

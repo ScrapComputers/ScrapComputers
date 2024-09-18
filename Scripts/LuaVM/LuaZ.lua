@@ -125,4 +125,4 @@ function luaZ:zgetc(z)
   end
 end
 
-_G.luavm.luaZ = luaZ
+sm.scrapcomputers.luavm.luaZ = luaZ

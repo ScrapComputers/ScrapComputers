@@ -14,11 +14,11 @@
          "minViewSize": 20,
          "subMeshList": [
             {
-               "material": "DifNor",
+               "material": "DifAsgNor",
                "textureList": [
-                  "$CONTENT_DATA/Objects/Textures/Radar_dif.png",
-                  "$CONTENT_DATA/Objects/Textures/transparent.tga",
-                  "$CONTENT_DATA/Objects/Textures/Radar_nor.png"
+                  "$CONTENT_DATA/Objects/Textures/Radar/Radar_dif.png",
+                  "$CONTENT_DATA/Objects/Textures/Radar/Radar_asg.png",
+                  "$CONTENT_DATA/Objects/Textures/Radar/Radar_nor.png"
                ]
             }
          ]

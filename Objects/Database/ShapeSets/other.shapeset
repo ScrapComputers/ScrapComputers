@@ -6,12 +6,11 @@
                 "y": 1,
                 "z": 1
             },
-            "color": "9a44b7",
+            "color": "222222",
             "physicsMaterial": "Mechanical",
             "renderable": "$CONTENT_DATA/Objects/Renderables/Configurator.rend",
-            "rotationSet": "PropYZ",
             "scripted": {
-                "classname": "Configurator",
+                "classname": "ConfiguratorClass",
                 "filename": "$CONTENT_DATA/Scripts/Configurator.lua"
             },
             "sticky": "-X+X-Y+Y-Z+Z",

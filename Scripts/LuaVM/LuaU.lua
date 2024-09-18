@@ -58,7 +58,7 @@
 
 --requires luaP
 local luaU = {}
-local luaP = _G.luavm.LuaP
+local luaP = sm.scrapcomputers.luavm.LuaP
 
 -- mark for precompiled code ('<esc>Lua') (from lua.h)
 luaU.LUA_SIGNATURE = "\27Lua"
@@ -251,7 +251,7 @@ function luaU:DumpCode(f, D)
   --was DumpVector
   self:DumpInt(n, D)
   for i = 0, n - 1 do
-    self:DumpBlock(_G.luavm.luaP:Instruction(f.code[i]), D)
+    self:DumpBlock(sm.scrapcomputers.luavm.luaP:Instruction(f.code[i]), D)
   end
 end
 
@@ -374,4 +374,4 @@ function luaU:dump(L, f, w, data, strip)
   return D.status
 end
 
-_G.luavm.luaU = luaU
+sm.scrapcomputers.luavm.luaU = luaU

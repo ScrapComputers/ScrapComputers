@@ -1,6 +1,4 @@
-dofile("$CONTENT_DATA/Scripts/Config.lua")
-
----@class ComponentTemplate : ShapeClass
+---@class ComponentTemplateClass : ShapeClass
 ComponentTemplate = class()
 ComponentTemplate.maxParentCount = 1
 ComponentTemplate.maxChildCount = 0
@@ -16,8 +14,7 @@ function ComponentTemplate:sv_createData()
         helloWorld = function()
             print("Hello World!")
         end
-    }
+   }
 end
 
--- Convert the class to a component
-sm.scrapcomputers.components.ToComponent(ComponentTemplate, "DATA_TYPE_HERE", true)
+sm.scrapcomputers.componentManager.toComponent(ComponentTemplate, "DATA_TYPE_HERE", true)

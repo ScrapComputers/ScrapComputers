@@ -8,10 +8,10 @@
             },
             "color": "eeeeee",
             "physicsMaterial": "Mechanical",
-            "renderable": "$CONTENT_DATA/Objects/Renderables/NetworkPort.rend",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Network/NetworkPort.rend",
             "rotationSet": "PropYZ",
             "scripted": {
-                "classname": "NetworkPort",
+                "classname": "NetworkPortClass",
                 "filename": "$CONTENT_DATA/Scripts/Network/NetworkPort.lua"
             },
             "sticky": "-X+X-Y+Y-Z+Z",
@@ -25,10 +25,10 @@
             },
             "color": "eeeeee",
             "physicsMaterial": "Mechanical",
-            "renderable": "$CONTENT_DATA/Objects/Renderables/Antenna.rend",
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Network/Antenna.rend",
             "rotationSet": "PropYZ",
             "scripted": {
-                "classname": "Antenna",
+                "classname": "AntennaClass",
                 "filename": "$CONTENT_DATA/Scripts/Network/Antenna.lua"
             },
             "sticky": "-X+X-Y+Y-Z+Z",

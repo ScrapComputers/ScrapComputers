@@ -762,4 +762,4 @@ data.charset = {
 	["ﬂ"] = {"..##..",".#..#.",".#..#.","###.#.",".#..#.",".#..#.",".#..#.","......"},
 	["�"] = {"..##..","..##..","..##..","..##..","..##..","..##..","..##..","......"}
 }
-sm.scrapcomputers.fontmanager.fonts["Lexis"] = data
+sm.scrapcomputers.fontManager.fonts["Lexis"] = data

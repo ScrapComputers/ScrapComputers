@@ -14,11 +14,11 @@
          "minViewSize": 20,
          "subMeshList": [
             {
-               "material": "DifNor",
+               "material": "Dif",
                "textureList": [
-                  "$CONTENT_DATA/Objects/Textures/Configurator_dif.png",
                   "$CONTENT_DATA/Objects/Textures/transparent.tga",
-                  "$CONTENT_DATA/Objects/Textures/Configurator_nor.png"
+                  "$CONTENT_DATA/Objects/Textures/transparent.tga",
+                  "$CONTENT_DATA/Objects/Textures/transparent.tga"
                ]
             }
          ]

@@ -1,196 +1,219 @@
--- Prevent hooking (hopefully)
 local __pairs = pairs
+local __ipairs = ipairs
 local __pcall = pcall
+local __select = select
+
+local __sm_json_open = sm.json.open
+local __sm_json_fileExists = sm.json.fileExists
+local __sm_json_writeJsonString = sm.json.writeJsonString
+local __sm_util_positiveModulo = sm.util.positiveModulo
+
+local __sm_item_isBlock = sm.item.isBlock
+local __sm_item_isPart = sm.item.isPart
+local __sm_item_isJoint = sm.item.isJoint
+local __sm_item_isTool = sm.item.isTool
+
+local __sm_uuid_new = sm.uuid.new
 
 dofile("$CONTENT_40639a2c-bb9f-4d4f-b88c-41bfe264ffa8/Scripts/ModDatabase.lua")
-dofile("$CONTENT_DATA/Scripts/Config.lua")
 
 ---@class BanSystem : ToolClass
-BanSystem = class()
+BanSystemClass = class()
 
 local bannedMods = {
-    -- {Mod Name, Mod local id, BanLevel}
+    -- {Mod Name, Mod local id, BanLevel, Reason}
     -- If BanLevel is 1. Then you get the popup once in your world.
     -- If BanLevel is 2. You get the popup every 30 secconds
     -- If BanLevel is 3. You nolonger be able to use ScrapComputers on this world unless that mod/addon gets removed from the world
-    -- If BanLevel is 4. Your game will crash on load of world.
+    -- If BanLevel is 4. ScrapComputers WILL FUCKING KILL YOUR SHITTY ASS WORLD AND BURN IT IN THE 8TH LAYER OF HELL
 }
 
 -- SERVER --
 
-function BanSystem:server_onCreate()
-    -- Load the shapesets and toolsets
-    ModDatabase.loadShapesets()
-    ModDatabase.loadToolsets()
-
-    -- Create the needed variables
-    self.isBanned = 0
-    self.bannedInstalledMods = {}
-
-    -- Loop through all banned mods
-    for _, bannedModData in __pairs(bannedMods) do
-        -- Get the data and put them into variables
-        ---@type string, string, boolean
-        local modname = bannedModData[1]
-        local localId = bannedModData[2]
-        local banLevel = bannedModData[3]
-
-        -- Check if the mod is loaded
-        if ModDatabase.isModLoaded(localId) then
-            -- If banLevel is 4. crash the game in 3 ways.
-            if banLevel == 4 then
-                __pcall(sm.json.writeJsonString, ({1, test = "a"}))
-                __pcall(sm.util.positiveModulo , 4, 0)
-
-                while true do end
-            else
-                -- If banLevel is higher than self.isBanned, update it
-                if banLevel > self.isBanned then
-                    self.isBanned = banLevel
+local function IsModLoaded(Shapesets, Toolsets, LocalId)
+    if Shapesets[LocalId] then
+        for shapeset, shapeUuids in __pairs (Shapesets[LocalId]) do
+            for _, shapeUuid in __ipairs(shapeUuids) do
+                local uuid = __sm_uuid_new(shapeUuid)
+                
+                if __sm_item_isBlock(uuid) or __sm_item_isPart(uuid) or __sm_item_isJoint(uuid) then
+                    if __select(1, __pcall(__sm_json_fileExists, shapeset)) then
+                        return true
+                    else
+                        return false
+                    end
+                else
+                    return false
                 end
-
-                -- Add the banned mod name and level to the self.bannedInstalledMods
-                self.bannedInstalledMods[#self.bannedInstalledMods + 1] = {modname, banLevel}
             end
         end
     end
-
-    -- Unload the shapesets and toolsets
-    ModDatabase.unloadShapesets()
-    ModDatabase.unloadToolsets()
+    
+    if Toolsets[LocalId] then
+        for toolset, toolUuids in __pairs (Toolsets[LocalId]) do
+            for _, toolUuid in __ipairs(toolUuids) do
+                local uuid = __sm_uuid_new(toolUuid)
+                
+                if __sm_item_isTool(uuid) then
+                    if __select(1, __pcall(__sm_json_fileExists, toolset)) then
+                        return true
+                    else
+                        return false
+                    end
+                else
+                    return false
+                end
+            end
+        end
+    end
+    
+    return nil
 end
 
-function BanSystem:server_onFixedUpdate()
-    -- Check if its 3
-    if self.isBanned == 3 then
-        -- Loop through sm.scrapcomputers.dataList and clear it
+local Shapesets = __sm_json_open("$CONTENT_40639a2c-bb9f-4d4f-b88c-41bfe264ffa8/Scripts/data/shapesets.json")
+local Toolsets = __sm_json_open("$CONTENT_40639a2c-bb9f-4d4f-b88c-41bfe264ffa8/Scripts/data/toolsets.json")
+
+local function BanCheck()
+    local isBanned = 0
+    local bannedInstalledMods = {}
+    
+    for _, bannedModData in __pairs(bannedMods) do
+        local modname = bannedModData[1]
+        local localId = bannedModData[2]
+        local banLevel = bannedModData[3]
+        local reason = bannedModData[4]
+        
+        if IsModLoaded(Shapesets, Toolsets, localId) then
+            if banLevel == 4 then
+                while true do
+                    __pcall(__sm_json_writeJsonString, ({1, test = "a"}))
+                    __pcall(__sm_util_positiveModulo, 4, 0)
+                end
+            else
+                if banLevel > isBanned then
+                    isBanned = banLevel
+                end
+                
+                bannedInstalledMods[#bannedInstalledMods + 1] = {modname, banLevel, reason}
+            end
+        end
+    end
+    
+    return isBanned, bannedInstalledMods
+end
+
+BanCheck()
+
+dofile("$CONTENT_DATA/Scripts/Config.lua")
+
+function BanSystemClass:server_onCreate()
+    self.sv = {}
+    self.sv.isBanned, self.sv.bannedInstalledMods = BanCheck()
+end
+
+function BanSystemClass:server_onFixedUpdate()
+    if self.sv.isBanned == 3 then
         for index, _ in pairs(sm.scrapcomputers.dataList) do
             sm.scrapcomputers.dataList[index] = {}
         end
 
-        -- Change sm.scrapcomputers.modDisabled to true if it isnt true
         if sm.scrapcomputers.modDisabled ~= true then
             sm.scrapcomputers.modDisabled = true
         end
     end
 end
 
--- Dev mode related
-function BanSystem:server_onRefresh() self:server_onCreate() end
+function BanSystemClass:server_onRefresh() self:server_onCreate() end
 
--- Ban checking for clients
-function BanSystem:sv_banCheck(_, player)
-    -- If self.isBanned isnt 0. send packet to the player.
-    if self.isBanned ~= 0 then
-        self.network:sendToClient(player, "cl_preventUserFromPlaying", sm.json.writeJsonString({self.bannedInstalledMods, self.isBanned}))
+function BanSystemClass:sv_banCheck(data, player)
+    if self.sv.isBanned ~= 0 then
+        self.network:sendToClient(player, "cl_preventUserFromPlaying", sm.json.writeJsonString({self.sv.bannedInstalledMods, self.sv.isBanned}))
     end
 end
 
 -- CLIENT --
 
-function BanSystem:client_onCreate()
-    -- Create variables
-    self.bannedLevel = 0
-    self.bannedMods = {}
-    self.timer = -1
+function BanSystemClass:client_onCreate()
+    self.cl = {
+        bannedLevel = 0,
+        bannedMods = {},
+        timer = -1,
+    }
 
-    -- Perform a check
+    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Banned, false, {backgroundAlpha = 0.5, isOverlapped = true})
+    
+    self.cl.gui:setButtonCallback("ExitButton", "cl_exitButton")
+    self.cl.gui:setOnCloseCallback("cl_exit")
+
+    self.cl.isGuiActive = false
+
     self.network:sendToServer("sv_banCheck")
-
-    -- Scrap Mechanic sucks! So this states when the gui is active or not
-    self.isGuiActive = false
 end
 
-function BanSystem:cl_preventUserFromPlaying(bannedLevel)
-    -- If its a string, convert it back to a table and update self.bannedMods
+function BanSystemClass:cl_preventUserFromPlaying(bannedLevel)
     if type(bannedLevel) == "string" then
         bannedLevel = sm.json.parseJsonString(bannedLevel)
 
-        -- Update bannedMods and bannedLevel
-        self.bannedMods = bannedLevel[1]
-        self.bannedLevel = bannedLevel[2]
+        self.cl.bannedMods = bannedLevel[1]
+        self.cl.bannedLevel = bannedLevel[2]
     end
 
-    -- Set self.isGuiActive to true
-    self.isGuiActive = true
-    
-    -- Create the gui
-    self.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Banned)
+    self.sv.isGuiActive = true
 
-    -- Create the callbacks
-    self.gui:setButtonCallback("ExitButton", "cl_exitButton")
-    self.gui:setOnCloseCallback("cl_exit")
+    local text = "ScrapComputers has detected that a Addon/Mod has been loaded but disallowed by ScrapComputers, Incase your wondering why you got this popup: We have a ban system in our mod to prevent bad actors from using our mod for creating addons or mods. You receiving this means that you have a banned mod or addon loaded in your world from ScrapComputers.\n\nTo remove this popup, You can remove the listed mods below."
+    local chatMessage = "--------------------------------------------------------\nScrapComputers has detected a banned mod/addon loaded in your world!\n\nBanned Mods: #eb4034"
 
-    -- The starting text
-    local text = "ScrapComputers has detected that a Addon/Mod has been installed but disallowed by ScrapComputers\n\nMods that are loaded into your world that are banned. (Modname and then what happens when you load that mod)"
-    
-    -- Loop through all banned mods that were detected
-    for _, bannedMod in pairs(self.bannedMods) do
-        -- Unpack it to get it's banned mod name and level
-        local bannedModName, bannedModLevel = unpack(bannedMod)
+    for _, bannedMod in pairs(self.cl.bannedMods) do
+        local bannedModName, bannedModLevel, reason = unpack(bannedMod) ---@type string, number, string
 
-        -- Add the mod name to it
-        text = text.."\n\t#eeeeee"..bannedModName..": "
+        text = text .. "\n\t#eeeeee" .. bannedModName .. ": "
 
-        -- Add the level text to it
-
-        -- Why not sort this into ranks?
         if bannedModLevel == 2 then
-            text = text.."#eeee22Show this Popup every 30 secconds" -- Annoying rank
+            text = text .. "#eeee22Show this Popup every 30 secconds"
         elseif bannedModLevel == 3 then
-            text = text.."#ee2222ScrapComputers is disabled entirly!" -- "Your a disapointment to your family" rank
+            text = text .. "#ee2222ScrapComputers is disabled entirly!"
         else
-            text = text.."#22ee22Nothing happens!" -- Good bad rank??
+            text = text .. "#22ee22Nothing happens!"
         end
+
+        text = text .. "#eeeeee\n\t\tReason: " .. reason
+        chatMessage = chatMessage .. bannedModName .. ", "
     end
 
-    -- Send the chat message
-    sm.gui.chatMessage(text)
+    sm.gui.chatMessage(chatMessage:sub(1, #chatMessage - 2) .. "\n#eeeeee--------------------------------------------------------")
 
-    -- Update the text
-    self.gui:setText("Message", text)
-
-    -- Open it
-    self.gui:open()
+    self.cl.gui:setText("Message", text)
+    self.cl.gui:open()
 end
 
-function BanSystem:cl_exit()
-    -- Set this to false
-    self.isGuiActive = false
+function BanSystemClass:cl_exit()
+    self.cl.isGuiActive = false
 
-    -- If ban level is 2, set self.timer to 30 secconds
-    if self.bannedLevel == 2 then
-        self.timer = 30 * 40
-    end 
+    if self.cl.bannedLevel == 2 then
+        self.cl.timer = 30 * 40
+    end
 end
 
-function BanSystem:cl_exitButton()
-    -- Close the gui
-    self.gui:close()
-
-    self:cl_exit() -- We can reuse the cl_exit callback 
+function BanSystemClass:cl_exitButton()
+    self.cl.gui:close()
+    self:cl_exit()
 end
 
-function BanSystem:client_onFixedUpdate()
-    -- Check if timer is not -1
-    if self.timer ~= -1 then
-        -- Decrease timer by 1
-        self.timer = self.timer - 1
+function BanSystemClass:client_onFixedUpdate()
+    if self.cl.timer ~= -1 then
+        self.cl.timer = self.cl.timer - 1
 
-        -- If its 0, open the gui again!
-        if self.timer == 0 then
+        if self.cl.timer == 0 then
             self:cl_preventUserFromPlaying()
         end
     end
-    
-    -- Check if the gui exists
-    if self.gui and sm.exists(self.gui) then
-        -- Check if the gui is not active even tho it should be, Open it.
-        if not self.gui:isActive() and self.isGuiActive then
-            self.gui:open()
+
+    if sm.exists(self.cl.gui) then
+        if not self.cl.gui:isActive() and self.cl.isGuiActive then
+            self.cl.gui:open()
         end
     end
 end
 
 -- Dev mode related
-function BanSystem:client_onRefresh() self:client_onCreate() end
+function BanSystemClass:client_onRefresh() self:client_onCreate() end

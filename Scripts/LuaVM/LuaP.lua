@@ -430,4 +430,4 @@ luaP.opmodes = {
 luaP.opmodes[0] =
   opmode(0, 1, "OpArgR", "OpArgN", "iABC")      -- OP_MOVE
 
-_G.luavm.luaP = luaP
+sm.scrapcomputers.luavm.luaP = luaP

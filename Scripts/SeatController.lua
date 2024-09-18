@@ -1,119 +1,88 @@
-dofile("$CONTENT_DATA/Scripts/Config.lua")
-
----@class SeatController : ShapeClass
-SeatController = class()
-SeatController.maxParentCount = 1
-SeatController.maxChildCount = -1
-SeatController.connectionInput = sm.interactable.connectionType.power
-SeatController.connectionOutput = sm.interactable.connectionType.compositeIO
-SeatController.colorNormal = sm.color.new(0x696969ff)
-SeatController.colorHighlight = sm.color.new(0x969696ff)
+---@class SeatControllerClass : ShapeClass
+SeatControllerClass = class()
+SeatControllerClass.maxParentCount = 1
+SeatControllerClass.maxChildCount = -1
+SeatControllerClass.connectionInput = sm.interactable.connectionType.power
+SeatControllerClass.connectionOutput = sm.interactable.connectionType.compositeIO
+SeatControllerClass.colorNormal = sm.color.new(0x696969ff)
+SeatControllerClass.colorHighlight = sm.color.new(0x969696ff)
 
 -- SERVER --
 
-function SeatController:sv_createData()
+function SeatControllerClass:sv_createData()
     return {
-        ---Gets seat data
-        ---@return table? data The seat data
-        getSeatData = function()
-            if self.sv.seat then
-                -- Get the ass
-                return self.sv.data
-            end
-        end,
+        ---Gets seat data and returns it
+        ---@return SeatData? data The seat data
+        getSeatData = function() return self.sv.seat and self.sv.data or nil end,
 
-        ---Gets joints data
-        ---@return table[]? data The joints data
-        getJointData = function()
-            if not self.sv.seat then return end
-
-            -- GET THE MOTHERFUCKING ASS
-            return self:sv_getJointData()
-        end,
+        ---Gets all connected joints and gets its data and returns it
+        ---@return JointData[]? data The connected joints data
+        getJointData = function() return self.sv.seat and self:sv_getJointData() or nil end,
 
         ---Presses a button
-        ---@param index integer? The button to press
+        ---@param index integer The button to press
+        ---@return boolean? success If it succeeded
         pressButton = function (index)
-            assert(index > -1, "bad argument #1. Index out of range.") -- Range check
+            sm.scrapcomputers.errorHandler.assertArgument(index, nil, {"integer"})
+            sm.scrapcomputers.errorHandler.assert(index >= 0, nil, "Index out of range.")
 
-            if self.sv.seat then
-                -- Do the fucking action
-                self.sv.seat:pressSeatInteractable(index)
-            end
+            return self.sv.seat and self.sv.seat:pressSeatInteractable(index) or nil
         end,
 
         ---Releases a button
-        ---@param index integer? THe button to release
+        ---@param index integer The button to release
+        ---@return boolean? success If it succeeded
         releaseButton = function (index)
-            assert(index > -1, "bad argument #1. Index out of range.") -- Range check
+            sm.scrapcomputers.errorHandler.assertArgument(index, nil, {"integer"})
+            sm.scrapcomputers.errorHandler.assert(index >= 0, nil, "Index out of range.")
 
-            if self.sv.seat then
-                -- Do the fucking action
-                self.sv.seat:releaseSeatInteractable(index)
-            end
+            return self.sv.seat and self.sv.seat:releaseSeatInteractable(index) or nil
         end,
-    }
+}
 end
 
-function SeatController:server_onCreate()
-    -- Server-side Variables
+function SeatControllerClass:server_onCreate()
     self.sv = {
-        -- Contains seat data
         data = {},
-
-        ---@type Interactable? The seat's interactable
-        seat = nil
+        seat = nil, ---@type Interactable
     }
 end
 
-function SeatController:server_onFixedUpdate()
-    -- Get the singluar parent
-    local int = self.interactable:getSingleParent()
+function SeatControllerClass:server_onFixedUpdate()
+    local singleParent = self.interactable:getSingleParent()
 
-    -- Check if there is one and is a seat
-    if int and int:hasSeat() then
-        -- Update self.sv.seat
-        self.sv.seat = int
+    if singleParent and singleParent:hasSeat() then
+        self.sv.seat = singleParent
 
-        -- Get the seated character
-        local seatedCharacter = int:getSeatCharacter()
-
-        -- Get the seated name or nil
+        local seatedCharacter = singleParent:getSeatCharacter()
         local name = seatedCharacter and seatedCharacter:getPlayer().name or nil
 
-        -- Update self.sv.data
         self.sv.data = {
-            wsPower       = int:getSteeringPower(), -- The current power when you got fucked in the ass
-            adPower       = int:getSteeringAngle(), -- The current angle
-            characterName = name                    -- The name of the sitting player
+            wsPower = singleParent:getSteeringPower(),
+            adPower = singleParent:getSteeringAngle(),
+            characterName = name,
         }
     else
-        -- WIPE IT OFF!
         self.sv.seat = nil
     end
 end
 
-function SeatController:sv_getJointData()
-    -- The joint data
+function SeatControllerClass:sv_getJointData()
     local jointData = {}
 
-    -- Loop through all bearings
     for _, joint in pairs(self.sv.seat:getBearings()) do
-        -- Get it's settings
         local leftSpeed, rightSpeed, leftLimit, rightLimit, locked = self.sv.seat:getSteeringJointSettings(joint)
 
-        -- Add it to jointData
         table.insert(jointData, {
-            leftSpeed = leftSpeed,   -- The current left speed
-            rightSpeed = rightSpeed, -- The current right speed
-            leftLimit = leftLimit,   -- The current left limit (angle)
-            rightLimit = rightLimit, -- The current right limit (angle)
-            bearingLock = not locked -- True if the bearing is locked
+            leftSpeed = leftSpeed,
+            rightSpeed = rightSpeed,
+            leftLimit = leftLimit,
+            rightLimit = rightLimit,
+            bearingLock = not locked,
         })
     end
 
     return jointData
 end
 
--- Convert the class to a component
-sm.scrapcomputers.components.ToComponent(SeatController, "SeatControllers", true)
+sm.scrapcomputers.componentManager.toComponent(SeatControllerClass, "SeatControllers", true)

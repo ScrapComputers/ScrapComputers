@@ -1,71 +1,8 @@
 [
+    /* MISC */
     {
         "name": "Script Template",
         "script": "-- Any variables outside the main functions are global! (As programmer perspective) The code only gets ran once!\n\n-- Gets called when the computer starts up\nfunction onLoad()\n\t\nend\n\n-- Gets called every tick\nfunction onUpdate()\n\t\nend\n\n-- Gets called when the computer error's out.\nfunction onError(err)\n\t\nend\n\n-- Gets called when the computer shuts down.\nfunction onDestroy()\n\t\nend"
-    },
-    {
-        "name": "Terminal Example",
-        "script": "local terminal = sc.getTerminals()[1]\n\nfunction onLoad()\n\tterminal.clear()\n\tterminal.send(\"#3A96DDComputer: Send a input and il echo it back to you!\")\nend\n\nfunction onUpdate()\n\tif terminal.receivedInputs() then\n\t\tlocal text = terminal.getInput()\n\n\t\tterminal.send(\"> \"..text)\n\tend\nend\n\nfunction onDestroy()\n\tterminal.clear()\n\tterminal.clearInputHistory()\nend"
-    },
-    {
-        "name": "Harddrive Example (Writer)",
-        "script": "local harddrive = sc.getDrives()[1]\nlocal data = {} -- Whatever inside this table will be stored to the harddrive!\n\nfunction onLoad()\n\tharddrive.save(data)\n\t\n\tprint(\"Saved Data!\")\nend"
-    },
-    {
-        "name": "Harddrive Example (Reader)",
-        "script": "local drive = sc.getDrives()[1]\n\nfunction onLoad()\n\tlocal data = drive.load()\n\tlocal jsonString = sm.json.writeJsonString(data)\n\n\tprint(jsonString)\nend"
-    },
-    {
-        "name": "Hologram Example",
-        "script": "local hologram = sc.getHolograms()[1]\n\nlocal UUID = \"6ad29c0e-8209-4dca-9133-20d7a2fc2d63\"\nlocal Scale = sm.vec3.new(1,1,1)\nlocal Position = sm.vec3.new(0,1,0)\nlocal Rotation = sm.vec3.new(45,25,15)\nlocal Color = sm.color.new(\"4A4A4A\")\n\nfunction onLoad()\n\thologram.createCustomObject(UUID, Position, Rotation, Scale, Color)\nend"
-    },
-    {
-        "name": "Radar Example",
-        "script": "local Radar = sc.getRadars()[1]\nlocal VAngle = 35\nlocal HAngle = 35\n\nfunction onLoad()\n\tRadar.setVerticalScanAngle(VAngle)\n\tRadar.setHorizontalScanAngle(HAngle)\nend\n\nfunction onUpdate()\n\tlocal Targets = Radar.getTargets()\n\n\tprint(\"Total Targets: \"..tostring(#Targets))\n\n\tfor _, Target in pairs(Targets) do\n\t\tlocal RoundedPosition = sm.vec3.new(\n\t\t\tmath.floor(Target.position.x),\n\t\t\tmath.floor(Target.position.y),\n\t\t\tmath.floor(Target.position.z)\n\t\t)\n\t\t\n\t\tlocal TargetPositionStr = \"(\"..RoundedPosition.x..\", \"..RoundedPosition.y..\", \"..RoundedPosition.z..\")\"\n\t\tlocal TargetSurfaceAreaStr = tostring(Target.surfaceArea)\n\n\t\tprint(\"\t\"..TargetPositionStr..\" | \"..TargetSurfaceAreaStr)\n\tend\nend"
-    },
-    {
-        "name": "Network Port Example (Sender)",
-        "script": "local networkPort = sc.getNetworkPorts()[1]\n\nfunction onLoad()\n\tif not networkPort.hasConnection() then\n\t\tprint(\"No connection found!\")\n\t\treturn\n\tend\n\n\tnetworkPort.sendPacket(\"Hello World!\")\n\tprint(\"Sent packet!\")\nend"
-    },
-    {
-        "name": "Network Port Example (Receiver)",
-        "script": "local networkPort = sc.getNetworkPorts()[1]\n\nfunction onLoad()\n\tif not networkPort.hasConnection() then\n\t\tprint(\"No connection found!\")\n\t\treturn\n\tend\n\n\tif networkPort.getTotalPackets() > 0 then\n\t\tlocal packet = networkPort.receivePacket()\n\t\tprint(\"received \"..tostring(packet))\n\telse\n\t\tprint(\"No packets received!\")\n\tend\nend"
-    },
-    {
-        "name": "Display Touch Screen Example",
-        "script": "local display = sc.getDisplays()[1]\n\nfunction onLoad()\n\tdisplay.enableTouchScreen(true)\nend\n\nfunction onUpdate()\n\tlocal data = display.getTouchData()\n\n\tif data and data.state ~= 3 then\n\t\tdisplay.drawPixel(data.x, data.y, \"eeeeee\")\n\tend\n\n\tdisplay.update()\nend\n\nfunction onDestroy()\n\tdisplay.clear()\n\tdisplay.update()\nend"
-    },
-    {
-        "name": "Display Mandlebrot Fractal Example",
-        "script": "local display = sc.getDisplays()[1]\nlocal width, height = display.getDimensions()\n\nfunction drawBurningShip()\n\tlocal maxIterations = 1000 --change for fidelity, 1000 gets you a solid fidelity but its more costly on render time\n\tlocal zoom = 1 --[[20000]]\n\tlocal offsetX = 0 --[[-0.7497]]\n\tlocal offsetY = 0 --[[0.0315]]\n\n\tfor x = 1, width do\n\t\tfor y = 1, height do\n\t\t\tlocal zx, zy = (x - width / 2) / (0.5 * zoom * width) + offsetX, (y - height / 2) / (0.5 * zoom * height) + offsetY\n\t\t\tlocal cRe, cIm = zx, zy\n\t\t\tlocal iteration = 0\n\n\t\t\twhile (zx * zx + zy * zy < 4) and (iteration < maxIterations) do\n\t\t\t\tlocal newZx = zx * zx - zy * zy + cRe\n\t\t\t\tlocal newZy = 2 * zx * zy + cIm\n\t\t\t\tzx, zy = newZx, newZy\n\t\t\t\titeration = iteration + 1\n\t\t\tend\n\n\t\t\tlocal brightness = iteration / maxIterations\n\t\t\tlocal color\n\n\t\t\tif iteration == maxIterations then\n\t\t\t\tcolor = sm.color.new(0, 0, 0)\n\t\t\telse\n\t\t\t\tcolor = sm.color.new(brightness, brightness, brightness) * 2 --adjust number for brightness control\n\t\t\tend\n\n\t\t\tdisplay.drawPixel(x, y, color)\n\t\tend\n\tend\nend\n\nfunction onLoad()\n\tdrawBurningShip()\n\tdisplay.update()\nend"
-    },
-    {
-        "name": "Display Optimization Tester",
-        "script": "local display = sc.getDisplays()[1]\nlocal width, height = display.getDimensions()\n\nfunction onLoad()\n\tfor x = 1, width do\n\t\tfor y = 1, height do\n\t\t\tdisplay.drawPixel(x, y, sc.color.random0to1())\n\t\tend\n\tend\n\t\n\tdisplay.update()\nend"
-    },
-    {
-        "name": "Noise Generator (Display + Terminal)",
-        "script": "local terminal = sc.getTerminals()[1]\nlocal display = sc.getDisplays()[1]\nlocal width, height = display.getDimensions()\n\nfunction onLoad()\n\t-- Clear and send in information\n\tterminal.clear()\n\tterminal.send(\"#3A96DCInput must be a number!\")\n\tterminal.send(\"#3A96DCDisplay size: (\"..tostring(width)..\"x\"..tostring(height)..\")\")\nend\n\nfunction onUpdate()\n\t-- Check if theres inputs received.\n\tif terminal.receivedInputs() then\n\t\t-- Since there is a input. Get the input text\n\t\tlocal text = terminal.getInput()\n\n\t\t-- If its empty, return since its blank.\n\t\tif text == \"\" then return end\n\n\t\t-- Send text showing it has been received\n\t\tterminal.send(\"> \"..text)\n\n\t\t-- Convert text to a number\n\t\tlocal seedNumber = tonumber(text)\n\t\tif seedNumber == nil then -- tonumber returns nil if it wasen't a number. Here we are checking if its nil, If so then send a error message!\n\t\t\tterminal.send(\"#E74856Not a number!\")\n\t\telse\n\t\t\t-- Since we know its a number. Send message\n\t\t\tterminal.send(\"received seed!\")\n\t\t\tdisplay.clear() -- Clear display\n\n\t\t\t-- Loop through all pixels\n\t\t\tfor x = 1, width, 1 do\n\t\t\t\tfor y = 1, height, 1 do\n\t\t\t\t\t-- Draw a pixel based of a octaveNoise2d output\n\t\t\t\t\tdisplay.drawPixel(x, y, sc.color.newSingluar(sm.noise.octaveNoise2d(x, y, 7.5, seedNumber)))\n\t\t\t\tend\n\t\t\tend\n\n\t\t\t-- Update it.\n\t\t\tdisplay.update()\n\t\tend\n\tend\nend\n\nfunction onDestroy()\n\t-- Clear the terminal entirly\n\tterminal.clear()\n\tterminal.clearInputHistory()\n\n\t-- Clear the display\n\tdisplay.clear()\n\tdisplay.update()\nend"
-    },
-    {
-        "name": "Picture Example (Display + Camera)",
-        "script": "local display = sc.getDisplays()[1]\nlocal camera = sc.getCameras()[1]\nlocal width, height = display.getDimensions()\n\nfunction onLoad()\n\tcamera.toggleRandom(true)\n\n\tlocal frame = camera.getFrame(width, height, 100, 100)\n\n\tdisplay.drawFromTable(frame)\n\tdisplay.update()\nend"
-    },
-    {
-        "name": "Video Example (Display + Camera)",
-        "script": "local display = sc.getDisplays()[1]\nlocal camera = sc.getCameras()[1]\nlocal width, height = display.getDimensions()\n\nfunction onUpdate()\n\tlocal frame = camera.getVideo(width, height, 100, 100, 2)\n\n\tdisplay.drawFromTable(frame)\n\tdisplay.update()\nend"
-    },
-    {
-        "name": "Speaker Example",
-        "script": "local speaker = sc.getSpeakers()[1]\n\nfunction onLoad()\n\t-- See https://github.com/Vajdani/sm_docs/blob/master/Lists/Audio.json for full list\n\tspeaker.playNoteEffect(\"event:/music/robotheads/dance/dancebass\")\nend"
-    },
-    {
-        "name": "Keyboard Example",
-        "script": "local keyboard = sc.getKeyboards()[1]\nlocal display = sc.getDisplays()[1]\n\nfunction onLoad()\n\tlastKeystroke = \"\"\n\ttext = \"\"\nend\n\nfunction onUpdate()\n\tlocal keystroke = keyboard.getLatestKeystroke()\n\tlocal pressed = keyboard.isPressed()\n\tlocal rapidPress\n\tlocal clock = os.clock()\n\n\tif pressed then\n\t\tif keystroke == lastKeystroke then\n\t\t\tif not pressClock then\n\t\t\t\tpressClock = clock\n\t\t\tend\n\n\t\t\tif pressClock + 0.3 <= clock then\n\t\t\t\trapidPress = true\n\t\t\tend\n\t\telse\n\t\t\trapidPress = false\n\t\t\tpressClock = nil\n\t\tend\n\telse\n\t\trapidPress = false\n\t\tpressClock = nil\n\t\tnotPress = true\n\tend\n\n\tif (pressed and notPress or keystroke ~= lastKeystroke) or rapidPress then\n\t\tlastKeystroke = keystroke\n\t\tnotPress = false\n\n\t\tif keystroke == \"backSpace\" then\n\t\t\tif #text > 0 then\n\t\t\t\ttext = text:sub(1, #text - 1)\n\t\t\tend\n\t\telse\n\t\t\ttext = text..keystroke\n\t\tend\n\t\t\n\t\tdisplay.clear()\n\t\tdisplay.drawText(2, 2, text, \"eeeeee\")\n\t\tdisplay.update()\n\tend\nend\n\nfunction onDestroy()\n\tdisplay.clear()\n\tdisplay.update()\nend"
-    },
-    {
-        "name": "Motor example",
-        "script": "local motor = sc.getMotors()[1]\n\nfunction onLoad()\n\tmotor.setBearingSpeed(600)\n\tmotor.setTorque(1000)\nend"
     },
     {
         "name": "Encryiption Example - Base64",
@@ -79,12 +16,126 @@
         "name": "Encryiption Example - SHA256",
         "script": "function onLoad()\n\t-- Message\n\tlocal msg = \"Hello World!\"\n\tprint(\"Message: \"..msg)\n\n\t-- Encoded message\n\tlocal encodedMessage = sc.sha256.encode(msg)\n\tprint(\"SHA256 Encoded: \"..encodedMessage)\nend"
     },
+
+    /* TERMINAL */
     {
-        "name": "Laser Example",
-        "script": "local Laser = sc.getLasers()[1]\nlocal Distance = 100\n\nfunction onLoad()\n\tLaser.setDistance(Distance) -- Distance is in Meters\nend\n\nfunction onUpdate()\n\tlocal hit, result = Laser.getLaserData()\n\n\tif hit then\n\t\t-- \"result.fraction\" is the distance that is 0 to 1. so we mutiply that by Distance so its 0 to DISTANCE\n\t\tlocal RoundedDistance = math.floor(result.fraction * Distance)\n\n\t\tprint(\"Hit! Distance is \"..RoundedDistance.. \" Meter(s)\")\n\tend\nend"
+        "name": "Terminal Example",
+        "script": "-- Get terminal component\nlocal terminal = sc.getTerminals()[1]\n\nfunction onLoad()\n\t-- Clears the terminal and writes initial message\n\tterminal.clear()\n\tterminal.send(\"#3A96DDComputer: Send a input and il echo it back to you!\")\nend\n\nfunction onUpdate()\n\t-- Checks to see if there has been any user inputs\n\tif terminal.receivedInputs() then\n\t\t-- Get message and send it back with \">\" at the start\n\t\tlocal text = terminal.getInput()\n\n\t\tterminal.send(\"> \"..text)\n\tend\nend\n\nfunction onDestroy()\n\t-- Clear terminal and input history\n\tterminal.clear()\n\tterminal.clearInputHistory()\nend"
+    },
+    
+    /* HARDDRIVE */
+    {
+        "name": "Harddrive Write Example",
+        "script": "-- Get harddrive component\nlocal harddrive = sc.getDrives()[1]\n\n-- Data to be stored inside the harddrive\nlocal data = {} \n\nfunction onLoad()\n\t-- Save the data\n\tharddrive.save(data)\n\t\n\tprint(\"Saved Data!\")\nend"
     },
     {
+        "name": "Harddrive Read Example",
+        "script": "-- Get harddrive component\nlocal harddrive = sc.getDrives()[1]\n\nfunction onLoad()\n\t-- Get the data stored in the harddrive and make it a string\n\tlocal data = harddrive.load()\n\tlocal jsonString = sm.json.writeJsonString(data)\n\n\tprint(jsonString)\nend"
+    },
+    
+    /* HOLOGRAM */
+    {
+        "name": "Hologram Cube Example",
+        "script": "-- Get hologram component\nlocal hologram = sc.getHolograms()[1]\n\n-- Set the holograms initial parameters\nlocal scale = sm.vec3.new(1,1,1)\nlocal position = sm.vec3.new(0,1,0)\nlocal rotation = sm.vec3.new(45,25,15)\nlocal color = sc.color.random0to1()\n\n-- Create the hologram and get its ID\nfunction onLoad()\n\tid = hologram.createCube(position, rotation, scale, color)\nend\n\nfunction onUpdate()\n\t-- Get the hologram object with its ID\n\tlocal object = hologram.getObject(id)\n\n\t-- Set the holograms rotation\n\tobject.setRotation(rotation)\n\t-- Step the rotation by 1 degree in each axis\n\trotation = rotation + sm.vec3.one()\nend"
+    },
+    {
+        "name": "Hologram Custom Object Example",
+        "script": "-- Get hologram component\nlocal hologram = sc.getHolograms()[1]\n\n-- Set the holograms initial parameters\nlocal uuid = \"6ad29c0e-8209-4dca-9133-20d7a2fc2d63\"\nlocal scale = sm.vec3.new(1,1,1)\nlocal position = sm.vec3.new(0,1,0)\nlocal rotation = sm.vec3.new(45,25,15)\nlocal color = sm.color.new(\"4A4A4A\")\n\n-- Create the hologram object\nfunction onLoad()\n\thologram.createCustomObject(uuid, position, rotation, scale, color)\nend"
+    },
+    {
+        "name": "Hologram Atom Example",
+        "script": "-- Get hologram component\nlocal hologram = sc.getHolograms()[1]\n\n-- Create Static variables\nlocal protonColor = sm.color.new(\"ff0000\")\nlocal neutronColor = sm.color.new(\"00ff00\")\nlocal electronColor = sm.color.new(\"ffffff\")\nlocal datumPosition = sm.vec3.new(0, 1, 0)\n\n-- Create tables for storing hologram objects\nlocal nucleusObjects = {}\nlocal electronObjects = {}\n\n-- Create average position used for centering the rotation of the electrons\nlocal averagePosition = sm.vec3.zero()\n\n-- Generates a random rotation direction for electrons\nlocal function generateRandom()\n\tlocal rand = math.random(1, 2)\n\n\treturn math.random(0, 1) == 1 and sm.vec3.new(0, math.rad(10), 0) or sm.vec3.new(0, math.rad(-10), 0)\nend\n\nfunction onLoad()\n\t-- Get the ammount of protons and neutrons in the nucleus\n\tlocal nucleusCount = math.random(2, 5)\n\tlocal electronCount = math.random(1, 3)\n\n\t-- Loop for every nucleus object\n\tfor i = 1, nucleusCount do\n\t\t-- Generates a random bool to make the object a proton and generates a random offset position\n\t\tlocal isProton = math.random(0, 1) == 1\n\t\tlocal randOffset = sm.vec3.new(math.random(), math.random(), math.random())\n\t\n\t\t-- Set the objects parameters\n\t\tlocal position = datumPosition + randOffset - randOffset / 2\n\t\tlocal rotation = sm.vec3.zero()\n\t\tlocal scale = sm.vec3.one()\n\t\tlocal color = isProton and protonColor or neutronColor\n\n\t\t-- Create the object and add it to its respective table, along with data needed for modifications\n\t\tnucleusObjects[#nucleusObjects + 1] = {\n\t\t\tid = hologram.createSphere(position, rotation, scale, color),\n\t\t\tposition = position\n\t\t}\n\n\t\t-- Update the average position with the random offset\n\t\taveragePosition = averagePosition + position\n\tend\n\n\t-- Complete the average\n\taveragePosition = averagePosition / nucleusCount\n\n\t-- Loop for every electron object\n\tfor i = 1, electronCount do\n\t\t-- Set the objects parameters\n\t\tlocal position = sm.vec3.new(i + 0.5, 0, 0) + averagePosition\n\t\tlocal rotation = sm.vec3.zero()\n\t\tlocal scale = sm.vec3.one() / 10\n\t\n\t\t-- Create the object and add it to its respective table, along with data needed for modifications\n\t\telectronObjects[#electronObjects + 1] = {\n\t\t\tid = hologram.createSphere(position, rotation, scale, electronColor),\n\t\t\tposition = position,\n\t\t\torbitDirection = generateRandom() -- dictates the direction of rotation\n\t\t}\n\tend\nend\n\nfunction onUpdate()\n\t-- Loop through every nucleus object\n\tfor i, objectData in pairs(nucleusObjects) do\n\t\t-- Get the object and create a noise offset for vibration\n\t\tlocal object = hologram.getObject(objectData.id)\n\t\tlocal noiseOffset = sm.vec3.new(math.random() / 10, math.random() / 10, math.random() / 10)\n\n\t\t-- Set the new position\n\t\tobject.setPosition(objectData.position + noiseOffset - noiseOffset / 2)\n\tend\n\n\t-- Loop through every electron object\n\tfor i, objectData in pairs(electronObjects) do\n\t\t-- Get the object\n\t\tlocal object = hologram.getObject(objectData.id)\n\n\t\t-- Get the direction from the current position to the average position and rotate based on the orbit direction\n\t\tlocal direction = averagePosition - objectData.position\n\t\tlocal newDirection = direction:rotateY(objectData.orbitDirection.y)\n\n\t\t-- Create the new electron position with the new direction\n\t\tlocal newPosition = averagePosition - newDirection\n\n\t\t-- Update the objects position and update the tables saved position\n\t\tobject.setPosition(newPosition)\n\t\tobjectData.position = newPosition\n\tend\nend"
+    },
+    
+    /* RADAR */
+    {
+        "name": "Radar Example",
+        "script": "-- Get radar component\nlocal radar = sc.getRadars()[1]\n\n-- Set static variables\nlocal vAngle = 35\nlocal hAngle = 35\n\nfunction onLoad()\n\t-- Set scan angles\n\tradar.setVerticalScanAngle(vAngle)\n\tradar.setHorizontalScanAngle(hAngle)\nend\n\nfunction onUpdate()\n\t-- Get all targets\n\tlocal targets = radar.getTargets()\n\n\tprint(\"Total Targets: \"..tostring(#targets))\n\t\n\t-- Loop through each target\n\tfor _, target in pairs(targets) do\n\t\t-- Round targets world position\n\t\tlocal roundedPosition = sm.vec3.new(\n\t\t\tmath.floor(target.position.x),\n\t\t\tmath.floor(target.position.y),\n\t\t\tmath.floor(target.position.z)\n\t\t)\n\n\t\t-- Print target data \n\t\tprint(tostring(roundedPosition)..\" | \"..tostring(target.surfaceArea))\n\tend\nend"
+    },
+    
+    /* NETWORK PORT */
+    {
+        "name": "Network Port Send Example",
+        "script": "-- Get network port component\nlocal networkPort = sc.getNetworkPorts()[1]\n\nfunction onLoad()\n\t-- Check to see if it has a connection\n\tif not networkPort.hasConnection() then\n\t\tprint(\"No connection found!\")\n\t\treturn\n\tend\n\n\t-- Send the data\n\tnetworkPort.sendPacket(\"Hello World!\")\n\tprint(\"Sent packet!\")\nend"
+    },
+    {
+        "name": "Network Port Recieve Example",
+        "script": "-- Get network port component\nlocal networkPort = sc.getNetworkPorts()[1]\n\nfunction onLoad()\n\t-- Check to see if it has a connection\n\tif not networkPort.hasConnection() then\n\t\tprint(\"No connection found!\")\n\t\treturn\n\tend\n\n\t-- If there is a recieved packet then print it\n\tif networkPort.getTotalPackets() > 0 then\n\t\tlocal packet = networkPort.receivePacket()\n\t\tprint(\"received \"..tostring(packet))\n\telse\n\t\tprint(\"No packets received!\")\n\tend\nend"
+    },
+    
+    /* DISPLAY */
+    {
+        "name": "Display Touch Screen Example",
+        "script": "-- Get display component\nlocal display = sc.getDisplays()[1]\n\nfunction onLoad()\n\t-- Enable touch screen on display\n\tdisplay.enableTouchScreen(true)\nend\n\nfunction onUpdate()\n\t-- Get the players touch screen data\n\tlocal data = display.getTouchData()\n\n\t-- Check if there is someone touching the screen and they havent released\n\tif data and data.state ~= 3 then\n\t\t-- Draw a pixel at the touch position with a random color\n\t\tdisplay.drawPixel(data.x, data.y, sc.color.random0to1())\n\tend\n\t\n\t-- Update the display()\n\tdisplay.update()\nend\n\nfunction onDestroy()\n\t-- Clear and update the display()\n\tdisplay.clear()\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Display Mandlebrot Fractal Example",
+        "script": "-- Get display component\nlocal display = sc.getDisplays()[1]\n\n-- Get the connected display's width and height\nlocal width, height = display.getDimensions()\n\n--[[\n\tSome recommended values to try:\n\n\tmaxIterations = 1000\n\tzoom = 20000\n\toffsetX = -0.7497\n\toffsetY = 0.0315\n]]\n\n-- Function to draw a Mandelbrot fractal on the display\nfunction drawFractal()\n\t-- Set variables specific for the final image\n\tlocal maxIterations = 200 -- Maximum iterations per pixel, determines the detail and accuracy of the fractal\n\tlocal zoom = 1 -- Zoom multiplier, adjusts the scale of the fractal\n\tlocal offsetX = 0 -- X-axis offset for the fractal's center\n\tlocal offsetY = 0 -- Y-axis offset for the fractal's center\n\tlocal pixelTbl = {} -- create the final pixel table\n\n\t-- Loop through every pixel on the display\n\tfor x = 1, width do\n\t\tfor y = 1, height do\n\t\t\t-- Convert pixel coordinates (x, y) to complex plane coordinates (zx, zy)\n\t\t\tlocal zx, zy = (x - width / 2) / (0.5 * zoom * width) + offsetX, (y - height / 2) / (0.5 * zoom * height) + offsetY\n\t\t\tlocal cRe, cIm = zx, zy  -- The real and imaginary parts of the initial complex number\n\t\t\tlocal iteration = 0  -- Iteration counter\n\n\t\t\t-- Iterate to determine if the point belongs to the Mandelbrot set\n\t\t\twhile (zx * zx + zy * zy < 4) and (iteration < maxIterations) do\n\t\t\t\tlocal newZx = zx * zx - zy * zy + cRe  -- Calculate the new real part\n\t\t\t\tlocal newZy = 2 * zx * zy + cIm  -- Calculate the new imaginary part\n\t\t\t\tzx, zy = newZx, newZy  -- Update zx and zy for the next iteration\n\t\t\t\titeration = iteration + 1  -- Increment the iteration counter\n\t\t\tend\n\n\t\t\t-- Determine the color based on the number of iterations\n\t\t\tlocal brightness = iteration / maxIterations\n\t\t\tlocal color\n\n\t\t\t-- If the point is in the set (reached max iterations), color it black\n\t\t\tif iteration == maxIterations then\n\t\t\t\tcolor = sm.color.new(0, 0, 0)\n\t\t\telse\n\t\t\t\t-- Otherwise, map the iteration count to a grayscale brightness\n\t\t\t\tcolor = sm.color.new(brightness, brightness, brightness) * 2  -- Adjust brightness level as needed\n\t\t\tend\n\n\t\t\t-- Add the pixel data to the pixel table\n\t\t\tpixelTbl[#pixelTbl + 1] = {x = x, y = y, scale = {x = 1, y = 1}, color = color}\n\t\tend\n\tend\n\t\n\t-- Draw the pixel table\n\tdisplay.drawFromTable(pixelTbl)\nend\n\nfunction onLoad()\n\t--Draw the fractal and update the display\n\tdrawFractal()\n\tdisplay.update()\nend\n"
+    },
+    {
+        "name": "Display Optimization Tester",
+        "script": "-- Warning! This can get very laggy on high pixel count displays, do this at your own risk\n\n-- Get display component\nlocal display = sc.getDisplays()[1]\n\n-- Get connected displays width and height\nlocal width, height = display.getDimensions()\n\nfunction onLoad()\n\t-- Loop through every pixel\n\tfor x = 1, width do\n\t\tfor y = 1, height do\n\t\t\t-- Draw a pixel at the current location with a random color\n\t\t\tdisplay.drawPixel(x, y, sc.color.random0to1())\n\t\tend\n\tend\n\t\n\t-- Update the display\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Display Noise Generator",
+        "script": "-- Get display component\nlocal display = sc.getDisplays()[1]\n\n-- Get connected displays width and height\nlocal width, height = display.getDimensions()\n\n-- Function that generates a random 10 digit seed\nlocal function generateSeed()\n\tlocal string = \"\"\n\n\tfor i = 1, 10 do\n\t\tstring = string..tostring(math.random(0, 9))\n\tend\n\n\treturn tonumber(string)\nend\n\nfunction onLoad()\n\t-- Generate a seed\n\tlocal seed = generateSeed()\n\n\t-- Loop through all pixels\n\tfor x = 1, width, 1 do\n\t\tfor y = 1, height, 1 do\n\t\t\t-- Draw a pixel based of a octaveNoise2d output\n\t\t\tdisplay.drawPixel(x, y, sc.color.newSingular(sm.noise.octaveNoise2d(x, y, 7.5, seed)))\n\t\tend\n\tend\n\n\t-- Update it.\n\tdisplay.update()\nend\n\nfunction onDestroy()\n\t-- Clear and update the display\n\tdisplay.clear()\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Display Rotating Cube Example",
+        "script": "-- Get display component (128 x 128 recommended) \nlocal display = sc.getDisplays()[1]\n\n-- Get width and height\nlocal width, height = display.getDimensions()\n\n-- Initialise varaibles and create a random color\nlocal cubeSize = math.min(width, height) / 2  -- Scale of the cube size\nlocal angleX, angleY = 0, 0  -- Initial angles for rotation\nlocal centerX, centerY = width / 2, height / 2  -- Center of the display\nlocal rotationSpeed = 0.02  -- Speed of rotation\nlocal color = sc.color.random0to1()\n\n-- Define the 8 vertices of the cube\nlocal vertices = {\n\tsm.vec3.new(-1, -1, -1),\n\tsm.vec3.new(1, -1, -1),\n\tsm.vec3.new(1, 1, -1),\n\tsm.vec3.new(-1, 1, -1),\n\tsm.vec3.new(-1, -1, 1),\n\tsm.vec3.new(1, -1, 1),\n\tsm.vec3.new(1, 1, 1),\n\tsm.vec3.new(-1, 1, 1)\n}\n\n-- Define all cube edges\nlocal edges = {\n\t{1, 2}, {2, 3}, {3, 4}, {4, 1},  -- Edges of the front face\n\t{5, 6}, {6, 7}, {7, 8}, {8, 5},  -- Edges of the back face\n\t{1, 5}, {2, 6}, {3, 7}, {4, 8}   -- Connecting edges between front and back faces\n}\n\nfunction projectVertex(vertex)\n\t-- Simple perspective projection\n\tlocal scale = cubeSize / (vertex.z + 3)\n\tlocal x = vertex.x * scale + centerX\n\tlocal y = vertex.y * scale + centerY\n\n\t-- Clamp and round the coordinates\n\tx = sm.util.clamp(math.floor(x + 0.5), 1, width)\n\ty = sm.util.clamp(math.floor(y + 0.5), 1, height)\n\n\treturn x, y\nend\n\nfunction onUpdate()\n\t-- Clear the display\n\tdisplay.clear()\n\n\t-- Create projected verticies table\n\tlocal projectedVertices = {}\n\t\n\t-- Loop through each verticy\n\tfor i = 1, #vertices do\n\t\t-- Get the current verticy and rotate it based on the x and y angles\n\t\tlocal rotatedVertex = vertices[i]\n\t\trotatedVertex = rotatedVertex:rotateX(angleX)\n\t\trotatedVertex = rotatedVertex:rotateY(angleY)\n\t\t\n\t\t-- Project the rotated vertex to 2D screen space and add to the table\n\t\tlocal x, y = projectVertex(rotatedVertex)\n\t\tprojectedVertices[i] = {x, y}\n\tend\n\t\n\t-- Loop through each edge\n\tfor i = 1, #edges do\n\t\t-- Get the verticies that correspond to each stored edge\n\t\tlocal v1 = projectedVertices[edges[i][1]]\n\t\tlocal v2 = projectedVertices[edges[i][2]]\n\t\t\n\t\t-- Draw a line between the 2 coordinates\n\t\tdisplay.drawLine(v1[1], v1[2], v2[1], v2[2], color)\n\tend\n\n\t-- Update the display\n\tdisplay.update()\n\n\t-- Increment rotation angles\n\tangleX = angleX + rotationSpeed\n\tangleY = angleY + rotationSpeed\nend"
+    },
+    
+    /* CAMERA + DISPLAY */
+    {
+        "name": "Picture Example (Display + Camera)",
+        "script": "-- Get display and camera components\nlocal display = sc.getDisplays()[1]\nlocal camera = sc.getCameras()[1]\n\n-- Get connected displays width and height\nlocal width, height = display.getDimensions()\n\n-- Set camera parameters\ncamera.setFov(50) --Fov in degrees\ncamera.setRange(1000) --Range in meters\n\nfunction onLoad()\n\t-- Draw the frame to the display\n\tcamera.frame(display)\n\n\t-- Update the display\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Custom Example (Display + Camera)",
+        "script": "-- Get display and camera components\nlocal display = sc.getDisplays()[1]\nlocal camera = sc.getCameras()[1]\n\n-- Get connected displays width and height\nlocal width, height = display.getDimensions()\n\n-- Set camera parameters\ncamera.setFov(50) --Fov in degrees\ncamera.setRange(1000) --Range in meters\n\n-- Create the drawer function that the customFrame will use to color pixels\nlocal function drawer(hit, result, x, y)\n\tlocal color = sm.color.new(\"000000\")\n\n\tif hit then\n\t\tcolor = sm.color.new(1, 1, 1) * (1 - result.fraction)\n\tend\n\n\treturn color\nend\n\nfunction onLoad()\n\t-- Draw the frame to the display\n\tcamera.customFrame(display, drawer)\n\n\t-- Update the display\n\tdisplay.update()\nend"
+    },
+    {
+        "name": "Video Example (Display + Camera)",
+        "script": "-- Get display and camera components\nlocal display = sc.getDisplays()[1]\nlocal camera = sc.getCameras()[1]\n\n-- Get connected displays width and height\nlocal width, height = display.getDimensions()\n\n-- Set camera parameters\ncamera.setFov(50) --Fov in degrees\ncamera.setRange(250) --Range in meters\n\n-- Set display parameters\ndisplay.setOptimizationThreshold(0.05) -- Sets the image compression\n\nfunction onUpdate()\n\t-- Draw the video slices to the display\n\tcamera.video(display, 4) -- 4 slices of the display will be drawn per tick\n\n\t-- Update the display\n\tdisplay.update()\nend"
+    },
+    
+    /* SPEAKER */
+    {
+        "name": "Speaker Example",
+        "script": "local speaker = sc.getSpeakers()[1]\n\nfunction onLoad()\n\t-- See https://github.com/Vajdani/sm_docs/blob/master/Lists/Audio.json for full list\n\tspeaker.playSound(\"event:/music/robotheads/dance/dancebass\")\nend"
+    },
+    
+    /* KEYBOARD + DISPLAY */
+    {
+        "name": "Typing Example (Display + Keyboard)",
+        "script": "-- Get keyboard and display components\nlocal keyboard = sc.getKeyboards()[1]\nlocal display = sc.getDisplays()[1]\n\n-- Set globals\nfunction onLoad()\n\tlastKeystroke = \"\"\n\ttext = \"\"\nend\n\nfunction onUpdate()\n\t-- Get keyboards keystroke and press data\n\tlocal keystroke = keyboard.getLatestKeystroke()\n\tlocal pressed = keyboard.isPressed()\n\n\t-- Create variables for rapid press\n\tlocal rapidPress\n\tlocal clock = os.clock()\n\n\t-- Determine if the user is holding a key, if so then rapid press\n\tif pressed then\n\t\tif keystroke == lastKeystroke then\n\t\t\tif not pressClock then\n\t\t\t\tpressClock = clock\n\t\t\tend\n\n\t\t\tif pressClock + 0.3 <= clock then\n\t\t\t\trapidPress = true\n\t\t\tend\n\t\telse\n\t\t\trapidPress = false\n\t\t\tpressClock = nil\n\t\tend\n\telse\n\t\trapidPress = false\n\t\tpressClock = nil\n\t\tnotPress = true\n\tend\n\n\t-- Determine if a keystroke should be made\n\tif (pressed and notPress or keystroke ~= lastKeystroke) or rapidPress then\n\t\tlastKeystroke = keystroke\n\t\tnotPress = false\n\n\t\t-- If the keystroke is a backspace then remove the last char in the string, else add the current keystroke\n\t\tif keystroke == \"backSpace\" then\n\t\t\tif #text > 0 then\n\t\t\t\ttext = text:sub(1, #text - 1)\n\t\t\tend\n\t\telse\n\t\t\ttext = text..keystroke\n\t\tend\n\t\t\n\t\t-- Clear and update the display with the new string\n\t\tdisplay.clear()\n\t\tdisplay.drawText(2, 2, text, \"eeeeee\")\n\t\tdisplay.update()\n\tend\nend\n\nfunction onDestroy()\n\t-- Clear and update the display\n\tdisplay.clear()\n\tdisplay.update()\nend"
+    },
+    
+    /* MOTOR */
+    {
+        "name": "Motor example",
+        "script": "-- Get motor component\nlocal motor = sc.getMotors()[1]\n\n-- Set the bearing speed and torque to random values\nfunction onLoad()\n\tmotor.setBearingSpeed(math.random(100, 1000))\n\tmotor.setTorque(math.random(100, 1000))\nend"
+    },
+    
+    /* LASER */
+    {
+        "name": "Laser Example",
+        "script": "-- Get laser component\nlocal laser = sc.getLasers()[1]\n\n-- Set static variables\nlocal distance = 100\n\n-- Set the lasers max distance\nfunction onLoad()\n\tlaser.setDistance(distance) -- Distance is in Meters\nend\n\nfunction onUpdate()\n\t-- Get the lasers raycast data\n\tlocal hit, result = laser.getLaserData()\n\n\t-- If the ray has hit something\n\tif hit then\n\t\t-- Multiply the max distance by the fraction to get the ray's distance travelled\n\t\tlocal roundedDistance = math.floor(result.fraction * distance)\n\t\n\t\t-- Print distance\n\t\tprint(\"Hit! Distance is \"..roundedDistance.. \" Meter(s)\")\n\tend\nend"
+    },
+        
+    /* GPS */
+    {
         "name": "GPS Example",
-        "script": "-- This prints out the current speed\n\nlocal GPS = sc.getGPSs()[1]\n\nfunction onUpdate()\n\tlocal data = GPS.getGPSData()\n\n\tprint(\"Current Speed: \"..math.floor(data.speed)..\" m/s\")\nend\n"
+        "script": "-- Get GPS component\nlocal GPS = sc.getGPSs()[1]\n\nfunction onUpdate()\n\t-- Get the GPS's data\n\tlocal data = GPS.getGPSData()\n\n\t-- Print out the current speed\n\tprint(\"Current Speed: \"..math.floor(data.speed)..\" m/s\")\nend\n"
+    },
+
+    /* REGISTERS */
+    {
+        "name": "Register Addition Example",
+        "script": "-- 2 Input and 1 output register needed, name the 2 input registers \"input1\" and \"input2\" respectivley, name the output register \"output\"\n-- This works best with putting things like modpack numbers into the registers, however you can do stuff like binary\n\nfunction onUpdate()\n\t-- Get the values in each register\n\tlocal input1 = sc.getReg(\"input1\")\n\tlocal input2 = sc.getReg(\"input2\")\n\n\t-- Set the output register with the new number\n\tsc.setReg(\"output\", input1 + input2) -- Can be any maths operation\nend\n"
+    },
+    {
+        "name": "Register Clock Example",
+        "script": "-- 1 output register needed, name the register \"output\"\n\n-- Set the power varaible\nlocal power = 0\n\nfunction onUpdate()\n\t-- Set the current power\n\tsc.setReg(\"output\", power)\n\n\t-- Flip flop the power between 0 - 1, this pulses the register at 20Hz\n\tpower = power == 0 and 1 or 0\nend"
     }
 ]

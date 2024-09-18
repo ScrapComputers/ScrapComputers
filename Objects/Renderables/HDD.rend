@@ -16,9 +16,9 @@
             {
                "material": "DifNor",
                "textureList": [
-                  "$CONTENT_DATA/Objects/Textures/HDD_dif.png",
+                  "$CONTENT_DATA/Objects/Textures/HDD/HDD_dif.png",
                   "$CONTENT_DATA/Objects/Textures/transparent.tga",
-                  "$CONTENT_DATA/Objects/Textures/HDD_nor.png"
+                  "$CONTENT_DATA/Objects/Textures/HDD/HDD_nor.png"
                ]
             }
          ]

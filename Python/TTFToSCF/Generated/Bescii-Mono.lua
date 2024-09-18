@@ -762,4 +762,4 @@ data.charset = {
 	["ﬂ"] = {"..####..",".##..##.",".##..##.","####.##.",".##..##.",".##..##.",".##...##","........"},
 	["�"] = {".######.","##....##","#..##..#","#####..#","####..##","###..###","########",".##..##."}
 }
-sm.scrapcomputers.fontmanager.fonts["Bescii-Mono"] = data
+sm.scrapcomputers.fontManager.fonts["Bescii-Mono"] = data

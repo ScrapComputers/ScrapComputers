@@ -2,6 +2,6 @@
 sm.scrapcomputers.MODULE = {}
 
 ---Prints hello world!
-sm.scrapcomputers.MODULE.helloWorld = function()
+function sm.scrapcomputers.MODULE.helloWorld()
     print("Hello world!")
 end

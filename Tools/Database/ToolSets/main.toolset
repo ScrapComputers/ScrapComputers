@@ -7,7 +7,7 @@
 			"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
 			"showInInventory": false,
 			"autoTool": true,
-			"script": { "class": "ConfigManager", "file": "$CONTENT_DATA/Scripts/Tools/ConfigManager.lua", "data": {} }
+			"script": { "class": "ConfigManagerClass", "file": "$CONTENT_DATA/Scripts/Tools/ConfigManager.lua" }
 		},
 		{
 			"name": "SCRAPCOMPUTERS___BAN_SYSTEM",
@@ -16,7 +16,7 @@
 			"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
 			"showInInventory": false,
 			"autoTool": true,
-			"script": { "class": "BanSystem", "file": "$CONTENT_DATA/Scripts/Tools/BanSystem.lua", "data": {} }
+			"script": { "class": "BanSystemClass", "file": "$CONTENT_DATA/Scripts/Tools/BanSystem.lua" }
 		}
 	]
 }

@@ -14,11 +14,11 @@
          "minViewSize": 20,
          "subMeshList": [
             {
-               "material": "DifNor",
+               "material": "DifAsgNor",
                "textureList": [
-                  "$CONTENT_DATA/Objects/Textures/Hologram_dif.png",
-                  "$CONTENT_DATA/Objects/Textures/transparent.tga",
-                  "$CONTENT_DATA/Objects/Textures/Hologram_nor.png"
+                  "$CONTENT_DATA/Objects/Textures/Hologram/Hologram_dif.png",
+                  "$CONTENT_DATA/Objects/Textures/Hologram/Hologram_asg.png",
+                  "$CONTENT_DATA/Objects/Textures/Hologram/Hologram_nor.png"
                ]
             }
          ]

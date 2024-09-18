@@ -1071,4 +1071,4 @@ function lua_wrap_state(proto, env, upval)
 	return wrapped
 end
 
-_G.luavm.lbi = {bc_to_state = lua_bc_to_state, wrap_state = lua_wrap_state}
+sm.scrapcomputers.luavm.lbi = {bc_to_state = lua_bc_to_state, wrap_state = lua_wrap_state}

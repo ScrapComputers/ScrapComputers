@@ -1,0 +1,17 @@
+{
+    "ScrapComputers - ConfiguratiorStar": {
+        "effectList": [
+            {
+                "offset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "particles": [
+                    "p_sc_configurator"
+                ],
+                "type": "particle"
+            }
+        ]
+    }
+}
