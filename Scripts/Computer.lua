@@ -53,7 +53,7 @@ function ComputerClass:server_onCreate()
         wait1Tick = false,
         previousActive = false,
         canResetError = false,
-}
+    }
     self.sv.saved = self.storage:load()
 
     if not self.sv.saved then
@@ -121,7 +121,9 @@ function ComputerClass:server_onFixedUpdate(deltaTime)
             self:sv_syncClients()
 
             local function run()
-                local func, errorMessage = sm.scrapcomputers.luavm.loadstring(self.sv.saved.code, self.sv.env)
+                local safeCode = self.sv.saved.code:gsub("##", "#")
+
+                local func, errorMessage = sm.scrapcomputers.luavm.loadstring(safeCode, self.sv.env)
                 if not func then error(errorMessage) end
 
                 func()
@@ -171,7 +173,7 @@ function ComputerClass:sv_serverSync(data)
 end
 
 function ComputerClass:sv_syncClients()
-    local strings = sm.scrapcomputers.string.splitString(self.sv.saved.code, byteLimit)
+    local strings = sm.scrapcomputers.string.splitString(self.sv.saved.code:gsub("##", "#"), byteLimit)
 
     for i, string in pairs(strings) do
         self.network:sendToClients("cl_rebuildCode", {string = string, i = i})
@@ -181,7 +183,7 @@ function ComputerClass:sv_syncClients()
 end
 
 function ComputerClass:sv_resyncClient(data, player)
-    local strings = sm.scrapcomputers.string.splitString(self.sv.saved.code, byteLimit)
+    local strings = sm.scrapcomputers.string.splitString(self.sv.saved.code:gsub("##", "#"), byteLimit)
 
     for i, string in pairs(strings) do
         self.network:sendToClient(player, "cl_rebuildCode", {string = string, i = i})
@@ -361,7 +363,7 @@ function ComputerClass:cl_setAlwaysOnState(widget, name)
 end
 
 function ComputerClass:cl_saveCode()
-    self.cl.code = self.cl.unsavedCode:gsub("⁄", "\\")
+    self.cl.code = self.cl.unsavedCode:gsub("⁄", "\\"):gsub("#", "##")
 
     local strings = sm.scrapcomputers.string.splitString(self.cl.code, byteLimit)
     for i, string in pairs(strings) do
