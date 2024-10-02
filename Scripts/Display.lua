@@ -1,8 +1,6 @@
--- Ben has sacraficed his fucking soul making display's. VeraDev died commenting the entire display.
--- Not only did VeraDev die, When this commit was pushed (for documentation), The 2 best sentences of
--- the description were: "THIS IS ABSOLUTE DOG SHIT AND I DONT WANT TO EVER TOUCH THEM AGAIN. THIS BITCH CAN SUCK MY ASS!"
-
+-- Ben has sacraficed his fucking soul making display's. VeraDev died commenting the entire display, its even beter because now its all gone.
 -- If you ever make your own display's. You will actually kill yourself. We are NOT joking.
+-- If anyone can find a better method of doing this please save our souls
 
 ---@class DisplayClass : ShapeClass
 DisplayClass = class()
@@ -21,20 +19,11 @@ local camera = sm.camera
 local PIXEL_UUID = sm.uuid.new("cd943f04-96c7-43f0-852c-b2d68c7fc157")
 local BACKPANEL_EFFECT_NAME = "ScrapComputers - ShapeRenderableBackPanel"
 local width, height = sm.gui.getScreenSize()
+
 local byteLimit = 65000
+local drawTableLimit = 13500
+local tableLimit = 6500 --11000 --11543
 local displayHidingCooldown = 0.1
-
-local bufferInstructions = {
-    ["DRAW_PIXEL"] = "cl_addToTable",
-    ["DRAW_LINE"] = "cl_drawLine",
-    ["DRAW_TEXT"] = "cl_drawText",
-    ["DRAW_CIRCLE"] = "cl_drawCircle",
-    ["DRAW_TRIANGLE"] = "cl_drawTriangle",
-    ["DRAW_RECT"] = "cl_drawRect",
-
-    ["OPTIMIZE"] = "cl_optimizeDisplayEffects",
-    ["CLEAR_DISPLAY"] = "cl_clearDisplay"
-}
 
 local networkInstructions = {
     ["DIS_VIS"] = "cl_setDisplayHidden",
@@ -120,10 +109,54 @@ function indexToCoordinate(index, width)
     return x, y
 end
 
-local function getFirst(tbl)
+function getFirst(tbl)
     for i, v in pairs(tbl) do
         return v, i
     end
+end
+
+function splitTable(numbers, length)
+    if #numbers <= length then
+        return {numbers}
+    end
+
+    local result = {}
+    local currentTable = {}
+    local count = 0
+
+    for i, num in ipairs(numbers) do
+        table.insert(currentTable, num)
+        count = count + 1
+
+        if count == length then
+            table.insert(result, currentTable)
+            currentTable = {}
+            count = 0
+        end
+    end
+
+    if #currentTable > 0 then
+        table.insert(result, currentTable)
+    end
+
+    return result  
+end
+
+function colorToID(color)
+    local r = math.floor(color.r * 255)
+    local g = math.floor(color.g * 255)
+    local b = math.floor(color.b * 255)
+    
+    local colorID = bit.bor(bit.lshift(r, 16), bit.lshift(g, 8), b)
+    return colorID
+end
+
+function idToColor(colorID)
+    local r = bit.band(bit.rshift(colorID, 16), 0xFF)
+    local g =  bit.band(bit.rshift(colorID, 8), 0xFF)
+    local b = bit.band(colorID, 0xFF)
+    
+    return sm.color.new(r / 255, g / 255, b / 255)
 end
 
 -- The torture. Someone please give us a soul. Espessally Ben Bingo, He wrote the entire display. PLEASE GIVE US SOME FUCKING WATER, WE HAVENT DRANK WATER SINCE DAY 1.
@@ -134,8 +167,9 @@ end
 ---@param width number The width of the display
 ---@param height number The height of the display
 ---@param threshold number The optimization threshold
+---@param formatToNetwork boolean If the function is formatting the result to netowrk or not
 ---@return table TooMuchOptimizedInstructionSet The reduced instruction set afther it was slaughtered.
-function optimizeDisplayPixelStack(indexedStack, width, height, threshold)
+function optimizeDisplayPixelStack(indexedStack, width, height, threshold, formatToNetwork)
     local optimizedStack = {}
     local processed = {}
 
@@ -200,35 +234,33 @@ function optimizeDisplayPixelStack(indexedStack, width, height, threshold)
         end
     end)
 
-    local cahcedIndex = #optimizedStack
+    local cahcedIndex = 0
 
     for _, index in ipairs(keys) do
         if not processed[index] then
             local x, y = indexToCoordinate(index, width)
             local pixelIndex = indexedStack[index]
 
+            local maxWidth, maxHeight = findMaxDimensions(x, y, pixelIndex)
+
             cahcedIndex = cahcedIndex + 1
 
-            if not scale then
-                local maxWidth, maxHeight = findMaxDimensions(x, y, pixelIndex)
-
+            if formatToNetwork then
+                optimizedStack[cahcedIndex] = coordinateToIndex(x, y, width)
+                cahcedIndex = cahcedIndex + 1
+                optimizedStack[cahcedIndex] = coordinateToIndex(maxWidth, maxHeight, width)
+                cahcedIndex = cahcedIndex + 1
+                optimizedStack[cahcedIndex] = colorToID(pixelIndex)
+            else
                 optimizedStack[cahcedIndex] = {
                     x = x,
                     y = y,
                     color = pixelIndex,
                     scale = {x = maxWidth, y = maxHeight}
                 }
-
-                -- Mark the merged pixels as processed
-                markBlockAsProcessed(x, y, maxWidth, maxHeight)
-            else
-                optimizedStack[cahcedIndex] = {
-                    x = x,
-                    y = y,
-                    color = pixelIndex,
-                    scale = {x = scale.x, y = scale.y}
-                }
             end
+
+            markBlockAsProcessed(x, y, maxWidth, maxHeight) 
         end
     end
 
@@ -253,19 +285,15 @@ function DisplayClass:sv_createData()
 
         sm.scrapcomputers.errorHandler.assert(radius, 3, "Radius is too small!")
 
-        self.sv.buffer[#self.sv.buffer + 1] = {
-            "DRAW_CIRCLE",
-            {
-                x = round(x),
-                y = round(y),
+        local len = #self.sv.buffer
 
-                radius = round(radius),
-
-                color = type(color) == "Color" and color or sm.color.new(color),
-
-                isFilled = isFilled
-            }
-        }
+        self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
+        self.sv.buffer[len + 2] = round(radius)
+        self.sv.buffer[len + 3] = colorToID(type(color) == "string" and sm.color.new(color) or color)
+        self.sv.buffer[len + 4] = isFilled
+        
+        self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 4
+        self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 4
     end
 
     ---Draw Triangle function
@@ -287,23 +315,17 @@ function DisplayClass:sv_createData()
 
         sm.scrapcomputers.errorHandler.assertArgument(color, 7, {"Color", "string"})
 
-        self.sv.buffer[#self.sv.buffer + 1] = {
-            "DRAW_TRIANGLE", -- The type
-            {
-                x1 = round(x1),
-                y1 = round(y1),
+        local len = #self.sv.buffer
+        local width = self.data.width
 
-                x2 = round(x2),
-                y2 = round(y2),
-
-                x3 = round(x3),
-                y3 = round(y3),
-
-                color = type(color) == "Color" and color or sm.color.new(color),
-
-                isFilled = isFilled
-            }
-        }
+        self.sv.buffer[len + 1] = coordinateToIndex(round(x1), round(y1), width)
+        self.sv.buffer[len + 2] = coordinateToIndex(round(x2), round(y2), width)
+        self.sv.buffer[len + 3] = coordinateToIndex(round(x3), round(y3), width)
+        self.sv.buffer[len + 4] = colorToID(type(color) == "string" and sm.color.new(color) or color)
+        self.sv.buffer[len + 5] = isFilled
+        
+        self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 5
+        self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 5
     end
 
     ---Draw Rectangle Function
@@ -322,20 +344,16 @@ function DisplayClass:sv_createData()
 
         sm.scrapcomputers.errorHandler.assertArgument(color, 4, {"Color", "string"})
 
-        self.sv.buffer[#self.sv.buffer + 1] = {
-            "DRAW_RECT",
-            {
-                x = round(x),
-                y = round(y),
+        local len = #self.sv.buffer
+        local screenWidth = self.data.width
 
-                width = round(width),
-                height = round(height),
-
-                color = type(color) == "Color" and color or sm.color.new(color),
-
-                isFilled = isFilled
-            }
-        }
+        self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), screenWidth)
+        self.sv.buffer[len + 2] = coordinateToIndex(round(width), round(height), screenWidth)
+        self.sv.buffer[len + 3] = colorToID(type(color) == "string" and sm.color.new(color) or color)
+        self.sv.buffer[len + 4] = isFilled
+        
+        self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 6
+        self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 4
     end
 
     return {
@@ -351,15 +369,13 @@ function DisplayClass:sv_createData()
 
             sm.scrapcomputers.errorHandler.assertArgument(color, 3, {"Color", "string"})
 
-            self.sv.buffer[#self.sv.buffer + 1] = {
-                "DRAW_PIXEL",
-                {
-                    x = round(x),
-                    y = round(y),
-                    scale = {x = 1, y = 1},
-                    color = type(color) == "Color" and color or sm.color.new(color)
-                }
-            }
+            local len = #self.sv.buffer
+            
+            self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
+            self.sv.buffer[len + 2] = colorToID(type(color) == "string" and sm.color.new(color) or color)
+
+            self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 1
+            self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 2
         end,
 
         ---Draws pixels from a table
@@ -367,16 +383,34 @@ function DisplayClass:sv_createData()
         drawFromTable = function (tbl)
             sm.scrapcomputers.errorHandler.assertArgument(tbl, nil, {"table"}, {"PixelTable"})
 
+            local index = #self.sv.drawTableBuffer + 1
+            self.sv.drawTableBuffer[index] = { pixels = {} }
+
+            local width = self.data.width
+
             for i, pixel in pairs(tbl) do
-                sm.scrapcomputers.errorHandler.assert(pixel.x and pixel.y and pixel.scale and pixel.color, "missing data at index "..i..".")
+                local pixel_x = pixel.x
+                local pixel_y = pixel.y
+                local pixel_color = pixel.color
 
-                sm.scrapcomputers.errorHandler.assert(type(pixel.x) == "number", nil, "bad x value at index "..i..". Expected number. Got "..type(pixel.x).." instead!")
-                sm.scrapcomputers.errorHandler.assert(type(pixel.y) == "number", nil, "bad y value at index "..i..". Expected number. Got "..type(pixel.y).." instead!")
+                local xType = type(pixel_x)
+                local yType = type(pixel_y)
+                local colorType = type(pixel_color)
 
-                sm.scrapcomputers.errorHandler.assert((type(pixel.color) == "Color" or type(pixel.color) == "string"), nil, "bad color at index "..i..". Expected Color or string. Got "..type(pixel.color).." instead!")
+                sm.scrapcomputers.errorHandler.assert(pixel_x and pixel_y and pixel_color, "missing data at index "..i..".")
+
+                sm.scrapcomputers.errorHandler.assert(xType == "number", nil, "bad x value at index "..i..". Expected number. Got "..xType.." instead!")
+                sm.scrapcomputers.errorHandler.assert(yType == "number", nil, "bad y value at index "..i..". Expected number. Got "..yType.." instead!")
+                sm.scrapcomputers.errorHandler.assert(colorType == "Color" or colorType == "string", nil, "bad color at index "..i..". Expected Color or string. Got ".. colorType.." instead!")
+
+                if pixel_color ~= self.sv.backPanel then
+                    self.sv.drawTableBuffer[index].pixels[coordinateToIndex(pixel_x, pixel_y, width)] = type(pixel_color) == "string" and sm.color.new(pixel_color) or pixel_color
+                end
             end
 
-            self.sv.buffer[#self.sv.buffer + 1] = {"DRAW_TABLE", tbl}
+            self.sv.indexBuffer[#self.sv.indexBuffer + 1] = #tbl
+            self.sv.drawTableBuffer[index].index = #self.sv.indexBuffer
+            self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 9
         end,
 
         -- Clear the display
@@ -389,17 +423,17 @@ function DisplayClass:sv_createData()
             end
 
             self.sv.buffer = {}
+            self.sv.indexBuffer = {}
+            self.sv.instructionBuffer = {}
 
-            local clearColor = type(color) == "Color" and color or sm.color.new(color or "000000")
+            local clearColor = colorToID(color and (type(color) == "string" and sm.color.new(color) or color) or sm.color.new(0, 0, 0))
 
-            self.sv.buffer[#self.sv.buffer + 1] = {
-                "CLEAR_DISPLAY",
-                {
-                    clearColor
-                }
-            }
+            self.sv.buffer[1] = clearColor
 
-            self.sv.backPannel = clearColor
+            self.sv.instructionBuffer[1] = 3
+            self.sv.indexBuffer[1] = 1
+
+            self.sv.backPanel = clearColor
         end,
 
         -- Draws a line
@@ -417,17 +451,15 @@ function DisplayClass:sv_createData()
 
             sm.scrapcomputers.errorHandler.assertArgument(color, 5, {"Color", "string"})
 
-            self.sv.buffer[#self.sv.buffer + 1] = {
-                "DRAW_LINE",
-                {
-                    x = round(x),
-                    y = round(y),
-                    x1 = round(x1),
-                    y1 = round(y1),
+            local len = #self.sv.buffer
+            local width = self.data.width
+            
+            self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), width)
+            self.sv.buffer[len + 2] = coordinateToIndex(round(x1), round(y1), width)
+            self.sv.buffer[len + 3] = colorToID(type(color) == "string" and sm.color.new(color) or color)
 
-                    color = type(color) == "Color" and color or sm.color.new(color)
-                }
-            }
+            self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 2 
+            self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 3
         end,
 
         -- Draws a circle
@@ -499,21 +531,19 @@ function DisplayClass:sv_createData()
             local font, errMsg = sm.scrapcomputers.fontManager.getFont(fontName)
             sm.scrapcomputers.errorHandler.assert(font, 5, errMsg)
 
-            color = color or "FFFFFF"
+            if text ~= "" then
+                color = color or "FFFFFF"
 
-            self.sv.buffer[#self.sv.buffer + 1] = {
-                "DRAW_TEXT",
-                {
-                    x = round(x),
-                    y = round(y),
+                local len = #self.sv.buffer
 
-                    string = text,
-
-                    color = type(color) == "Color" and color or sm.color.new(color),
-
-                    font = fontName
-                }
-            }
+                self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
+                self.sv.buffer[len + 2] = text
+                self.sv.buffer[len + 3] = colorToID(type(color) == "string" and sm.color.new(color) or color)
+                self.sv.buffer[len + 4] = fontName
+                
+                self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 7
+                self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 4
+            end
         end,
 
         -- Returns the dimensions of the display
@@ -546,7 +576,7 @@ function DisplayClass:sv_createData()
         enableTouchScreen = function(bool)
             sm.scrapcomputers.errorHandler.assertArgument(bool, nil, {"boolean"})
 
-            self.sv.networkBuffer[#self.sv.networkBuffer+1] = {"TOUCH_STATE", {bool}}
+            self.sv.networkBuffer[#self.sv.networkBuffer + 1] = {"TOUCH_STATE", {bool}}
             self.sv.display.touchAllowed = bool
         end,
 
@@ -570,7 +600,8 @@ function DisplayClass:sv_createData()
 
         -- Optimizes the display to the extreme. Will be costy during the optimization but will be a massive performance increase after it.
         optimize = function ()
-            self.sv.buffer[#self.sv.buffer+1] = {"OPTIMIZE", {}}
+            self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 8
+            self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 0
         end,
 
         -- Sets the optimization threshold. The lower, the less optimization it does but with better quality, the higher, the better optimization it does but with worser quality.
@@ -586,10 +617,7 @@ function DisplayClass:sv_createData()
         ---Sets the max buffer size
         ---@param buffer integer The max buffer size
         setMaxBuffer = function (buffer)
-            sm.scrapcomputers.errorHandler.assertArgument(buffer, nil, {"integer"})
-            sm.scrapcomputers.errorHandler.assert(buffer > 0, nil, "bad argument #1. Buffer must be positive")
-
-            self.sv.maxBuffer = buffer
+            -- Func deprecated
         end,
 
         -- Returns display's id
@@ -629,113 +657,88 @@ function DisplayClass:sv_createData()
 end
 
 function DisplayClass:server_onFixedUpdate()
+    local self_network = self.network
+
     if #self.sv.networkBuffer > 0 then
         for _, data in pairs(self.sv.networkBuffer) do
             local instruction, params = unpack(data)
             local dest = networkInstructions[instruction]
 
-            self.network:sendToClients(dest, params)
+            self_network:sendToClients(dest, params)
 
             if instruction == "DIS_VIS" then
-                self.network:sendToClients("cl_setUserHidden", params[1])
+                self_network:sendToClients("cl_setUserHidden", params[1])
             end
         end
 
         if sm.scrapcomputers.backend.cameraColorCache then
-            sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = false
+            sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = nil
         end
 
         self.sv.networkBuffer = {}
     end
 
-    if (self.sv.allowUpdate or self.sv.autoUpdate) and #self.sv.buffer > 0 then
-        local broke = false
-        local processedCount = 0
+    local tableBuffer = #self.sv.drawTableBuffer > 0
 
-        local shape_id = self.shape.id
-        local maxBuffer = self.sv.maxBuffer
-        local width, height = self.data.width, self.data.height
-        local threshold = self.sv.display.threshold
-        local sm_color_new = sm.color.new
-        local sm_json_writeJsonString = sm.json.writeJsonString
-        local scrap_splitString = sm.scrapcomputers.string.splitString
-        local self_network = self.network
-
-        for i, data in pairs(self.sv.buffer) do
-            if processedCount < maxBuffer or maxBuffer == 0 then
-                local instruction, params = data[1], data[2]
-
-                if instruction == "DRAW_TABLE" then
-                    local drawBuffer = {}
-                    local extras = {}
-
-                    local cachedExtras = 0
-
-                    for _, pixel in pairs(params) do
-                        local pixel_x = pixel.x
-                        local pixel_y = pixel.y
-                        local pixel_color = pixel.color
-                        local pixel_scale = pixel.scale
-                        local pixel_scale_x = pixel_scale.x
-                        local pixel_scale_y = pixel_scale.y
-
-                        if pixel_scale_x == 1 and pixel_scale_y == 1 then
-                            local color = type(pixel_color) == "string" and sm_color_new(pixel_color) or pixel_color
-
-                            drawBuffer[coordinateToIndex(pixel_x, pixel_y, width)] = color
-                        else
-                            cachedExtras = cachedExtras + 1
-                            extras[cachedExtras] = pixel
-                        end
-                    end
-
-                    local optimisedBuffer = optimizeDisplayPixelStack(drawBuffer, width, height, threshold)
-                    local cachedOptimise = #optimisedBuffer
-
-                    for _, extra in pairs(extras) do
-                        cachedOptimise = cachedOptimise + 1
-                        optimisedBuffer[cachedOptimise] = extra
-                    end
-
-                    if cachedOptimise > 500 then
-                        for _, pixel in pairs(optimisedBuffer) do
-                            pixel.color = tostring(pixel.color)
-                        end
-
-                        local jsonStr = sm_json_writeJsonString(optimisedBuffer)
-                        local strings = scrap_splitString(jsonStr, byteLimit)
-
-                        local cachedStrings = #strings
-
-                        for i, string in pairs(strings) do
-                            local finished = i == cachedStrings
-                            self_network:sendToClients("cl_rebuildParams", {string = string, finished = finished, i = i})
-                        end
-                    else
-                        self_network:sendToClients("cl_drawTable", optimisedBuffer)
-                    end
-                else
-                    if sm.scrapcomputers.backend.cameraColorCache and instruction ~= "OPTIMIZE" then
-                        sm.scrapcomputers.backend.cameraColorCache[shape_id] = false
-                    end
-
-                    local dest = bufferInstructions[instruction]
-                    self_network:sendToClients(dest, params)
+    if (self.sv.allowUpdate or self.sv.autoUpdate) and #self.sv.instructionBuffer > 0 then
+        for i, instruciton in pairs(self.sv.instructionBuffer) do
+            if instruciton ~= 8 and instruciton ~= 9 then
+                if sm.scrapcomputers.backend.cameraColorCache then
+                    sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = nil
                 end
 
-                self.sv.buffer[i] = nil
-                processedCount = processedCount + 1
-            else
-                broke = true
                 break
             end
         end
 
-        self.network:sendToClients("cl_pushPixels")
+        local optimisedDrawTables = {}
+        local optimisedTableIndex = 0
 
-        if not broke then
-            self.sv.allowUpdate = false
+        local width = self.data.width
+        local height = self.data.height
+        local threshold = self.sv.display.threshold
+
+        if tableBuffer then
+            for i, data in pairs(self.sv.drawTableBuffer) do
+                local optimisedTable = optimizeDisplayPixelStack(data.pixels, width, height, threshold, true)
+                local len = #optimisedTable
+
+                if #optimisedDrawTables == 0 then
+                    optimisedDrawTables = optimisedTable
+                    optimisedTableIndex = optimisedTableIndex + len
+                else
+                    for i, v in pairs(optimisedTable) do
+                        optimisedTableIndex = optimisedTableIndex + 1
+                        optimisedDrawTables[optimisedTableIndex] = v
+                    end
+                end
+
+                self.sv.indexBuffer[data.index] = len / 3
+            end
+
+            local tableChuncks = splitTable(optimisedDrawTables, drawTableLimit)
+
+            for i, data in pairs(tableChuncks) do
+                self_network:sendToClients("cl_buildTables", data)
+            end
         end
+
+        local dataChunks = splitTable(self.sv.buffer, tableLimit)
+        local indexChunks = splitTable(self.sv.indexBuffer, tableLimit)
+        local instructionChunks = splitTable(self.sv.instructionBuffer, tableLimit)
+
+        local len = math.max(#dataChunks, #indexChunks, #instructionChunks)
+
+        for i = 1, len do
+            self_network:sendToClients("cl_buildData", {dataChunks[i], indexChunks[i], instructionChunks[i], i == len})
+        end
+
+        self.sv.buffer = {}
+        self.sv.indexBuffer = {}
+        self.sv.instructionBuffer = {}
+        self.sv.drawTableBuffer = {}
+
+        self.sv.allowUpdate = false
     end
 
     if self.sv.needSync and self.sv.synced and self.sv.pixel.pixelData then
@@ -744,11 +747,11 @@ function DisplayClass:server_onFixedUpdate()
         for _, pixel in pairs(self.sv.pixel.pixelData) do
             pixel.color = sm.color.new(pixel.color)
 
-            self.network:sendToClient(self.sv.needSync, "cl_drawPixel", pixel)
+            self_network:sendToClient(self.sv.needSync, "cl_drawPixel", pixel)
         end
 
-        self.network:sendToClient(self.sv.needSync, "cl_syncDisplay", {color = self.sv.pixel.backPannel, touch = self.sv.display.touchAllowed})
-        self.network:sendToClient(self.sv.needSync, "cl_pushPixels")
+        self_network:sendToClient(self.sv.needSync, "cl_syncDisplay", {color = self.sv.pixel.backPanel, touch = self.sv.display.touchAllowed})
+        self_network:sendToClient(self.sv.needSync, "cl_pushPixels")
 
         self.sv.pixel.pixelData = {}
         self.sv.needSync = nil
@@ -758,15 +761,19 @@ end
 function DisplayClass:server_onCreate()
     self.sv = {
         display = {
-            threshold = 0.01
+            threshold = 0
         },
+
         pixel = {
             pixelData = {},
-            backPannel = sm.color.new("000000")
+            backPanel = sm.color.new("000000")
         },
+
         buffer = {},
-        networkBuffer = {},
-        maxBuffer = 0
+        indexBuffer = {},
+        drawTableBuffer = {},
+        instructionBuffer = {},
+        networkBuffer = {}
     }
 end
 
@@ -790,6 +797,12 @@ function DisplayClass:sv_syncData(data)
 
         self.sv.rebuildStr = nil
         self.sv.synced = true
+    end
+end
+
+function DisplayClass:server_onDestroy()
+    if sm.scrapcomputers.backend.cameraColorCache then
+        sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = nil
     end
 end
 
@@ -844,7 +857,14 @@ function DisplayClass:client_onCreate()
             pixelScale = sm.vec3.zero()
         },
 
-        backPannel = {
+        buffer = {
+            data = {},
+            indexes = {},
+            instructions = {},
+            tables = {}
+        },
+
+        backPanel = {
             effect = sm.effect.createEffect(BACKPANEL_EFFECT_NAME, self.interactable),
             defaultColor = sm.color.new("000000"),
             currentColor = sm.color.new("000000")
@@ -853,7 +873,7 @@ function DisplayClass:client_onCreate()
         display = {
             renderDistance = 10,
             visTimer = 0,
-            threshold = 0.01
+            threshold = 0
         },
 
         startBuffer = {},
@@ -884,13 +904,13 @@ function DisplayClass:client_onCreate()
 
     self.cl.pixel.pixelScale = sm.vec3.new(0, bgScale.y / height, bgScale.z / width)
 
-    self.cl.backPannel.effect:setParameter("uuid", PIXEL_UUID)
-    self.cl.backPannel.effect:setParameter("color", self.cl.backPannel.defaultColor)
+    self.cl.backPanel.effect:setParameter("uuid", PIXEL_UUID)
+    self.cl.backPanel.effect:setParameter("color", self.cl.backPanel.defaultColor)
 
-    self.cl.backPannel.effect:setOffsetPosition(sm.vec3.new(0.115, 0, 0))
-    self.cl.backPannel.effect:setScale(bgScale)
+    self.cl.backPanel.effect:setOffsetPosition(sm.vec3.new(self.data.panelOffset or 0.115, 0, 0))
+    self.cl.backPanel.effect:setScale(bgScale)
 
-    self.cl.backPannel.effect:start()
+    self.cl.backPanel.effect:start()
 
     if not sm.isHost then
         self.network:sendToServer("sv_syncDisplay")
@@ -898,13 +918,49 @@ function DisplayClass:client_onCreate()
 end
 
 function DisplayClass:cl_syncDisplay(data)
-    self.cl.backPannel.effect:setParameter("color", data.color)
+    self.cl.backPanel.effect:setParameter("color", data.color)
     self.cl.display.touchAllowed = data.touch
 end
 
-function DisplayClass:client_onDestroy()
-    if sm.scrapcomputers.backend.cameraColorCache then
-        sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = nil
+function DisplayClass:cl_buildData(data)
+    local sv_dataTbl = data[1]
+    local sv_indexTbl = data[2]
+    local sv_instructionTbl = data[3]
+    
+    if sv_dataTbl then
+        local dataTbl = self.cl.buffer.data
+        local len = #dataTbl
+
+        for i = 1, #sv_dataTbl do
+            len = len + 1
+            dataTbl[len] = sv_dataTbl[i]
+        end
+    end
+
+    if sv_indexTbl then
+        local indexTbl = self.cl.buffer.indexes
+        local instructionTbl = self.cl.buffer.instructions
+        local len = #indexTbl
+
+        for i = 1, #sv_indexTbl do
+            len = len + 1
+            indexTbl[len] = sv_indexTbl[i]
+            instructionTbl[len] = sv_instructionTbl[i]
+        end
+    end
+
+    if data[4] then
+        self:cl_pushData()
+    end
+end
+
+function DisplayClass:cl_buildTables(tbl)
+    local data = self.cl.buffer.tables
+    local length = #data
+
+    for i = 1, #tbl do
+        length = length + 1
+        data[length] = tbl[i]
     end
 end
 
@@ -988,22 +1044,24 @@ function DisplayClass:client_onFixedUpdate()
         local len = #players
 
         if len ~= self.cl.lastLen then
+            if not self.cl.lastLen or len > self.cl.lastLen then
+                local sendTbl = {}
+
+                for i, data in pairs(self.cl.pixel.pixelData) do
+                    data.color = tostring(data.color)
+
+                    table.insert(sendTbl, data)
+                end
+
+                local json = sm.json.writeJsonString(sendTbl)
+                local strings = sm.scrapcomputers.string.splitString(json, byteLimit)
+
+                for i, string in pairs(strings) do
+                    self.network:sendToServer("sv_syncData", {string = string, i = i, finished = i == #strings})
+                end
+            end
+
             self.cl.lastLen = len
-
-            local sendTbl = {}
-
-            for i, data in pairs(self.cl.pixel.pixelData) do
-                data.color = tostring(data.color)
-
-                table.insert(sendTbl, data)
-            end
-
-            local json = sm.json.writeJsonString(sendTbl)
-            local strings = sm.scrapcomputers.string.splitString(json, byteLimit)
-
-            for i, string in pairs(strings) do
-                self.network:sendToServer("sv_syncData", {string = string, i = i, finished = i == #strings})
-            end
         end
     end
 
@@ -1089,13 +1147,9 @@ function DisplayClass:cl_checkRaycastValidity(res, isTinker)
         self.cl.display.raycastValid = self.shape:getXAxis() == roundedNorm
 
         if self.cl.display.raycastValid then
-            if isTinker then
-                sm.gui.setInteractionText("", "Press "..sm.gui.getKeyBinding("Tinker", true).." for touch screen", "")
-                sm.gui.setInteractionText("")
-            else
-                sm.gui.setInteractionText("", "Press "..sm.gui.getKeyBinding("Use", true).." for touch screen", "")
-                sm.gui.setInteractionText("")
-            end
+            local isTinkerText = isTinker and sm.gui.getKeyBinding("Tinker", true) or sm.gui.getKeyBinding("Use", true)
+            sm.gui.setInteractionText("", sm.scrapcomputers.languageManager.translatable("scrapcomputers.display.touchscreen", isTinkerText), "")
+            sm.gui.setInteractionText("")
         else
             sm.gui.setInteractionText("")
             sm.gui.setInteractionText("")
@@ -1143,7 +1197,7 @@ function DisplayClass:cl_drawPixel(params)
 
     local data_width = self.data.width
     local data_height = self.data.height
-    local backpannel_color = self.cl.backPannel.currentColor
+    local backpanel_color = self.cl.backPanel.currentColor
 
     if params_x > data_width or params_y > data_height or params_x + params_scale_x - 1 < 1 or params_y + params_scale_y - 1 < 1 then return end
 
@@ -1176,7 +1230,7 @@ function DisplayClass:cl_drawPixel(params)
 
     if params_scale_x == 1 and params_scale_y == 1 then
         if not sm.exists(effect) then
-            if params_color ~= backpannel_color then
+            if params_color ~= backpanel_color then
                 self:cl_createPixelEffect(params_x, params_y, params_scale, params_color)
             end
             return
@@ -1191,7 +1245,7 @@ function DisplayClass:cl_drawPixel(params)
 
         if (effectData_scale_x ~= 1 or effectData_scale_y ~= 1) and params_color ~= effectData_color then
             self:cl_splitEffect(effectData_x, effectData_y, params_x, params_y, params_scale)
-            if params_color ~= backpannel_color then
+            if params_color ~= backpanel_color then
                 self:cl_createPixelEffect(params_x, params_y, params_scale, params_color)
             end
             return
@@ -1202,7 +1256,7 @@ function DisplayClass:cl_drawPixel(params)
             pixelData[occupied].color = params_color
         end
 
-        if params_color ~= backpannel_color then
+        if params_color ~= backpanel_color then
             self:cl_startEffect(effect)
         else
             self:cl_stopEffect(effect, effectData)
@@ -1227,7 +1281,7 @@ function DisplayClass:cl_drawPixel(params)
                 pixelData[occupied].color = params_color
             end
 
-            if params_color ~= backpannel_color then
+            if params_color ~= backpanel_color then
                 self:cl_startEffect(effect)
             else
                 self:cl_stopEffect(effect, effectData)
@@ -1284,7 +1338,7 @@ function DisplayClass:cl_drawPixel(params)
             end
         end
 
-        if params_color ~= backpannel_color then
+        if params_color ~= backpanel_color then
             self:cl_createPixelEffect(params_x, params_y, params_scale, params_color)
         end
     end
@@ -1310,10 +1364,68 @@ function DisplayClass:cl_scaledAdd(params)
 end
 
 function DisplayClass:cl_addToTable(params)
-    self.cl.optimiseBuffer[coordinateToIndex(params.x, params.y, self.data.width)] = params.color
+    self.cl.optimiseBuffer[params[1]] = idToColor(params[2])
 end
 
-function DisplayClass:cl_pushPixels()
+function DisplayClass:cl_pushData()
+    local functionLookup = {
+        DisplayClass.cl_addToTable,
+        DisplayClass.cl_drawLine,
+        DisplayClass.cl_clearDisplay,
+        DisplayClass.cl_drawCircle,
+        DisplayClass.cl_drawTriangle,
+        DisplayClass.cl_drawRect,
+        DisplayClass.cl_drawText,
+        DisplayClass.cl_optimizeDisplayEffects,
+        DisplayClass.cl_drawTable
+    }
+    
+    local dataIndex = 0
+    local tableIndex = 0
+    local indexes = self.cl.buffer.indexes
+    local data = self.cl.buffer.data
+    local tableData = self.cl.buffer.tables
+    local width = self.data.width
+
+    for i, numb in pairs(self.cl.buffer.instructions) do
+        local cl_sendFunc = functionLookup[numb]
+        local index = indexes[i]
+        local params = {}
+        local paramsIndex = 0
+        
+        if numb ~= 9 then
+            if index ~= 0 then
+                for i = 1, index do
+                    dataIndex = dataIndex + 1
+
+                    paramsIndex = paramsIndex + 1
+                    params[paramsIndex] = data[dataIndex]
+                end
+            end
+        else
+            local currentParam = {}
+
+            for _ = 1, index do
+                for i = 1, 3 do
+                    tableIndex = tableIndex + 1
+                    currentParam[i] = tableData[tableIndex]
+                end
+
+                paramsIndex = paramsIndex + 1
+                params[paramsIndex] = currentParam
+
+                currentParam = {}
+            end
+        end
+
+        cl_sendFunc(self, params)
+    end
+
+    self.cl.buffer.instructions = {}
+    self.cl.buffer.indexes = {}
+    self.cl.buffer.data = {}
+    self.cl.buffer.tables = {}
+
     local optimisedBuffer = optimizeDisplayPixelStack(self.cl.optimiseBuffer, self.data.width, self.data.height, self.cl.display.threshold)
 
     for i, pixel in pairs(optimisedBuffer) do
@@ -1332,7 +1444,7 @@ function DisplayClass:cl_pushPixels()
         end
     end
 
-    for _, effect in pairs(self.cl.stopBuffer) do
+    for i, effect in pairs(self.cl.stopBuffer) do
         self:cl_forceStop(effect)
     end
 
@@ -1350,26 +1462,17 @@ function DisplayClass:cl_cacheCheck(index, color)
     return false
 end
 
--- Other end of split string, only used for DRAW_TABLE as it has the ability to be larger than the network packet size limit
----@param data table The data
-function DisplayClass:cl_rebuildParams(data)
-    self.cl.tblParams = data.i == 1 and data.string or self.cl.tblParams .. data.string
-
-    if data.finished then 
-        local params = sm.json.parseJsonString(self.cl.tblParams)
-        self:cl_drawTable(params)
-
-        self.cl.tblParams = {}
-    end
-end
-
 -- Function that gets called to draw pixels based on a table
 ---@param tbl table The pixel table to be drawn.
 function DisplayClass:cl_drawTable(tbl)
-    for _, pixel in pairs(tbl) do
-        pixel.color = type(pixel.color) == "string" and sm.color.new(pixel.color) or pixel.color
+    local width = self.data.width
 
-        self:cl_drawPixel(pixel)
+    for _, pixel in pairs(tbl) do
+        local x, y = indexToCoordinate(pixel[1], width)
+        local sx, sy = indexToCoordinate(pixel[2], width)
+        local color = idToColor(pixel[3])
+
+        self:cl_drawPixel({x = x, y = y, scale = {x = sx, y = sy}, color = color})
     end
 end
 
@@ -1384,6 +1487,8 @@ function DisplayClass:cl_createPixelEffect(x, y, scale, color)
     local pixel_scale = self.cl.pixel.pixelScale
     local pixel_scale_y = pixel_scale.y
     local pixel_scale_z = pixel_scale.z
+
+    local pixelDepth = self.data.panelOffset and self.data.panelOffset + 0.001 or 0.116
 
     local scale_x = scale.x
     local scale_y = scale.y
@@ -1400,9 +1505,8 @@ function DisplayClass:cl_createPixelEffect(x, y, scale, color)
         color = color,
     }
 
-    -- Create the effect
     local newEffect
-    local cachedEffect, _ = getFirst(self.cl.pixel.stoppedEffects)
+    local cachedEffect = getFirst(self.cl.pixel.stoppedEffects)
 
     if cachedEffect then
         newEffect = cachedEffect
@@ -1429,7 +1533,7 @@ function DisplayClass:cl_createPixelEffect(x, y, scale, color)
     end
 
     local xPos, yPos = pixelPosToShapePos(centerX, centerY, self.cl.display.widthScale, self.cl.display.heightScale, pixel_scale)
-    newEffect:setOffsetPosition(sm.vec3.new(0.116, yPos, xPos))
+    newEffect:setOffsetPosition(sm.vec3.new(pixelDepth, yPos, xPos))
     newEffect:setParameter("color", color)
 
     local dataIndex = coordinateToIndex(x, y, data_width)
@@ -1606,7 +1710,6 @@ function DisplayClass:cl_optimizeDisplayEffects()
                 scale = {x = maxWidth, y = maxHeight}
             })
 
-            -- Mark the merged pixels as processed
             markBlockAsProcessed(x, y, maxWidth, maxHeight)
         end
 
@@ -1619,23 +1722,17 @@ function DisplayClass:cl_optimizeDisplayEffects()
     end
 end
 
--- Draws a line, uses draw pixel to draw final pixels
--- This uses Bresenham's line algorithm.
----@param params {x0: number, y0: number, x1: number, y1: number, color: Color} The parameters
 function DisplayClass:cl_drawLine(params)
-    local x0 = params.x
-    local y0 = params.y
-    local x1 = params.x1
-    local y1 = params.y1
-    local color = params.color
+    local width = self.data.width
+    local x0, y0 = indexToCoordinate(params[1], width)
+    local x1, y1 = indexToCoordinate(params[2], width)
+    local color =  type(params[3]) == "Color" and params[3] or idToColor(params[3])
 
     local dx = math.abs(x1 - x0)
     local dy = math.abs(y1 - y0)
     local sx = (x0 < x1) and 1 or -1
     local sy = (y0 < y1) and 1 or -1
     local err = dx - dy
-
-    local width = self.data.width
 
     while true do
         if x0 >= 1 and y0 >= 1 and x0 < width and y0 < self.data.height then
@@ -1661,13 +1758,11 @@ function DisplayClass:cl_drawLine(params)
     end
 end
 
----@param params {x: number, y: number, radius: number, color: Color, isFilled: boolean} The parameters
 function DisplayClass:cl_drawCircle(params)
-    local x = params.x
-    local y = params.y
-    local radius = params.radius
-    local color = params.color
-    local isFilled = params.isFilled
+    local x, y = indexToCoordinate(params[1], self.data.width)
+    local radius = params[2]
+    local color = idToColor(params[3])
+    local isFilled = params[4]
 
     local f = 1 - radius
     local ddF_x = 1
@@ -1721,26 +1816,23 @@ function DisplayClass:cl_drawCircle(params)
     end
 end
 
----@param params {x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, color: Color, isFilled: boolean} The parameters
 function DisplayClass:cl_drawTriangle(params)
-    local x1 = params.x1
-    local y1 = params.y1
-    local x2 = params.x2
-    local y2 = params.y2
-    local x3 = params.x3
-    local y3 = params.y3
-    local color = params.color
-    local isFilled = params.isFilled
+    local width = self.data.width
+    local x1, y1 = indexToCoordinate(params[1], width)
+    local x2, y2 = indexToCoordinate(params[2], width)
+    local x3, y3 = indexToCoordinate(params[3], width)
+    local color = idToColor(params[4])
+    local isFilled = params[5]
 
-    self:cl_drawLine({x = x1, y = y1, x1 = x2, y1 = y2, color = color})
-    self:cl_drawLine({x = x2, y = y2, x1 = x3, y1 = y3, color = color})
-    self:cl_drawLine({x = x3, y = y3, x1 = x1, y1 = y1, color = color})
+    self:cl_drawLine({coordinateToIndex(x1, y1, width), coordinateToIndex(x2, y2, width), color})
+    self:cl_drawLine({coordinateToIndex(x2, y2, width), coordinateToIndex(x3, y3, width), color})
+    self:cl_drawLine({coordinateToIndex(x3, y3, width), coordinateToIndex(x1, y1, width), color})
 
     if isFilled then
         local sortedPoints = {
-            {x = params.x1, y = params.y1},
-            {x = params.x2, y = params.y2},
-            {x = params.x3, y = params.y3}
+            {x = x1, y = y1},
+            {x = x2, y = y2},
+            {x = x3, y = y3}
         }
         table.sort(sortedPoints, function(a, b) return a.y < b.y end)
 
@@ -1771,16 +1863,12 @@ function DisplayClass:cl_drawTriangle(params)
     end
 end
 
-
--- Draws a cuboid, filled or not, uses draw pixel to draw final pixels
----@param params {x: number, y: number, width: number, height: number, color: Color, isFilled: boolean} The parameters
 function DisplayClass:cl_drawRect(params)
-    local x = params.x
-    local y = params.y
-    local width = params.width
-    local height = params.height
-    local color = params.color
-    local isFilled = params.isFilled
+    local screenWidth = self.data.width
+    local x, y = indexToCoordinate(params[1], screenWidth)
+    local width, height = indexToCoordinate(params[2], screenWidth)
+    local color = idToColor(params[3])
+    local isFilled = params[4]
 
     if isFilled then
         self:cl_scaledAdd({x = x, y = y, color = color, scale = {x = width, y = height}})
@@ -1793,14 +1881,17 @@ function DisplayClass:cl_drawRect(params)
     self:cl_scaledAdd({x = x, y = y + height - 1, scale = {x = width, y = 1}, color = color})
 end
 
--- Draws text, uses the font in ConfigFont.lua, uses draw pixel to draw final pixels
----@param params {x: number, y: number, string: string, color: Color, font: string} The parameters
 function DisplayClass:cl_drawText(params)
-    local font, err = sm.scrapcomputers.fontManager.getFont(params.font)
+    local params_x, params_y = indexToCoordinate(params[1], self.data.width)
+    local params_text = params[2]
+    local params_color = idToColor(params[3])
+    local params_font = params[4]
+
+    local font, err = sm.scrapcomputers.fontManager.getFont(params_font)
 
     if not font then
         sm.log.error("Fatal error! Failed to get the font! Error message: "..err)
-        sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: A unexpected error occured trying to get a font!")
+        sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.display.failed_to_find_font"))
 
         return
     end
@@ -1810,8 +1901,10 @@ function DisplayClass:cl_drawText(params)
 
     local i = 1
 
-    while i <= #params.string do
-        local char = getUTF8Character(params.string, i)
+    local width = self.data.width
+
+    while i <= #params_text do
+        local char = getUTF8Character(params_text, i)
 
         if char == "\n" then
             xSpacing = 0
@@ -1819,7 +1912,7 @@ function DisplayClass:cl_drawText(params)
         else
             local fontLetter = font.charset[char] or font.errorChar
 
-            if (params.x + xSpacing) + font.fontWidth > self.data.width then
+            if (params_x + xSpacing) + font.fontWidth > width then
                 xSpacing = 0
                 ySpacing = ySpacing + font.fontHeight
             end
@@ -1827,10 +1920,10 @@ function DisplayClass:cl_drawText(params)
             for yPosition, row in pairs(fontLetter) do
                 for xPosition = 1, #row, 1 do
                     if row:sub(xPosition, xPosition) == "#" then
-                        local index = coordinateToIndex(params.x + xSpacing + (xPosition - 1), params.y + ySpacing + (yPosition - 1), self.data.width)
+                        local index = coordinateToIndex(params_x + xSpacing + (xPosition - 1), params_y + ySpacing + (yPosition - 1), width)
 
-                        if self:cl_cacheCheck(index, params.color) then
-                            self.cl.optimiseBuffer[index] = params.color
+                        if self:cl_cacheCheck(index, params_color) then
+                            self.cl.optimiseBuffer[index] = params_color
                         end
                     end
                 end
@@ -1844,8 +1937,6 @@ function DisplayClass:cl_drawText(params)
     end
 end
 
--- Clears display
----@param params [Color]
 function DisplayClass:cl_clearDisplay(params)
     for i, effect in pairs(self.cl.pixel.pixels) do
         if sm.exists(effect) then
@@ -1857,16 +1948,14 @@ function DisplayClass:cl_clearDisplay(params)
     self.cl.pixel.pixelData = {}
     self.cl.pixel.occupied = {}
 
-    local color = params[1]
+    local color = params[1] and idToColor(params[1])
 
     if color then
-        self.cl.backPannel.effect:setParameter("color", color)
-        self.cl.backPannel.currentColor = color
+        self.cl.backPanel.effect:setParameter("color", color)
+        self.cl.backPanel.currentColor = color
     end
 end
 
--- Loops through pixels to hide/show them
----@param params [boolean]
 function DisplayClass:cl_setDisplayHidden(params)
     local setHidden = params[1]
 
@@ -1885,7 +1974,7 @@ function DisplayClass:cl_setDisplayHidden(params)
     end
 end
 
-function DisplayClass:cl_forceStop(effect, culling)
+function DisplayClass:cl_forceStop(effect)
     if sm.exists(effect) and effect:isPlaying() then effect:stop() end
 end
 

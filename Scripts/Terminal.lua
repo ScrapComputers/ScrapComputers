@@ -111,6 +111,7 @@ function TerminalClass:client_onInteract(character, state)
     self.cl.gui:setButtonCallback("InputHistoryList_Button", "cl_clearHistory")
     self.cl.gui:setButtonCallback("InputText_Button", "cl_summitInput")
 
+    self:cl_runTranslations()
     self.cl.gui:open()
 end
 
@@ -182,6 +183,12 @@ function TerminalClass:cl_setInputHistory(inputHistory)
     if sm.exists(self.cl.gui) then
         self.cl.gui:setText("InputHistoryList", self:cl_formatInputHistory())
     end
+end
+
+function TerminalClass:cl_runTranslations()
+    self.cl.gui:setText("Title"                  , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.title"           ))
+    self.cl.gui:setText("InputText_Button"       , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.summit_inputbtn" ))
+    self.cl.gui:setText("InputHistoryList_Button", sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.clear_historybtn"))
 end
 
 sm.scrapcomputers.componentManager.toComponent(TerminalClass, "Terminals", true)

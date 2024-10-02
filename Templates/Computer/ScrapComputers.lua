@@ -28,14 +28,9 @@
 ---@field y integer The position on the y-axis
 ---@field state integer The state of the touch: 1 for Pressed, 2 for Hold, 3 for Released.
 
----@class PixelScale Contains information about a pixel's scale.
----@field x integer The width
----@field y integer The height
-
 ---@class PixelTableField An instruction for a pixel table.
 ---@field x number The x-coordinate (floored)
 ---@field y number The y-coordinate (floored)
----@field scale PixelScale The scale of the pixel
 ---@field color Color The color of the pixel
 
 ---@alias PixelTable PixelTableField[] Pixel tables contain pixel information used to draw on the display, similar to instructions.
@@ -810,10 +805,6 @@ function Display.optimize() end
 ---@param threshold number The new threshold
 function Display.setOptimizationThreshold(threshold) end
 
----Sets the maximum buffer size.
----@param buffer integer The maximum buffer size
-function Display.setMaxBuffer(buffer) end
-
 ---Returns the display's ID.
 ---@return integer id The display's shape ID.
 function Display.getId() end
@@ -958,9 +949,9 @@ function Laser.setDistance(distance) end
 ---@return LaserData data The laser data
 function Laser.getLaserData() end
 
----Toggles the laser beam.
----@param bool boolean Enable or disable the laser beam
-function Laser.toggleBeam(bool) end
+---Toggles the laser's beam visiblity.
+---@param bool boolean Enable or disable the laser beam visibility
+function Laser.toggleLaser(bool) end
 
 ---Returns true if the laser beam is visible, false if invisible.
 ---@return boolean bool If the laser beam is visible or invisible

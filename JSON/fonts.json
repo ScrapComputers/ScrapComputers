@@ -1,8 +1,14 @@
 [
     "ATASCII",
     "Bescii-Mono",
+    "C64_Pro-STYLE",
+    "C64_Pro_Mono-STYLE",
     "CPC464",
     "Lexis",
+    "MinecraftBold",
+    "MinecraftBoldItalic",
+    "MinecraftItalic",
+    "MinecraftRegular",
     "MorePerfectDOSVGA",
     "PixelOperator-Bold",
     "PixelOperator8-Bold",
@@ -15,6 +21,5 @@
     "PixelOperatorMono8",
     "PixelOperatorMonoHB",
     "PixelOperatorMonoHB8",
-    "PixelOperatorSC-Bold",
-    "PixelOperatorSC"
+    "SC5x5"
 ]

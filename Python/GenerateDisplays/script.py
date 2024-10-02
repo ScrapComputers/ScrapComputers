@@ -1,55 +1,74 @@
-# days_wasted_working_on_this = 9
-from jsonc_parser.parser import JsoncParser as jsonc
 import json
-import uuid
+from PIL import Image, UnidentifiedImageError
+import os
 
-InputFile = open("Input.json", "r")
-InputJson = jsonc.parse_str(InputFile.read())
-InputFile.close()
+def resize_image(image, target_width, target_height):
+    return image.resize((target_width, target_height), Image.ANTIALIAS)
 
-ShapesetJson = {"partList": []}
-InventoryDescriptionsJson = {}
+def get_pixel_data(image):
+    pixel_data = []
+    width, height = image.size
+    for y in range(height):
+        for x in range(width):
+            color = image.getpixel((x, y))  # Get color as (R, G, B) tuple
+            hex_color = '#{:02x}{:02x}{:02x}'.format(*color)  # Convert to hex
+            pixel_data.append({'x': x + 1, 'y': y + 1, 'color': hex_color})
+    return pixel_data
 
-# DON'T TOUCH IT
-# - VeraDev afther wasting weeks of his life time
-def calculate_scale(x, y, width, height):
-    if width > height:
-        return y / 4
+def export_to_json(data, filename="output.json"):
+    try:
+        with open(filename, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+        print(f"Data successfully exported to {filename}")
+    except Exception as e:
+        print(f"Failed to export data: {e}")
 
-    return x / 4 # return y / 4 would work aswell
+def get_valid_resolution(prompt):
+    while True:
+        try:
+            value = int(input(prompt))
+            if value <= 0:
+                raise ValueError
+            return value
+        except ValueError:
+            print("Please enter a valid positive integer.")
 
-for resolution in InputJson["resolutions"]:
-    res, size = resolution
-    
-    width  = int(str(res).split("x")[0])
-    height = int(str(res).split("x")[1])
-    
-    x = int(str(size).split("x")[0])
-    y = int(str(size).split("x")[1])
-    
-    scale = calculate_scale(x, y, width, height)
-    
-    uuid4 = str(uuid.uuid4())
-    ShapesetJson.get("partList").append({
-            "box": { "x": 1, "y": y, "z": x },
-            "color": "323232",
-            "physicsMaterial": "Mechanical",
-            "renderable": f"$CONTENT_DATA/Objects/Renderables/Displays/Display{size}.rend",
-            "rotationSet": "PropNegY",
-            "scripted": { "classname": "DisplayClass", "filename": "$CONTENT_DATA/Scripts/DisplayClass.lua", "data": { "width": width, "height": height, "scale": scale } },
-            "sticky": "-X+X-Y+Y-Z+Z",
-            "uuid": uuid4
-        })
-    
-    InventoryDescriptionsJson[uuid4] = {
-        "title": f"[#3A96DDS#3b78ffC#eeeeee] {res} Display ({size})",
-        "description": f"A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee{res}\n#f9f1a5Object Size: #eeeeee{size}"
-    }
-    
-    print(f"[ScrapComputers - Display Generator]: Generated {res} (Model size: {size}) Display!")
+def main():
+    try:
+        # Prompt user for image file
+        image_path = input("Enter the path to the PNG image: ")
+        
+        # Check if the file exists
+        if not os.path.exists(image_path):
+            print(f"Error: File '{image_path}' not found.")
+            return
+        
+        # Open image
+        try:
+            image = Image.open(image_path)
+        except UnidentifiedImageError:
+            print("Error: The file is not a valid image or is in an unsupported format.")
+            return
 
-with open("Shapeset.json", "w") as f:
-    f.write(json.dumps(ShapesetJson, indent=4))
-    
-with open("InventoryDescriptions.json", "w") as f:
-    f.write(json.dumps(InventoryDescriptionsJson, indent=4))
+        # Prompt user for desired resolution
+        target_width = get_valid_resolution("Enter desired width: ")
+        target_height = get_valid_resolution("Enter desired height: ")
+        
+        # Resize image to desired resolution
+        resized_image = resize_image(image, target_width, target_height)
+        
+        # Get the pixel data as a table
+        pixel_table = get_pixel_data(resized_image)
+        
+        # Get the directory of the script to save output.json in the same folder
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        output_path = os.path.join(script_dir, "output.json")
+        
+        # Export pixel data to output.json
+        export_to_json(pixel_table, output_path)
+
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+if __name__ == "__main__":
+    main()

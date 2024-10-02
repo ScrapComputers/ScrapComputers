@@ -96,7 +96,7 @@ function ConfigManagerClass:sv_updateConfig()
                 sm.log.warning("[ConfigManager - Updater]: Current Configuration for \"" .. curConfig.id .. "\" has invalid options! Updating it...")
                 sm.scrapcomputers.config.configurations[index].options = config.options
 
-                if curConfig.selectedOption > config.options then
+                if curConfig.selectedOption > #config.options then
                     sm.log.warning("[ConfigManager - Updater]: Current Configuration for \"" .. curConfig.id .. "\" selected option is out-of-bounds! Resetting it... (Mentioned to user aswel!)")
                     curConfig.selectedOption = config.selectedOption
 
@@ -147,7 +147,11 @@ function ConfigManagerClass:cl_printResettedConfigurations(data)
     local message = "ScrapComputers has resetted " .. sm.scrapcomputers.toString(#data) .. " configurations because of a config change which caused there selected config to be invalid.\n\nConfigurations:#eb4034"
     
     for _, name in pairs(data) do
-        message = message .. "\n\t" .. sm.scrapcomputers.toString(name)
+        local translatableName = "config." .. name .. "=name"
+        local actualName = sm.scrapcomputers.languageManager.translatable(translatableName)
+        if actualName == translatableName then actualName = name end
+        
+        message = message .. "\n\t" .. actualName
     end
 
     sm.gui.chatMessage(message)

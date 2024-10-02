@@ -84,7 +84,7 @@ end
 local function applySunShader(result, color, time, sunDirection)
     if time < 0.75 then return color end
 
-    local distance = -(sunDirection:dot(result.directionWorld:normalize()))
+    local distance = -(sm_vec3_dot(sunDirection, result.directionWorld:normalize()))
 
     if distance > 0.995 then
         return sm_color_new("eeeeee")
@@ -101,16 +101,14 @@ end
 ---@param fogColor Color The fog's color
 ---@return Color The new color
 local function applyFog(color, fraction, maxDistance, fogColor)
-    if maxDistance > 700 then
-        local distance = fraction * maxDistance * 0.8
-        local fogFactor = math.min(distance / maxDistance, 1)
 
-        return sm_color_new(color.r * (1 - fogFactor) + fogColor.r * fogFactor,
-                            color.g * (1 - fogFactor) + fogColor.g * fogFactor,
-                            color.b * (1 - fogFactor) + fogColor.b * fogFactor)
-    else
-        return color
-    end
+    local distance = fraction * maxDistance * 0.8
+    local fogFactor = math.min(distance / maxDistance, 1)
+
+    return sm_color_new(color.r * (1 - fogFactor) + fogColor.r * fogFactor,
+                        color.g * (1 - fogFactor) + fogColor.g * fogFactor,
+                        color.b * (1 - fogFactor) + fogColor.b * fogFactor)
+
 end
 
 ---@param raycastResult RaycastResult The raycast result
@@ -630,6 +628,7 @@ function CameraClass:sv_computeVideoRays(sliceWidth, width, height)
 
     if sliceWidth ~= self.sv.lastSliceWidth then
         self.sv.lastSliceWidth = sliceWidth
+        self.sv.screenSection = 0
         self:sv_clearCache()
     end
 
@@ -696,7 +695,7 @@ function CameraClass:sv_drawFrame(rays, coordinateTbl, width, height)
     local pixelCount = #rays
     local pixels = {}
     local time = math.abs(sm_game_getTimeOfDay() + 0.5)
-    local defaultColor = sm_color_new("3fadc7") * time
+    local defaultColor = getSkyColor()
     local rangeFactor = self.sv.range * 1.1
 
     local range = self.sv.range
@@ -711,7 +710,7 @@ function CameraClass:sv_drawFrame(rays, coordinateTbl, width, height)
         local modifier = 1
 
         if hit then
-            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
+            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.4
             color = getObjCol(result) * time
 
             if result.type ~= "limiter" then
@@ -722,7 +721,7 @@ function CameraClass:sv_drawFrame(rays, coordinateTbl, width, height)
         local coord = coordinateTbl[i]
         local x, y = coord[1] + xOffset, coord[2] + yOffset
 
-        pixels[i] = {x = x, y = y, scale = {x = 1, y = 1}, color = color}
+        pixels[i] = {x = x, y = y, color = color}
     end
 
     return pixels
@@ -749,7 +748,7 @@ function CameraClass:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height
 
         if hit then
             if result.type ~= "limiter" then
-                local modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
+                local modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.4
 
                 if type(mask) == "table" then
                     color = blackColor
@@ -771,7 +770,7 @@ function CameraClass:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height
         local coord = coordinateTbl[i]
         local x, y = coord[1] + xOffset, coord[2] + yOffset
 
-        pixels[i] = {x = x, y = y, scale = {x = 1, y = 1}, color = color}
+        pixels[i] = {x = x, y = y, color = color}
     end
 
     return pixels
@@ -802,7 +801,7 @@ function CameraClass:sv_drawDepthFrame(rays, coordinateTbl, focalLength, width, 
         local coord = coordinateTbl[i]
         local x, y = coord[1] + xOffset, coord[2] + yOffset
 
-        pixels[i] = {x = x, y = y, scale = {x = 1, y = 1}, color = color}
+        pixels[i] = {x = x, y = y, color = color}
     end
 
     -- Return the pixels
@@ -836,7 +835,7 @@ function CameraClass:sv_drawAdvancedFrame(rays, coordinateTbl, width, height)
         local modifier = 1
 
         if hit then
-            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
+            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.4
             color = getObjCol(result, true) * time
 
             if result.type ~= "limiter" then
@@ -861,7 +860,7 @@ function CameraClass:sv_drawAdvancedFrame(rays, coordinateTbl, width, height)
             local finalColor = applySunShader(result, color, time, sunDir)
 
             pixelIndex = pixelIndex + 1
-            pixels[pixelIndex] = {x = x, y = y, scale = {x = 1, y = 1}, color = finalColor}
+            pixels[pixelIndex] = {x = x, y = y, color = finalColor}
         end
     end
 
@@ -880,7 +879,7 @@ function CameraClass:sv_drawAdvancedFrame(rays, coordinateTbl, width, height)
         local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
 
         finalPixelIndex = finalPixelIndex + 1
-        pixels[finalPixelIndex] = {x = x, y = y, scale = {x = 1, y = 1}, color = pointData.color}
+        pixels[finalPixelIndex] = {x = x, y = y, color = pointData.color}
     end
 
     return pixels
@@ -910,7 +909,7 @@ function CameraClass:sv_drawCustomFrame(rays, coordinateTbl, drawer, width, heig
         color = colorType == "string" and sm_color_new(color) or color
 
         pixelIndex = pixelIndex + 1
-        pixels[pixelIndex] = {x = x, y = y, color = color, scale = {x = 1, y = 1}}
+        pixels[pixelIndex] = {x = x, y = y, color = color}
     end
 
     return pixels
@@ -923,7 +922,7 @@ function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, he
     local cachedColors = self.sv.cachedColors
     local pixels = {}
     local time = math.abs(sm_game_getTimeOfDay() + 0.5)
-    local defaultColor = sm_color_new("3fadc7") * time
+    local defaultColor = getSkyColor()
     local rangeFactor = self.sv.range * 1.1
 
     local range = self.sv.range
@@ -939,11 +938,12 @@ function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, he
         local modifier = 1
 
         if hit then
-            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
+            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.6
+            
             color = getObjCol(result) * time
 
             if result.type ~= "limiter" then
-                color = color * modifier * (1 - (result.fraction * range / rangeFactor))
+                color = applyFog(color, result.fraction, range, fogColor) * modifier
             end
         end
 
@@ -955,7 +955,7 @@ function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, he
             self.sv.hasDrawn = true
 
             pixelIndex = pixelIndex + 1
-            pixels[pixelIndex] = {x = x, y = y, scale = {x = 1, y = 1}, color = color}
+            pixels[pixelIndex] = {x = x, y = y, color = color}
 
             self.sv.cachedColors[coordIndex] = color
         end
@@ -1020,7 +1020,7 @@ function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, w
                 self.sv.hasDrawn = true
 
                 pixelIndex = pixelIndex + 1
-                pixels[pixelIndex] = {x = x, y = y, scale = {x = 1, y = 1}, color = finalColor}
+                pixels[pixelIndex] = {x = x, y = y, color = finalColor}
 
                 self.sv.cachedColors[coordIndex] = finalColor
             end
@@ -1046,7 +1046,7 @@ function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, w
             self.sv.hasDrawn = true
 
             finalPixelIndex = finalPixelIndex + 1
-            pixels[finalPixelIndex] = {x = x, y = y, scale = {x = 1, y = 1}, color = pointData.color}
+            pixels[finalPixelIndex] = {x = x, y = y, color = pointData.color}
 
             self.sv.cachedColors[coordIndex] = pointData.color
         end
@@ -1081,7 +1081,7 @@ function CameraClass:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, thresh
 
         if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], color, threshold) then
             pixelIndex = pixelIndex + 1
-            pixels[pixelIndex] = {x = x, y = y, color = color, scale = {x = 1, y = 1}}
+            pixels[pixelIndex] = {x = x, y = y, color = color}
         end
     end
 

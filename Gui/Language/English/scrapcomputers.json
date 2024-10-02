@@ -1,0 +1,135 @@
+{
+    // Computer
+    "scrapcomputers.computer.main_title"                               : "COMPUTER",
+    "scrapcomputers.computer.examples_title"                           : "EXAMPLES",
+
+    "scrapcomputers.computer.automaticly_saved"                        : "Automaticly saved your code!",
+    "scrapcomputers.computer.syntax_highlighting_disabled"             : "Syntax highlighting is disabled (Reached the character limit!)",
+    "scrapcomputers.computer.selected_example.not_a_number"            : "Not a integer!",
+    "scrapcomputers.computer.selected_example.out_of_bounds"           : "Example doesn't exist! (Choose from 1-%d)",                                                     // Has a integer argument containing the total examples
+    "scrapcomputers.computer.selected_example.cannot_be_decimal"       : "Not a decimal!",
+    "scrapcomputers.computer.selected_example.valid_example_selected"  : "Selected \"%s\" Example!",                                                                      // Has a integer argument containing the selected example's name.
+    "scrapcomputers.computer.syntax_character_limit_reached"           : "Syntax highlighting is disabled (Too many characters! Max is: %d, Total script characters %d)", // Has 2 integer arguments, 1st argument is the max characters and the 2nd is the total characters in the script.
+    "scrapcomputers.computer.example_loaded"                           : "Loaded example \"%s\"",                                                                         // Has a string argument which contains the loaded example's name
+
+    "scrapcomputers.computer.save_button"                              : "Save Changes",
+    "scrapcomputers.computer.revert_changes_button"                    : "Revert Changes",
+    "scrapcomputers.computer.format_text_button"                       : "Format Text",
+    "scrapcomputers.computer.load_example_button"                      : "Load Example",
+
+    "scrapcomputers.computer.always_on_toggable_button"                : "Always On: %s",
+
+    "scrapcomputers.computer.savedcode"                                : "Saved code!",
+    "scrapcomputers.computer.code_reverted"                            : "Reverted your code changes!",
+
+    // HDD (Harddrive or Drive)
+    "scrapcomputers.drive.title"                                       : "DATA CONTENTS",
+    "scrapcomputers.drive.savebtn"                                     : "Save Data to Drive",
+    "scrapcomputers.drive.deletebtn"                                   : "Remove Example",
+    "scrapcomputers.drive.exportbtn"                                   : "Export Example",
+    "scrapcomputers.drive.overwritebtn"                                : "Overwrite Example",
+    "scrapcomputers.drive.importbtn"                                   : "Import Example",
+
+    "scrapcomputers.drive.examples.example_deleted"                    : "Deleted \"%s\" Example",                   // Has 1 argument, which is the name of the example that was deletd.
+    "scrapcomputers.drive.examples.imported_example"                   : "Imported \"%s\" Example",                  // Has 1 argument, which is the name of the imported example
+    "scrapcomputers.drive.examples.example_not_found"                  : "Example not found!",
+    "scrapcomputers.drive.examples.invalid_name"                       : "Invalid Name for a example!",
+    "scrapcomputers.drive.examples.overwrited_example"                 : "Overwrote example \"%s\"",                 // Has a argument which is a string that contains the selected example's name being overwritten.
+    "scrapcomputers.drive.examples.created_example"                    : "Created example \"%s\"",                   // Has a argument which is a string that contains the selected example's name being created.
+
+    "scrapcomputers.drive.data_overload"                               : "Too much data! (Max: %d, Size: %d Bytes)", // Has 2 arguments, first one is the max size and 2nd is the overloaded data's size.
+    "scrapcomputers.drive.saved_data"                                  : "Saved brand new data!",
+
+    "scrapcomputers.drive.unknown_error"                               : "Unknown error!",
+    "scrapcomputers.drive.json_error"                                  : "JSON Error: Line %d, Column: %d\n%s",      // Has 3 arguments, first 2 are the line and column where the error happend and the last one is the error message itself
+
+    // Terminal
+    "scrapcomputers.terminal.title"                                    : "TERMINAL",
+    "scrapcomputers.terminal.summit_inputbtn"                          : "Summit Input",
+    "scrapcomputers.terminal.clear_historybtn"                         : "Clear History",
+
+    // Input & Output registers
+    "scrapcomputers.registers.input_title"                             : "Input Register's name",
+    "scrapcomputers.registers.output_title"                            : "Output Register's name",
+    
+    // Keyboard
+    "scrapcomputers.keyboard.exit"                                     : "Exit keyboard",
+    
+    // Antenna
+    "scrapcomputers.antenna.title"                                     : "Antenna",
+
+    // Configurator
+    "scrapcomputers.configurator.title"                                : "CONFIGURATOR",
+    "scrapcomputers.configurator.change_value"                         : "Change Value",
+    "scrapcomputers.configurator.load_defaults"                        : "Reset Configs",
+    "scrapcomputers.configurator.cannot_access_object"                 : "You do not have the required permission to access the configurator!",
+
+    // Display
+    "scrapcomputers.display.failed_to_find_font"                       : "Failed to find the font! Something might have broken! Contact the team ASAP!",
+    "scrapcomputers.display.touchscreen"                               : "Press %s for touchscreen.", // 1 Argument. which is the keybind text (with style)
+
+    // Other
+    "scrapcomputers.other.save_and_closebtn"                           : "Save & Close",
+    "scrapcomputers.other.mod_disabled_message"                        : "ScrapComputers is disabled! Please remove the banned addon/mod(s) and rejoin!",
+
+    // Banned GUI
+    "scrapcomputers.banned.title"                                      : "ScrapComputers has detected a banned mod/addon!",
+    "scrapcomputers.banned.gui_text"                                   : "ScrapComputers has detected that a Addon/Mod has been loaded but disallowed by ScrapComputers, Incase your wondering why you got this popup: We have a ban system in our mod to prevent bad actors from using our mod for creating addons or mods. You receiving this means that you have a banned mod or addon loaded in your world from ScrapComputers.\n\nTo remove this popup, You can remove the listed mods below.",
+    "scrapcomputers.banned.chat_text"                                  : "ScrapComputers has detected a banned mod/addon loaded in your world!\n\nBanned Mods: ",
+    
+    "scrapcomputers.banned.banlevel1"                                  : "Nothing happens!",
+    "scrapcomputers.banned.banlevel2"                                  : "Show this Popup every 30 secconds",
+    "scrapcomputers.banned.banlevel3"                                  : "ScrapComputers is disabled entirly!",
+    
+    // Configs
+    // These are optional, they already have all the information in there configs. but if you want to modify them, you can change it here.
+    // 
+    // How to create translations for configs:
+    // All configs start with "config.", They are reserved and you should NOT use them for any other purpose.
+    // Afther the config's id. it has a leading = and then a field. These fields are:
+    //  - name: The name of the config
+    //  - description: The description of the config
+    //  - option=?: Option names. the ? mean the index of the option.
+    //
+    // If you find this confusing, please look at the translatable text's below and if that doesn't help you, ask help in our discord server.
+    //
+    // TIP: You could actually use this where the actual config option data (not from translation files) are used internally and this for the end-user. because this
+    //      file is only used on GUI's and nowhere else!
+
+    "config.scrapcomputers.computer.safe_or_unsafe_env=name"           : "Safe/Unsafe Env Mode",
+    "config.scrapcomputers.computer.safe_or_unsafe_env=description"    : "This option allows you to access unsafe functions within the environment. When enabled, you gain access to powerful features like _G, self, the entire sm table, and more. Additionally, some tables may be altered to permit modifications by Lua DLL mods, giving you greater control and flexibility but also increasing the risk of unintended changes or security vulnerabilities.",
+    "config.scrapcomputers.computer.safe_or_unsafe_env=option=1"       : "Safe Env",
+    "config.scrapcomputers.computer.safe_or_unsafe_env=option=2"       : "Unsafe Env",
+
+    "config.scrapcomputers.configurator.admin_only=name"               : "Admin-only accessable Configurator",
+    "config.scrapcomputers.configurator.admin_only=description"        : "If the setting is configured to Everyone, then anyone can access the configurator. Otherwise, access is restricted to the host only.",
+    "config.scrapcomputers.configurator.admin_only=option=1"           : "Only Host",
+    "config.scrapcomputers.configurator.admin_only=option=2"           : "Everyone",
+
+    "config.scrapcomputers.hologram.max_objects=name"                  : "Max Hologram objects",
+    "config.scrapcomputers.hologram.max_objects=description"           : "This option allows you to set a limit on the number of hologram objects that can be rendered per hologram.\n\nYou can choose from the following options: Unlimited, 16, 32, 64, 128, 256, 512, 1024, 2048, and 4096",
+    "config.scrapcomputers.hologram.max_objects=option=1"              : "Unlimited",
+    "config.scrapcomputers.hologram.max_objects=option=2"              : "16 Max",
+    "config.scrapcomputers.hologram.max_objects=option=3"              : "32 Max",
+    "config.scrapcomputers.hologram.max_objects=option=4"              : "64 Max",
+    "config.scrapcomputers.hologram.max_objects=option=5"              : "128 Max",
+    "config.scrapcomputers.hologram.max_objects=option=6"              : "256 Max",
+    "config.scrapcomputers.hologram.max_objects=option=7"              : "512 Max",
+    "config.scrapcomputers.hologram.max_objects=option=8"              : "1024 Max",
+    "config.scrapcomputers.hologram.max_objects=option=9"              : "2048 Max",
+    "config.scrapcomputers.hologram.max_objects=option=10"             : "4096 Max",
+
+    "config.scrapcomputers.computer.autosave=name"                     : "Automaticly Save code (Auto-Save)",
+    "config.scrapcomputers.computer.autosave=description"              : "This feature will automatically save your code whenever you exit the GUI, ensuring that no changes or updates are lost and providing a seamless and worry-free experience as you code.",
+    "config.scrapcomputers.computer.autosave=option=1"                 : "Disabled",
+    "config.scrapcomputers.computer.autosave=option=2"                 : "Enabled",
+
+    "config.scrapcomputers.computer.reset_error_on_restart=name"       : "Clear error on restart",
+    "config.scrapcomputers.computer.reset_error_on_restart=description": "When you get a error message, it stops the computer and you will have to press Done to clear the error and the computer would start. If you enable this, afther you get a error, restarting the computer (turning it off and on) will clear the error and start up again.",
+    "config.scrapcomputers.computer.reset_error_on_restart=option=1"   : "Disabled",
+    "config.scrapcomputers.computer.reset_error_on_restart=option=2"   : "Enabled",
+
+    "config.scrapcomputers.global.selectedLanguage=name"               : "Current Mod Language",
+    "config.scrapcomputers.global.selectedLanguage=description"        : "ScrapComputers's Language Manager allows you to use game-supported and non game-supported Languages. This means that addon's can add such as Dutch Translations.\n\nUse this config to modify which language the mod should use. Set it to Automatic so it selects a game-supported language for you.\n\n\nNOTE: This only applies to Graphical User Interfaces! Some addon's might add specialized behaviour based on what language your on!" ,
+    "config.scrapcomputers.global.selectedLanguage=option=1"           : "Automatic"
+}

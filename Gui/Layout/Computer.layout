@@ -2,7 +2,7 @@
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.890625 0.84999999999999998" name="BackPanel">
         <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 0.78654970760233922 1">
-            <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 1 0.045751633986928102" align="Center Top" name="Title">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 1 0.045751633986928102" align="Center Top" name="mainTitle">
                 <Property key="Caption" value="COMPUTER"/>
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_ButtonLarge"/>
@@ -11,9 +11,9 @@
             <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.026022304832713755 0.092592592592592587 0.94869888475836428 0.62091503267973858" align="Right Top" name="scriptData">
                 <Property key="TextAlign" value="Default"/>
                 <Property key="MultiLine" value="true"/>
-                <Property key="FontName" value="X_Hud_Interaction"/>
+                <Property key="FontName" value="DejaVuSansFont_28"/>
                 <Property key="TabPrinting" value="true"/>
-                <Property key="MaxTextLength" value="999999999"/>
+                <Property key="MaxTextLength" value="9223372036854775806"/>
             </Widget>
             <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.022304832713754646 0.73529411764705888 0.9524163568773234 0.17429193899782136" align="Right Top" name="exceptionData">
                 <Property key="TextAlign" value="Default"/>
@@ -35,9 +35,14 @@
                 <Property key="TextAlign" value="Center"/>
                 <Property key="ReadOnly" value="true"/>
             </Widget>
+            <Widget type="Button" skin="GenderButton" position_real="0.82156133828996281 0.02178649237472767 0.15241635687732341 0.04357298474945534" align="Right Top" name="formatTextBtn">
+                <Property key="Caption" value="#eeeeeeFormat Text"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_Button"/>
+            </Widget>
         </Widget>
         <Widget type="Widget" skin="BackgroundPopup" position_real="0.79532163742690054 0 0.20643274853801169 1">
-            <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 0.99150141643059486 0.045751633986928102" align="Center Top" name="title">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 0.99150141643059486 0.045751633986928102" align="Center Top" name="examplesTitle">
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_ButtonLarge"/>
                 <Property key="TextShadow" value="true"/>
@@ -47,7 +52,7 @@
                 <Property key="ReadOnly" value="true"/>
                 <Property key="WordWrap" value="true"/>
                 <Property key="TextAlign" value="Default"/>
-                <Property key="MaxTextLength" value="999999999"/>
+                <Property key="MaxTextLength" value="9999999999"/>
             </Widget>
             <Widget type="Button" skin="PrimaryButton" position_real="0.042492917847025496 0.84967320261437906 0.92067988668555245 0.06535947712418301" name="loadExample">
                 <Property key="FontName" value="SM_Button"/>

@@ -132,7 +132,9 @@ function AntennaClass:client_onInteract(character, state)
     self.network:sendToServer("server_updateClientName")
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, true, {backgroundAlpha = 0.5})
-    self.cl.gui:setText("Title", "Antenna")
+    self.cl.gui:setText("Title", sm.scrapcomputers.languageManager.translatable("scrapcomputers.antenna.title"))
+    self.cl.gui:setText("Button", sm.scrapcomputers.languageManager.translatable("scrapcomputers.other.save_and_closebtn"))
+    
     self.cl.gui:setText("Input", self.cl.name)
 
     self.cl.gui:setTextChangedCallback("Input", "client_onTextChanged")
@@ -166,6 +168,7 @@ end
 
 function AntennaClass:client_setName(name)
     self.cl.name = name
+    self.cl.newName = name
 end
 
 -- Convert the class to a component

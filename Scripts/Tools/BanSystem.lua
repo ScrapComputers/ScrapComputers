@@ -160,8 +160,8 @@ function BanSystemClass:cl_preventUserFromPlaying(bannedLevel)
 
     self.sv.isGuiActive = true
 
-    local text = "ScrapComputers has detected that a Addon/Mod has been loaded but disallowed by ScrapComputers, Incase your wondering why you got this popup: We have a ban system in our mod to prevent bad actors from using our mod for creating addons or mods. You receiving this means that you have a banned mod or addon loaded in your world from ScrapComputers.\n\nTo remove this popup, You can remove the listed mods below."
-    local chatMessage = "--------------------------------------------------------\nScrapComputers has detected a banned mod/addon loaded in your world!\n\nBanned Mods: #eb4034"
+    local text = sm.scrapcomputers.languageManager.translatable("scrapcomputers.banned.gui_text")
+    local chatMessage = "--------------------------------------------------------\n" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.banned.chat_text") .."#eb4034"
 
     for _, bannedMod in pairs(self.cl.bannedMods) do
         local bannedModName, bannedModLevel, reason = unpack(bannedMod) ---@type string, number, string
@@ -169,19 +169,20 @@ function BanSystemClass:cl_preventUserFromPlaying(bannedLevel)
         text = text .. "\n\t#eeeeee" .. bannedModName .. ": "
 
         if bannedModLevel == 2 then
-            text = text .. "#eeee22Show this Popup every 30 secconds"
+            text = text .. "#eeee22" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.banned.banlevel2")
         elseif bannedModLevel == 3 then
-            text = text .. "#ee2222ScrapComputers is disabled entirly!"
+            text = text .. "#ee2222" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.banned.banlevel3")
         else
-            text = text .. "#22ee22Nothing happens!"
+            text = text .. "#22ee22" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.banned.banlevel1")
         end
 
-        text = text .. "#eeeeee\n\t\tReason: " .. reason
+        text = text .. "#eeeeee\n\t\t: " .. reason
         chatMessage = chatMessage .. bannedModName .. ", "
     end
 
     sm.gui.chatMessage(chatMessage:sub(1, #chatMessage - 2) .. "\n#eeeeee--------------------------------------------------------")
 
+    self.cl.gui:setText("Title", sm.scrapcomputers.languageManager.translatable("scrapcomputers.banned.title"))
     self.cl.gui:setText("Message", text)
     self.cl.gui:open()
 end

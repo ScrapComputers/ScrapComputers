@@ -64,7 +64,8 @@ function InputRegisterClass:client_onCreate()
     }
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, false, {backgroundAlpha = 0.5})
-    self.cl.gui:setText("Title", "Input Register's Name")
+    self.cl.gui:setText("Title", sm.scrapcomputers.languageManager.translatable("scrapcomputers.registers.input_title"))
+    self.cl.gui:setText("Button", sm.scrapcomputers.languageManager.translatable("scrapcomputers.other.save_and_closebtn"))
 
     self.cl.gui:setTextChangedCallback("Input", "cl_onTextChanged")
     self.cl.gui:setButtonCallback ("Button", "cl_onSave")

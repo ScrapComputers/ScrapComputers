@@ -21,7 +21,7 @@ function ConfiguratorClass:client_onCreate()
         gui = nil, ---@type GuiInterface
         popupGui = nil,
         currentIndex = 1,
-}
+    }
 
     self.cl.starEffect = sm.effect.createEffect("ScrapComputers - ConfiguratiorStar", self.interactable)
     self.cl.starEffect:setAutoPlay(true)
@@ -45,8 +45,8 @@ function ConfiguratorClass:cl_onLoadDefualts()
 
     self.cl.popupGui = sm.gui.createGuiFromLayout("$GAME_DATA/Gui/Layouts/PopUp/PopUp_YN.layout", true, {backgroundAlpha = 0.5})
 
-    self.cl.popupGui:setText("Title", "Reset Configuration?")
-    self.cl.popupGui:setText("Message", "Do you really want to reset your configuration! This is not reversible!")
+    self.cl.popupGui:setText("Title", sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.resetpopup.title"))
+    self.cl.popupGui:setText("Message", sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.resetpopup.description"))
 
     self.cl.popupGui:setButtonCallback("Yes", "cl_onLoadDefualtsButton")
     self.cl.popupGui:setButtonCallback("No", "cl_onLoadDefualtsButton")
@@ -80,9 +80,15 @@ function ConfiguratorClass:cl_updateGui(text)
         self.cl.gui:setVisible("ChangeValueButton", true)
 
         local config = sm.scrapcomputers.config.configurations[self.cl.currentIndex]
+        local description = sm.scrapcomputers.languageManager.translatable("config." .. config.id .. "=description")
+        if description == ("config." .. config.id .. "=description") then description = config.description end
 
-        self.cl.gui:setText("Description", config.description)
-        self.cl.gui:setText("CurrentValue", config.options[config.selectedOption])
+        local valueName = "config." .. config.id .. "=option=" .. sm.scrapcomputers.toString(config.selectedOption)
+        local value = sm.scrapcomputers.languageManager.translatable(valueName)
+        if value == valueName then value = config.options[config.selectedOption] end
+
+        self.cl.gui:setText("Description", description)
+        self.cl.gui:setText("CurrentValue", value)
 
         self.cl.gui:setVisible("ChangeValueButton", (sm.isHost or not config.hostOnly))
     elseif result == -1 then
@@ -114,6 +120,10 @@ function ConfiguratorClass:cl_createGui()
     self.cl.gui:setButtonCallback("ChangeValueButton", "cl_onChangeValue")
     self.cl.gui:setButtonCallback("LoadDefaultsButton", "cl_onLoadDefualts")
 
+    self.cl.gui:setText("Title"             , sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.title"        ))
+    self.cl.gui:setText("ChangeValueButton" , sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.change_value" ))
+    self.cl.gui:setText("LoadDefaultsButton", sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.load_defaults"))
+
     self:cl_updateGui(self.cl.currentIndex)
 end
 
@@ -121,7 +131,7 @@ function ConfiguratorClass:client_onInteract(character, state)
     if not state then return end
 
     if sm.scrapcomputers.config.getConfig("scrapcomputers.configurator.admin_only").selectedOption == 1 and not sm.isHost then
-        sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: You do not have access to the Configurator!")
+        sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.cannot_access_object"))
         return
     end
 
@@ -140,8 +150,14 @@ end
 function ConfiguratorClass:svcl_formatList()
     local text = ""
 
+    ---@param config Configuration
     for index, config in ipairs(sm.scrapcomputers.table.numberlyOrderTable(sm.scrapcomputers.config.configurations)) do
-        text = text .. sm.scrapcomputers.toString(index) .. ": " .. config.name .. "\n"
+        local name = sm.scrapcomputers.languageManager.translatable("config." .. config.id .. "=name")
+        if name == ("config." .. config.id .. "=name") then
+            name = config.name
+        end
+
+        text = text .. sm.scrapcomputers.toString(index) .. ": " .. name .. "\n"
     end
 
     return text:sub(1, -1)

@@ -32,9 +32,9 @@ function LaserClass:sv_createData()
             return self:sv_laserRaycast()
         end,
 
-        ---Toggles the laser beam
-        ---@param bool boolean To enable or disable the beam
-        toggleBeam = function(bool)
+        ---Toggles the laser's visiblity
+        ---@param bool boolean To enable or disable the visibility
+        toggleLaser = function(bool)
             self.sv.laserVisibility = bool
         end,
 

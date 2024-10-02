@@ -75,8 +75,9 @@ function KeyboardClass:client_onCreate()
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Keyboard)
     self.cl.gui:setTextChangedCallback("TextBox", "cl_onKeystroke")
-    self.cl.gui:setText ("TextBox", "0")
-
+    self.cl.gui:setText("TextBox", "0")
+    self.cl.gui:setText("Exit", sm.scrapcomputers.languageManager.translatable("scrapcomputers.keyboard.exit")
+)
     self.cl.gui:setButtonCallback("Exit", "cl_onExit")
 end
 
