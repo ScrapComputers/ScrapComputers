@@ -86,7 +86,7 @@
     },
     {
         "name": "Display Image Generation Example",
-        "script": "local display = sc.getDisplays()[1]\nlocal width, height = display.getDimensions()\nlocal image = \"\"\n\nfunction onLoad()\n\tlocal pixelTbl = {}\n\tlocal strIndex = 1\n\tlocal x, y = 1, 1\n\n\tfor i = 1, width * height do\n\t\tlocal hex = image:sub(strIndex, strIndex + 5)\n\n\t\tpixelTbl[i] = {x = x, y = y, color = hex}\n\n\t\ty = y + 1\n\n\t\tif y > height then\n\t\t\tx = x + 1\n\t\t\ty = 1\n\t\tend\n\n\t\tstrIndex = strIndex + 6\n\tend\n\n\tdisplay.drawFromTable(pixelTbl)\n\tdisplay.update()\nend"
+        "script": "-- The example image is 256 x 256, so please use a 256 x 256 display!\n-- Get the display component\nlocal display = sc.getDisplays()[1]\ndisplay.setOptimizationThreshold(0.02)\n\nlocal width, height = display.getDimensions()\n\n-- Generate the image and update the display\ndisplay.loadImage(width, height, \"example.json\")\ndisplay.update()"
     },
     
     /* CAMERA + DISPLAY */

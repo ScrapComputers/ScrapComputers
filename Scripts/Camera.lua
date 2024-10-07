@@ -1,3 +1,4 @@
+local sm_scrapcomputers_errorHandler_assertArgument = sm.scrapcomputers.errorHandler.assertArgument
 local sm_physics_getGroundMaterial = sm.physics.getGroundMaterial
 local sm_vec3_new = sm.vec3.new
 local sm_color_new = sm.color.new
@@ -252,9 +253,9 @@ function CameraClass:sv_createData()
         ---@param width integer? The width of the frame
         ---@param height integer? The height of the frame
         frame = function(display, width, height)
-            sm.scrapcomputers.errorHandler.assertArgument(display, 1, {"table"}, {"Display"})
-            sm.scrapcomputers.errorHandler.assertArgument(width, 2, {"integer", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(height, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 2, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 3, {"integer", "nil"})
 
             local width1, height1 = display.getDimensions()
 
@@ -272,9 +273,9 @@ function CameraClass:sv_createData()
         ---@param width integer? The width of the frame
         ---@param height integer? The height of the frame
         advancedFrame = function(display, width, height)
-            sm.scrapcomputers.errorHandler.assertArgument(display, 1, {"table"}, {"Display"})
-            sm.scrapcomputers.errorHandler.assertArgument(width, 2, {"integer", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(height, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 2, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 3, {"integer", "nil"})
 
             local width1, height1 = display.getDimensions()
 
@@ -293,10 +294,10 @@ function CameraClass:sv_createData()
         ---@param width integer? The width of the frame
         ---@param height integer? The height of the frame
         depthFrame = function(display, focalLength, width, height)
-            sm.scrapcomputers.errorHandler.assertArgument(display, 1, {"table"}, {"Display"})
-            sm.scrapcomputers.errorHandler.assertArgument(focalLength, 2, {"integer"})
-            sm.scrapcomputers.errorHandler.assertArgument(width, 3, {"integer", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(height, 4, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(focalLength, 2, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
 
             local width1, height1 = display.getDimensions()
 
@@ -315,10 +316,10 @@ function CameraClass:sv_createData()
         ---@param width integer? The width of the frame
         ---@param height integer? The height of the frame
         maskedFrame = function(display, mask, width, height)
-            sm.scrapcomputers.errorHandler.assertArgument(display, 1, {"table"}, {"Display"})
-            sm.scrapcomputers.errorHandler.assertArgument(mask, 2, {"string", "table"})
-            sm.scrapcomputers.errorHandler.assertArgument(width, 3, {"integer", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(height, 4, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(mask, 2, {"string", "table"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
 
             local width1, height1 = display.getDimensions()
 
@@ -329,7 +330,7 @@ function CameraClass:sv_createData()
                 for index, str in pairs(mask) do
                     local strType = type(str)
 
-                    sm.scrapcomputers.errorHandler.assertArgument(strType == "string", nil, "Bad argument #2, index " .. index .. "! Expected string, got " .. strType .. " instead!")
+                    sm_scrapcomputers_errorHandler_assertArgument(strType == "string", nil, "Bad argument #2, index " .. index .. "! Expected string, got " .. strType .. " instead!")
                 end
             end
 
@@ -345,10 +346,10 @@ function CameraClass:sv_createData()
         ---@param width   integer?               The width of the frame
         ---@param height  integer?               The height of the frame
         customFrame = function(display, drawer, width, height)
-            sm.scrapcomputers.errorHandler.assertArgument(display, 1, {"table"}, {"Display"})
-            sm.scrapcomputers.errorHandler.assertArgument(drawer, 2, {"function"}, {"Drawer"})
-            sm.scrapcomputers.errorHandler.assertArgument(width, 3, {"integer", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(height, 4, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(drawer, 2, {"function"}, {"Drawer"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
 
             local width1, height1 = display.getDimensions()
 
@@ -369,19 +370,29 @@ function CameraClass:sv_createData()
         ---@param width      integer?               The width of the video
         ---@param height     integer?               The height of the video
         video = function(display, sliceWidth, width, height)
-            sm.scrapcomputers.errorHandler.assertArgument(display, 1, {"table"}, {"Display"})
-            sm.scrapcomputers.errorHandler.assertArgument(sliceWidth, 2, {"integer"})
-            sm.scrapcomputers.errorHandler.assertArgument(width, 3, {"integer", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(height, 4, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(sliceWidth, 2, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
 
             local width1, height1 = display.getDimensions()
 
             width = width  or width1
             height = height or height1
 
-            if not sm.scrapcomputers.backend.cameraColorCache[display.getId()] and not self.sv.forced then
-                self.sv.forced = display.getId()
-                sm.scrapcomputers.backend.cameraColorCache[display.getId()] = true
+            local displayId = display.getId()
+
+            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced then
+                self.sv.forced = displayId
+                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+            end
+
+            if sliceWidth ~= self.sv.lastSliceWidth then
+                self.sv.lastSliceWidth = sliceWidth
+                self.sv.screenSection = 0
+                sm.scrapcomputers.backend.cameraColorCache[displayId] = nil
+                
+                self:sv_clearCache()
             end
 
             local thershold = display.getOptimizationThreshold()
@@ -405,19 +416,29 @@ function CameraClass:sv_createData()
         ---@param width      integer?               The width of the video
         ---@param height     integer?               The height of the video
         advancedVideo = function(display, sliceWidth, width, height)
-            sm.scrapcomputers.errorHandler.assertArgument(display, 1, {"table"}, {"Display"})
-            sm.scrapcomputers.errorHandler.assertArgument(sliceWidth, 2, {"integer"})
-            sm.scrapcomputers.errorHandler.assertArgument(width, 3, {"integer", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(height, 4, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(sliceWidth, 2, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
 
             local width1, height1 = display.getDimensions()
 
             width = width  or width1
             height = height or height1
 
-            if not sm.scrapcomputers.backend.cameraColorCache[display.getId()] and not self.sv.forced then
-                self.sv.forced = display.getId()
-                sm.scrapcomputers.backend.cameraColorCache[display.getId()] = true
+            local displayId = display.getId()
+
+            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced then
+                self.sv.forced = displayId
+                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+            end
+
+            if sliceWidth ~= self.sv.lastSliceWidth then
+                self.sv.lastSliceWidth = sliceWidth
+                self.sv.screenSection = 0
+                sm.scrapcomputers.backend.cameraColorCache[displayId] = nil
+                
+                self:sv_clearCache()
             end
 
             local thershold = display.getOptimizationThreshold()
@@ -442,20 +463,30 @@ function CameraClass:sv_createData()
         ---@param width   integer?               The width of the frame
         ---@param height  integer?               The height of the frame
         customVideo = function(display, drawer, sliceWidth, width, height)
-            sm.scrapcomputers.errorHandler.assertArgument(display, 1, {"table"}, {"Display"})
-            sm.scrapcomputers.errorHandler.assertArgument(drawer, 2, {"function"}, {"Drawer"})
-            sm.scrapcomputers.errorHandler.assertArgument(sliceWidth, 3, {"integer"})
-            sm.scrapcomputers.errorHandler.assertArgument(width, 4, {"integer", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(height, 5, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(drawer, 2, {"function"}, {"Drawer"})
+            sm_scrapcomputers_errorHandler_assertArgument(sliceWidth, 3, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 4, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 5, {"integer", "nil"})
 
             local width1, height1 = display.getDimensions()
 
             width = width  or width1
             height = height or height1
 
-            if not sm.scrapcomputers.backend.cameraColorCache[display.getId()] and not self.sv.forced then
-                self.sv.forced = display.getId()
-                sm.scrapcomputers.backend.cameraColorCache[display.getId()] = true
+            local displayId = display.getId()
+
+            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced then
+                self.sv.forced = displayId
+                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+            end
+
+            if sliceWidth ~= self.sv.lastSliceWidth then
+                self.sv.lastSliceWidth = sliceWidth
+                self.sv.screenSection = 0
+                sm.scrapcomputers.backend.cameraColorCache[displayId] = nil
+
+                self:sv_clearCache()
             end
 
             local thershold = display.getOptimizationThreshold()
@@ -476,7 +507,7 @@ function CameraClass:sv_createData()
         -- Sets the range, The bigger. the further you can see
         ---@param range integer The range to set it to
         setRange = function(range)
-            sm.scrapcomputers.errorHandler.assertArgument(range, nil, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(range, nil, {"integer"})
             assert(range > 0, "bad argument #1, range must be above 0")
 
             self.sv.range = range
@@ -486,7 +517,7 @@ function CameraClass:sv_createData()
         -- Sets the shadow range, The bigger. the bigger the shadows can be
         ---@param range integer The range to set it to
         setShadowRange = function(range)
-            sm.scrapcomputers.errorHandler.assertArgument(range, nil, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(range, nil, {"integer"})
             assert(range > 0, "bad argument #1, range must be above 0")
 
             self.sv.shadowRange = range
@@ -495,7 +526,7 @@ function CameraClass:sv_createData()
         ---Sets the FOV
         ---@param fov integer The FOV to set it to
         setFov = function(fov)
-            sm.scrapcomputers.errorHandler.assertArgument(fov, nil, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(fov, nil, {"integer"})
             assert(fov > 0 and fov <= 120, "bad argument #1, fov out of range")
 
             self.sv.fov = math.rad(fov)
@@ -505,7 +536,7 @@ function CameraClass:sv_createData()
         ---The x position it would be rendered at
         ---@param xOffset integer
         setOffsetX = function(xOffset)
-            sm.scrapcomputers.errorHandler.assertArgument(xOffset, nil, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(xOffset, nil, {"integer"})
 
             self.sv.xOffset = xOffset
         end,
@@ -513,13 +544,13 @@ function CameraClass:sv_createData()
         --The y position it would be rendered at
         ---@param yOffset integer
         setOffsetY = function(yOffset)
-            sm.scrapcomputers.errorHandler.assertArgument(yOffset, nil, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(yOffset, nil, {"integer"})
 
             self.sv.yOffset = yOffset
         end,
 
         toggleFogShader = function (bool)
-            sm.scrapcomputers.errorHandler.assertArgument(bool, nil, {"boolean"})
+            sm_scrapcomputers_errorHandler_assertArgument(bool, nil, {"boolean"})
 
             self.sv.fogShader = bool
         end
@@ -541,11 +572,20 @@ function CameraClass:server_onCreate()
         cachedCoordinates = {},
         cachedColors = {},
 
-        screenSection = 0
+        screenSection = 0,
+
+        isComputerActive = false,
+        previousComputerActive = false,
+
+        previousSkyColor = getSkyColor()
     }
 end
 
 function CameraClass:server_onFixedUpdate()
+    if self.sv.previousComputerActive ~= self.sv.isComputerActive then
+        self.sv.previousComputerActive = self.sv.isComputerActive
+    end
+
     local pos = self.shape.worldPosition
     local rot = self.shape.worldRotation
 
@@ -623,12 +663,6 @@ function CameraClass:sv_computeVideoRays(sliceWidth, width, height)
 
     if height ~= self.sv.lastHeight then
         self.sv.lastHeight = height
-        self:sv_clearCache()
-    end
-
-    if sliceWidth ~= self.sv.lastSliceWidth then
-        self.sv.lastSliceWidth = sliceWidth
-        self.sv.screenSection = 0
         self:sv_clearCache()
     end
 
@@ -854,10 +888,10 @@ function CameraClass:sv_drawAdvancedFrame(rays, coordinateTbl, width, height)
                 mask = filter,
             }
         else
+            local finalColor = applySunShader(result, color, time, sunDir)
+
             local coordinate = coordinateTbl[i]
             local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
-
-            local finalColor = applySunShader(result, color, time, sunDir)
 
             pixelIndex = pixelIndex + 1
             pixels[pixelIndex] = {x = x, y = y, color = finalColor}
@@ -951,14 +985,12 @@ function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, he
         local x, y = coord[1] + xOffset, coord[2] + yOffset
         local coordIndex = coordinateToIndex(x, y, width)
 
-        if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], color, threshold) then
-            self.sv.hasDrawn = true
+        self.sv.hasDrawn = true
 
-            pixelIndex = pixelIndex + 1
-            pixels[pixelIndex] = {x = x, y = y, color = color}
-
-            self.sv.cachedColors[coordIndex] = color
-        end
+        pixelIndex = pixelIndex + 1
+        pixels[pixelIndex] = {x = x, y = y, color = color}
+            
+        self.sv.cachedColors[coordIndex] = color
     end
 
     return pixels

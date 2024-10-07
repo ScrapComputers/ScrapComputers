@@ -1,5 +1,6 @@
 from PIL import Image, UnidentifiedImageError
 import os
+import json
 
 def rgb_to_hex(color):
     """Convert an RGB tuple to a hex string (without #)."""
@@ -10,28 +11,28 @@ def resize_image(image, target_width, target_height):
     return image.resize((target_width, target_height), Image.Resampling.LANCZOS)
 
 def get_pixel_data(image):
-    """Get pixel data from the image and output as a single concatenated hex string."""
-    hex_string = ""
+    """Get pixel data from the image and output as a list of hex color strings."""
+    hex_colors = []
     width, height = image.size
     
     for x in range(width):
         for y in range(height):
             try:
                 color = image.getpixel((x, y))  # Get color as (R, G, B) tuple
-                hex_color = rgb_to_hex(color)   # Convert to hex string without #
-                hex_string += hex_color         # Concatenate hex colors into a single string
+                hex_color = rgb_to_hex(color)    # Convert to hex string without #
+                hex_colors.append(hex_color)      # Add hex color to the list
 
             except Exception as e:
                 print(f"Error retrieving pixel at ({x}, {y}): {e}")
                 continue  # Skip to the next pixel if there's an error
 
-    return hex_string
+    return hex_colors
 
-def save_hex_string(hex_string, filename="output.txt"):
-    """Save the concatenated hex string to a file."""
+def save_json(hex_colors, filename="output.json"):
+    """Save the hex color data to a JSON file without pretty printing."""
     try:
         with open(filename, 'w') as file:
-            file.write(hex_string)
+            json.dump(hex_colors, file)  # No indent for uglified output
         print(f"Data successfully exported to {filename}")
     except Exception as e:
         print(f"Failed to export data: {e}")
@@ -71,15 +72,15 @@ def main():
         # Resize image to desired resolution
         resized_image = resize_image(image, target_width, target_height)
         
-        # Get the pixel data as a single concatenated hex string
-        hex_string = get_pixel_data(resized_image)
+        # Get the pixel data as a list of hex color strings
+        hex_colors = get_pixel_data(resized_image)
         
-        # Get the directory of the script to save output.txt in the same folder
+        # Get the directory of the script to save output.json in the same folder
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        output_path = os.path.join(script_dir, "output.txt")
+        output_path = os.path.join(script_dir, "output.json")
         
-        # Save the concatenated hex string to the file
-        save_hex_string(hex_string, output_path)
+        # Save the hex color data to the JSON file
+        save_json(hex_colors, output_path)
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")

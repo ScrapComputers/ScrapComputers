@@ -427,6 +427,10 @@ end
 function ComputerClass:cl_saveButtonBtn(widget, name)
     self:cl_saveCode()
     self:cl_setLogMessage(3 * 40, "16c60c", sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.savedcode"))
+
+    local code = self.cl.unsavedCode:gsub("\\", "⁄"):gsub("##", "#")
+    self.cl.exceptionLines = {}
+    self.cl.gui:setText("scriptData", sm.scrapcomputers.syntaxManager.highlightCode(code, {}))
 end
 
 function ComputerClass:cl_revertChangesBtn(widget, name)

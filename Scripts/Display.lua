@@ -2,14 +2,48 @@
 -- If you ever make your own display's. You will actually kill yourself. We are NOT joking.
 -- If anyone can find a better method of doing this please save our souls
 
+local sm_scrapcomputers_errorHandler_assertArgument = sm.scrapcomputers.errorHandler.assertArgument
+local sm_scrapcomputers_errorHandler_assert = sm.scrapcomputers.errorHandler.assert
+local sm_scrapcomputers_string_splitString = sm.scrapcomputers.string.splitString
+
+local sm_effect_createEffect = sm.effect.createEffect
+local shellEffect = sm_effect_createEffect("ShapeRenderable")
+local effect_start = shellEffect.start
+local effect_stop = shellEffect.stop
+local effect_destroy = shellEffect.destroy
+local effect_setScale = shellEffect.setScale
+local effect_setParameter = shellEffect.setParameter
+local effect_setOffsetPosition = shellEffect.setOffsetPosition
+local effect_isPlaying = shellEffect.isPlaying
+effect_destroy(shellEffect)
+
+local sm_color_new = sm.color.new
+local sm_vec3_new = sm.vec3.new
+local sm_vec3_length = sm.vec3.length
+local sm_vec3_dot = sm.vec3.dot
+local sm_vec3_normalize = sm.vec3.normalize
+
+local bit_bor = bit.bor
+local bit_band = bit.band
+local bit_lshift = bit.lshift
+local bit_rshift = bit.rshift
+
+local math_floor = math.floor
+local math_ceil = math.ceil
+local math_sqrt = math.sqrt
+local math_max = math.max
+
+local string_byte = string.byte
+local string_sub = string.sub
+
 ---@class DisplayClass : ShapeClass
 DisplayClass = class()
 DisplayClass.maxParentCount = 1
 DisplayClass.maxChildCount = 0
 DisplayClass.connectionInput = sm.interactable.connectionType.compositeIO
 DisplayClass.connectionOutput = sm.interactable.connectionType.none
-DisplayClass.colorNormal = sm.color.new(0x696969ff)
-DisplayClass.colorHighlight = sm.color.new(0x969696ff)
+DisplayClass.colorNormal = sm_color_new(0x696969ff)
+DisplayClass.colorHighlight = sm_color_new(0x969696ff)
 
 -- CLIENT/SERVER --
 
@@ -24,6 +58,8 @@ local byteLimit = 65000
 local drawTableLimit = 13500
 local tableLimit = 6500 --11000 --11543
 local displayHidingCooldown = 0.1
+
+local imagePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/DisplayImages/"
 
 local networkInstructions = {
     ["DIS_VIS"] = "cl_setDisplayHidden",
@@ -47,7 +83,7 @@ function shapePosToPixelPos(point, widthScale, heightScale, pixelScale)
 end
 
 function round(numb)
-    return math.floor(numb + 0.5)
+    return math_floor(numb + 0.5)
 end
 
 -- Returns true if the 2 colors are similar given via a threshold
@@ -75,15 +111,15 @@ function colorDistance(r1, g1, b1, r2, g2, b2)
     local dg = g2 - g1
     local db = b2 - b1
 
-    return math.sqrt(dr^2 + dg^2 + db^2)
+    return math_sqrt(dr^2 + dg^2 + db^2)
 end
 
--- Gets the UTF8 char from a string as string.sub messes up special characters
+-- Gets the UTF8 char from a string as string_sub messes up special characters
 ---@param str string The string
 ---@param index number The UTF8 character to select
 ---@return string UTF8Character The UTF8 character returned.
 function getUTF8Character(str, index)
-    local byte = string.byte(str, index)
+    local byte = string_byte(str, index)
     local byteCount = 1
 
     if byte >= 0xC0 and byte <= 0xDF then
@@ -94,7 +130,7 @@ function getUTF8Character(str, index)
         byteCount = 4
     end
 
-    return string.sub(str, index, index + byteCount - 1)
+    return string_sub(str, index, index + byteCount - 1)
 end
 
 -- Converts 2D coordinates (x, y) to a 1D array index
@@ -105,7 +141,7 @@ end
 -- Converts a 1D array index to 2D coordinates (x, y)
 function indexToCoordinate(index, width)
     local x = (index - 1) % width + 1
-    local y = math.floor((index - 1) / width) + 1
+    local y = math_floor((index - 1) / width) + 1
     return x, y
 end
 
@@ -123,40 +159,44 @@ function splitTable(numbers, length)
     local result = {}
     local currentTable = {}
     local count = 0
+    local resultIndex = 0
 
     for i, num in ipairs(numbers) do
-        table.insert(currentTable, num)
         count = count + 1
+        currentTable[count] = num
 
         if count == length then
-            table.insert(result, currentTable)
+            resultIndex = resultIndex + 1
+            result[resultIndex] = currentTable
+
             currentTable = {}
             count = 0
         end
     end
 
     if #currentTable > 0 then
-        table.insert(result, currentTable)
+        resultIndex = resultIndex + 1
+        result[resultIndex] = currentTable
     end
 
     return result  
 end
 
 function colorToID(color)
-    local r = math.floor(color.r * 255)
-    local g = math.floor(color.g * 255)
-    local b = math.floor(color.b * 255)
+    local r = math_floor(color.r * 255)
+    local g = math_floor(color.g * 255)
+    local b = math_floor(color.b * 255)
     
-    local colorID = bit.bor(bit.lshift(r, 16), bit.lshift(g, 8), b)
+    local colorID = bit_bor(bit_lshift(r, 16), bit_lshift(g, 8), b)
     return colorID
 end
 
 function idToColor(colorID)
-    local r = bit.band(bit.rshift(colorID, 16), 0xFF)
-    local g =  bit.band(bit.rshift(colorID, 8), 0xFF)
-    local b = bit.band(colorID, 0xFF)
+    local r = bit_band(bit_rshift(colorID, 16), 0xFF)
+    local g =  bit_band(bit_rshift(colorID, 8), 0xFF)
+    local b = bit_band(colorID, 0xFF)
     
-    return sm.color.new(r / 255, g / 255, b / 255)
+    return sm_color_new(r / 255, g / 255, b / 255)
 end
 
 -- The torture. Someone please give us a soul. Espessally Ben Bingo, He wrote the entire display. PLEASE GIVE US SOME FUCKING WATER, WE HAVENT DRANK WATER SINCE DAY 1.
@@ -219,26 +259,28 @@ function optimizeDisplayPixelStack(indexedStack, width, height, threshold, forma
         end
     end
 
+    local cahcedIndex = 0
+    local optimizedStack = {}
     local keys = {}
+
     for index in pairs(indexedStack) do
-        table.insert(keys, index)
+        local x, y = indexToCoordinate(index, width)
+        keys[#keys + 1] = {index = index, x = x, y = y}
     end
 
     table.sort(keys, function(a, b)
-        local x1, y1 = indexToCoordinate(a, width)
-        local x2, y2 = indexToCoordinate(b, width)
-        if y1 == y2 then
-            return x1 < x2
+        if a.y == b.y then
+            return a.x < b.x
         else
-            return y1 < y2
+            return a.y < b.y
         end
     end)
 
-    local cahcedIndex = 0
+    for _, keyData in ipairs(keys) do
+        local index = keyData.index
 
-    for _, index in ipairs(keys) do
         if not processed[index] then
-            local x, y = indexToCoordinate(index, width)
+            local x, y = keyData.x, keyData.y
             local pixelIndex = indexedStack[index]
 
             local maxWidth, maxHeight = findMaxDimensions(x, y, pixelIndex)
@@ -260,7 +302,7 @@ function optimizeDisplayPixelStack(indexedStack, width, height, threshold, forma
                 }
             end
 
-            markBlockAsProcessed(x, y, maxWidth, maxHeight) 
+            markBlockAsProcessed(x, y, maxWidth, maxHeight)
         end
     end
 
@@ -278,22 +320,28 @@ function DisplayClass:sv_createData()
     ---@param color Color The color of the circle
     ---@param isFilled boolean If true, the circle is filled. else not.
     local function drawCricle(x, y, radius, color, isFilled)
-        sm.scrapcomputers.errorHandler.assertArgument(x, 1, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(y, 2, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(radius, 3, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(color, 4, {"Color", "string"})
+        sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(radius, 3, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(color, 4, {"Color", "string"})
 
-        sm.scrapcomputers.errorHandler.assert(radius, 3, "Radius is too small!")
+        sm_scrapcomputers_errorHandler_assert(radius, 3, "Radius is too small!")
 
-        local len = #self.sv.buffer
+        local dataBuffer = self.sv.buffer.data
+        local instructionBuffer = self.sv.buffer.instruction
+        local indexBuffer = self.sv.buffer.index
 
-        self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
-        self.sv.buffer[len + 2] = round(radius)
-        self.sv.buffer[len + 3] = colorToID(type(color) == "string" and sm.color.new(color) or color)
-        self.sv.buffer[len + 4] = isFilled
+        local len = #dataBuffer
+
+        dataBuffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
+        dataBuffer[len + 2] = round(radius)
+        dataBuffer[len + 3] = colorToID(type(color) == "string" and sm_color_new(color) or color)
+        dataBuffer[len + 4] = isFilled
+
+        local cacheIndex = #instructionBuffer + 1
         
-        self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 4
-        self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 4
+        instructionBuffer[cacheIndex] = 4
+        indexBuffer[cacheIndex] = 4
     end
 
     ---Draw Triangle function
@@ -306,26 +354,32 @@ function DisplayClass:sv_createData()
     ---@param color Color The color of the triangle
     ---@param isFilled boolean If true, Triangle is filled. else its just 3 fucking lines.
     local function drawTriangle(x1, y1, x2, y2, x3, y3, color, isFilled)
-        sm.scrapcomputers.errorHandler.assertArgument(x1, 1, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(y1, 2, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(x2, 3, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(y2, 4, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(x3, 5, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(y3, 6, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(x1, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y1, 2, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(x2, 3, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y2, 4, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(x3, 5, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y3, 6, {"number"})
 
-        sm.scrapcomputers.errorHandler.assertArgument(color, 7, {"Color", "string"})
+        sm_scrapcomputers_errorHandler_assertArgument(color, 7, {"Color", "string"})
 
-        local len = #self.sv.buffer
+        local dataBuffer = self.sv.buffer.data
+        local instructionBuffer = self.sv.buffer.instruction
+        local indexBuffer = self.sv.buffer.index
+
+        local len = #dataBuffer
         local width = self.data.width
 
-        self.sv.buffer[len + 1] = coordinateToIndex(round(x1), round(y1), width)
-        self.sv.buffer[len + 2] = coordinateToIndex(round(x2), round(y2), width)
-        self.sv.buffer[len + 3] = coordinateToIndex(round(x3), round(y3), width)
-        self.sv.buffer[len + 4] = colorToID(type(color) == "string" and sm.color.new(color) or color)
-        self.sv.buffer[len + 5] = isFilled
+        dataBuffer[len + 1] = coordinateToIndex(round(x1), round(y1), width)
+        dataBuffer[len + 2] = coordinateToIndex(round(x2), round(y2), width)
+        dataBuffer[len + 3] = coordinateToIndex(round(x3), round(y3), width)
+        dataBuffer[len + 4] = colorToID(type(color) == "string" and sm_color_new(color) or color)
+        dataBuffer[len + 5] = isFilled
+
+        local cacheIndex = #instructionBuffer + 1
         
-        self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 5
-        self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 5
+        instructionBuffer[cacheIndex] = 5
+        indexBuffer[cacheIndex] = 5
     end
 
     ---Draw Rectangle Function
@@ -336,24 +390,30 @@ function DisplayClass:sv_createData()
     ---@param color Color|string The color of the rectangle
     ---@param isFilled boolean If true, The rectangle is filled. else it will just draw 4 fucking lines.
     local function drawRect(x, y, width, height, color, isFilled)
-        sm.scrapcomputers.errorHandler.assertArgument(x, 1, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(y, 2, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
 
-        sm.scrapcomputers.errorHandler.assertArgument(width, 3, {"number"})
-        sm.scrapcomputers.errorHandler.assertArgument(height, 4, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"number"})
 
-        sm.scrapcomputers.errorHandler.assertArgument(color, 4, {"Color", "string"})
+        sm_scrapcomputers_errorHandler_assertArgument(color, 4, {"Color", "string"})
 
-        local len = #self.sv.buffer
+        local dataBuffer = self.sv.buffer.data
+        local instructionBuffer = self.sv.buffer.instruction
+        local indexBuffer = self.sv.buffer.index
+
+        local len = #dataBuffer
         local screenWidth = self.data.width
 
-        self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), screenWidth)
-        self.sv.buffer[len + 2] = coordinateToIndex(round(width), round(height), screenWidth)
-        self.sv.buffer[len + 3] = colorToID(type(color) == "string" and sm.color.new(color) or color)
-        self.sv.buffer[len + 4] = isFilled
+        dataBuffer[len + 1] = coordinateToIndex(round(x), round(y), screenWidth)
+        dataBuffer[len + 2] = coordinateToIndex(round(width), round(height), screenWidth)
+        dataBuffer[len + 3] = colorToID(type(color) == "string" and sm_color_new(color) or color)
+        dataBuffer[len + 4] = isFilled
+
+        local cacheIndex = #instructionBuffer + 1
         
-        self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 6
-        self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 4
+        instructionBuffer[cacheIndex] = 6
+        indexBuffer[cacheIndex] = 4
     end
 
     return {
@@ -362,31 +422,43 @@ function DisplayClass:sv_createData()
         ---@param y number
         ---@param color Color
         drawPixel = function (x, y, color)
-            sm.scrapcomputers.errorHandler.assertArgument(x, 1, {"number"})
-            sm.scrapcomputers.errorHandler.assertArgument(y, 2, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
 
             if x < 1 or x > self.data.width or y < 1 or y > self.data.height then return end
 
-            sm.scrapcomputers.errorHandler.assertArgument(color, 3, {"Color", "string"})
+            sm_scrapcomputers_errorHandler_assertArgument(color, 3, {"Color", "string"})
 
-            local len = #self.sv.buffer
+            local dataBuffer = self.sv.buffer.data
+            local instructionBuffer = self.sv.buffer.instruction
+            local indexBuffer = self.sv.buffer.index
+
+            local len = #dataBuffer
             
-            self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
-            self.sv.buffer[len + 2] = colorToID(type(color) == "string" and sm.color.new(color) or color)
+            dataBuffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
+            dataBuffer[len + 2] = colorToID(type(color) == "string" and sm_color_new(color) or color)
 
-            self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 1
-            self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 2
+            local cacheIndex = #instructionBuffer + 1
+
+            instructionBuffer[cacheIndex] = 1
+            indexBuffer[cacheIndex] = 2
         end,
 
         ---Draws pixels from a table
         ---@param tbl PixelTable The table of pixels
         drawFromTable = function (tbl)
-            sm.scrapcomputers.errorHandler.assertArgument(tbl, nil, {"table"}, {"PixelTable"})
+            sm_scrapcomputers_errorHandler_assertArgument(tbl, nil, {"table"}, {"PixelTable"})
 
-            local index = #self.sv.drawTableBuffer + 1
-            self.sv.drawTableBuffer[index] = { pixels = {} }
+            local tableBuffer = self.sv.buffer.drawTable
+            local index = #tableBuffer + 1
+
+            tableBuffer[index] = {{}}
+
+            local instructionBuffer = self.sv.buffer.instruction
+            local indexBuffer = self.sv.buffer.index
 
             local width = self.data.width
+            local backpannel = self.sv.backPanel
 
             for i, pixel in pairs(tbl) do
                 local pixel_x = pixel.x
@@ -397,41 +469,43 @@ function DisplayClass:sv_createData()
                 local yType = type(pixel_y)
                 local colorType = type(pixel_color)
 
-                sm.scrapcomputers.errorHandler.assert(pixel_x and pixel_y and pixel_color, "missing data at index "..i..".")
+                sm_scrapcomputers_errorHandler_assert(pixel_x and pixel_y and pixel_color, "missing data at index "..i..".")
 
-                sm.scrapcomputers.errorHandler.assert(xType == "number", nil, "bad x value at index "..i..". Expected number. Got "..xType.." instead!")
-                sm.scrapcomputers.errorHandler.assert(yType == "number", nil, "bad y value at index "..i..". Expected number. Got "..yType.." instead!")
-                sm.scrapcomputers.errorHandler.assert(colorType == "Color" or colorType == "string", nil, "bad color at index "..i..". Expected Color or string. Got ".. colorType.." instead!")
+                sm_scrapcomputers_errorHandler_assert(xType == "number", nil, "bad x value at index "..i..". Expected number. Got "..xType.." instead!")
+                sm_scrapcomputers_errorHandler_assert(yType == "number", nil, "bad y value at index "..i..". Expected number. Got "..yType.." instead!")
+                sm_scrapcomputers_errorHandler_assert(colorType == "Color" or colorType == "string", nil, "bad color at index "..i..". Expected Color or string. Got ".. colorType.." instead!")
 
-                if pixel_color ~= self.sv.backPanel then
-                    self.sv.drawTableBuffer[index].pixels[coordinateToIndex(pixel_x, pixel_y, width)] = type(pixel_color) == "string" and sm.color.new(pixel_color) or pixel_color
+                if pixel_color ~= backpannel then
+                    tableBuffer[index][1][coordinateToIndex(pixel_x, pixel_y, width)] = type(pixel_color) == "string" and sm_color_new(pixel_color) or pixel_color
                 end
             end
 
-            self.sv.indexBuffer[#self.sv.indexBuffer + 1] = #tbl
-            self.sv.drawTableBuffer[index].index = #self.sv.indexBuffer
-            self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 9
+            local cacheIndex = #instructionBuffer + 1
+
+            indexBuffer[cacheIndex] = #tbl
+            tableBuffer[index][2] = #indexBuffer
+            instructionBuffer[cacheIndex] = 9
         end,
 
         -- Clear the display
         ---@param color MultiColorType The new background color or 000000
         clear = function (color)
-            sm.scrapcomputers.errorHandler.assertArgument(color, nil, {"Color", "string", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(color, nil, {"Color", "string", "nil"})
 
             if sm.scrapcomputers.backend.cameraColorCache then
                 sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = nil
             end
 
-            self.sv.buffer = {}
-            self.sv.indexBuffer = {}
-            self.sv.instructionBuffer = {}
+            self.sv.buffer.data = {}
+            self.sv.buffer.index = {}
+            self.sv.buffer.instruction = {}
 
-            local clearColor = colorToID(color and (type(color) == "string" and sm.color.new(color) or color) or sm.color.new(0, 0, 0))
+            local clearColor = colorToID(color and (type(color) == "string" and sm_color_new(color) or color) or sm_color_new(0, 0, 0))
 
-            self.sv.buffer[1] = clearColor
+            self.sv.buffer.data[1] = clearColor
 
-            self.sv.instructionBuffer[1] = 3
-            self.sv.indexBuffer[1] = 1
+            self.sv.buffer.instruction[1] = 3
+            self.sv.buffer.index[1] = 1
 
             self.sv.backPanel = clearColor
         end,
@@ -443,23 +517,29 @@ function DisplayClass:sv_createData()
         ---@param y1 number -- The 2nd point on y-axis
         ---@param color MultiColorType The line's color
         drawLine = function (x, y, x1, y1, color)
-            sm.scrapcomputers.errorHandler.assertArgument(x, 1, {"number"})
-            sm.scrapcomputers.errorHandler.assertArgument(y, 2, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
 
-            sm.scrapcomputers.errorHandler.assertArgument(x1, 3, {"number"})
-            sm.scrapcomputers.errorHandler.assertArgument(y1, 4, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(x1, 3, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(y1, 4, {"number"})
 
-            sm.scrapcomputers.errorHandler.assertArgument(color, 5, {"Color", "string"})
+            sm_scrapcomputers_errorHandler_assertArgument(color, 5, {"Color", "string"})
 
-            local len = #self.sv.buffer
+            local dataBuffer = self.sv.buffer.data
+            local instructionBuffer = self.sv.buffer.instruction
+            local indexBuffer = self.sv.buffer.index
+
+            local len = #dataBuffer
             local width = self.data.width
             
-            self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), width)
-            self.sv.buffer[len + 2] = coordinateToIndex(round(x1), round(y1), width)
-            self.sv.buffer[len + 3] = colorToID(type(color) == "string" and sm.color.new(color) or color)
+            dataBuffer[len + 1] = coordinateToIndex(round(x), round(y), width)
+            dataBuffer[len + 2] = coordinateToIndex(round(x1), round(y1), width)
+            dataBuffer[len + 3] = colorToID(type(color) == "string" and sm_color_new(color) or color)
 
-            self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 2 
-            self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 3
+            local cacheIndex = #instructionBuffer + 1
+
+            instructionBuffer[cacheIndex] = 2 
+            indexBuffer[cacheIndex] = 3
         end,
 
         -- Draws a circle
@@ -518,32 +598,82 @@ function DisplayClass:sv_createData()
         ---@param text string The text to show
         ---@param color MultiColorType the color of the text
         drawText = function (x, y, text, color, fontName)
-            sm.scrapcomputers.errorHandler.assertArgument(x, 1, {"number"})
-            sm.scrapcomputers.errorHandler.assertArgument(y, 2, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
 
-            sm.scrapcomputers.errorHandler.assertArgument(text, 3, {"string"})
-            sm.scrapcomputers.errorHandler.assertArgument(color, 4, {"Color", "string", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(text, 3, {"string"})
+            sm_scrapcomputers_errorHandler_assertArgument(color, 4, {"Color", "string", "nil"})
             
-            sm.scrapcomputers.errorHandler.assertArgument(fontName, 5, {"string", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(fontName, 5, {"string", "nil"})
             
             fontName = fontName or sm.scrapcomputers.fontManager.getDefaultFontName()
 
             local font, errMsg = sm.scrapcomputers.fontManager.getFont(fontName)
-            sm.scrapcomputers.errorHandler.assert(font, 5, errMsg)
+            sm_scrapcomputers_errorHandler_assert(font, 5, errMsg)
 
             if text ~= "" then
                 color = color or "FFFFFF"
 
-                local len = #self.sv.buffer
+                local dataBuffer = self.sv.buffer.data
+                local instructionBuffer = self.sv.buffer.instruction
+                local indexBuffer = self.sv.buffer.index
 
-                self.sv.buffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
-                self.sv.buffer[len + 2] = text
-                self.sv.buffer[len + 3] = colorToID(type(color) == "string" and sm.color.new(color) or color)
-                self.sv.buffer[len + 4] = fontName
+                local len = #dataBuffer
+
+                dataBuffer[len + 1] = coordinateToIndex(round(x), round(y), self.data.width)
+                dataBuffer[len + 2] = text
+                dataBuffer[len + 3] = colorToID(type(color) == "string" and sm_color_new(color) or color)
+                dataBuffer[len + 4] = fontName
+
+                local cacheIndex = #instructionBuffer + 1
                 
-                self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 7
-                self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 4
+                instructionBuffer[cacheIndex] = 7
+                indexBuffer[cacheIndex] = 4
             end
+        end,
+
+        loadImage = function(width, height, path)
+            sm_scrapcomputers_errorHandler_assertArgument(width, 1, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 2, {"integer"})
+
+            sm_scrapcomputers_errorHandler_assertArgument(path, 3, {"string"})
+
+            local fileLocation = imagePath..path
+            sm_scrapcomputers_errorHandler_assert(sm.json.fileExists(fileLocation), 3, "Image doesnt exist")
+
+            local imageTbl = sm.json.open(fileLocation)
+
+            local tableBuffer = self.sv.buffer.drawTable
+            local index = #tableBuffer + 1
+
+            tableBuffer[index] = {{}}
+
+            local instructionBuffer = self.sv.buffer.instruction
+            local indexBuffer = self.sv.buffer.index
+
+            local x, y = 1, 1
+            local backpannel = self.sv.backPanel
+
+            for i, color in pairs(imageTbl) do
+                local rgb = sm_color_new(color)
+
+                if rgb ~= backpannel then
+                    tableBuffer[index][1][coordinateToIndex(x, y, width)] = rgb
+                end
+
+                y = y + 1
+
+                if y > height then
+                    y = 1
+                    x = x + 1
+                end
+            end
+
+            local cacheIndex = #instructionBuffer + 1
+
+            indexBuffer[cacheIndex] = #imageTbl
+            tableBuffer[index][2] = #indexBuffer
+            instructionBuffer[cacheIndex] = 9
         end,
 
         -- Returns the dimensions of the display
@@ -555,28 +685,28 @@ function DisplayClass:sv_createData()
 
         -- Hides the display, Makes all players unable to see it.
         hide = function ()
-            self.sv.networkBuffer[#self.sv.networkBuffer + 1] = {"DIS_VIS", {true}}
+            self.sv.buffer.network[#self.sv.buffer.network + 1] = {"DIS_VIS", {true}}
         end,
 
         -- Shows the display. All players will be able to see it
         show = function ()
-            self.sv.networkBuffer[#self.sv.networkBuffer + 1] = {"DIS_VIS", {false}}
+            self.sv.buffer.network[#self.sv.buffer.network + 1] = {"DIS_VIS", {false}}
         end,
 
         -- Set the render distance for the display. If you go out of this range, the display will hide itself automaticly, else it will show itself.
         ---@param distance number The new render distance to set
         setRenderDistance = function (distance)
-            sm.scrapcomputers.errorHandler.assertArgument(distance, nil, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(distance, nil, {"number"})
 
-            self.sv.networkBuffer[#self.sv.networkBuffer + 1] = {"SET_REND", {distance}}
+            self.sv.buffer.network[#self.sv.buffer.network + 1] = {"SET_REND", {distance}}
         end,
 
         -- Enables/Disables touchscreen. Makes getTouchData usable
         ---@param bool boolean If true, Touchscreen mode is enabled and the end-user can interact with it.
         enableTouchScreen = function(bool)
-            sm.scrapcomputers.errorHandler.assertArgument(bool, nil, {"boolean"})
+            sm_scrapcomputers_errorHandler_assertArgument(bool, nil, {"boolean"})
 
-            self.sv.networkBuffer[#self.sv.networkBuffer + 1] = {"TOUCH_STATE", {bool}}
+            self.sv.buffer.network[#self.sv.buffer.network + 1] = {"TOUCH_STATE", {bool}}
             self.sv.display.touchAllowed = bool
         end,
 
@@ -593,24 +723,27 @@ function DisplayClass:sv_createData()
         -- Always update's the display. We highly do not suggest doing this as its VERY laggy.
         ---@param bool boolean Toggle the autoUpdate system.
         autoUpdate = function (bool)
-            sm.scrapcomputers.errorHandler.assertArgument(bool, nil, {"boolean"})
+            sm_scrapcomputers_errorHandler_assertArgument(bool, nil, {"boolean"})
 
             self.sv.autoUpdate = bool
         end,
 
         -- Optimizes the display to the extreme. Will be costy during the optimization but will be a massive performance increase after it.
         optimize = function ()
-            self.sv.instructionBuffer[#self.sv.instructionBuffer + 1] = 8
-            self.sv.indexBuffer[#self.sv.indexBuffer + 1] = 0
+            local instructionBuffer = self.sv.buffer.instruction
+            local indexBuffer = self.sv.buffer.index
+
+            instructionBuffer[#instructionBuffer + 1] = 8
+            indexBuffer[#indexBuffer + 1] = 0
         end,
 
         -- Sets the optimization threshold. The lower, the less optimization it does but with better quality, the higher, the better optimization it does but with worser quality.
         -- You must set this value in decimals, Default optimization threshold when placing it is 0.05
         ---@param int number The new threshold
         setOptimizationThreshold = function (int)
-            sm.scrapcomputers.errorHandler.assertArgument(int, nil, {"number"})
+            sm_scrapcomputers_errorHandler_assertArgument(int, nil, {"number"})
 
-            self.sv.networkBuffer[#self.sv.networkBuffer + 1] = {"SET_THRESHOLD", {int}}
+            self.sv.buffer.network[#self.sv.buffer.network + 1] = {"SET_THRESHOLD", {int}}
             self.sv.display.threshold = int
         end,
 
@@ -638,8 +771,8 @@ function DisplayClass:sv_createData()
         ---@return number width The width of the text that it will use
         ---@return number height The height of the text that it will use
         calcTextSize = function (text, font)
-            sm.scrapcomputers.errorHandler.assertArgument(text, 1, {"string"})
-            sm.scrapcomputers.errorHandler.assertArgument(font, 2, {"string", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(text, 1, {"string"})
+            sm_scrapcomputers_errorHandler_assertArgument(font, 2, {"string", "nil"})
 
             font = font or sm.scrapcomputers.fontManager.getDefaultFontName()
 
@@ -649,7 +782,7 @@ function DisplayClass:sv_createData()
             end
 
             local usedWidth = sm.util.clamp(#text * trueFont.fontWidth, 0, self.data.width)
-            local usedHeight = (1 + math.floor((#text * trueFont.fontWidth) / self.data.width)) * trueFont.fontHeight
+            local usedHeight = (1 + math_floor((#text * trueFont.fontWidth) / self.data.width)) * trueFont.fontHeight
 
             return usedWidth, usedHeight
         end,
@@ -659,8 +792,8 @@ end
 function DisplayClass:server_onFixedUpdate()
     local self_network = self.network
 
-    if #self.sv.networkBuffer > 0 then
-        for _, data in pairs(self.sv.networkBuffer) do
+    if #self.sv.buffer.network > 0 then
+        for _, data in pairs(self.sv.buffer.network) do
             local instruction, params = unpack(data)
             local dest = networkInstructions[instruction]
 
@@ -675,16 +808,18 @@ function DisplayClass:server_onFixedUpdate()
             sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = nil
         end
 
-        self.sv.networkBuffer = {}
+        self.sv.buffer.network = {}
     end
 
-    local tableBuffer = #self.sv.drawTableBuffer > 0
+    local tableBuffer = #self.sv.buffer.drawTable > 0
 
-    if (self.sv.allowUpdate or self.sv.autoUpdate) and #self.sv.instructionBuffer > 0 then
-        for i, instruciton in pairs(self.sv.instructionBuffer) do
+    if (self.sv.allowUpdate or self.sv.autoUpdate) and #self.sv.buffer.instruction > 0 then
+        local shapeId = self.shape.id
+
+        for i, instruciton in pairs(self.sv.buffer.instruction) do
             if instruciton ~= 8 and instruciton ~= 9 then
                 if sm.scrapcomputers.backend.cameraColorCache then
-                    sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = nil
+                    sm.scrapcomputers.backend.cameraColorCache[shapeId] = nil
                 end
 
                 break
@@ -694,13 +829,14 @@ function DisplayClass:server_onFixedUpdate()
         local optimisedDrawTables = {}
         local optimisedTableIndex = 0
 
+        local indexBuffer = self.sv.buffer.index
         local width = self.data.width
         local height = self.data.height
         local threshold = self.sv.display.threshold
 
         if tableBuffer then
-            for i, data in pairs(self.sv.drawTableBuffer) do
-                local optimisedTable = optimizeDisplayPixelStack(data.pixels, width, height, threshold, true)
+            for i, data in pairs(self.sv.buffer.drawTable) do
+                local optimisedTable = optimizeDisplayPixelStack(data[1], width, height, threshold, true)
                 local len = #optimisedTable
 
                 if #optimisedDrawTables == 0 then
@@ -713,7 +849,7 @@ function DisplayClass:server_onFixedUpdate()
                     end
                 end
 
-                self.sv.indexBuffer[data.index] = len / 3
+                indexBuffer[data[2]] = len / 3
             end
 
             local tableChuncks = splitTable(optimisedDrawTables, drawTableLimit)
@@ -723,20 +859,20 @@ function DisplayClass:server_onFixedUpdate()
             end
         end
 
-        local dataChunks = splitTable(self.sv.buffer, tableLimit)
-        local indexChunks = splitTable(self.sv.indexBuffer, tableLimit)
-        local instructionChunks = splitTable(self.sv.instructionBuffer, tableLimit)
+        local dataChunks = splitTable(self.sv.buffer.data, tableLimit)
+        local indexChunks = splitTable(indexBuffer, tableLimit)
+        local instructionChunks = splitTable(self.sv.buffer.instruction, tableLimit)
 
-        local len = math.max(#dataChunks, #indexChunks, #instructionChunks)
+        local len = math_max(#dataChunks, #indexChunks, #instructionChunks)
 
         for i = 1, len do
             self_network:sendToClients("cl_buildData", {dataChunks[i], indexChunks[i], instructionChunks[i], i == len})
         end
 
-        self.sv.buffer = {}
-        self.sv.indexBuffer = {}
-        self.sv.instructionBuffer = {}
-        self.sv.drawTableBuffer = {}
+        self.sv.buffer.data = {}
+        self.sv.buffer.index = {}
+        self.sv.buffer.instruction = {}
+        self.sv.buffer.drawTable = {}
 
         self.sv.allowUpdate = false
     end
@@ -744,14 +880,15 @@ function DisplayClass:server_onFixedUpdate()
     if self.sv.needSync and self.sv.synced and self.sv.pixel.pixelData then
         self.sv.synced = false
 
+        local player = self.sv.needSync
         for _, pixel in pairs(self.sv.pixel.pixelData) do
-            pixel.color = sm.color.new(pixel.color)
+            pixel.color = sm_color_new(pixel.color)
 
-            self_network:sendToClient(self.sv.needSync, "cl_drawPixel", pixel)
+            self_network:sendToClient(player, "cl_drawPixel", pixel)
         end
 
-        self_network:sendToClient(self.sv.needSync, "cl_syncDisplay", {color = self.sv.pixel.backPanel, touch = self.sv.display.touchAllowed})
-        self_network:sendToClient(self.sv.needSync, "cl_pushPixels")
+        self_network:sendToClient(player, "cl_syncDisplay", {color = self.sv.pixel.backPanel, touch = self.sv.display.touchAllowed})
+        self_network:sendToClient(player, "cl_pushPixels")
 
         self.sv.pixel.pixelData = {}
         self.sv.needSync = nil
@@ -766,14 +903,16 @@ function DisplayClass:server_onCreate()
 
         pixel = {
             pixelData = {},
-            backPanel = sm.color.new("000000")
+            backPanel = sm_color_new("000000")
         },
 
-        buffer = {},
-        indexBuffer = {},
-        drawTableBuffer = {},
-        instructionBuffer = {},
-        networkBuffer = {}
+        buffer = {
+            data = {},
+            index = {},
+            drawTable = {},
+            instruction = {},
+            network = {}
+        },
     }
 end
 
@@ -851,7 +990,6 @@ function DisplayClass:client_onCreate()
             pixelData = {},
             occupied = {},
             stoppedEffects = {},
-            stoppedEffectData = {},
             selectionIndex = 0,
 
             pixelScale = sm.vec3.zero()
@@ -865,9 +1003,9 @@ function DisplayClass:client_onCreate()
         },
 
         backPanel = {
-            effect = sm.effect.createEffect(BACKPANEL_EFFECT_NAME, self.interactable),
-            defaultColor = sm.color.new("000000"),
-            currentColor = sm.color.new("000000")
+            effect = sm_effect_createEffect(BACKPANEL_EFFECT_NAME, self.interactable),
+            defaultColor = sm_color_new("000000"),
+            currentColor = sm_color_new("000000")
         },
 
         display = {
@@ -879,7 +1017,8 @@ function DisplayClass:client_onCreate()
         startBuffer = {},
         stopBuffer = {},
         tblParams = {},
-        optimiseBuffer = {}
+        optimiseBuffer = {},
+        stoppedIndex = 0
     }
 
     local width = self.data.width
@@ -900,17 +1039,17 @@ function DisplayClass:client_onCreate()
     self.cl.display.heightScale = heightScale
 
     local offset = 0.04
-    local bgScale = sm.vec3.new(0, (self.cl.display.heightScale - offset) * 100, (self.cl.display.widthScale - offset) * 100)
+    local bgScale = sm_vec3_new(0, (self.cl.display.heightScale - offset) * 100, (self.cl.display.widthScale - offset) * 100)
 
-    self.cl.pixel.pixelScale = sm.vec3.new(0, bgScale.y / height, bgScale.z / width)
+    self.cl.pixel.pixelScale = sm_vec3_new(0, bgScale.y / height, bgScale.z / width)
 
-    self.cl.backPanel.effect:setParameter("uuid", PIXEL_UUID)
-    self.cl.backPanel.effect:setParameter("color", self.cl.backPanel.defaultColor)
+    effect_setParameter(self.cl.backPanel.effect, "uuid", PIXEL_UUID)
+    effect_setParameter(self.cl.backPanel.effect,"color", self.cl.backPanel.defaultColor)
 
-    self.cl.backPanel.effect:setOffsetPosition(sm.vec3.new(self.data.panelOffset or 0.115, 0, 0))
-    self.cl.backPanel.effect:setScale(bgScale)
+    effect_setOffsetPosition(self.cl.backPanel.effect, sm_vec3_new(self.data.panelOffset or 0.115, 0, 0))
+    effect_setScale(self.cl.backPanel.effect, bgScale)
 
-    self.cl.backPanel.effect:start()
+    effect_start(self.cl.backPanel.effect)
 
     if not sm.isHost then
         self.network:sendToServer("sv_syncDisplay")
@@ -918,7 +1057,7 @@ function DisplayClass:client_onCreate()
 end
 
 function DisplayClass:cl_syncDisplay(data)
-    self.cl.backPanel.effect:setParameter("color", data.color)
+    effect_setParameter(self.cl.backPanel.effect, "color", data.color)
     self.cl.display.touchAllowed = data.touch
 end
 
@@ -976,7 +1115,7 @@ function DisplayClass:client_onFixedUpdate()
         local worldPosition = self.shape.worldPosition
         local shouldHide = false
 
-        if (worldPosition - character.worldPosition):length() > self.cl.display.renderDistance then
+        if sm_vec3_length(worldPosition - character.worldPosition) > self.cl.display.renderDistance then
             shouldHide = true
         end
 
@@ -1002,11 +1141,13 @@ function DisplayClass:client_onFixedUpdate()
 
             shouldHide = true
 
-            local dirDot = dir:dot((worldPosition - pos):normalize())
+            local dirDot = sm_vec3_dot(dir, sm_vec3_normalize(worldPosition - pos))
 
             if dirDot > 0 then
+                local sm_render_getScreenCoordinatesFromWorldPosition = sm.render.getScreenCoordinatesFromWorldPosition
+
                 for i, bound in pairs(boundry) do
-                    local x, y = sm.render.getScreenCoordinatesFromWorldPosition(bound, width, height)
+                    local x, y = sm_render_getScreenCoordinatesFromWorldPosition(bound, width, height)
 
                     if not ((x < 0 or x > width) or (y < 0 or y > height)) then
                         shouldHide = false
@@ -1019,7 +1160,7 @@ function DisplayClass:client_onFixedUpdate()
         if not shouldHide then
             local startPos = worldPosition + sm.quat.getRight(self.shape.worldRotation) * 0.15
             local diff = pos - worldPosition
-            local endPos = startPos + diff:normalize() * diff:length()
+            local endPos = startPos + sm_vec3_normalize(diff) * sm_vec3_length(diff)
 
             local hit, res = sm.physics.raycast(startPos, endPos)
 
@@ -1046,18 +1187,21 @@ function DisplayClass:client_onFixedUpdate()
         if len ~= self.cl.lastLen then
             if not self.cl.lastLen or len > self.cl.lastLen then
                 local sendTbl = {}
+                local sendIndex = 0
 
                 for i, data in pairs(self.cl.pixel.pixelData) do
                     data.color = tostring(data.color)
 
-                    table.insert(sendTbl, data)
+                    sendIndex = sendIndex + 1
+                    sendTbl[sendIndex] = data
                 end
 
                 local json = sm.json.writeJsonString(sendTbl)
-                local strings = sm.scrapcomputers.string.splitString(json, byteLimit)
+                local strings = sm_scrapcomputers_string_splitString(json, byteLimit)
+                local self_network = self.network
 
                 for i, string in pairs(strings) do
-                    self.network:sendToServer("sv_syncData", {string = string, i = i, finished = i == #strings})
+                    self_network:sendToServer("sv_syncData", {string = string, i = i, finished = i == #strings})
                 end
             end
 
@@ -1143,7 +1287,7 @@ end
 
 function DisplayClass:cl_checkRaycastValidity(res, isTinker)
     if self.cl.display.touchAllowed then
-        local roundedNorm = sm.vec3.new(round(res.normalLocal.x), round(res.normalLocal.y), round(res.normalLocal.z))
+        local roundedNorm = sm_vec3_new(round(res.normalLocal.x), round(res.normalLocal.y), round(res.normalLocal.z))
         self.cl.display.raycastValid = self.shape:getXAxis() == roundedNorm
 
         if self.cl.display.raycastValid then
@@ -1190,7 +1334,7 @@ function DisplayClass:cl_drawPixel(params)
 
     local params_x = params.x
     local params_y = params.y
-    local params_color = type(params.color) == "Color" and params.color or sm.color.new(params.color)
+    local params_color = type(params.color) == "Color" and params.color or sm_color_new(params.color)
     local params_scale = params.scale
     local params_scale_x = params_scale.x
     local params_scale_y = params_scale.y
@@ -1252,7 +1396,7 @@ function DisplayClass:cl_drawPixel(params)
         end
 
         if params_color ~= effectData_color then
-            effect:setParameter("color", params_color)
+            effect_setParameter(effect, "color", params_color)
             pixelData[occupied].color = params_color
         end
 
@@ -1276,7 +1420,7 @@ function DisplayClass:cl_drawPixel(params)
 
         if effectData_scale_x == params_scale_x and effectData.scale.y == params_scale_y and effectData_x == params_x and effectData_y == params_y then
             if params_color ~= effectData_color then
-                effect:setParameter("color", params_color)
+                effect_setParameter(effect, "color", params_color)
 
                 pixelData[occupied].color = params_color
             end
@@ -1346,11 +1490,13 @@ end
 
 function DisplayClass:cl_scaledAdd(params)
     local x, y = params.x, params.y
+    local optimisedBuffer = self.cl.optimiseBuffer
+    local width = self.data.width
 
     for i = 1, params.scale.x * params.scale.y do
-        local index = coordinateToIndex(x, y, self.data.width)
+        local index = coordinateToIndex(x, y, width)
 
-        self.cl.optimiseBuffer[index] = nil
+        optimisedBuffer[index] = nil
 
         x = x + 1
 
@@ -1434,12 +1580,14 @@ function DisplayClass:cl_pushData()
 
     self.cl.optimiseBuffer = {}
 
+    local startBuffer = self.cl.startBuffer
+
     if not self.cl.display.isHidden then
         for i, effect in pairs(self.cl.startBuffer) do
             if sm.exists(effect) then
                 self:cl_forceStart(effect)
             else
-                self.cl.startBuffer[i] = nil
+                startBuffer[i] = nil
             end
         end
     end
@@ -1506,13 +1654,14 @@ function DisplayClass:cl_createPixelEffect(x, y, scale, color)
     }
 
     local newEffect
-    local cachedEffect = getFirst(self.cl.pixel.stoppedEffects)
+    local _, cachedEffect = next(self.cl.pixel.stoppedEffects)
 
     if cachedEffect then
         newEffect = cachedEffect
+        self.cl.stoppedIndex = self.cl.stoppedIndex - 1
     else
-        newEffect = sm.effect.createEffect(self:cl_selectShapeRenderable(), self.interactable)
-        newEffect:setParameter("uuid", PIXEL_UUID)
+        newEffect = sm_effect_createEffect(self:cl_selectShapeRenderable(), self.interactable)
+        effect_setParameter(newEffect,"uuid", PIXEL_UUID)
     end
 
     local is1x1 = scale_x == 1 and scale_y == 1
@@ -1521,27 +1670,26 @@ function DisplayClass:cl_createPixelEffect(x, y, scale, color)
     local centerY = 0
 
     if is1x1 then
-        newEffect:setScale(sm.vec3.new(0, pixel_scale_y, pixel_scale_z))
+        effect_setScale(newEffect, sm_vec3_new(0, pixel_scale_y, pixel_scale_z))
 
         centerX = x - 1
         centerY = y - 1
     else
-        newEffect:setScale(sm.vec3.new(0, pixel_scale_y * scale_y, pixel_scale_z * scale_x))
+        effect_setScale(newEffect, sm_vec3_new(0, pixel_scale_y * scale_y, pixel_scale_z * scale_x))
 
         centerX = ((scale_x / 2) + x - 1) - 0.5
         centerY = ((scale_y / 2) + y - 1) - 0.5
     end
 
     local xPos, yPos = pixelPosToShapePos(centerX, centerY, self.cl.display.widthScale, self.cl.display.heightScale, pixel_scale)
-    newEffect:setOffsetPosition(sm.vec3.new(pixelDepth, yPos, xPos))
-    newEffect:setParameter("color", color)
+    effect_setOffsetPosition(newEffect, sm_vec3_new(pixelDepth, yPos, xPos))
+    effect_setParameter(newEffect, "color", color)
 
     local dataIndex = coordinateToIndex(x, y, data_width)
     self.cl.pixel.pixels[dataIndex] = newEffect
     self.cl.pixel.pixelData[dataIndex] = newEffectData
 
     self.cl.pixel.stoppedEffects[newEffect.id] = nil
-    self.cl.pixel.stoppedEffectData[newEffect.id] = nil
 
     local occupiedTbl = self.cl.pixel.occupied
 
@@ -1724,6 +1872,8 @@ end
 
 function DisplayClass:cl_drawLine(params)
     local width = self.data.width
+    local height = self.data.height
+
     local x0, y0 = indexToCoordinate(params[1], width)
     local x1, y1 = indexToCoordinate(params[2], width)
     local color =  type(params[3]) == "Color" and params[3] or idToColor(params[3])
@@ -1734,12 +1884,14 @@ function DisplayClass:cl_drawLine(params)
     local sy = (y0 < y1) and 1 or -1
     local err = dx - dy
 
+    local optimiseBuffer = self.cl.optimiseBuffer
+
     while true do
-        if x0 >= 1 and y0 >= 1 and x0 < width and y0 < self.data.height then
+        if x0 > 0 and y0 > 0 and x0 <= width and y0 <= height then
             local index = coordinateToIndex(x0, y0, width)
 
             if self:cl_cacheCheck(index, color) then
-                self.cl.optimiseBuffer[index] = color
+                optimiseBuffer[index] = color
             end
         end
 
@@ -1759,7 +1911,10 @@ function DisplayClass:cl_drawLine(params)
 end
 
 function DisplayClass:cl_drawCircle(params)
-    local x, y = indexToCoordinate(params[1], self.data.width)
+    local width = self.data.width
+    local height = self.data.height
+
+    local x, y = indexToCoordinate(params[1], width)
     local radius = params[2]
     local color = idToColor(params[3])
     local isFilled = params[4]
@@ -1770,11 +1925,13 @@ function DisplayClass:cl_drawCircle(params)
     local cx = 0
     local cy = radius
 
-    local function plot(xp, yp)
-        local index = coordinateToIndex(xp, yp, self.data.width)
+    local optimiseBuffer = self.cl.optimiseBuffer
 
-        if xp >= 1 and xp <= self.data.width and yp >= 1 and yp <= self.data.height and self:cl_cacheCheck(index, color) then
-            self.cl.optimiseBuffer[index] = color
+    local function plot(xp, yp)
+        local index = coordinateToIndex(xp, yp, width)
+
+        if xp >= 1 and xp <= width and yp >= 1 and yp <= height and self:cl_cacheCheck(index, color) then
+            optimiseBuffer[index] = color
         end
     end
 
@@ -1818,6 +1975,9 @@ end
 
 function DisplayClass:cl_drawTriangle(params)
     local width = self.data.width
+    local height = self.data.height
+    local optimiseBuffer = self.cl.optimiseBuffer
+
     local x1, y1 = indexToCoordinate(params[1], width)
     local x2, y2 = indexToCoordinate(params[2], width)
     local x3, y3 = indexToCoordinate(params[3], width)
@@ -1850,12 +2010,12 @@ function DisplayClass:cl_drawTriangle(params)
 
             if xa > xb then xa, xb = xb, xa end
 
-            for x = math.floor(xa), math.ceil(xb) do
-                if x >= 1 and x <= self.data.width and y >= 1 and y <= self.data.height then
-                    local index = coordinateToIndex(x, y, self.data.width)
+            for x = math_floor(xa), math_ceil(xb) do
+                if x >= 1 and x <= width and y >= 1 and y <= height then
+                    local index = coordinateToIndex(x, y, width)
 
                     if self:cl_cacheCheck(index, color) then
-                        self.cl.optimiseBuffer[index] = color
+                        optimiseBuffer[index] = color
                     end
                 end
             end
@@ -1902,6 +2062,7 @@ function DisplayClass:cl_drawText(params)
     local i = 1
 
     local width = self.data.width
+    local optimiseBuffer = self.cl.optimiseBuffer
 
     while i <= #params_text do
         local char = getUTF8Character(params_text, i)
@@ -1923,7 +2084,7 @@ function DisplayClass:cl_drawText(params)
                         local index = coordinateToIndex(params_x + xSpacing + (xPosition - 1), params_y + ySpacing + (yPosition - 1), width)
 
                         if self:cl_cacheCheck(index, params_color) then
-                            self.cl.optimiseBuffer[index] = params_color
+                            optimiseBuffer[index] = params_color
                         end
                     end
                 end
@@ -1938,9 +2099,11 @@ function DisplayClass:cl_drawText(params)
 end
 
 function DisplayClass:cl_clearDisplay(params)
+    local pixelData = self.cl.pixel.pixelData
+
     for i, effect in pairs(self.cl.pixel.pixels) do
         if sm.exists(effect) then
-            self:cl_stopEffect(effect, self.cl.pixel.pixelData[i])
+            self:cl_stopEffect(effect, pixelData[i])
         end
     end
 
@@ -1951,7 +2114,7 @@ function DisplayClass:cl_clearDisplay(params)
     local color = params[1] and idToColor(params[1])
 
     if color then
-        self.cl.backPanel.effect:setParameter("color", color)
+        effect_setParameter(self.cl.backPanel.effect, "color", color)
         self.cl.backPanel.currentColor = color
     end
 end
@@ -1975,15 +2138,15 @@ function DisplayClass:cl_setDisplayHidden(params)
 end
 
 function DisplayClass:cl_forceStop(effect)
-    if sm.exists(effect) and effect:isPlaying() then effect:stop() end
+    if sm.exists(effect) and effect_isPlaying(effect) then effect_stop(effect) end
 end
 
 function DisplayClass:cl_forceStart(effect)
-    if sm.exists(effect) and not effect:isPlaying() then effect:start() end
+    if sm.exists(effect) and not effect_isPlaying(effect) then effect_start(effect) end
 end
 
 function DisplayClass:cl_destroyEffect(effect)
-    if sm.exists(effect) then effect:destroy() end
+    if sm.exists(effect) then effect_destroy(effect) end
 end
 
 function DisplayClass:cl_startEffect(effect)
@@ -1996,20 +2159,27 @@ function DisplayClass:cl_stopEffect(effect, effectData, temporary)
     self.cl.stopBuffer[effect.id] = effect
 
     if not temporary then
-        self.cl.pixel.stoppedEffects[effect.id] = effect
-        self.cl.pixel.stoppedEffectData[effect.id] = effectData
+        if self.cl.stoppedIndex < 65537 then
+            self.cl.stoppedIndex = self.cl.stoppedIndex + 1
+            self.cl.pixel.stoppedEffects[effect.id] = effect
+        else
+            self:cl_destroyEffect(effect)
+        end
+
+        local occupiedTbl = self.cl.pixel.occupied
+        local width = self.data.width
 
         if effectData then
-            local dataIndex = coordinateToIndex(effectData.x, effectData.y, self.data.width)
+            local dataIndex = coordinateToIndex(effectData.x, effectData.y, width)
             local xScale, yScale = effectData.scale.x, effectData.scale.y
 
             if xScale ~= 1 or yScale ~= 1 then
                 local x1, y1 = effectData.x, effectData.y
 
                 for _ = 1, xScale * yScale do
-                    local occupiedIndex = coordinateToIndex(x1, y1, self.data.width)
+                    local occupiedIndex = coordinateToIndex(x1, y1, width)
 
-                    self.cl.pixel.occupied[occupiedIndex] = nil
+                    occupiedTbl[occupiedIndex] = nil
 
                     x1 = x1 + 1
 
@@ -2019,7 +2189,7 @@ function DisplayClass:cl_stopEffect(effect, effectData, temporary)
                     end
                 end
             else
-                self.cl.pixel.occupied[dataIndex] = nil
+                occupiedTbl[dataIndex] = nil
             end
 
             self.cl.pixel.pixels[dataIndex] = nil

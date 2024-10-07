@@ -49,7 +49,7 @@ function SpeakerClass:sv_createData()
         ---@param note number The note
         ---@param durationTicks number The duration that it will play in ticks
         playNote = function (pitch, note, durationTicks)
-            sm.scrapcomputers.errorHandler.assertArgument(pitch, 1, {"integer"})
+            sm.scrapcomputers.errorHandler.assertArgument(pitch, 1, {"number"})
             sm.scrapcomputers.errorHandler.assertArgument(note, 2, {"integer"})
             sm.scrapcomputers.errorHandler.assertArgument(durationTicks, 3, {"integer", "nil"})
             
@@ -98,7 +98,7 @@ function SpeakerClass:server_onFixedUpdate()
     end
 
     if self.sv.killAll then
-        self.network:sendToClients("cl_killAll")
+        self.network:sendToClients("cl_kilEmlAll")
         self.sv.killAll = false
     end
 end
@@ -112,7 +112,7 @@ function SpeakerClass:client_onCreate()
     }
 end
 
-function SpeakerClass:cl_killAll() -- 🔥🔥🔥 10/10 function name 💯💯💯
+function SpeakerClass:cl_kilEmlAll() -- 🔥🔥🔥 10/10 function name 💯💯💯
     for effectId, _ in pairs(self.cl.effectBuffer) do
         if sm.exists(self.cl.effects[effectId]) then
             self.cl.effects[effectId]:destroy()

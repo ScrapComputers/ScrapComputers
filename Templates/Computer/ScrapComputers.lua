@@ -768,6 +768,12 @@ function Display.drawFilledRect(x, y, width, height, color) end
 ---@param fontName string The font to use
 function Display.drawText(x, y, text, color, fontName) end
 
+---Draws a image on the screen.  Images are loaded from the DisplayImages folder in the mods directory, you can generate your own images with the use of our PNG to pixel data python conveter in the mod.
+---@param width integer The width of the image
+---@param height integer The height of the image
+---@param path string The path of the image. Put `example.json` here to load a example image (256x256 image)
+function Display.loadImage( width, height, path ) end
+
 ---Returns the dimensions of the display.
 ---@return number width The width of the display
 ---@return number height The height of the display
