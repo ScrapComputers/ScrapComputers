@@ -271,21 +271,7 @@ function sm.scrapcomputers.enviromentManager.createEnv(self)
     if sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2 then
         enviromentVariables._G = _G
 
-        enviromentVariables.self = {
-            colorHighlight = self.colorHighlight,
-            colorNormal = self.colorNormal,
-            connectionInput = self.connectionInput,
-            connectionOutput = self.connectionOutput,
-            data = self.data,
-            interactable = self.interactable,
-            maxChildCount = self.maxChildCount,
-            maxParentCount = self.maxParentCount,
-            network = self.network,
-            params = self.params,
-            poseWeightCount = self.poseWeightCount,
-            shape = self.shape,
-            storage = self.storage,
-        }
+        enviromentVariables.self = self
 
         enviromentVariables.sm = sm
 
