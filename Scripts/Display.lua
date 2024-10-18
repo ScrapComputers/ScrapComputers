@@ -406,7 +406,7 @@ function DisplayClass:sv_createData()
         local len = #dataBuffer
 
         dataBuffer[len + 1] = 4
-        dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), self.data.width)
+        dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), data_width)
         dataBuffer[len + 3] = round(radius)
         dataBuffer[len + 4] = colorToID(type(color) == "string" and sm_color_new(color) or color)
         dataBuffer[len + 5] = isFilled
@@ -438,12 +438,11 @@ function DisplayClass:sv_createData()
         
         local dataBuffer = self.sv.buffer.data
         local len = #dataBuffer
-        local width = self.data.width
 
         dataBuffer[len + 1] = 5
-        dataBuffer[len + 2] = coordinateToIndex(round(x1), round(y1), width)
-        dataBuffer[len + 3] = coordinateToIndex(round(x2), round(y2), width)
-        dataBuffer[len + 4] = coordinateToIndex(round(x3), round(y3), width)
+        dataBuffer[len + 2] = coordinateToIndex(round(x1), round(y1), data_width)
+        dataBuffer[len + 3] = coordinateToIndex(round(x2), round(y2), data_width)
+        dataBuffer[len + 4] = coordinateToIndex(round(x3), round(y3), data_width)
         dataBuffer[len + 5] = colorToID(type(color) == "string" and sm_color_new(color) or color)
         dataBuffer[len + 6] = isFilled
 
@@ -470,11 +469,10 @@ function DisplayClass:sv_createData()
 
         local dataBuffer = self.sv.buffer.data
         local len = #dataBuffer
-        local width1 = self.data.width
 
         dataBuffer[len + 1] = 6
-        dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), width1)
-        dataBuffer[len + 3] = coordinateToIndex(round(width), round(height), width1)
+        dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), data_width)
+        dataBuffer[len + 3] = coordinateToIndex(round(width), round(height), data_width)
         dataBuffer[len + 4] = colorToID(type(color) == "string" and sm_color_new(color) or color)
         dataBuffer[len + 5] = isFilled
 
@@ -735,7 +733,7 @@ function DisplayClass:sv_createData()
         ---@return number width The width of the display
         ---@return number height height height of the display
         getDimensions = function ()
-            return self.data.width, self.data.height
+            return data_width, data_height
         end,
 
         -- Hides the display, Makes all players unable to see it.
@@ -873,8 +871,12 @@ function DisplayClass:sv_createData()
 end
 
 function DisplayClass:server_onFixedUpdate()
+    local self_data = self.data
+    local data_width = self_data.width
+    local data_height = self_data.height
     local self_network = self.network
     local sendToClients = self_network.sendToClients
+    local sendToClient = self_network.sendToClient
 
     if #self.sv.buffer.network > 0 then
         for _, data in pairs(self.sv.buffer.network) do
@@ -903,7 +905,7 @@ function DisplayClass:server_onFixedUpdate()
 
         if tableBuffer then
             for _, table in pairs(drawTable) do
-                local optimisedTable = optimizeDisplayPixelStack(table, self.data.width, self.data.height, self.sv.display.threshold, true)
+                local optimisedTable = optimizeDisplayPixelStack(table, data_width, data_height, self.sv.display.threshold, true)
                 local dataBufferInd = #dataBuffer
 
                 for i, pixel in pairs(optimisedTable) do
@@ -935,14 +937,14 @@ function DisplayClass:server_onFixedUpdate()
         self.sv.synced = false
 
         local player = self.sv.needSync
-        for _, pixel in pairs(self.sv.pixel.pixelData) do
-            pixel[3] = sm_color_new(pixel[3])
+        for index, pixel in pairs(self.sv.pixel.pixelData) do
+            pixel[5] = idToColor(pixel[5])
 
-            self_network:sendToClient(player, "cl_drawPixel", pixel)
+            sendToClient(self_network, player, "cl_drawPixel", pixel)
         end
 
-        self_network:sendToClient(player, "cl_syncDisplay", {color = self.sv.pixel.backPanel, touch = self.sv.display.touchAllowed})
-        self_network:sendToClient(player, "cl_pushPixels")
+        sendToClient(self_network, player, "cl_syncDisplay", {color = self.sv.pixel.backPanel, touch = self.sv.display.touchAllowed})
+        sendToClient(self_network, player, "cl_pushPixels")
 
         self.sv.pixel.pixelData = {}
         self.sv.needSync = nil
@@ -1129,6 +1131,7 @@ function DisplayClass:cl_buildData(data)
 end
 
 function DisplayClass:client_onFixedUpdate()
+    local width = self.data.width
     local clock = os.clock()
     local pos = camera.getPosition()
     local dir = camera.getDirection()
@@ -1214,8 +1217,15 @@ function DisplayClass:client_onFixedUpdate()
                 local sendTbl = {}
                 local sendIndex = 0
 
-                for i, data in pairs(self.cl.pixel.pixelData) do
-                    data[3] = tostring(data[3])
+                for index, pixelData in pairs(self.cl.pixel.pixelData) do
+                    local x, y = indexToCoordinate(index, width)
+                    local data = {
+                        x,
+                        y,
+                        pixelData[1],
+                        pixelData[2],
+                        colorToID(pixelData[3])
+                    }
 
                     sendIndex = sendIndex + 1
                     sendTbl[sendIndex] = data
@@ -1509,19 +1519,21 @@ end
 
 function DisplayClass:cl_scaledAdd(params)
     local x, y = params[1], params[2]
+    local sx, sy = params[3], params[4]
     local optimisedBuffer = self.cl.optimiseBuffer
     local width = self.data.width
-
-    for i = 1, params[3] * params[4] do
-        local index = coordinateToIndex(x, y, width)
+    local x1, y1 = x, y
+    
+    for i = 1, sx * sy do
+        local index = coordinateToIndex(x1, y1, width)
 
         optimisedBuffer[index] = nil
 
-        x = x + 1
+        x1 = x1 + 1
 
-        if x > params[1] + params[3] - 1 then
-            y = y + 1
-            x = params[1]
+        if x1 > x + sx - 1 then
+            y1 = y1 + 1
+            x1 = x
         end
     end
 
@@ -1542,27 +1554,14 @@ end
 
 function DisplayClass:cl_pushData()
     local self_cl = self.cl
-    local functionLookup = {
-        DisplayClass.cl_addToTable,
-        DisplayClass.cl_drawLine,
-        DisplayClass.cl_clearDisplay,
-        DisplayClass.cl_drawCircle,
-        DisplayClass.cl_drawTriangle,
-        DisplayClass.cl_drawRect,
-        DisplayClass.cl_drawText,
-        DisplayClass.cl_optimizeDisplayEffects,
-        DisplayClass.cl_formatDraw
-    }
-
     local data = self_cl.buffer.data
+    local totalLen = #data
     local searchIndex = 0
 
-    while searchIndex < #data do
+    while searchIndex < totalLen do
         searchIndex = searchIndex + 1
 
         local instruction = data[searchIndex]
-        local cl_sendFunc = functionLookup[instruction]
-
         local dataCount = dataCountLookup[instruction]
         local currentParam = {}
 
@@ -1572,8 +1571,26 @@ function DisplayClass:cl_pushData()
                 currentParam[i] = data[searchIndex]
             end
         end
-       
-        cl_sendFunc(self, currentParam)
+
+        if instruction == 1 then
+            self:cl_addToTable(currentParam)
+        elseif instruction == 2 then
+            self:cl_drawLine(currentParam)
+        elseif instruction == 3 then
+            self:cl_clearDisplay(currentParam)
+        elseif instruction == 4 then
+            self:cl_drawCircle(currentParam)
+        elseif instruction == 5 then
+            self:cl_drawTriangle(currentParam)
+        elseif instruction == 6 then
+            self:cl_drawRect(currentParam)
+        elseif instruction == 7 then
+            self:cl_drawText(currentParam)
+        elseif instruction == 8 then
+            self:cl_optimizeDisplayEffects()
+        elseif instruction == 9 then
+            self:cl_formatDraw(currentParam)
+        end
     end
 
     local self_data = self.data
