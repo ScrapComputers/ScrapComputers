@@ -61,7 +61,7 @@ local byteLimit = 65000
 local tableLimit = 15000
 local displayHidingCooldown = 0.1
 
-local imagePath = "$CONTENT_3660881a-a6b8-40e5-a348-27b368a742e9/DisplayImages/"
+local imagePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/DisplayImages/"
 
 local networkInstructions = {
     ["DIS_VIS"] = "cl_setDisplayHidden",
