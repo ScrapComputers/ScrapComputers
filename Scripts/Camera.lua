@@ -1107,7 +1107,7 @@ function CameraClass:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, thresh
         local color = drawer(hit, result, x, y)
         local colorType = type(color)
 
-        sm.scrapcomputers.errorHandler.assert(colorType ~= "string" and colorType ~= "Color", nil, "Camera drawer function has returned a malformed color.")
+        sm.scrapcomputers.errorHandler.assert(colorType == "string" or colorType == "Color", nil, "Camera drawer function has returned a malformed color.")
         ---@diagnostic disable-next-line: cast-local-type
         color = colorType == "string" and color or sm_color_new(color)
 
