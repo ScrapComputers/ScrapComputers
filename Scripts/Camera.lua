@@ -1108,8 +1108,7 @@ function CameraClass:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, thresh
         local colorType = type(color)
 
         sm.scrapcomputers.errorHandler.assert(colorType == "string" or colorType == "Color", nil, "Camera drawer function has returned a malformed color.")
-        ---@diagnostic disable-next-line: cast-local-type
-        color = colorType == "string" and color or sm_color_new(color)
+        color = colorType == "Color" and color or sm_color_new(color)
 
         if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], color, threshold) then
             pixelIndex = pixelIndex + 1
