@@ -6,10 +6,10 @@ ConfigManagerClass = class()
 function ConfigManagerClass:server_onCreate()
     sm.scrapcomputers.config.initConfig()
 
-    sm.log.info("[ConfigManager]: Initalized ScrapComputers Configuration Manager!")
+    sm.scrapcomputers.logger.info("ConfigManager.lua", "Initalized ScrapComputers Configuration Manager!")
 
     if not sm.scrapcomputers.config.configurations then
-        sm.log.warning("[ConfigManager]: No configuration saved! Resetting config...")
+        sm.scrapcomputers.logger.warn("ConfigManager.lua", "No configuration saved! Resetting config...")
         sm.scrapcomputers.config.resetConfiguration()
     end
 
@@ -26,7 +26,7 @@ end
 
 function ConfigManagerClass:server_onFixedUpdate()
     if not sm.scrapcomputers.config.getConfig then
-        sm.log.warning("[ConfigManager]: Server-side functions not initalized! Initalizing them....")
+        sm.scrapcomputers.logger.warn("ConfigManager.lua", "Server-side functions not initalized! Initalizing them....")
         sm.scrapcomputers.config.initConfig()
         self:sv_updateConfig()
     end
@@ -54,28 +54,28 @@ function ConfigManagerClass:sv_updateConfig()
             local curConfig = sm.scrapcomputers.config.configurations[index]
 
             if #curConfig.options ~= #config.options then
-                sm.log.warning("[ConfigManager - Updater]: Current Configuration for \"" .. curConfig.id .. "\" has diffirent available options than the default one! Recreating them... ")
+                sm.scrapcomputers.logger.warn("ConfigManager.lua", "Current Configuration for \"" .. curConfig.id .. "\" has diffirent available options than the default one! Recreating them... ")
                 sm.scrapcomputers.config.configurations[index].options = unpack({config.options})
                 
                 needsSaving = true
             end
 
             if curConfig.description ~= config.description then
-                sm.log.warning("[ConfigManager - Updater]: Current Configuration for \"" .. curConfig.id .. "\" has outdated description! Updating it...")
+                sm.scrapcomputers.logger.warn("ConfigManager.lua", "Current Configuration for \"" .. curConfig.id .. "\" has outdated description! Updating it...")
                 sm.scrapcomputers.config.configurations[index].description = config.description
 
                 needsSaving = true
             end
 
             if curConfig.hostOnly ~= config.hostOnly then
-                sm.log.warning("[ConfigManager - Updater]: Current Configuration for \"" .. curConfig.id .. "\" has outdated host-only! Updating it...")
+                sm.scrapcomputers.logger.warn("ConfigManager.lua", "Current Configuration for \"" .. curConfig.id .. "\" has outdated host-only! Updating it...")
                 sm.scrapcomputers.config.configurations[index].hostOnly = config.hostOnly
 
                 needsSaving = true
             end
 
             if curConfig.name ~= config.name then
-                sm.log.warning("[ConfigManager - Updater]: Current Configuration for \"" .. curConfig.id .. "\" has outdated name! Updating it...")
+                sm.scrapcomputers.logger.warn("ConfigManager.lua", "Current Configuration for \"" .. curConfig.id .. "\" has outdated name! Updating it...")
                 sm.scrapcomputers.config.configurations[index].name = config.name
 
                 needsSaving = true
@@ -93,11 +93,11 @@ function ConfigManagerClass:sv_updateConfig()
             end
 
             if incorrectConfigOptions then
-                sm.log.warning("[ConfigManager - Updater]: Current Configuration for \"" .. curConfig.id .. "\" has invalid options! Updating it...")
+                sm.scrapcomputers.logger.warn("ConfigManager.lua", "Current Configuration for \"" .. curConfig.id .. "\" has invalid options! Updating it...")
                 sm.scrapcomputers.config.configurations[index].options = config.options
 
                 if curConfig.selectedOption > #config.options then
-                    sm.log.warning("[ConfigManager - Updater]: Current Configuration for \"" .. curConfig.id .. "\" selected option is out-of-bounds! Resetting it... (Mentioned to user aswel!)")
+                    sm.scrapcomputers.logger.warn("ConfigManager.lua", "Current Configuration for \"" .. curConfig.id .. "\" selected option is out-of-bounds! Resetting it... (Mentioned to user aswel!)")
                     curConfig.selectedOption = config.selectedOption
 
                     table.insert(self.sv.resettedConfigs, config.name)
@@ -106,7 +106,7 @@ function ConfigManagerClass:sv_updateConfig()
                 needsSaving = true
             end
         else
-            sm.log.warning("[ConfigManager - Updater]: Missing config \"" .. config.id .. "\"! Adding it...")
+            sm.scrapcomputers.logger.warn("ConfigManager.lua", "Missing config \"" .. config.id .. "\"! Adding it...")
             sm.scrapcomputers.config.configurations[index] = unpack({config})
 
             needsSaving = true
@@ -124,7 +124,7 @@ function ConfigManagerClass:sv_updateConfig()
         end
 
         if not found then
-            sm.log.warning("[ConfigManager - Updater]: Configuration \"" .. curConfig.id .. "\" will be removed. (Addon might have been removed or a addon removed it!)")
+            sm.scrapcomputers.logger.warn("ConfigManager.lua", "Configuration \"" .. curConfig.id .. "\" will be removed. (Addon might have been removed or a addon removed it!)")
             table.remove(sm.scrapcomputers.config.configurations, index)
 
             needsSaving = true
@@ -134,7 +134,7 @@ function ConfigManagerClass:sv_updateConfig()
     if needsSaving then
         sm.scrapcomputers.config.saveConfig()
 
-        sm.log.info("[ConfigManager - Updater]: Configs got changed! Saved it!")
+        sm.scrapcomputers.logger.info("ConfigManager.lua", "Configs got changed! Saved it!")
     end
 end
 

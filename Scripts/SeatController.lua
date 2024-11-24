@@ -1,3 +1,7 @@
+-- We let you control WASD power before, But the connected seat and this component kept on
+-- having fackin MMO battles, fight to the fucking ashes style. So we were forced to remove
+-- it.
+
 ---@class SeatControllerClass : ShapeClass
 SeatControllerClass = class()
 SeatControllerClass.maxParentCount = 1

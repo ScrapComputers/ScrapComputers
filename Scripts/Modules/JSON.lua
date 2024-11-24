@@ -1,3 +1,6 @@
+-- This game fucking sucks. Like why cant they just make sm.json.parseJsonString not crash your fucking
+-- game when you put this into it: {iHateEndUsers = true, 0x47} and make simdjson shit itself.
+
 -- Safer version of converting a table to json and vise versa
 sm.scrapcomputers.json = {}
 
@@ -98,17 +101,91 @@ end
 
 ---Converts it to a table
 ---@param root string The json string to convert to a table
----@param safeMode boolean If you wanted to, you can check if the json somehow had corrupt data that the game didnt caught.
 ---@return table tbl The table from json string
-function sm.scrapcomputers.json.toTable(root, safeMode)
-    safeMode = safeMode or true
-
+function sm.scrapcomputers.json.toTable(root)
     sm.scrapcomputers.errorHandler.assertArgument(root, 1, {"string"})
-    sm.scrapcomputers.errorHandler.assertArgument(safeMode, 2, {"boolean", "nil"})
     
-    local newRoot = sm.json.parseJsonString(root)
+    return sm.json.parseJsonString(root)
+end
 
-    if safeMode and not sm.scrapcomputers.json.isSafe(newRoot) then error("Game crash prevented!") end
+local operatorColor = "#D4D4D4"
+local textColor = "#9CDCFE"
+local stringColor = "#CE9178"
+local numberColor = "#B5CEA8"
+local booleanColor = "#569CCB"
+local operator2Colors = {
+    "#FFD700",
+    "#DA70D6",
+    "#179FFF"
+}
+
+---Adds syntax highlighting to the json tab. Note that it will be automaticly prettified.
+function sm.scrapcomputers.json.prettifyTable(rootContents)
+    sm.scrapcomputers.errorHandler.assertArgument(rootContents, 1, {"table"})
+
+    local output = ""
     
-    return newRoot
+    local function selectOperatorColorBasedOnLevel(level)
+        return operator2Colors[(level - 1) % #operator2Colors + 1]
+    end
+
+    local function prettifyTable(data, level, hasMoreData)
+        local isDict = sm.scrapcomputers.table.isDictonary(data)
+        output = output .. selectOperatorColorBasedOnLevel(level) .. (isDict and "{" or "[")
+
+        local dataSize = sm.scrapcomputers.table.getTableSize(data)
+        if dataSize ~= 0 then
+            output = output  .. "\n"
+
+            local numberIndex = 1
+            for index, value in pairs(data) do
+                if isDict then
+                    output = output .. ("\t"):rep(level) .. textColor .. "\"" .. index .. "\"" .. operatorColor .. ": "
+                else
+                    output = output .. ("\t"):rep(level)
+                end
+    
+                local valueType = type(value)
+                if valueType == "table" then
+                    prettifyTable(value, level + 1, numberIndex ~= dataSize)
+                elseif valueType == "string" then
+                    local safeText = value:gsub("\\", "⁄")
+                    local safeEscapeCodes = {"⁄b", "⁄f", "⁄n", "⁄r", "⁄t"}
+                    for key, value in pairs({"\b", "\f", "\n", "\r", "\t"}) do
+                        safeText = safeText:gsub(value, safeEscapeCodes[key])
+                    end
+                    output = output .. stringColor .. "\"" .. safeText .. "\""
+                elseif valueType == "number" then
+                    output = output .. numberColor .. tostring(value)
+                else
+                    output = output .. booleanColor .. (value and "true" or "false")
+                end
+
+                if valueType ~= "table" then
+                    if dataSize ~= numberIndex then
+                        output = output .. operatorColor .. ","
+                    end
+    
+                    output = output .. "\n"
+                end
+    
+                numberIndex = numberIndex + 1
+            end
+        end
+        
+        output = output .. ("\t"):rep(level - 1) .. selectOperatorColorBasedOnLevel(level) .. (isDict and "}" or "]")
+        if hasMoreData then
+            output = output .. operatorColor .. ","
+        end
+        output = output  .. "\n"
+    end
+
+    prettifyTable(rootContents, 1, false)
+    return output
+end
+
+function sm.scrapcomputers.json.prettifyString(root)
+    sm.scrapcomputers.errorHandler.assertArgument(root, nil, {"string"})
+
+    return sm.scrapcomputers.json.prettifyTable(sm.scrapcomputers.json.toTable(root))
 end

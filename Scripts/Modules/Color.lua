@@ -66,3 +66,9 @@ function sm.scrapcomputers.color.generateGradient(colors, numColors)
 
     return gradient
 end
+
+---Creates a blank color
+---@return Color color The blank color
+function sm.scrapcomputers.color.blank()
+    return sm.color.new(0, 0, 0, 0)
+end

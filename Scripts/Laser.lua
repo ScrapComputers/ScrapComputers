@@ -49,7 +49,7 @@ function LaserClass:sv_createData()
         ignoreCurrentBody = function(bool)
             self.sv.ignoreCurrentBody = bool
         end
-}
+    }
 end
 
 function LaserClass:server_onCreate()
@@ -61,7 +61,7 @@ function LaserClass:server_onCreate()
         ignoreCurrentBody = false,
         hit = false,
         res = nil, ---@type RaycastResult 
-}
+    }
 end
 
 function LaserClass:server_onFixedUpdate()
@@ -110,7 +110,7 @@ function LaserClass:sv_laserRaycast()
         type = self.sv.res.type,
         valid = self.sv.res.valid,
         color = color
-}
+    }
 
     return self.sv.hit, dataTable
 end
@@ -124,7 +124,7 @@ function LaserClass:client_onCreate()
     }
 
     self.cl.effect:setParameter("color", sm.color.new("ee0000"))
-    self.cl.effect:setParameter("uuid", sm.uuid.new ("628b2d61-5ceb-43e9-8334-a4135566df7a"))
+    self.cl.effect:setParameter("uuid", sm.uuid.new("628b2d61-5ceb-43e9-8334-a4135566df7a"))
     self.cl.effect:setScale(sm.vec3.new(0.01, 0.01, 0.01))
 
     self.cl.effect:start()

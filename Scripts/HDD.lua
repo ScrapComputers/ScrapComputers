@@ -7,6 +7,7 @@ HDDClass.connectionOutput = sm.interactable.connectionType.none
 HDDClass.colorNormal = sm.color.new(0x0eeb8fff)
 HDDClass.colorHighlight = sm.color.new(0x58ed71ff)
 
+-- This is against our prinicple. Fuck you Scrap Mechanic.
 local byteLimit = 65000
 
 -- SERVER + CLIENT --
@@ -30,7 +31,7 @@ function HDDClass:sv_createData()
         -- Returns the self.savedData variable
         ---@return table data The data
         load = function ()
-            return self.sv.savedData    
+            return self.sv.savedData
         end,
 
         -- Saves data to the shape itself
@@ -110,42 +111,57 @@ end
 function HDDClass:client_onCreate()
     self.cl = {
         gui = nil,
-        hddContentText = "",
+        driveContents = {},
         inputText = "",
         exampleInputText = "",
         waitCount = 0,
-        selectedExample = nil
+        selectedExample = nil,
+        character = nil
     }
 end
 
 function HDDClass:client_onInteract(character, state)
     if not state then return end
 
-    self.cl.inputText = self.cl.hddContentText
     self.cl.exampleInputText = ""
-
+    
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Harddrive, true, {backgroundAlpha = 0.5})
+        
+    self.cl.gui:setText("driveContents", sm.scrapcomputers.json.prettifyTable(self.cl.driveContents))
+    self.cl.inputText = sm.scrapcomputers.json.toString(self.cl.driveContents)
 
-    local safeInput = self.cl.hddContentText:gsub("\\", "⁄")
+    self.cl.gui:setButtonCallback("saveBtn", "cl_onSaveBtn")
+    self.cl.gui:setButtonCallback("importDataBtn", "cl_onImportExampleBtn")
+    self.cl.gui:setButtonCallback("exportDataBtn", "cl_onExportExampleBtn")
+    self.cl.gui:setButtonCallback("deleteBtn", "cl_onDeleteExampleBtn")
+    self.cl.gui:setButtonCallback("formatDataBtn", "cl_onFormatBtn")
 
-    self.cl.gui:setText("DriveContents", safeInput)
+    self.cl.gui:setTextChangedCallback("driveContents", "cl_updateHDDContents")
+    self.cl.gui:setTextChangedCallback("selectedOption", "cl_updateSelectedExample")
 
-    self.cl.gui:setButtonCallback("SaveButton", "cl_onSaveBtn")
-    self.cl.gui:setButtonCallback("ImportDataButton", "cl_onImportExampleBtn")
-    self.cl.gui:setButtonCallback("ExportDataButton", "cl_onExportExampleBtn")
-    self.cl.gui:setButtonCallback("DeleteButton", "cl_onDeleteExampleBtn")
-
-    self.cl.gui:setTextChangedCallback("DriveContents", "cl_updateHDDContents")
-    self.cl.gui:setTextChangedCallback("SelectedOption", "cl_updateSelectedExample")
-
-    self.cl.gui:setVisible("DeleteButton", false)
-    self.cl.gui:setVisible("ExportDataButton", true)
-    self.cl.gui:setVisible("ImportDataButton", false)
+    self.cl.gui:setVisible("deleteBtn", false)
+    self.cl.gui:setVisible("exportDataBtn", true)
+    self.cl.gui:setVisible("importDataBtn", false)
 
     self:cl_updateExamples()
     self:cl_runTranslations()
 
+    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
+
     self.cl.gui:open()
+    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
+    self.cl.character = character
+end
+
+function HDDClass:cl_onGuiClose()
+    if self.cl.character then
+        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
+    end
+end
+
+function HDDClass:cl_onFormatBtn(widget, p)
+    local safeText = self.cl.inputText:gsub("\\", "⁄")
+    self.cl.gui:setText("driveContents", sm.scrapcomputers.json.prettifyString(safeText))
 end
 
 ---@param text string The text
@@ -161,20 +177,20 @@ function HDDClass:cl_updateSelectedExample(widget, text)
     end
 
     if selectedExample then
-        self.cl.gui:setVisible("DeleteButton"    , not selectedExample.builtIn)
-        self.cl.gui:setVisible("ExportDataButton", not selectedExample.builtIn)
+        self.cl.gui:setVisible("deleteBtn"    , not selectedExample.builtIn)
+        self.cl.gui:setVisible("exportDataBtn", not selectedExample.builtIn)
 
         if not selectedExample.builtIn then
-            self.cl.gui:setText("ExportDataButton", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.overwritebtn"))
+            self.cl.gui:setText("exportDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.overwritebtn"))
         end
-        self.cl.gui:setVisible("ImportDataButton", true)
+        self.cl.gui:setVisible("importDataBtn", true)
 
         self.cl.selectedExample = selectedExample
     else
-        self.cl.gui:setVisible("DeleteButton", false)
-        self.cl.gui:setVisible("ExportDataButton", true)
-        self.cl.gui:setVisible("ImportDataButton", false)
-        self.cl.gui:setText("ExportDataButton", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.exportbtn"))
+        self.cl.gui:setVisible("deleteBtn", false)
+        self.cl.gui:setVisible("exportDataBtn", true)
+        self.cl.gui:setVisible("importDataBtn", false)
+        self.cl.gui:setText("exportDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.exportbtn"))
 
         self.cl.selectedExample = nil
     end
@@ -191,7 +207,7 @@ function HDDClass:cl_onDeleteExampleBtn()
 
             sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples)
 
-            self.cl.gui:setText("Log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.example_deleted", self.cl.exampleInputText))
+            self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.example_deleted", self.cl.exampleInputText))
             self.cl.waitCount = 3 * 40
 
             self:cl_updateExamples()
@@ -200,7 +216,7 @@ function HDDClass:cl_onDeleteExampleBtn()
         end
     end
 
-    self.cl.gui:setText("Log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.example_not_found"))
+    self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.example_not_found"))
     self.cl.waitCount = 3 * 40
 end
 
@@ -208,20 +224,16 @@ function HDDClass:cl_onImportExampleBtn()
     local data = self.cl.selectedExample.data
     local newText = "{}"
 
-    if data then
-        newText = next(data) == nil and "{}" or sm.scrapcomputers.json.toString(data, false, true):gsub("#", "##"):gsub("\\", "⁄")
-    end
-
     self.cl.inputText = newText
-    self.cl.gui:setText("DriveContents", newText)
+    self.cl.gui:setText("driveContents", sm.scrapcomputers.json.prettifyTable(data))
 
-    self.cl.gui:setText("Log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.imported_example", self.cl.selectedExample.name))
+    self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.imported_example", self.cl.selectedExample.name))
     self.cl.waitCount = 3 * 40
 end
 
 function HDDClass:cl_onExportExampleBtn()
     if not isExampleNameCorrect(self.cl.exampleInputText) then
-        self.cl.gui:setText("Log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.invalid_name"))
+        self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.invalid_name"))
         self.cl.waitCount = 3 * 40
 
         return
@@ -237,7 +249,7 @@ function HDDClass:cl_onExportExampleBtn()
                 contents[index].data = newData
                 sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples)
 
-                self.cl.gui:setText("Log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.overwrited_example", self.cl.selectedExample.name))
+                self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.overwrited_example", self.cl.selectedExample.name))
                 self.cl.waitCount = 3 * 40
 
                 break
@@ -247,7 +259,7 @@ function HDDClass:cl_onExportExampleBtn()
         table.insert(contents, {builtIn = false, data = newData, name = self.cl.exampleInputText})
         sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples)
 
-        self.cl.gui:setText("Log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.created_example", self.cl.exampleInputText))
+        self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.created_example", self.cl.exampleInputText))
         self.cl.waitCount = 3 * 40
     end
 
@@ -263,12 +275,12 @@ function HDDClass:cl_onSaveBtn()
         local dataSize = sm.scrapcomputers.json.toString(result, false)
 
         if #dataSize > byteLimit then
-            self.cl.gui:setText("Log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.data_overload", byteLimit, dataSizes))
+            self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.data_overload", byteLimit, #dataSize))
             self.cl.waitCount = 10 * 40
         else
             self.network:sendToServer("sv_saveData", {result, true})
 
-            self.cl.gui:setText("Log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.saved_data"))
+            self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.saved_data"))
             self.cl.waitCount = 3 * 40
         end
     else
@@ -282,13 +294,13 @@ function HDDClass:cl_onSaveBtn()
 
             local specificError = errorLines[3] or sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.unknown_error")
 
-            self.cl.gui:setText("Log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.json_error", line, column, specificError))
+            self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.json_error", line, column, specificError))
             self.cl.waitCount = 10 * 40
         else
-            self.cl.gui:setText("Log", "#E74856" .. result)
+            self.cl.gui:setText("log", "#E74856" .. result)
             self.cl.waitCount = 10 * 40
             
-            sm.log.error(result)
+            sm.scrapcomputers.logger.error("HDD.lua", result)
         end
     end
 end
@@ -296,7 +308,7 @@ end
 function HDDClass:client_onFixedUpdate()
     if self.cl.waitCount >= 0 then
         if self.cl.waitCount == 0 and sm.exists(self.cl.gui) then
-            self.cl.gui:setText("Log", "")
+            self.cl.gui:setText("log", "")
         end
 
         self.cl.waitCount = self.cl.waitCount - 1
@@ -305,14 +317,15 @@ end
 
 ---@param text string
 function HDDClass:cl_updateHDDContents(widget, text)
-    self.cl.inputText = text
+    local unsafeText = text:gsub("⁄", "\\")
+    self.cl.inputText = unsafeText
 end
 
 function HDDClass:cl_updateDriveData(newData)
     if not next(newData) then
-        self.cl.hddContentText = "{}"
+        self.cl.driveContents = {}
     else
-        self.cl.hddContentText = sm.scrapcomputers.json.toString(newData, false, true):gsub("#", "##")
+        self.cl.driveContents = newData
     end
 end
 
@@ -325,14 +338,16 @@ function HDDClass:cl_updateExamples()
         text = text .. example.name .. "\n"
     end
 
-    self.cl.gui:setText("List", text)
+    self.cl.gui:setText("list", text)
 end
 
 function HDDClass:cl_runTranslations()
-    self.cl.gui:setText("Title"           , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.title"    ))
-    self.cl.gui:setText("SaveButton"      , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.savebtn"  ))
-    self.cl.gui:setText("DeleteButton"    , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.deletebtn"))
-    self.cl.gui:setText("ImportDataButton", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.importbtn"))
+    self.cl.gui:setText("title"        , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.title"             ))
+    self.cl.gui:setText("saveBtn"      , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.savebtn"           ))
+    self.cl.gui:setText("deleteBtn"    , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.deletebtn"         ))
+    self.cl.gui:setText("importDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.importbtn"         ))
+    self.cl.gui:setText("exportDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.exportbtn"         ))
+    self.cl.gui:setText("formatDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.format_text_button"))
 end
 
 sm.scrapcomputers.componentManager.toComponent(HDDClass, "Harddrives", true)

@@ -16,9 +16,9 @@
             {
                "material": "Dif",
                "textureList": [
-                  "$CONTENT_DATA/Objects/Textures/transparent.tga",
-                  "$CONTENT_DATA/Objects/Textures/transparent.tga",
-                  "$CONTENT_DATA/Objects/Textures/transparent.tga"
+                  "$CONTENT_DATA/Objects/Textures/transparent.png",
+                  "$CONTENT_DATA/Objects/Textures/transparent.png",
+                  "$CONTENT_DATA/Objects/Textures/transparent.png"
                ]
             }
          ]

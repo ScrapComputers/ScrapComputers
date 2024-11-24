@@ -35,9 +35,29 @@ function ConfiguratorClass:cl_onChangeValue()
     if not value then value = 1 end
 
     self.network:sendToServer("sv_setConfig", {currentConfig.id, value})
-    self.cl.gui:setText("CurrentValue", currentConfig.options[value])
-
     sm.effect.playEffect("NoteTerminal - Interact", self.shape:getWorldPosition())
+
+    local valueName = "config." .. currentConfig.id .. "=option=" .. sm.scrapcomputers.toString(value)
+    local valueText = sm.scrapcomputers.languageManager.translatable(valueName)
+    if valueText == valueName then
+        valueText = currentConfig.options[value]
+    end
+
+    self.cl.gui:setText("CurrentValue", valueText)
+
+    -- A hacky solution comming up!
+    -- We want to refresh the text in the gui when the language changes via this. But to make
+    -- it as simple as possible, i can just do this.
+    --
+    -- I am not bothered unhackifying it.
+
+    if currentConfig.id == "scrapcomputers.global.selectedLanguage" then
+        currentConfig.selectedOption = value
+        self:cl_updateGui(tostring(self.cl.currentIndex))
+        self:cl_runTranslations()
+        
+        self.cl.gui:setText("List", self:svcl_formatList())
+    end
 end
 
 function ConfiguratorClass:cl_onLoadDefualts()
@@ -120,10 +140,7 @@ function ConfiguratorClass:cl_createGui()
     self.cl.gui:setButtonCallback("ChangeValueButton", "cl_onChangeValue")
     self.cl.gui:setButtonCallback("LoadDefaultsButton", "cl_onLoadDefualts")
 
-    self.cl.gui:setText("Title"             , sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.title"        ))
-    self.cl.gui:setText("ChangeValueButton" , sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.change_value" ))
-    self.cl.gui:setText("LoadDefaultsButton", sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.load_defaults"))
-
+    self:cl_runTranslations()
     self:cl_updateGui(self.cl.currentIndex)
 end
 
@@ -143,6 +160,13 @@ function ConfiguratorClass:client_onInteract(character, state)
     self.cl.gui:open()
 
     sm.effect.playEffect("PowerSocket - Activate", self.shape:getWorldPosition())
+end
+
+function ConfiguratorClass:cl_runTranslations()
+    self.cl.gui:setText("Title"             , sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.title"        ))
+    self.cl.gui:setText("ChangeValueButton" , sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.change_value" ))
+    self.cl.gui:setText("LoadDefaultsButton", sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.load_defaults"))
+
 end
 
 -- CLIENT / SERVER --

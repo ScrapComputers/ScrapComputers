@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 0.8671875 0.78148148148148144" name="BackPanel">
-        <Widget type="TextBox" skin="TextBox" position_real="0 0.023696682464454975 1 0.062796208530805683" align="Center Top" name="Title">
+        <Widget type="TextBox" skin="TextBox" position_real="0 0.023696682464454975 1 0.062796208530805683" align="Center Top" name="title">
             <Property key="TextAlign" value="Center"/>
             <Property key="FontName" value="SM_Button"/>
             <Property key="TextShadow" value="true"/>
             <Property key="Caption" value="DATA CONTENTS"/>
         </Widget>
-        <Widget type="TextBox" skin="TextBox" position_real="0.52252252252252251 0.90639810426540279 0.30690690690690692 0.071090047393364927" name="Log">
+        <Widget type="TextBox" skin="TextBox" position_real="0.51951951951951947 0.90639810426540279 0.30990990990990991 0.071090047393364927" name="log">
             <Property key="FontName" value="SM_Button"/>
             <Property key="TextAlign" value="Center"/>
         </Widget>
-        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.015015015015015015 0.11848341232227488 0.20960960960960962 0.77606635071090047" align="Right Top" name="List">
+        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.015015015015015015 0.11848341232227488 0.20960960960960962 0.77606635071090047" align="Right Top" name="list">
             <Property key="TextAlign" value="Left Top"/>
             <Property key="MultiLine" value="true"/>
             <Property key="TabPrinting" value="true"/>
@@ -20,36 +20,41 @@
             <Property key="Caption" value="Why can u see this? The script defendly broke."/>
             <Property key="WordWrap" value="true"/>
         </Widget>
-        <Widget type="Button" skin="PrimaryButton" position_real="0.8288288288288288 0.89454976303317535 0.16216216216216217 0.094786729857819899" align="HStretch Top" name="SaveButton">
+        <Widget type="Button" skin="PrimaryButton" position_real="0.82582582582582587 0.89454976303317535 0.16216216216216217 0.094786729857819899" align="HStretch Top" name="saveBtn">
             <Property key="Caption" value="Save Data to Drive"/>
             <Property key="FontName" value="SM_Button"/>
             <Property key="TextAlign" value="Center"/>
         </Widget>
-        <Widget type="Button" skin="PrimaryButton" position_real="0.37537537537537535 0.89454976303317535 0.14654654654654656 0.094786729857819899" align="HStretch Top" name="DeleteButton">
+        <Widget type="Button" skin="PrimaryButton" position_real="0.37537537537537535 0.89454976303317535 0.14654654654654656 0.094786729857819899" align="HStretch Top" name="deleteBtn">
             <Property key="Caption" value="Remove Example"/>
             <Property key="FontName" value="SM_Button"/>
             <Property key="TextAlign" value="Center"/>
         </Widget>
-        <Widget type="Button" skin="PrimaryButton" position_real="0.22822822822822822 0.94194312796208535 0.14654654654654656 0.041469194312796206" align="HStretch Top" name="ExportDataButton">
+        <Widget type="Button" skin="PrimaryButton" position_real="0.22822822822822822 0.94194312796208535 0.14654654654654656 0.041469194312796206" align="HStretch Top" name="exportDataBtn">
             <Property key="FontName" value="SM_Button"/>
             <Property key="TextAlign" value="Center"/>
             <Property key="Caption" value="Export Example"/>
         </Widget>
-        <Widget type="Button" skin="PrimaryButton" position_real="0.22822822822822822 0.90047393364928907 0.14654654654654656 0.041469194312796206" align="HStretch Top" name="ImportDataButton">
+        <Widget type="Button" skin="PrimaryButton" position_real="0.22822822822822822 0.90047393364928907 0.14654654654654656 0.041469194312796206" align="HStretch Top" name="importDataBtn">
             <Property key="FontName" value="SM_Button"/>
             <Property key="TextAlign" value="Center"/>
             <Property key="Caption" value="Import Example"/>
         </Widget>
-        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.015015015015015015 0.90639810426540279 0.21021021021021022 0.071090047393364927" name="SelectedOption">
+        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.015015015015015015 0.90639810426540279 0.21021021021021022 0.071090047393364927" name="selectedOption">
             <Property key="TextAlign" value="Center"/>
         </Widget>
-        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.23123123123123124 0.11848341232227488 0.75375375375375375 0.77606635071090047" name="DriveContents">
+        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.23123123123123124 0.11848341232227488 0.75375375375375375 0.77606635071090047" name="driveContents">
             <Property key="TextAlign" value="Left Top"/>
             <Property key="MultiLine" value="true"/>
             <Property key="TabPrinting" value="true"/>
             <Property key="MaxTextLength" value="999999999"/>
             <Property key="Caption" value=""/>
             <Property key="WordWrap" value="true"/>
+        </Widget>
+        <Widget type="Button" skin="SecondaryButton" position_real="0.8288288288288288 0.023696682464454975 0.15615615615615616 0.065165876777251192" name="formatDataBtn">
+            <Property key="TextAlign" value="Center"/>
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="Caption" value="Format Data"/>
         </Widget>
     </Widget>
     <CodeGeneratorSettings>

@@ -237,15 +237,9 @@ function HologramClass:server_onFixedUpdate()
         self.sv.pendingDeletingObjects = {}
     end
 
-    local parents = self.interactable:getParents()
-
-    if #parents > 0 then
-        for _, parent in pairs(parents) do
-            if not parent.active then
-                self.sv.index = 0
-                break
-            end
-        end
+    local parent = self.interactable:getSingleParent()
+    if parent and not parent.active then
+        self.sv.index = 0
     end
 end
 

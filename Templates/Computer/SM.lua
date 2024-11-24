@@ -7,6 +7,11 @@ sm = {}
 ---Parses and writes json files from and to lua values.  
 sm.json = {}
 
+---Opens a json file and parses to Lua table.  
+---@param path string The json file path.
+---@return table
+function sm.json.open(path) end
+
 ---Parses a json string to lua table.  
 ---@param json string The json string.
 ---@return table
@@ -247,7 +252,6 @@ function sm.quat.round90(quaternion) end
 ---@param t number Interpolation amount between the two inputs.
 ---@return Quat
 function sm.quat.slerp(quaternion1, quaternion2, t) end
-
 
 ---A universally unique identifier (<strong>UUID</strong>) is a 128-bit number that can guarantee uniqueness across space and time.  
 ---To generate one, use [sm.uuid.new].  

@@ -1,11 +1,14 @@
 -- Utility functions.
 sm.scrapcomputers.util = {}
 
----Reimplementation of sm.util.positiveModulo, Uncrashable.
+
+---Reimplementation of sm.util.positiveModulo. 
 ---@param x number The number to divide
 ---@param n number The amount to divide
 ---@return number remainder The remains that it is impossible to divide
 function sm.scrapcomputers.util.positiveModulo(x, n)
+    -- Funfact, this is more accurate than SM's positiveModulo function.
+    -- They seriously cant code a proper simple fucking thing
     sm.scrapcomputers.errorHandler.assertArgument(x, 1, {"number"})
     sm.scrapcomputers.errorHandler.assertArgument(n, 1, {"number"})
 

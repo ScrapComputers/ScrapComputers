@@ -15,13 +15,38 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]] --
-if not table.pack then function table.pack(...) return {n = select('#', ...), ...} end end
+function table_pack(...)
+	return {
+		n = #{...},
+		...
+	}
+end
 
-if not table.move then
-	function table.move(src, first, last, offset, dst)
-		for i = 0, last - first do dst[offset + i] = src[first + i] end
+function table_move(src, first, last, offset, dst)
+	for i = 0, last - first do
+		dst[offset + i] = src[first + i]
 	end
 end
+
+local string = string
+local bit = bit
+local math = math
+local table = table
+
+local table_concat = table.concat
+
+local math_abs = math.abs
+local string_byte = string.byte
+local string_sub = string.sub
+local string_format = string.format
+
+local bit_bor = bit.bor
+local bit_rshift = bit.rshift
+local bit_lshift = bit.lshift
+local bit_band = bit.band
+
+local assert = assert
+local unpack = unpack
 
 local lua_bc_to_state
 local lua_wrap_state
@@ -165,74 +190,71 @@ local OPCODE_M = {
 -- @s - Start index of a little endian integer
 -- @e - End index of the integer
 -- @d - Direction of the loop
-local function rd_int_basic(src, s, e, d)
+function rd_int_basic(src, s, e, d)
 	local num = 0
 
-	-- if bb[l] > 127 then -- signed negative
-	-- 	num = num - 256 ^ l
-	-- 	bb[l] = bb[l] - 128
-	-- end
-
+	-- Iterate over the source string from index 's' to 'e' in steps of 'd'
 	for i = s, e, d do
-		local mul = 256 ^ math.abs(i - s)
-
-		num = num + mul * string.byte(src, i, i)
+		-- Shift the current byte by (8 * (i - s)) bits
+		local shift_amount = 8 * math_abs(i - s)
+		num = bit_bor(num, bit_lshift(string.byte(src, i, i), shift_amount))
 	end
 
 	return num
 end
 
--- float rd_flt_basic(byte f1..8)
--- @f1..4 - The 4 bytes composing a little endian float
-local function rd_flt_basic(f1, f2, f3, f4)
-	local sign = (-1) ^ bit.rshift(f4, 7)
-	local exp = bit.rshift(f3, 7) + bit.lshift(bit.band(f4, 0x7F), 1)
-	local frac = f1 + bit.lshift(f2, 8) + bit.lshift(bit.band(f3, 0x7F), 16)
+function rd_flt_basic(f1, f2, f3, f4)
+	local sign = (-1) ^ bit_rshift(f4, 7)  -- Get the sign bit from the most significant bit of f4
+	local exp = bit_rshift(f3, 7) + bit_lshift(bit_band(f4, 0x7F), 1)  -- Extract exponent from f3 and f4
+	local frac = f1 + bit_lshift(f2, 8) + bit_lshift(bit_band(f3, 0x7F), 16)  -- Extract fraction bits (mantissa)
 	local normal = 1
 
 	if exp == 0 then
 		if frac == 0 then
-			return sign * 0
+			return sign * 0  -- Handle the case for zero
 		else
 			normal = 0
-			exp = 1
+			exp = 1  -- Denormalized numbers, exponent is 1
 		end
-	elseif exp == 0x7F then
+	elseif exp == 0xFF then  -- If the exponent is all 1's (255)
 		if frac == 0 then
-			return sign * (1 / 0)
+			return sign * (1 / 0)  -- Handle infinity
 		else
-			return sign * (0 / 0)
+			return sign * (0 / 0)  -- Handle NaN (Not a Number)
 		end
 	end
 
+	-- Return the final floating-point value
 	return sign * 2 ^ (exp - 127) * (1 + normal / 2 ^ 23)
 end
 
 -- double rd_dbl_basic(byte f1..8)
 -- @f1..8 - The 8 bytes composing a little endian double
-local function rd_dbl_basic(f1, f2, f3, f4, f5, f6, f7, f8)
-	local sign = (-1) ^ bit.rshift(f8, 7)
-	local exp = bit.lshift(bit.band(f8, 0x7F), 4) + bit.rshift(f7, 4)
-	local frac = bit.band(f7, 0x0F) * 2 ^ 48
+function rd_dbl_basic(f1, f2, f3, f4, f5, f6, f7, f8)
+	local sign = (-1) ^ bit_rshift(f8, 7)  -- Extract the sign bit from the MSB of f8
+	local exp = bit_lshift(bit_band(f8, 0x7F), 4) + bit_rshift(f7, 4)  -- Extract exponent (remaining 7 bits of f8 and 4 bits from f7)
+	local frac = bit_band(f7, 0x0F) * 2 ^ 48  -- Extract the fraction bits (mantissa)
 	local normal = 1
 
-	frac = frac + (f6 * 2 ^ 40) + (f5 * 2 ^ 32) + (f4 * 2 ^ 24) + (f3 * 2 ^ 16) + (f2 * 2 ^ 8) + f1 -- help
+	-- Build the fraction using all 48 bits of the mantissa
+	frac = frac + (f6 * 2 ^ 40) + (f5 * 2 ^ 32) + (f4 * 2 ^ 24) + (f3 * 2 ^ 16) + (f2 * 2 ^ 8) + f1
 
 	if exp == 0 then
 		if frac == 0 then
-			return sign * 0
+			return sign * 0  -- Handle zero
 		else
 			normal = 0
-			exp = 1
+			exp = 1  -- Denormalized number, exponent is 1
 		end
-	elseif exp == 0x7FF then
+	elseif exp == 0x7FF then  -- Exponent of all 1's (2047)
 		if frac == 0 then
-			return sign * (1 / 0)
+			return sign * (1 / 0)  -- Handle infinity
 		else
-			return sign * (0 / 0)
+			return sign * (0 / 0)  -- Handle NaN
 		end
 	end
 
+	-- Return the final double-precision floating-point value
 	return sign * 2 ^ (exp - 1023) * (normal + frac / 2 ^ 52)
 end
 
@@ -240,37 +262,37 @@ end
 -- @src - Source binary string
 -- @s - Start index of a little endian integer
 -- @e - End index of the integer
-local function rd_int_le(src, s, e) return rd_int_basic(src, s, e - 1, 1) end
+function rd_int_le(src, s, e) return rd_int_basic(src, s, e - 1, 1) end
 
 -- int rd_int_be(string src, int s, int e)
 -- @src - Source binary string
 -- @s - Start index of a big endian integer
 -- @e - End index of the integer
-local function rd_int_be(src, s, e) return rd_int_basic(src, e - 1, s, -1) end
+function rd_int_be(src, s, e) return rd_int_basic(src, e - 1, s, -1) end
 
 -- float rd_flt_le(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of little endian float
-local function rd_flt_le(src, s) return rd_flt_basic(string.byte(src, s, s + 3)) end
+function rd_flt_le(src, s) return rd_flt_basic(string_byte(src, s, s + 3)) end
 
 -- float rd_flt_be(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of big endian float
-local function rd_flt_be(src, s)
-	local f1, f2, f3, f4 = string.byte(src, s, s + 3)
+function rd_flt_be(src, s)
+	local f1, f2, f3, f4 = string_byte(src, s, s + 3)
 	return rd_flt_basic(f4, f3, f2, f1)
 end
 
 -- double rd_dbl_le(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of little endian double
-local function rd_dbl_le(src, s) return rd_dbl_basic(string.byte(src, s, s + 7)) end
+function rd_dbl_le(src, s) return rd_dbl_basic(string_byte(src, s, s + 7)) end
 
 -- double rd_dbl_be(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of big endian double
-local function rd_dbl_be(src, s)
-	local f1, f2, f3, f4, f5, f6, f7, f8 = string.byte(src, s, s + 7) -- same
+function rd_dbl_be(src, s)
+	local f1, f2, f3, f4, f5, f6, f7, f8 = string_byte(src, s, s + 7) -- same
 	return rd_dbl_basic(f8, f7, f6, f5, f4, f3, f2, f1)
 end
 
@@ -282,9 +304,9 @@ local float_types = {
 
 -- byte stm_byte(Stream S)
 -- @S - Stream object to read from
-local function stm_byte(S)
+function stm_byte(S)
 	local idx = S.index
-	local bt = string.byte(S.source, idx, idx)
+	local bt = string_byte(S.source, idx, idx)
 
 	S.index = idx + 1
 	return bt
@@ -293,9 +315,9 @@ end
 -- string stm_string(Stream S, int len)
 -- @S - Stream object to read from
 -- @len - Length of string being read
-local function stm_string(S, len)
+function stm_string(S, len)
 	local pos = S.index + len
-	local str = string.sub(S.source, S.index, pos - 1)
+	local str = string_sub(S.source, S.index, pos - 1)
 
 	S.index = pos
 	return str
@@ -303,11 +325,11 @@ end
 
 -- string stm_lstring(Stream S)
 -- @S - Stream object to read from
-local function stm_lstring(S)
+function stm_lstring(S)
 	local len = S:s_szt()
 	local str
 
-	if len ~= 0 then str = string.sub(stm_string(S, len), 1, -2) end
+	if len ~= 0 then str = string_sub(stm_string(S, len), 1, -2) end
 
 	return str
 end
@@ -315,7 +337,7 @@ end
 -- fn cst_int_rdr(string src, int len, fn func)
 -- @len - Length of type for reader
 -- @func - Reader callback
-local function cst_int_rdr(len, func)
+function cst_int_rdr(len, func)
 	return function(S)
 		local pos = S.index + len
 		local int = func(S.source, S.index, pos)
@@ -328,7 +350,7 @@ end
 -- fn cst_flt_rdr(string src, int len, fn func)
 -- @len - Length of type for reader
 -- @func - Reader callback
-local function cst_flt_rdr(len, func)
+function cst_flt_rdr(len, func)
 	return function(S)
 		local flt = func(S.source, S.index)
 		S.index = S.index + len
@@ -337,36 +359,36 @@ local function cst_flt_rdr(len, func)
 	end
 end
 
-local function stm_inst_list(S)
+function stm_inst_list(S)
 	local len = S:s_int()
 	local list = {}
 
 	for i = 1, len do
 		local ins = S:s_ins()
-		local op = bit.band(ins, 0x3F)
+		local op = bit_band(ins, 0x3F)
 		local args = OPCODE_T[op]
 		local mode = OPCODE_M[op]
-		local data = {value = ins, op = OPCODE_RM[op], A = bit.band(bit.rshift(ins, 6), 0xFF)}
+		local data = {value = ins, op = OPCODE_RM[op], A = bit_band(bit_rshift(ins, 6), 0xFF)}
 
 		if args == 'ABC' then
-			data.B = bit.band(bit.rshift(ins, 23), 0x1FF)
-			data.C = bit.band(bit.rshift(ins, 14), 0x1FF)
+			data.B = bit_band(bit_rshift(ins, 23), 0x1FF)
+			data.C = bit_band(bit_rshift(ins, 14), 0x1FF)
 			data.is_KB = mode.b == 'OpArgK' and data.B > 0xFF -- post process optimization
 			data.is_KC = mode.c == 'OpArgK' and data.C > 0xFF
 
 			if op == 10 then -- decode NEWTABLE array size, store it as constant value
-				local e = bit.band(bit.rshift(data.B, 3), 31)
+				local e = bit_band(bit_rshift(data.B, 3), 31)
 				if e == 0 then
 					data.const = data.B
 				else
-					data.const = bit.lshift(bit.band(data.B, 7) + 8, e - 1)
+					data.const = bit_lshift(bit_band(data.B, 7) + 8, e - 1)
 				end
 			end
 		elseif args == 'ABx' then
-			data.Bx = bit.band(bit.rshift(ins, 14), 0x3FFFF)
+			data.Bx = bit_band(bit_rshift(ins, 14), 0x3FFFF)
 			data.is_K = mode.b == 'OpArgK'
 		elseif args == 'AsBx' then
-			data.sBx = bit.band(bit.rshift(ins, 14), 0x3FFFF) - 131071
+			data.sBx = bit_band(bit_rshift(ins, 14), 0x3FFFF) - 131071
 		end
 
 		list[i] = data
@@ -375,7 +397,7 @@ local function stm_inst_list(S)
 	return list
 end
 
-local function stm_const_list(S)
+function stm_const_list(S)
 	local len = S:s_int()
 	local list = {}
 
@@ -397,7 +419,7 @@ local function stm_const_list(S)
 	return list
 end
 
-local function stm_sub_list(S, src)
+function stm_sub_list(S, src)
 	local len = S:s_int()
 	local list = {}
 
@@ -408,7 +430,7 @@ local function stm_sub_list(S, src)
 	return list
 end
 
-local function stm_line_list(S)
+function stm_line_list(S)
 	local len = S:s_int()
 	local list = {}
 
@@ -417,7 +439,7 @@ local function stm_line_list(S)
 	return list
 end
 
-local function stm_loc_list(S)
+function stm_loc_list(S)
 	local len = S:s_int()
 	local list = {}
 
@@ -426,7 +448,7 @@ local function stm_loc_list(S)
 	return list
 end
 
-local function stm_upval_list(S)
+function stm_upval_list(S)
 	local len = S:s_int()
 	local list = {}
 
@@ -518,10 +540,12 @@ function lua_bc_to_state(src)
 	return stm_lua_func(stream, '@virtual')
 end
 
-local function close_lua_upvalues(list, index)
+function close_lua_upvalues(list, index)
 	for i, uv in pairs(list) do
-		if uv.index >= index then
-			uv.value = uv.store[uv.index] -- store value
+		local uv_index = uv.index
+
+		if uv_index >= index then
+			uv.value = uv.store[uv_index] -- store value
 			uv.store = uv
 			uv.index = 'value' -- self reference
 			list[i] = nil
@@ -529,7 +553,7 @@ local function close_lua_upvalues(list, index)
 	end
 end
 
-local function open_lua_upvalue(list, index, memory)
+function open_lua_upvalue(list, index, memory)
 	local prev = list[index]
 
 	if not prev then
@@ -540,14 +564,14 @@ local function open_lua_upvalue(list, index, memory)
 	return prev
 end
 
-local function on_lua_error(failed, err)
+function on_lua_error(failed, err)
 	local src = failed.source
-	local line = failed.lines[failed.pc - 1]
+	local line = failed.lines[failed.pc]
 
-	error(string.format('%s:%i: %s', src, line, err), 0)
+	error(string_format('%s:%i: %s', src, line, err), 0)
 end
 
-local function run_lua_func(state, env, upvals)
+function run_lua_func(state, env, upvals)
 	local code = state.code
 	local subs = state.subs
 	local vararg = state.vararg
@@ -575,20 +599,9 @@ local function run_lua_func(state, env, upvals)
 						memory[inst.A] = uv.store[uv.index]
 					else
 						--[[ADD]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = memory[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = memory[inst.C]
-						end
-
+						local lhs = inst.const_B or memory[inst.B]
+						local rhs = inst.const_C or memory[inst.C]
+						
 						memory[inst.A] = lhs + rhs
 					end
 				elseif op > 3 then
@@ -597,12 +610,10 @@ local function run_lua_func(state, env, upvals)
 							--[[SELF]]
 							local A = inst.A
 							local B = inst.B
-							local index
+							local index = memory[inst.C]
 
 							if inst.is_KC then
 								index = inst.const_C
-							else
-								index = memory[inst.C]
 							end
 
 							memory[A + 1] = memory[B]
@@ -613,30 +624,17 @@ local function run_lua_func(state, env, upvals)
 						end
 					elseif op > 6 then
 						--[[GETTABLE]]
-						local index
+						local index = memory[inst.C]
 
 						if inst.is_KC then
 							index = inst.const_C
-						else
-							index = memory[inst.C]
 						end
 
 						memory[inst.A] = memory[inst.B][index]
 					else
 						--[[SUB]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = memory[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = memory[inst.C]
-						end
+						local lhs = inst.const_B or memory[inst.B]
+						local rhs = inst.const_C or memory[inst.C]
 
 						memory[inst.A] = lhs - rhs
 					end
@@ -654,15 +652,13 @@ local function run_lua_func(state, env, upvals)
 							local A = inst.A
 							local B = inst.B
 							local C = inst.C
-							local params
+							local params = B - 1
 
 							if B == 0 then
 								params = top_index - A
-							else
-								params = B - 1
 							end
 
-							local ret_list = table.pack(memory[A](unpack(memory, A + 1, A + params)))
+							local ret_list = table_pack(memory[A](unpack(memory, A + 1, A + params)))
 							local ret_num = ret_list.n
 
 							if C == 0 then
@@ -671,7 +667,7 @@ local function run_lua_func(state, env, upvals)
 								ret_num = C - 1
 							end
 
-							table.move(ret_list, 1, ret_num, A, memory)
+							table_move(ret_list, 1, ret_num, A, memory)
 						else
 							--[[SETUPVAL]]
 							local uv = upvals[inst.B]
@@ -680,19 +676,8 @@ local function run_lua_func(state, env, upvals)
 						end
 					else
 						--[[MUL]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = memory[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = memory[inst.C]
-						end
+						local lhs = inst.const_B or memory[inst.B]
+						local rhs = inst.const_C or memory[inst.C]
 
 						memory[inst.A] = lhs * rhs
 					end
@@ -702,12 +687,10 @@ local function run_lua_func(state, env, upvals)
 							--[[TAILCALL]]
 							local A = inst.A
 							local B = inst.B
-							local params
+							local params = B - 1
 
 							if B == 0 then
 								params = top_index - A
-							else
-								params = B - 1
 							end
 
 							close_lua_upvalues(open_list, 0)
@@ -715,19 +698,8 @@ local function run_lua_func(state, env, upvals)
 							return memory[A](unpack(memory, A + 1, A + params))
 						else
 							--[[SETTABLE]]
-							local index, value
-
-							if inst.is_KB then
-								index = inst.const_B
-							else
-								index = memory[inst.B]
-							end
-
-							if inst.is_KC then
-								value = inst.const_C
-							else
-								value = memory[inst.C]
-							end
+							local index = inst.const_B or memory[inst.B]
+							local value = inst.const_C or memory[inst.C]
 
 							memory[inst.A][index] = value
 						end
@@ -736,19 +708,8 @@ local function run_lua_func(state, env, upvals)
 						memory[inst.A] = {}
 					else
 						--[[DIV]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = memory[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = memory[inst.C]
-						end
+						local lhs = inst.const_B or memory[inst.B]
+						local rhs = inst.const_C or memory[inst.C]
 
 						memory[inst.A] = lhs / rhs
 					end
@@ -759,21 +720,23 @@ local function run_lua_func(state, env, upvals)
 			else
 				--[[FORLOOP]]
 				local A = inst.A
-				local step = memory[A + 2]
-				local index = memory[A] + step
+				local MemA = memory[A]
+				local Mem2A = memory[A + 2]
 				local limit = memory[A + 1]
-				local loops
-
-				if step == math.abs(step) then
-					loops = index <= limit
-				else
-					loops = index >= limit
-				end
-
-				if loops then
-					memory[A] = index
-					memory[A + 3] = index
-					pc = pc + inst.sBx
+				local index = MemA + Mem2A
+				
+				if Mem2A > 0 then
+				    if index <= limit then
+				        memory[A] = index
+				        memory[A + 3] = index
+				        pc = pc + inst.sBx
+				    end
+				elseif Mem2A < 0 then
+				    if index >= limit then
+				        memory[A] = index
+				        memory[A + 3] = index
+				        pc = pc + inst.sBx
+				    end
 				end
 			end
 		elseif op > 18 then
@@ -787,13 +750,7 @@ local function run_lua_func(state, env, upvals)
 							--[[RETURN]]
 							local A = inst.A
 							local B = inst.B
-							local len
-
-							if B == 0 then
-								len = top_index - A + 1
-							else
-								len = B - 1
-							end
+							local len = B == 0 and top_index - A + 1 or B - 1
 
 							close_lua_upvalues(open_list, 0)
 
@@ -801,7 +758,7 @@ local function run_lua_func(state, env, upvals)
 						else
 							--[[CONCAT]]
 							local B, C = inst.B, inst.C
-							local success, str = pcall(table.concat, memory, "", B, C)
+							local success, str = pcall(table_concat, memory, "", B, C)
 
 							if not success then
 								str = memory[B]
@@ -813,19 +770,8 @@ local function run_lua_func(state, env, upvals)
 						end
 					else
 						--[[MOD]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = memory[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = memory[inst.C]
-						end
+						local lhs = inst.const_B or memory[inst.B]
+						local rhs = inst.const_C or memory[inst.C]
 
 						memory[inst.A] = lhs % rhs
 					end
@@ -836,19 +782,8 @@ local function run_lua_func(state, env, upvals)
 							close_lua_upvalues(open_list, inst.A)
 						else
 							--[[EQ]]
-							local lhs, rhs
-
-							if inst.is_KB then
-								lhs = inst.const_B
-							else
-								lhs = memory[inst.B]
-							end
-
-							if inst.is_KC then
-								rhs = inst.const_C
-							else
-								rhs = memory[inst.C]
-							end
+							local lhs = inst.const_B or memory[inst.B]
+							local rhs = inst.const_C or memory[inst.C]
 
 							if (lhs == rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
 
@@ -856,38 +791,16 @@ local function run_lua_func(state, env, upvals)
 						end
 					elseif op > 26 then
 						--[[LT]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = memory[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = memory[inst.C]
-						end
+						local lhs = inst.const_B or memory[inst.B]
+						local rhs = inst.const_C or memory[inst.C]
 
 						if (lhs < rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
 
 						pc = pc + 1
 					else
 						--[[POW]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = memory[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = memory[inst.C]
-						end
+						local lhs = inst.const_B or memory[inst.B]
+						local rhs = inst.const_C or memory[inst.C]
 
 						memory[inst.A] = lhs ^ rhs
 					end
@@ -901,19 +814,8 @@ local function run_lua_func(state, env, upvals)
 				if op < 33 then
 					if op < 30 then
 						--[[LE]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = memory[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = memory[inst.C]
-						end
+						local lhs = inst.const_B or memory[inst.B]
+						local rhs = inst.const_C or memory[inst.C]
 
 						if (lhs <= rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
 
@@ -969,15 +871,14 @@ local function run_lua_func(state, env, upvals)
 								top_index = A + len - 1
 							end
 
-							table.move(vararg.list, 1, len, A, memory)
+							table_move(vararg.list, 1, len, A, memory)
 						else
 							--[[FORPREP]]
 							local A = inst.A
-							local init, limit, step
 
-							init = assert(tonumber(memory[A]), '`for` initial value must be a number')
-							limit = assert(tonumber(memory[A + 1]), '`for` limit must be a number')
-							step = assert(tonumber(memory[A + 2]), '`for` step must be a number')
+							local init = assert(tonumber(memory[A]), '`for` initial value must be a number')
+							local limit = assert(tonumber(memory[A + 1]), '`for` limit must be a number')
+							local step = assert(tonumber(memory[A + 2]), '`for` step must be a number')
 
 							memory[A] = init - step
 							memory[A + 1] = limit
@@ -1002,7 +903,7 @@ local function run_lua_func(state, env, upvals)
 
 						offset = (C - 1) * FIELDS_PER_FLUSH
 
-						table.move(memory, A + 1, A + len, offset + 1, tab)
+						table_move(memory, A + 1, A + len, offset + 1, tab)
 					else
 						--[[NOT]]
 						memory[inst.A] = not memory[inst.B]
@@ -1019,7 +920,7 @@ local function run_lua_func(state, env, upvals)
 
 				local vals = {memory[A](memory[A + 1], memory[A + 2])}
 
-				table.move(vals, 1, inst.C, base, memory)
+				table_move(vals, 1, inst.C, base, memory)
 
 				if memory[base] ~= nil then
 					memory[A + 2] = memory[base]
@@ -1038,24 +939,24 @@ local function run_lua_func(state, env, upvals)
 end
 
 function lua_wrap_state(proto, env, upval)
-	local function wrapped(...)
-		local passed = table.pack(...)
+	function wrapped(...)
+		local passed = table_pack(...)
 		local memory = {}
 		local vararg = {len = 0, list = {}}
 
-		table.move(passed, 1, proto.num_param, 0, memory)
+		table_move(passed, 1, proto.num_param, 0, memory)
 
 		if proto.num_param < passed.n then
 			local start = proto.num_param + 1
 			local len = passed.n - proto.num_param
 
 			vararg.len = len
-			table.move(passed, start, start + len - 1, 1, vararg.list)
+			table_move(passed, start, start + len - 1, 1, vararg.list)
 		end
 
 		local state = {vararg = vararg, memory = memory, code = proto.code, subs = proto.subs, pc = 1}
 
-		local result = table.pack(pcall(run_lua_func, state, env, upval))
+		local result = table_pack(pcall(run_lua_func, state, env, upval))
 
 		if result[1] then
 			return unpack(result, 2, result.n)

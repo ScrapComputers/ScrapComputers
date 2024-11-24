@@ -8,6 +8,12 @@
             },
             "color": "eeeeee",
             "physicsMaterial": "Mechanical",
+            "ratings" : {
+                "buoyancy" : 4,
+                "density" : 2,
+                "durability" : 5,
+                "friction" : 3
+            },
             "renderable": "$CONTENT_DATA/Objects/Renderables/Network/NetworkPort.rend",
             "rotationSet": "PropYZ",
             "scripted": {
@@ -25,6 +31,12 @@
             },
             "color": "eeeeee",
             "physicsMaterial": "Mechanical",
+            "ratings" : {
+                "buoyancy" : 6,
+                "density" : 2,
+                "durability" : 6,
+                "friction" : 3
+            },
             "renderable": "$CONTENT_DATA/Objects/Renderables/Network/Antenna.rend",
             "rotationSet": "PropYZ",
             "scripted": {

@@ -1,0 +1,15 @@
+{
+  "name": "ttf-to-ascf",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --max-old-space-size=8192 .",
+    "dev": "nodemon --max-old-space-size=8192 . -e js"
+  },
+  "packageManager": "yarn@4.3.1",
+  "dependencies": {
+    "earcut": "^3.0.0",
+    "lz4js": "^0.2.0",
+    "opentype.js": "^1.3.4"
+  }
+}

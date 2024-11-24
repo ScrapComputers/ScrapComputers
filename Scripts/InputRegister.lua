@@ -61,6 +61,7 @@ function InputRegisterClass:client_onCreate()
         gui = nil,
         text = "",
         registerName = "",
+        character = nil
     }
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, false, {backgroundAlpha = 0.5})
@@ -69,6 +70,14 @@ function InputRegisterClass:client_onCreate()
 
     self.cl.gui:setTextChangedCallback("Input", "cl_onTextChanged")
     self.cl.gui:setButtonCallback ("Button", "cl_onSave")
+
+    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
+end
+
+function InputRegisterClass:cl_onGuiClose()
+    if self.cl.character then
+        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
+    end
 end
 
 function InputRegisterClass:cl_setName(name)
@@ -82,6 +91,9 @@ function InputRegisterClass:client_onInteract(character, state)
     self.cl.text = self.cl.registerName
 
     self.cl.gui:open()
+
+    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
+    self.cl.character = character
 end
 
 function InputRegisterClass:cl_onTextChanged(widget, text)

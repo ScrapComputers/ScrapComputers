@@ -5,6 +5,7 @@ sm.scrapcomputers.languageManager = sm.scrapcomputers.languageManager or {
 
 sm.scrapcomputers.languageManager.languages = {}
 sm.scrapcomputers.languageManager.currentLanguage = sm.scrapcomputers.languageManager.currentLanguage or ""
+sm.scrapcomputers.languageManager.lastLanguageUpdate = sm.game.getCurrentTick()
 
 -- Gets all loaded languages and returns them
 function sm.scrapcomputers.languageManager.getLanguages()
@@ -27,13 +28,13 @@ function sm.scrapcomputers.languageManager.reloadLanguages()
         local path = "$CONTENT_" .. language[1] .. "/Gui/Language/" .. language[2] .. "/scrapcomputers.json"
 
         if not sm.json.fileExists(path) then
-            sm.log.warning("[ScrapComputers - LanguageManager]: Cannot find a language! Path: \"" .. path .. "\"")
+            sm.scrapcomputers.logger.warning("LanguageManager.lua", "Cannot find a language! Path: \"" .. path .. "\"")
             goto continue
         end
 
         local success, data = pcall(sm.json.open, path)
         if not success then
-            sm.log.error("[ScrapComputers - LanguageManager]: " .. data)
+            sm.scrapcomputers.logger.error("LanguageManager.lua", data)
             goto continue
         end
 
@@ -59,7 +60,7 @@ function sm.scrapcomputers.languageManager.addLanguage(localid, name)
 
     local success, data = pcall(sm.json.open, path)
     if not success then
-        sm.log.error("[ScrapComputers - LanguageManager]: " .. data)
+        sm.scrapcomputers.logger.error("LanguageManager.lua", data)
         return false
     end
 
@@ -80,6 +81,7 @@ function sm.scrapcomputers.languageManager.setSelectedLanguage(language)
     sm.scrapcomputers.errorHandler.assert(sm.scrapcomputers.languageManager.languages[language], nil, "Language Not Found!")
 
     sm.scrapcomputers.languageManager.currentLanguage = language
+    sm.scrapcomputers.languageManager.lastLanguageUpdate = sm.game.getCurrentTick()
 end
 
 -- Gets the current selected language.
@@ -112,7 +114,7 @@ function sm.scrapcomputers.languageManager.translatable(text, ...)
 
     local data = sm.scrapcomputers.languageManager.languages[sm.scrapcomputers.languageManager.getSelectedLanguage()]
     if not data or not data[text] then
-        sm.log.error("[ScrapComputers - LanguageManager]: Cannot find translatable string: \"" .. text .. "\"")
+        sm.scrapcomputers.logger.error("LanguageManager.lua", "Cannot find translatable string: \"" .. text .. "\"")
         return text
     end
     
@@ -120,4 +122,6 @@ function sm.scrapcomputers.languageManager.translatable(text, ...)
 end
 
 sm.scrapcomputers.languageManager.addLanguage("632be32f-6ebd-414e-a061-d45906ae4dc6", "English")
+sm.scrapcomputers.languageManager.addLanguage("632be32f-6ebd-414e-a061-d45906ae4dc6", "Dutch")
+
 sm.scrapcomputers.languageManager.autoDetectLanguage()

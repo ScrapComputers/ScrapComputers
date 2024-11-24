@@ -133,18 +133,32 @@ function RadarClass:sv_calculateTargets()
             for _, body in pairs(creation) do
                 if sm.exists(body) then
                     local min, max = body:getLocalAabb()
-                    minBound = (minBound or min):min(min)
-                    maxBound = (maxBound or max):min(max)
+
+                    if not minBound then
+                        minBound = min
+                        maxBound = max
+                    else
+                        minBound = minBound:min(min)
+                        maxBound = maxBound:max(max)
+                    end
                 end
             end
 
             if maxBound and minBound then
-                local distance = (self.shape.worldPosition - creation[1]:getShapes()[1].worldPosition):length() ---@type number
+                local averagePos = sm.vec3.zero()
+
+                for _, body in pairs(creation) do
+                    averagePos = averagePos + body:getCenterOfMassPosition()
+                end
+
+                averagePos = averagePos / #creation
+
+                local distance = (self.shape.worldPosition - averagePos):length() ---@type number
 
                 local bb = maxBound - minBound
-                local surfaceArea = ((bb.x * bb.z + bb.x * bb.y + bb.z * bb.y) / 2) * 1 / distance * 1000
+                local surfaceArea = ((bb.x * bb.z + bb.x * bb.y + bb.z * bb.y) / 2 / math.sqrt(distance)) * 8
 
-                local surfaceAreaBound = self.sv.hAngle * self.sv.vAngle / 40
+                local surfaceAreaBound = self.sv.hAngle * self.sv.vAngle / 80
 
                 if surfaceArea > surfaceAreaBound or distance < 200 then
                     table.insert(validTargets, {creation, surfaceArea})

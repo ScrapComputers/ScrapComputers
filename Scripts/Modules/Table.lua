@@ -50,7 +50,29 @@ end
 function sm.scrapcomputers.table.clone(tbl)
     sm.scrapcomputers.errorHandler.assertArgument(tbl, nil, {"table"})
 
-    return unpack({tbl})
+    local function cloneRecursive(root)
+        local output = {}
+        for index, value in pairs(root) do
+            local valueType = type(value)
+            if valueType == "table" then
+                output[index] = cloneRecursive(value)
+            
+            -- All elseif statements are here just so it doesnt reference root.
+            elseif valueType == "number" then
+                output[index] = 0 + value
+            elseif valueType == "string" then
+                output[index] = "" .. value
+            elseif valueType == "boolean" then
+                output[index] = value == true
+            else
+                output[index] = value
+            end
+        end
+
+        return output
+    end
+
+    return cloneRecursive(tbl)
 end
 
 ---Converts a lua table to a string
@@ -224,6 +246,8 @@ end
 ---@param tbl table The input
 ---@return table tbl The reversed table
 function sm.scrapcomputers.table.reverse(tbl)
+    sm.scrapcomputers.errorHandler.assertArgument(tbl, nil, {"table"})
+
     local newTbl = sm.scrapcomputers.table.clone(tbl)
     table.sort(newTbl, function(a,b) return a < b end)
 

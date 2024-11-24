@@ -16,6 +16,7 @@
     "scrapcomputers.computer.revert_changes_button"                    : "Revert Changes",
     "scrapcomputers.computer.format_text_button"                       : "Format Text",
     "scrapcomputers.computer.load_example_button"                      : "Load Example",
+    "scrapcomputers.computer.open_esncfg_button"                       : "Open ESNS Config",
 
     "scrapcomputers.computer.always_on_toggable_button"                : "Always On: %s",
 
@@ -29,6 +30,7 @@
     "scrapcomputers.drive.exportbtn"                                   : "Export Example",
     "scrapcomputers.drive.overwritebtn"                                : "Overwrite Example",
     "scrapcomputers.drive.importbtn"                                   : "Import Example",
+    "scrapcomputers.drive.format_text_button"                          : "Format Text",
 
     "scrapcomputers.drive.examples.example_deleted"                    : "Deleted \"%s\" Example",                   // Has 1 argument, which is the name of the example that was deletd.
     "scrapcomputers.drive.examples.imported_example"                   : "Imported \"%s\" Example",                  // Has 1 argument, which is the name of the imported example
@@ -45,7 +47,8 @@
 
     // Terminal
     "scrapcomputers.terminal.title"                                    : "TERMINAL",
-    "scrapcomputers.terminal.summit_inputbtn"                          : "Summit Input",
+    "scrapcomputers.terminal.title_history"                            : "INPUT HISTORY",
+    "scrapcomputers.terminal.summit_inputbtn"                          : "Submit Input",
     "scrapcomputers.terminal.clear_historybtn"                         : "Clear History",
 
     // Input & Output registers
@@ -54,7 +57,8 @@
     
     // Keyboard
     "scrapcomputers.keyboard.exit"                                     : "Exit keyboard",
-    
+    "scrapcomputers.keyboard.press_to_type_text"                       : "Press %s to start typing", // Has 1 argument, which is a hypertext of the Use keybind
+
     // Antenna
     "scrapcomputers.antenna.title"                                     : "Antenna",
 
@@ -64,9 +68,12 @@
     "scrapcomputers.configurator.load_defaults"                        : "Reset Configs",
     "scrapcomputers.configurator.cannot_access_object"                 : "You do not have the required permission to access the configurator!",
 
+    "scrapcomputers.configurator.resetpopup.title"                     : "Reset Configurations?",
+    "scrapcomputers.configurator.resetpopup.description"               : "You will not be able to undo this change!",
+    
     // Display
-    "scrapcomputers.display.failed_to_find_font"                       : "Failed to find the font! Something might have broken! Contact the team ASAP!",
-    "scrapcomputers.display.touchscreen"                               : "Press %s for touchscreen.", // 1 Argument. which is the keybind text (with style)
+    "scrapcomputers.display.failed_to_find_font"                       : "Failed to find the font! Something might have broken! Contact the ScrapComputers Team ASAP!",
+    "scrapcomputers.display.touchscreen"                               : "Press %s for touchscreen", // 1 Argument. which is the keybind text (with style)
 
     // Other
     "scrapcomputers.other.save_and_closebtn"                           : "Save & Close",
@@ -78,8 +85,8 @@
     "scrapcomputers.banned.chat_text"                                  : "ScrapComputers has detected a banned mod/addon loaded in your world!\n\nBanned Mods: ",
     
     "scrapcomputers.banned.banlevel1"                                  : "Nothing happens!",
-    "scrapcomputers.banned.banlevel2"                                  : "Show this Popup every 30 secconds",
-    "scrapcomputers.banned.banlevel3"                                  : "ScrapComputers is disabled entirly!",
+    "scrapcomputers.banned.banlevel2"                                  : "Show this Popup every 30 seconds",
+    "scrapcomputers.banned.banlevel3"                                  : "ScrapComputers is disabled entirely!",
     
     // Configs
     // These are optional, they already have all the information in there configs. but if you want to modify them, you can change it here.
@@ -107,7 +114,7 @@
     "config.scrapcomputers.configurator.admin_only=option=2"           : "Everyone",
 
     "config.scrapcomputers.hologram.max_objects=name"                  : "Max Hologram objects",
-    "config.scrapcomputers.hologram.max_objects=description"           : "This option allows you to set a limit on the number of hologram objects that can be rendered per hologram.\n\nYou can choose from the following options: Unlimited, 16, 32, 64, 128, 256, 512, 1024, 2048, and 4096",
+    "config.scrapcomputers.hologram.max_objects=description"           : "This option allows you to set the maximum number of objects that a hologram can render.\n\nYou can choose from the following options: Unlimited, 16, 32, 64, 128, 256, 512, 1024, 2048, and 4096",
     "config.scrapcomputers.hologram.max_objects=option=1"              : "Unlimited",
     "config.scrapcomputers.hologram.max_objects=option=2"              : "16 Max",
     "config.scrapcomputers.hologram.max_objects=option=3"              : "32 Max",
@@ -131,5 +138,14 @@
 
     "config.scrapcomputers.global.selectedLanguage=name"               : "Current Mod Language",
     "config.scrapcomputers.global.selectedLanguage=description"        : "ScrapComputers's Language Manager allows you to use game-supported and non game-supported Languages. This means that addon's can add such as Dutch Translations.\n\nUse this config to modify which language the mod should use. Set it to Automatic so it selects a game-supported language for you.\n\n\nNOTE: This only applies to Graphical User Interfaces! Some addon's might add specialized behaviour based on what language your on!" ,
-    "config.scrapcomputers.global.selectedLanguage=option=1"           : "Automatic"
+
+    "config.scrapcomputers.computer.nanvalues=name"                    : "NaN Value Management",
+    "config.scrapcomputers.computer.nanvalues=description"             : "Lua sometimes produces NaN values, which stand for \"Not a Number\", often resulting from operations like dividing 0 by 0 or taking the square root of negative numbers. These NaN values makes it possible to break ScrapComputers, leading to components nolonger working up to a point where you would have to reload your world\n\nThis config option lets you change the behaviour of NaN values.\n\nOptions:\n\tNo change in behaviour (Not Recommended): Lets you use NaN values in anything, Note that you would be able to brick components!\n\tScrapComputers Related functions disallowed (Short: SRFD): You wouldn't be able to send NaN values to any function from ScrapComputers.\n\nTIP: NaN values can never be itself, so to check if its a NaN value, you could just check by itself.\n\tTrue means not a NaN value\n\tFalse means a NaN value.",
+    "config.scrapcomputers.computer.nanvalues=option=1"                : "No change in behaviour",
+    "config.scrapcomputers.computer.nanvalues=option=2"                : "ScrapComputers related functions disallowed",
+
+    "config.scrapcomputers.global.developerenvironment=name"           : "Development Environment Mode",
+    "config.scrapcomputers.global.developerenvironment=description"    : "Developer Environment is a option which is designed to provide debug information. For now this lets you toggle log messages from the Debug Console.\n\nIn the future, it would let you be able to comminucate with external software without the usage of dll mods, it would be useful for like a VSCode extension that updates the computer's code based around a lua file. It would also have additional API for thing's that aren't really easy to make in the game itself.\n\n#f9f1a5WARNING: Please rejoin the world if you change this setting!",
+    "config.scrapcomputers.global.developerenvironment=option=1"       : "Normal environment",
+    "config.scrapcomputers.global.developerenvironment=option=2"       : "Development environment"
 }

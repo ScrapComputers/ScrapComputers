@@ -8,6 +8,12 @@
             },
             "color": "222222",
             "physicsMaterial": "Mechanical",
+            "ratings" : {
+                "buoyancy" : 5,
+                "density" : 1,
+                "durability" : 5,
+                "friction" : 3
+            },
             "renderable": "$CONTENT_DATA/Objects/Renderables/Configurator.rend",
             "scripted": {
                 "classname": "ConfiguratorClass",

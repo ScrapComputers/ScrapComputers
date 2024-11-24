@@ -28,6 +28,8 @@
 ---@field y integer The position on the y-axis
 ---@field state integer The state of the touch: 1 for Pressed, 2 for Hold, 3 for Released.
 
+---@alias TouchTable table<string, TouchData> This is a table that contains all touch data from every player interacting with the screen. The index is the player's name/
+
 ---@class PixelTableField An instruction for a pixel table.
 ---@field x number The x-coordinate (floored)
 ---@field y number The y-coordinate (floored)
@@ -42,6 +44,8 @@
 ---@class GPSData Data received from a GPS
 ---@field worldPosition Vec3 The current world position
 ---@field worldRotation Quat The current world rotation
+---@field localPosition Vec3 The current local position
+---@field localRotation Quat The current local rotation
 ---@field bearing number The world position's bearing rotation
 ---@field velocity Vec3 The current velocity
 ---@field speed number The current speed (magnitude of velocity)
@@ -54,6 +58,7 @@
 ---@field forwardAcceleration number The forward acceleration
 ---@field horizontalAcceleration number The horizontal acceleration
 ---@field verticalAcceleration number The vertical acceleration
+---@field degreeRotation Vec3 The world's roation as a euler.
 
 -- RADAR --
 
@@ -110,6 +115,66 @@
 ---@field characters string All characters that are usable in the font
 ---@field errorChar string[] The character used for a gylph that doesn't exist.
 ---@field charset table<string, string[]> Contains all gylph data for all characters.
+
+-- ASCFONT MANAGER --
+
+---@class ASCFont Represents a font and its associated metadata, glyphs, and other properties
+---@field metadata ASCFont.Metadata The metadata related to the font
+---@field glyphs table<string, ASCFont.Glyph> A table mapping glyph names to their corresponding glyph data
+
+---@class ASCFont.Metadata Metadata related to the font, such as its names, ascender/descender values, and bounding box
+---@field names table<string, string> A table containing font names (e.g., fullname, PostScript name)
+---@field ascender number The ascender value for the font, the height of the highest point of any character
+---@field descender number The descender value for the font, the depth of the lowest point of any character
+---@field underLinePosition number The vertical position where the underline is drawn
+---@field underLineThickness number The thickness of the underline
+---@field boundingBox ASCFont.BoundingBox The overall bounding box for the font containing the max and min coordinates
+---@field resolution number The resolution (typically in DPI) for the font
+
+---@class ASCFont.BoundingBox Represents the bounding box for a font, defining the minimum and maximum x and y coordinates
+---@field xMin number The minimum x-coordinate of the font's bounding box
+---@field xMax number The maximum x-coordinate of the font's bounding box
+---@field yMin number The minimum y-coordinate of the font's bounding box
+---@field yMax number The maximum y-coordinate of the font's bounding box
+
+---@class ASCFont.Glyph Represents a single glyph in the font, including its width, metrics, and triangle data
+---@field advanceWidth number The width of the glyph, which determines the spacing between it and the next character
+---@field metrics ASCFont.Metrics The metrics associated with the glyph, including its bounding box and left bearing
+---@field triangles table<ASCFont.Triangle> A table of triangles that define the shape of the glyph
+
+---@class ASCFont.Metrics : ASCFont.BoundingBox Represents the metrics for a glyph, extending from the bounding box with additional properties like left bearing
+---@field leftBearing number The horizontal distance from the origin to the leftmost edge of the glyph's bounding box
+
+---@class ASCFont.Triangle Represents a triangle used to define the geometry of a glyph
+---@field v1 ASCFont.Coordinate The first vertex of the triangle
+---@field v2 ASCFont.Coordinate The second vertex of the triangle
+---@field v3 ASCFont.Coordinate The third vertex of the triangle
+
+---@class ASCFont.Coordinate Represents a 2D coordinate, typically used for defining the vertices of a triangle
+---@field [1] number The x-coordinate of the point
+---@field [2] number The y-coordinate of the point
+
+-- CONFIG API --
+
+---@class Configuration A configuration for ScrapComputers
+---@field id string The id of the config, recommended to be in the format `[MOD_NAME].[COMPONENT_NAME].[CONFIG_NAME]`
+---@field name string The name of the config
+---@field description string The description of the config
+---@field selectedOption integer The current config's selected option
+---@field hostOnly boolean If the configuration is host-only accessible
+---@field options string[] A list of usable options for the config
+
+-- EXAMPLE MANAGER --
+
+---@class Example Represents an example with a name and a script
+---@field name string The name of the example
+---@field script string The script in the example
+
+-- LANGUAGE MANAGER --
+
+---@class Language Represents a language from the language manager
+---Each element inside it is a translation, where the index and value are strings.
+---@field [string] string A table of translations where each element is a string translation
 
 -- OTHER --
 
@@ -214,6 +279,10 @@ function sc.getGPSs() end
 ---@return SeatController[] SeatControllers All connected Seat Controllers
 function sc.getSeatControllers() end
 
+-- Gets all connected Lights and returns them
+---@return Light[] Lights All connected Lights
+function sc.getLights() end
+
 -- Gets the power value of a register
 ---@param registerName string The name of the register to get the power value from
 ---@return number power The power value of the register
@@ -223,6 +292,10 @@ function sc.getReg(registerName) end
 ---@param registerName string The name of the register to set the power value for
 ---@param power number The power value to set
 function sc.setReg(registerName, power) end
+
+-- Returns true if unsafe env is enabled, else false for safe env.
+---@return boolean isUnsafeENV If its in unsafe env or not.
+function sc.isUnsafeEnvEnabled() end
 
 ----------------------------------------------------------------------
 ---                                                                ---
@@ -235,6 +308,79 @@ function sc.setReg(registerName, power) end
 ---                                                                ---
 ----------------------------------------------------------------------
 
+---The example module for ScrapComputers
+sc.example = {}
+
+---Gets the loaded examples
+---@return Example[] examples A table of all loaded examples
+function sc.example.getExamples() end
+
+---Gets the total number of examples currently loaded
+---@return integer totalExamples The total number of loaded examples
+function sc.example.getTotalExamples() end
+
+---The syntax highlighting module for Lua code
+sc.syntax = {}
+
+---Adds syntax highlighting to the source and returns it
+---You can also mark exception lines, with the first line being where the actual error happened,
+---and the rest are code that leads to that error. If you don't want this, set the exceptionLines to an empty table.
+---@param source string The Lua source code to highlight
+---@param exceptionLines integer[] A table of line numbers where exceptions occurred (empty table if none)
+---@return string highlightedCode The source code with syntax highlighting applied
+function sc.syntax.highlightCode(source, exceptionLines) end
+
+---The language manager module for ScrapComputers
+sc.language = {}
+
+---Gets all loaded languages and returns them
+---@return Language[] languages A table of all loaded languages
+function sc.language.getLanguages() end
+
+---Gets the total number of loaded languages
+---@return integer totalLanguages The total number of loaded languages
+function sc.language.getTotalLanguages() end
+
+---Gets the currently selected language
+---@return string selectedLanguage The selected language
+function sc.language.getSelectedLanguage() end
+
+---Translates the provided text
+---@param text string The text to translate
+---@param ... any|any[] The parameters to pass to the translated text (optional)
+---@return string translatedText The translated text, or the same as `text` if not found
+function sc.language.translatable(text, ...) end
+
+--- The configuration module for ScrapComputers
+sc.config = {}
+
+---Converts a name to an id
+---@param name string The name of the config
+---@return string? id The id of the config, or nil if not found
+function sc.config.nameToId(name) end
+
+---Gets a configuration by index (not id!)
+---Will error if not found
+---@param index integer The index to search for
+---@return Configuration config The configuration found at the index
+function sc.config.getConfigByIndex(index) end
+
+---Gets the total number of configurations
+---@return integer totalConfigurations The total amount of configurations
+function sc.config.getTotalConfigurations() end
+
+---Gets a configuration by id
+---Will error if not found
+---@param id string The ID of the config
+---@return Configuration config The configuration found with the given id
+function sc.config.getConfig(id) end
+
+---Returns true if a configuration exists via ID
+---@param id string The ID of the configuration
+---@return boolean exists Whether the configuration exists or not
+function sc.config.configExists(id) end
+
+-- Extended JSON Library
 sc.json = {}
 
 -- Returns true if the table is safe for JSON conversion
@@ -296,113 +442,115 @@ function sc.base64.decode(data) end
 ---@class BitStream
 local Bitstream = {}
 
--- Dumps the bitstream to a string
----@return string dumpedString The dumped string
-function Bitstream:dumpString() end
+---Dumps the buffer
+---@return string buffer The dumped buffer
+function self:dumpString() end
 
--- Dumps the bitstream as Base64
----@return string dumpedString The dumped Base64 string
-function Bitstream:dumpBase64() end
+---Dumps the buffer (As Base64)
+---@return string buffer The dumped buffer
+function self:dumpBase64() end
 
--- Dumps the bitstream as hex
----@return string dumpedString The dumped hex string
-function Bitstream:dumpHex() end
+---Dumps the buffer (As Hex)
+---@return string buffer The dumped buffer
+function self:dumpHex() end
 
--- Writes a bit
----@param bit boolean|number The bit value to write
-function Bitstream:writeBit(bit) end
+---Reads a number from the bit stream (Big Endian)
+---@param byteSize integer Size of the number in bytes
+---@return integer number The read number
+function self:readNumberBE(byteSize) end
 
--- Reads a bit
----@return integer The bit value (0 or 1), or nil if overflow
-function Bitstream:readBit() end
+---Reads a number from the bit stream (Little Endian)
+---@param byteSize integer Size of the number in bytes
+---@return integer number The read number
+function self:readNumberLE(byteSize) end
 
--- Writes a byte
----@param byte number The byte to write (must be an ASCII character)
-function Bitstream:writeByte(byte) end
+--- Writes a float using IEEE 754 standard (Big Endian)
+---@param value number The float value to encode
+---@return integer encodedFloat The encoded float as integer
+function self:encodeFloat(value) end
 
--- Reads a byte
----@return integer byte The byte that was read
-function Bitstream:readByte() end
+--- Reads a float using IEEE 754 standard (Big Endian)
+---@param bytes integer The 4-byte integer representation of the float
+---@return number decodedFloat The decoded float
+function self:decodeFloat(bytes) end
 
--- Writes a signed 8-bit integer
----@param integer integer The signed 8-bit integer to write
-function Bitstream:writeInt8(integer) end
+--- Reads a double using IEEE 754 standard (Big Endian)
+---@param bytes integer The 8-byte integer representation of the double
+---@return number decodedDouble The decoded double
+function self:decodeDouble(bytes) end
 
--- Reads a signed 8-bit integer
----@return integer integer The signed 8-bit integer that was read
-function Bitstream:readInt8() end
+--- Writes a double using IEEE 754 standard (Big Endian)
+---@param value number The double value to encode
+---@return integer encodedDouble The encoded double as integer
+function self:encodeDouble(value) end
 
--- Writes an unsigned 8-bit integer
----@param uinteger integer The unsigned 8-bit integer to write
-function Bitstream:writeUInt8(uinteger) end
+---Reads a byte from the bit stream
+---@return integer byte The read byte
+function self:readByte() end
 
--- Reads an unsigned 8-bit integer
----@return integer uinteger The unsigned 8-bit integer that was read
-function Bitstream:readUInt8() end
+---Writes a byte to the bit stream
+---@param byte string The byte to write
+function self:writeByte(byte) end
 
--- Writes a signed 16-bit integer
----@param integer integer The signed 16-bit integer to write
-function Bitstream:writeInt16(integer) end
+---Reads a string of a given size from the bit stream
+---@param size integer The size of the string
+---@param stopNulByte boolean? If it should stop by a nul byte
+---@return string str The read string
+function self:readStringEx(size, stopNulByte) end
 
--- Reads a signed 16-bit integer
----@return integer integer16 The signed 16-bit integer that was read
-function Bitstream:readInt16() end
+---Writes a float to the bit stream (Big Endian)
+---@param value number The float value to write
+function self:writeFloatBE(value) end
 
--- Writes an unsigned 16-bit integer
----@param uinteger integer The unsigned 16-bit integer to write
-function Bitstream:writeUInt16(uinteger) end
+---Reads a float from the bit stream (Big Endian)
+---@return number value The read float value
+function self:readFloatBE() end
 
--- Reads an unsigned 16-bit integer
----@return integer integer The unsigned 16-bit integer that was read
-function Bitstream:readUInt16() end
+---Writes a double to the bit stream (Big Endian)
+---@param value number The double value to write
+function self:writeDoubleBE(value) end
 
--- Writes a signed 24-bit integer
----@param integer integer The signed 24-bit integer to write
-function Bitstream:writeInt24(integer) end
+---Reads a double from the bit stream (Big Endian)
+---@return number value The read double value
+function self:readDoubleBE() end
 
--- Reads a signed 24-bit integer
----@return integer integer The signed 24-bit integer that was read
-function Bitstream:readInt24() end
+---Writes a float to the bit stream (Little Endian)
+---@param value number The float value to write
+function self:writeFloatLE(value) end
 
--- Writes an unsigned 24-bit integer
----@param uinteger integer The unsigned 24-bit integer to write
-function Bitstream:writeUInt24(uinteger) end
+---Reads a float from the bit stream (Little Endian)
+---@return number value The read float value
+function self:readFloatLE() end
 
--- Reads an unsigned 24-bit integer
----@return integer uinteger The unsigned 24-bit integer that was read
-function Bitstream:readUInt24() end
+---Writes a double to the bit stream (Little Endian)
+---@param value number The double value to write
+function self:writeDoubleLE(value) end
 
--- Writes a signed 32-bit integer
----@param integer integer The signed 32-bit integer to write
-function Bitstream:writeInt32(integer) end
+---Reads a double from the bit stream (Little Endian)
+---@return number value The read double value
+function self:readDoubleLE()  end
 
--- Reads a signed 32-bit integer
----@return integer integer The signed 32-bit integer that was read
-function Bitstream:readInt32() end
+---Reads a string from the bit stream
+---@param isLittleEndian boolean? If it is in little endian or big endian, Defaults to little endian.
+---@param stopNulByte boolean? If it should stop by a nul byte
+---@return string str The read string
+function self:readString(isLittleEndian, stopNulByte) end
 
--- Writes an unsigned 32-bit integer
----@param uinteger integer The unsigned 32-bit integer to write
-function Bitstream:writeUInt32(uinteger) end
+---Skips bytes
+---@param bytes integer The amount of bytes to skip
+function self:skipBytes(bytes) end
 
--- Reads an unsigned 32-bit integer
----@return integer uinteger The unsigned 32-bit integer that was read
-function Bitstream:readUInt32() end
-
--- Writes a string
----@param string string The string to write
-function Bitstream:writeString(string) end
-
--- Reads a string
----@return string? str The string that was read
-function Bitstream:readString() end
+---Seeks to a new position
+---@param newPosition integer The new position
+function self:seek(newPosition) end
 
 -- Lets you read and write via packet buffers. Useful for networking!
-sc.BitStream = {}
+sc.bitstream = {}
 
 -- Creates a new BitStream stream
 ---@param data string? Optional pre-appended binary data
 ---@return BitStream bitStream The created bit stream
-function sc.BitStream.new(data) end
+function sc.bitstream.new(data) end
 
 ---Additional helper functions for sc.color
 sc.color = {}
@@ -421,6 +569,12 @@ function sc.color.random0to1() end
 ---@param rgbNumber integer The RGB value
 ---@return Color color The generated grayscale color
 function sc.color.newSingular(rgbNumber) end
+
+---This generates an interpolated gradient between the colors provided and is dependent on the ammount of gradient specified.
+---@param colors Color[] The table of colors to generate the gradient from.
+---@param numColors integer The ammount of blending each color gets in the gradient table.
+---@return Color[] colorGradient The generated gradient table.
+function sc.color.generateGradient(colors, numColors) end
 
 ---Allows you to create an MD5 stream for generating MD5 hashes.
 ---@class MD5Stream
@@ -550,7 +704,13 @@ sc.util = {}
 ---@param x number The number to divide
 ---@param n number The amount to divide
 ---@return number remainder The remains that it is impossible to divide
-function sm.scrapcomputers.util.positiveModulo(x, n) end
+function sc.util.positiveModulo(x, n) end
+
+---This generates an interpolated gradient between the numbers provided and is dependent on the ammount of gradient specified.
+---@param numbers number[] The table of numbers to generate the gradient from.
+---@param numNumbers integer The ammount of blending each number gets in the gradient table.
+---@return number[] numberGradient The generated gradient table.
+function sc.util.generateNumberGradient(numbers, numNumbers) end
 
 -- Additional features that `sm.vec3` does not have
 sc.vec3 = {}
@@ -570,25 +730,6 @@ function smc.vec3.toRadians(vec3) end
 ---@param vec3 Vec3 The vector3 value for x, y and z
 ---@return Vec3 vec3 The created vector3
 function sc.vec3.toDegrees(vec3) end
-
-
--- VPBS allows you to convert a Lua table to a packet buffer. Use this if you prefer to handle packets as strings rather than dealing with BitStreams.
-sc.vpbs = {}
-
----Converts a table to a VPBS string.
----@param tbl table The table to convert
----@return string vpbsStr The converted VPBS string
-function sc.vpbs.toString(tbl) end
-
----Converts a VPBS string to a table.
----@param data string The VPBS string
----@return table tbl The table created from the string
-function sc.vpbs.toTable(data) end
-
----Checks if the string is in VPBS format.
----@param data string The data to check
----@return boolean isVPBS True if the string is in VPBS format, false otherwise
-function sc.vpbs.isVPBSstring(data) end
 
 -- Manages fonts and lets you get the fonts
 sc.fontamanger = {}
@@ -610,6 +751,105 @@ function sc.fontamanger.getDefaultFontName() end
 ---Returns the default font
 ---@return ScrapComputersFont font The default font
 function sc.fontamanger.getDefaultFont() end
+
+---@class VirtualDisplay : Display A emulated display
+local VirtualDisplay = {}
+
+---This function cannot be used by Virtual Displays!
+---@deprecated
+function VirtualDisplay.hide() end
+
+---This function cannot be used by Virtual Displays!
+---@deprecated
+function VirtualDisplay.show() end
+
+---This function cannot be used by Virtual Displays!
+---@deprecated
+function VirtualDisplay.setRenderDistance(distance) end
+
+---This function cannot be used by Virtual Displays!
+---@deprecated
+function VirtualDisplay.enableTouchScreen(bool) end
+
+---This function cannot be used by Virtual Displays!
+---@deprecated
+function VirtualDisplay.getTouchData() end
+
+---This function cannot be used by Virtual Displays! (Use render instead!)
+---@deprecated
+function VirtualDisplay.update() end
+
+---This function cannot be used by Virtual Displays!
+---@deprecated
+function VirtualDisplay.autoUpdate(bool) end
+
+---This function cannot be used by Virtual Displays!
+---@deprecated
+function VirtualDisplay.setOptimizationThreshold(int) end
+
+---This function cannot be used by Virtual Displays!
+---@deprecated
+function VirtualDisplay.getOptimizationThreshold() end
+
+---Generates a frame and returns a PixelTable to be rendered on a Display. Use offsets to offset where it should render
+---@param xOffset number? The x offset, Defaults to 0 (Left)
+---@param yOffset number? The y offset, Defaults to 0 (Top)
+---@return PixelTable pixelTable The rendered frame
+function VirtualDisplay.render(xOffset, yOffset) end
+
+---Sets the virtual display's resolution
+---@param newWidth integer The new display width
+---@param newHeight integer The new display height
+function VirtualDisplay.setDimensions(newWidth, newHeight) end
+
+---Virtual displays enable the emulation of additional screens, allowing you to create fake displays in any resolution.
+sc.virtualdisplay = {}
+
+---Creates a virtual display
+---@param displayWidth integer The width of the virtual display
+---@param displayHeight integer The height of the virtual display
+---@return VirtualDisplay virtualDisplay The new created display
+function sc.virtualdisplay.new(displayWidth, displayHeight) end
+
+-- Lets you group up displays into 1 massive display
+sc.multidisplay = {}
+
+---Creates a multidisplay
+---@param displays Display[] Displays.
+---@param columns integer Total columns
+---@param rows integer Total rows
+---@return Display display A Multidisplay instance. (Display type because its 100% compattable)
+function sc.multidisplay.new(displays, columns, rows) end
+
+---The font manager module for handling TrueType fonts
+sc.ascfont = {}
+
+---Gets information about the font
+---@param fontName string The name of the font
+---@return ASCFont fontData The font data
+---@return string? error The error message, if any
+function sc.ascfont.getFontInfo(fontName) end
+
+---Calculates the size of a given text using a specified font
+---@param fontName string The name of the font
+---@param text string The text to measure
+---@param fontSize number The font size
+---@param rotation number The rotation of the text
+---@return number width The width of the text
+---@return number height The height of the text
+function sc.ascfont.calcTextSize(fontName, text, fontSize, rotation) end
+
+---Draws text to a display
+---@param display Display The display to draw on
+---@param xOffset number The x-coordinate offset
+---@param yOffset number The y-coordinate offset
+---@param text string The text to draw
+---@param fontName string The font name to use
+---@param color string|Color The color of the text
+---@param rotation number? The rotation of the text (optional)
+---@param fontSize number The size of the font to use
+---@param colorToggled boolean? Whether the text color can change dynamically (optional)
+function sc.ascfont.drawText(display, xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled) end
 
 ----------------------------------------------------------------------------------------------------
 ---                                                                                              --- 
@@ -760,13 +1000,35 @@ function Display.drawRect(x, y, width, height, color) end
 ---@param color MultiColorType The color of the filled rectangle
 function Display.drawFilledRect(x, y, width, height, color) end
 
+-- Draws a filled triangle
+---@param x1 number The 1st point on X-axis
+---@param y1 number The 1st point on Y-axis
+---@param x2 number The 2nd point on X-axis
+---@param y2 number The 2nd point on Y-axis
+---@param x3 number The 3rd point on X-axis
+---@param y3 number The 3rd point on Y-axis
+---@param color MultiColorType The color of the triangle
+function Display.drawTriangle(x1, y1, x2, y2, x3, y3, color) end
+
+-- Draws a filled triangle
+---@param x1 number The 1st point on X-axis
+---@param y1 number The 1st point on Y-axis
+---@param x2 number The 2nd point on X-axis
+---@param y2 number The 2nd point on Y-axis
+---@param x3 number The 3rd point on X-axis
+---@param y3 number The 3rd point on Y-axis
+---@param color MultiColorType The color of the triangle
+function Display.drawFilledTriangle(x1, y1, x2, y2, x3, y3, color) end
+
 ---Draws text on the display.
 ---@param x number The x-coordinate
 ---@param y number The y-coordinate
----@param text string The text to display
----@param color MultiColorType The color of the text
----@param fontName string The font to use
-function Display.drawText(x, y, text, color, fontName) end
+---@param text string The text to show
+---@param color MultiColorType the color of the text
+---@param fontName string? The name of the font to use
+---@param maxWidth integer? The max width before it wraps around
+---@param wordWrappingEnabled boolean? If it should do word wrapping or not.
+function Display.drawText(x, y, text, color, fontName, maxWidth, wordWrappingEnabled) end
 
 ---Draws a image on the screen.  Images are loaded from the DisplayImages folder in the mods directory, you can generate your own images with the use of our PNG to pixel data python conveter in the mod.
 ---@param width integer The width of the image
@@ -797,6 +1059,10 @@ function Display.enableTouchScreen(bool) end
 ---@return TouchData? touchData The touch data, or nil if the display has not been touched.
 function Display.getTouchData() end
 
+---Retrieves touch table from the display.
+---@return TouchTable touchTable A table containing all of the touch data from every player interacting with the display.
+function Display.getTouchTable() end
+
 ---Renders the pixels to the display.
 function Display.update() end
 
@@ -822,9 +1088,32 @@ function Display.getOptimizationThreshold() end
 ---Calculates the size of the text.
 ---@param text string The text to be calculated
 ---@param font string The font to use
+---@param maxWidth integer? The max width before it wraps around
+---@param wordWrappingEnabled boolean? If it should do word wrapping or not.
+---@param dynamicHeight boolean? If the height should be dynamic towards the actual text instead of the font's height. Only works if word wrapping is disabled.
 ---@return number width The width of the text
 ---@return number height The height of the text
-function Display.calcTextSize(text, font) end
+function Display.calcTextSize(text, font, maxWidth, wordWrappingEnabled, dynamicHeight) end
+
+---Draws ASCF text to a display
+---@param xOffset number The x-coordinate
+---@param yOffset number The y-coordinate
+---@param text string The text to draw
+---@param fontName string The name of the font
+---@param color string|Color The color of the text to set
+---@param rotation number? The rotation
+---@param fontSize number The size of the font to use
+---@param colorToggled boolean? If it should support colors or not in text.
+function Display.drawASCFText( xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled ) end
+
+---Calculates text size.
+---@param fontName string THe name of the font
+---@param text string The text
+---@param fontSize number The size of the font
+---@param rotation number? The rotation
+---@return number width The width the font consumes
+---@return number hegiht The height the font consumes
+function Display.calcASCFTextSize( fontName, text, fontSize, rotation ) end
 
 ---@class GPS A GPS allows you to get rotation, position, velocities, and more!
 local GPS = {}
@@ -1124,3 +1413,14 @@ function NetworkPort.receivePacket() end
 
 ---Clears all unread packets from the buffer.
 function NetworkPort.clearPackets() end
+
+---@class Light A component which lets you set/get the color of it's own component.
+local Light = {}
+
+---Gets the color
+---@return MultiColorTypeNonNil color The current color
+function Light.getColor() end
+
+---Sets the color
+---@param color MultiColorTypeNonNil The new color
+function Light.setColor(color) end

@@ -1,9 +1,14 @@
 -- Ben has sacraficed his fucking soul making display's. VeraDev died commenting the entire display, its even beter because now its all gone.
 -- If you ever make your own display's. You will actually kill yourself. We are NOT joking.
 
+-- TODO
+
+-- auto optimise
+
+local sm_scrapcomputers_ascfManager_applyDisplayFunctions = sm.scrapcomputers.ascfManager.applyDisplayFunctions
 local sm_scrapcomputers_errorHandler_assertArgument = sm.scrapcomputers.errorHandler.assertArgument
 local sm_scrapcomputers_errorHandler_assert = sm.scrapcomputers.errorHandler.assert
-local sm_scrapcomputers_string_splitString = sm.scrapcomputers.string.splitString
+local sm_scrapcomputers_languageManager_translatable = sm.scrapcomputers.languageManager.translatable
 
 local sm_effect_createEffect = sm.effect.createEffect
 local shellEffect = sm_effect_createEffect("ShapeRenderable")
@@ -23,6 +28,10 @@ local sm_vec3_dot = sm.vec3.dot
 local sm_vec3_normalize = sm.vec3.normalize
 local sm_exists = sm.exists
 local sm_player_getAllPlayers = sm.player.getAllPlayers
+local sm_util_clamp = sm.util.clamp
+local sm_render_getScreenCoordinatesFromWorldPosition = sm.render.getScreenCoordinatesFromWorldPosition
+local sm_game_getCurrentTick = sm.game.getCurrentTick
+local sm_physics_raycast = sm.physics.raycast
 
 local bit_bor = bit.bor
 local bit_band = bit.band
@@ -33,6 +42,8 @@ local math_floor = math.floor
 local math_ceil = math.ceil
 local math_sqrt = math.sqrt
 local math_max = math.max
+local math_min = math.min
+local math_abs = math.abs
 
 local string_byte = string.byte
 local string_sub = string.sub
@@ -52,14 +63,18 @@ DisplayClass.colorHighlight = sm_color_new(0x969696ff)
 
 local localPlayer = sm.localPlayer
 local camera = sm.camera
+local colorCache = sm.scrapcomputers.backend.cameraColorCache
+local tinkerBind = sm.gui.getKeyBinding("Tinker", true)
+local interactBind = sm.gui.getKeyBinding("Use", true)
 
 local PIXEL_UUID = sm.uuid.new("cd943f04-96c7-43f0-852c-b2d68c7fc157")
 local BACKPANEL_EFFECT_NAME = "ScrapComputers - ShapeRenderableBackPanel"
-local width, height = sm.gui.getScreenSize()
+local effectPrefix = "ScrapComputers - ShapeRenderable"
+local rePos = sm_vec3_new(0, 0, -10000)
 
-local byteLimit = 65000
 local tableLimit = 15000
-local displayHidingCooldown = 0.1
+local displayHidingCooldown = 0.5
+local optimiseCooldown = 1.5
 
 local imagePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/DisplayImages/"
 
@@ -67,7 +82,8 @@ local networkInstructions = {
     ["DIS_VIS"] = "cl_setDisplayHidden",
     ["SET_REND"] = "cl_setRenderDistance",
     ["SET_THRESHOLD"] = "cl_setThreshold",
-    ["TOUCH_STATE"] = "cl_setTouchAllowed"
+    ["TOUCH_STATE"] = "cl_setTouchAllowed",
+    ["OPTIMIZE"] = "cl_optimizeDisplayEffects"
 }
 
 local dataCountLookup = {
@@ -77,9 +93,7 @@ local dataCountLookup = {
     4,
     5,
     4,
-    6,
-    0,
-    3
+    6
 }
 
 function pixelPosToShapePos(x, y, widthScale, heightScale, pixelScale)
@@ -100,34 +114,14 @@ function round(numb)
     return math_floor(numb + 0.5)
 end
 
--- Returns true if the 2 colors are similar given via a threshold
----@param color Color The first color
----@param color1 Color The seccond color
----@param threshold number (Optional) The threshold of how accruate it should be. By default its 0 aka exactly same color.
----@return boolean colorSame If this is true. then the 2 colors are similar from the threshold.
 function areColorsSimilar(color, color1, threshold)
     if not color or not color1 then return false end
 
-    threshold = threshold or 0
-    local distance = colorDistance(color.r, color.g, color.b, color1.r, color1.g, color1.b)
+    local dr = color1.r - color.r
+    local dg = color1.g - color.g
+    local db = color1.b - color.b
 
-    return distance <= threshold
-end
-
--- Returns the distance between 2 colors (R1, G1, B1, R2, G2, B2)
----@param r1 number The first color for Red
----@param g1 number The first color for Green
----@param b1 number The first color for Blue
----@param r2 number The seccond color for Red
----@param g2 number The seccond color for Green
----@param b2 number The seccond color for Blue
----@return number colorDistance The distance between the 2 color's.
-function colorDistance(r1, g1, b1, r2, g2, b2)
-    local dr = r2 - r1
-    local dg = g2 - g1
-    local db = b2 - b1
-
-    return math_sqrt(dr^2 + dg^2 + db^2)
+    return math_sqrt(dr^2 + dg^2 + db^2) <= threshold
 end
 
 -- Gets the UTF8 char from a string as string_sub messes up special characters
@@ -202,7 +196,7 @@ function splitTable(numbers, length)
     local count = 0
     local resultIndex = 0
 
-    for i, num in ipairs(numbers) do
+    for _, num in ipairs(numbers) do
         count = count + 1
         currentTable[count] = num
 
@@ -224,6 +218,12 @@ function splitTable(numbers, length)
 end
 
 function colorToID(color)
+    if color then
+        color = type(color) == "string" and sm_color_new(color) or color
+    else
+        color = sm_color_new(0, 0, 0)
+    end
+
     local r = math_floor(color.r * 255)
     local g = math_floor(color.g * 255)
     local b = math_floor(color.b * 255)
@@ -240,152 +240,17 @@ function idToColor(colorID)
     return sm_color_new(r / 255, g / 255, b / 255)
 end
 
--- The torture. Someone please give us a soul. Espessally Ben Bingo, He wrote the entire display. PLEASE GIVE US SOME FUCKING WATER, WE HAVENT DRANK WATER SINCE DAY 1.
--- SOME ONE PLEASE FUCKING HELP US. WE DONT WANNA DIE. PLEASE PLEASE AAAAAAAAAAAAAAAA
---
--- Anyways, This optimizes the stack of pixels ready to get drawn, reduces the instructiuon count massivley
----@param indexedStack table The instruction Set
----@param width number The width of the display
----@param height number The height of the display
----@param threshold number The optimization threshold
----@param formatToNetwork boolean If the function is formatting the result to netowrk or not
----@return table TooMuchOptimizedInstructionSet The reduced instruction set afther it was slaughtered.
-function optimizeDisplayPixelStack(indexedStack, width, height, threshold, formatToNetwork)
-    local optimizedStack = {}
-    local processed = {}
-
-    local function findMaxDimensions(x, y, color)
-        local maxWidth, maxHeight = 1, 1
-
-        for i = x + 1, width do
-            local index = coordinateToIndex(i, y, width)
-            local pixelIndex = indexedStack[index]
-
-            if not pixelIndex or processed[index] or not areColorsSimilar(pixelIndex, color, threshold) then
-                break
-            end
-            maxWidth = maxWidth + 1
-        end
-
-        for j = y + 1, height do
-            local rowIsUniform = true
-            for i = x, x + maxWidth - 1 do
-                local index = coordinateToIndex(i, j, width)
-                local pixelIndex = indexedStack[index]
-
-                if not pixelIndex or processed[index] or not areColorsSimilar(pixelIndex, color, threshold) then
-                    rowIsUniform = false
-                    break
-                end
-            end
-            if not rowIsUniform then break end
-            maxHeight = maxHeight + 1
-        end
-
-        return maxWidth, maxHeight
-    end
-
-    local function markBlockAsProcessed(x, y, maxWidth, maxHeight)
-        local i, j = x, y
-
-        for _ = 1, maxWidth * maxHeight do
-            processed[coordinateToIndex(i, j, width)] = true
-
-            i = i + 1
-
-            if i > x + maxWidth - 1 then
-                j = j + 1
-                i = x
-            end
-        end
-    end
-
-    local cahcedIndex = 0
-    local optimizedStack = {}
-    local keys = {}
-    local keyIndex = 0
-
-    for index in pairs(indexedStack) do
-        local x, y = indexToCoordinate(index, width)
-
-        keyIndex = keyIndex + 1
-        keys[keyIndex] = {index, x, y}
-    end
-
-    if keyIndex == width * height and not formatToNetwork then
-        for _, keyData in ipairs(keys) do
-            local index = keyData[1]
-
-            cahcedIndex = cahcedIndex + 1
-            optimizedStack[cahcedIndex] = {
-                keyData[2],
-                keyData[3],
-                1,
-                1,
-                indexedStack[index]
-            }
-        end
-
-        return optimizedStack
-    end
-
-    table_sort(keys, function(a, b)
-        local ay = a[3]
-        local by = b[3]
-
-        if ay == by then
-            return a[2] < b[2]
-        else
-            return ay < by
-        end
-    end)
-
-    for _, keyData in ipairs(keys) do
-        local index = keyData[1]
-
-        if not processed[index] then
-            local x, y = keyData[2], keyData[3]
-            local pixelIndex = indexedStack[index]
-
-            local maxWidth, maxHeight = findMaxDimensions(x, y, pixelIndex)
-
-            cahcedIndex = cahcedIndex + 1
-
-            if formatToNetwork then
-                optimizedStack[cahcedIndex] = 9
-                cahcedIndex = cahcedIndex + 1
-                optimizedStack[cahcedIndex] = index
-                cahcedIndex = cahcedIndex + 1
-                optimizedStack[cahcedIndex] = coordinateToIndex(maxWidth, maxHeight, width)
-                cahcedIndex = cahcedIndex + 1
-                optimizedStack[cahcedIndex] = colorToID(pixelIndex)
-            else
-                optimizedStack[cahcedIndex] = {
-                    x,
-                    y,
-                    maxWidth,
-                    maxHeight,
-                    pixelIndex
-                }
-            end
-
-            markBlockAsProcessed(x, y, maxWidth, maxHeight)
-        end
-    end
-
-    return optimizedStack
-end
-
-
 -- SERVER --
 
 -- Creates all functions for the display
 function DisplayClass:sv_createData()
     local shapeId = self.shape.id
-    local colorCache = sm.scrapcomputers.backend.cameraColorCache
+    local clearCache = false
     local data = self.data
     local data_width = data.width
     local data_height = data.height
+    local dataBuffer = {}
+    local dataIndex = 0
 
     -- Draw Circle function
     ---@param x number The center X coordinates
@@ -401,19 +266,18 @@ function DisplayClass:sv_createData()
 
         sm_scrapcomputers_errorHandler_assert(radius, 3, "Radius is too small!")
 
-        
-        local dataBuffer = self.sv.buffer.data
-        local len = #dataBuffer
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = 4
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = round(radius)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = colorToID(color)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = isFilled
 
-        dataBuffer[len + 1] = 4
-        dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), data_width)
-        dataBuffer[len + 3] = round(radius)
-        dataBuffer[len + 4] = colorToID(type(color) == "string" and sm_color_new(color) or color)
-        dataBuffer[len + 5] = isFilled
-
-        if colorCache then
-            colorCache[shapeId] = nil
-        end
+        clearCache = true
     end
 
     ---Draw Triangle function
@@ -433,22 +297,20 @@ function DisplayClass:sv_createData()
         sm_scrapcomputers_errorHandler_assertArgument(x3, 5, {"number"})
         sm_scrapcomputers_errorHandler_assertArgument(y3, 6, {"number"})
 
-        sm_scrapcomputers_errorHandler_assertArgument(color, 7, {"Color", "string"})
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = 5
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = coordinateToIndex(round(x1), round(y1), data_width)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = coordinateToIndex(round(x2), round(y2), data_width)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = coordinateToIndex(round(x3), round(y3), data_width)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = colorToID(color)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = isFilled
 
-        
-        local dataBuffer = self.sv.buffer.data
-        local len = #dataBuffer
-
-        dataBuffer[len + 1] = 5
-        dataBuffer[len + 2] = coordinateToIndex(round(x1), round(y1), data_width)
-        dataBuffer[len + 3] = coordinateToIndex(round(x2), round(y2), data_width)
-        dataBuffer[len + 4] = coordinateToIndex(round(x3), round(y3), data_width)
-        dataBuffer[len + 5] = colorToID(type(color) == "string" and sm_color_new(color) or color)
-        dataBuffer[len + 6] = isFilled
-
-        if colorCache then
-            colorCache[shapeId] = nil
-        end
+        clearCache = true
     end
 
     ---Draw Rectangle Function
@@ -465,58 +327,46 @@ function DisplayClass:sv_createData()
         sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"number"})
         sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"number"})
 
-        sm_scrapcomputers_errorHandler_assertArgument(color, 4, {"Color", "string"})
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = 6
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = coordinateToIndex(round(width), round(height), data_width)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = colorToID(color)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = isFilled
 
-        local dataBuffer = self.sv.buffer.data
-        local len = #dataBuffer
-
-        dataBuffer[len + 1] = 6
-        dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), data_width)
-        dataBuffer[len + 3] = coordinateToIndex(round(width), round(height), data_width)
-        dataBuffer[len + 4] = colorToID(type(color) == "string" and sm_color_new(color) or color)
-        dataBuffer[len + 5] = isFilled
-
-        if colorCache then
-            colorCache[shapeId] = nil
-        end
+        clearCache = true
     end
 
-    return {
+    local display = {
         ---Draws a pixel
         ---@param x number
         ---@param y number
         ---@param color Color
         drawPixel = function (x, y, color)
-            sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
-            sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
-
-            if x < 1 or x > data_width or y < 1 or y > data_height then return end
-
-            sm_scrapcomputers_errorHandler_assertArgument(color, 3, {"Color", "string"})
+            local typeX = type(x)
+            local typeY = type(y)
             
-            local dataBuffer = self.sv.buffer.data
-            local len = #dataBuffer
-            
-            dataBuffer[len + 1] = 1
-            dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), data_width)
-            dataBuffer[len + 3] = colorToID(type(color) == "string" and sm_color_new(color) or color)
+            assert(typeX == "number", "Bad argument #1! Expected number, got "..typeX.." instead!")
+            assert(typeY == "number", "Bad argument #2! Expected number, got "..typeY.." instead!")
 
-            if colorCache then
-                colorCache[shapeId] = nil
-            end
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = 1
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = colorToID(color)
+
+            clearCache = true
         end,
 
         ---Draws pixels from a table
         ---@param tbl PixelTable The table of pixels
         drawFromTable = function (tbl)
             sm_scrapcomputers_errorHandler_assertArgument(tbl, nil, {"table"}, {"PixelTable"})
-
-            local tableBuffer = self.sv.buffer.drawTable
-            local index = #tableBuffer + 1
-
-            tableBuffer[index] = {}
-
-            local backpannel = self.sv.backPanel
 
             for i, pixel in pairs(tbl) do
                 local pixel_x = pixel.x
@@ -525,39 +375,36 @@ function DisplayClass:sv_createData()
 
                 local xType = type(pixel_x)
                 local yType = type(pixel_y)
-                local colorType = type(pixel_color)
 
                 sm_scrapcomputers_errorHandler_assert(pixel_x and pixel_y and pixel_color, "missing data at index "..i..".")
 
                 sm_scrapcomputers_errorHandler_assert(xType == "number", nil, "bad x value at index "..i..". Expected number. Got "..xType.." instead!")
                 sm_scrapcomputers_errorHandler_assert(yType == "number", nil, "bad y value at index "..i..". Expected number. Got "..yType.." instead!")
-                sm_scrapcomputers_errorHandler_assert(colorType == "Color" or colorType == "string", nil, "bad color at index "..i..". Expected Color or string. Got ".. colorType.." instead!")
-
-                if pixel_color ~= backpannel then
-                    tableBuffer[index][coordinateToIndex(pixel_x, pixel_y, data_width)] = type(pixel_color) == "string" and sm_color_new(pixel_color) or pixel_color
-                end
+            
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = 1
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = coordinateToIndex(round(pixel_x), round(pixel_y), data_width)
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = colorToID(pixel_color)
             end
         end,
 
         -- Clear the display
         ---@param color MultiColorType The new background color or 000000
         clear = function (color)
-            sm_scrapcomputers_errorHandler_assertArgument(color, nil, {"Color", "string", "nil"})
+            local clearColor = colorToID(color)
             
-
-            self.sv.buffer.data = {}
-
-            local dataBuffer = self.sv.buffer.data
-            local clearColor = colorToID(color and (type(color) == "string" and sm_color_new(color) or color) or sm_color_new(0, 0, 0))
-
+            dataBuffer = {}
             dataBuffer[1] = 3
             dataBuffer[2] = clearColor
+            dataIndex = 2
+
+            dataBuffer[dataIndex] = clearColor
 
             self.sv.backPanel = clearColor
 
-            if colorCache then
-                colorCache[shapeId] = nil
-            end
+            clearCache = true
         end,
 
         -- Draws a line
@@ -572,21 +419,17 @@ function DisplayClass:sv_createData()
 
             sm_scrapcomputers_errorHandler_assertArgument(x1, 3, {"number"})
             sm_scrapcomputers_errorHandler_assertArgument(y1, 4, {"number"})
-
-            sm_scrapcomputers_errorHandler_assertArgument(color, 5, {"Color", "string"})
-
             
-            local dataBuffer = self.sv.buffer.data
-            local len = #dataBuffer
-            
-            dataBuffer[len + 1] = 2
-            dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), data_width)
-            dataBuffer[len + 3] = coordinateToIndex(round(x1), round(y1), data_width)
-            dataBuffer[len + 4] = colorToID(type(color) == "string" and sm_color_new(color) or color)
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = 2
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = coordinateToIndex(round(x1), round(y1), data_width)
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = colorToID(color)
 
-            if colorCache then
-                colorCache[shapeId] = nil
-            end
+            clearCache = true
         end,
 
         -- Draws a circle
@@ -650,9 +493,6 @@ function DisplayClass:sv_createData()
         drawText = function (x, y, text, color, fontName, maxWidth, wordWrappingEnabled)
             sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
             sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
-
-            sm_scrapcomputers_errorHandler_assertArgument(text, 3, {"string"})
-            sm_scrapcomputers_errorHandler_assertArgument(color, 4, {"Color", "string", "nil"})
             
             sm_scrapcomputers_errorHandler_assertArgument(fontName, 5, {"string", "nil"})
 
@@ -664,29 +504,30 @@ function DisplayClass:sv_createData()
             local font, errMsg = sm.scrapcomputers.fontManager.getFont(fontName)
             sm_scrapcomputers_errorHandler_assert(font, 5, errMsg)
 
-            
-            local data_width = self.data.width
+            text = tostring(text)
 
             if text ~= "" then
                 color = color or "EEEEEE"
                 maxWidth = maxWidth or data_width
                 wordWrappingEnabled = type(wordWrappingEnabled) == "boolean" and wordWrappingEnabled or true
 
-                local dataBuffer = self.sv.buffer.data
-                local len = #dataBuffer
-
-                dataBuffer[len + 1] = 7
-                dataBuffer[len + 2] = coordinateToIndex(round(x), round(y), data_width)
-                dataBuffer[len + 3] = text
-                dataBuffer[len + 4] = colorToID(type(color) == "string" and sm_color_new(color) or color)
-                dataBuffer[len + 5] = fontName
-                dataBuffer[len + 6] = maxWidth
-                dataBuffer[len + 7] = wordWrappingEnabled
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = 7
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = text
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = colorToID(color)
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = fontName
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = maxWidth
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = wordWrappingEnabled
             end
 
-            if colorCache then
-                colorCache[shapeId] = nil
-            end
+            clearCache = true
         end,
 
         loadImage = function(width, height, path)
@@ -699,22 +540,15 @@ function DisplayClass:sv_createData()
             sm_scrapcomputers_errorHandler_assert(sm.json.fileExists(fileLocation), 3, "Image doesnt exist")
 
             local imageTbl = sm.json.open(fileLocation)
-
-            local tableBuffer = self.sv.buffer.drawTable
-            local index = #tableBuffer + 1
-
-            tableBuffer[index] = {}
-
             local x, y = 1, 1
-            local backpannel = self.sv.backPanel
             
-
-            for i, color in pairs(imageTbl) do
-                local rgb = sm_color_new(color)
-
-                if rgb ~= backpannel then
-                    tableBuffer[index][coordinateToIndex(x, y, width)] = rgb
-                end
+            for _, color in pairs(imageTbl) do
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = 1
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = coordinateToIndex(x, y, data_width)
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = colorToID(color)
 
                 y = y + 1
 
@@ -724,9 +558,7 @@ function DisplayClass:sv_createData()
                 end
             end
 
-            if colorCache then
-                colorCache[shapeId] = nil
-            end
+            clearCache = true
         end,
 
         -- Returns the dimensions of the display
@@ -763,14 +595,69 @@ function DisplayClass:sv_createData()
             self.sv.display.touchAllowed = bool
         end,
 
-        -- Gets the touched latest data. Will error if touchscreen is disabled
+        -- Gets the latest touch data.
         getTouchData = function()
             return self.sv.display.touchData
         end,
 
+        -- Gets a table touch data to accomodate multiple players pressing the screen.
+        getTouchTable = function()
+            return self.sv.display.touchTbl
+        end,
+
         -- Renders the pixels to the display.
         update = function ()
-            self.sv.allowUpdate = true
+            local self_sv = self.sv
+            local lastBuffer = self_sv.lastBuffer
+            local lastLength = self_sv.lastBufferLen
+            local update = not lastLength or not lastBuffer
+
+            if clearCache and colorCache then
+                colorCache[shapeId] = nil
+                clearCache = false
+            end
+
+            if not update then
+                if lastLength ~= dataIndex then
+                    update = true
+                end
+            end
+
+            if not update then
+                local maxLen = math_max(lastLength, dataIndex)
+
+                for i = 1, maxLen do
+                    local currData, lastData = dataBuffer[i], lastBuffer[i]
+
+                    if currData ~= lastData then
+                        update = true
+                        break
+                    end
+                end
+            end
+
+            if update then
+                local currBuffer = self_sv.buffer.data
+
+                if currBuffer[1] then
+                    local selIndex = #currBuffer
+
+                    for _, data in pairs(dataBuffer) do
+                        selIndex = selIndex + 1
+                        currBuffer[selIndex] = data
+                    end
+                else
+                    currBuffer = dataBuffer
+                end
+
+                self_sv.buffer.data = currBuffer
+                self_sv.lastBuffer = currBuffer
+                self_sv.lastBufferLen = #currBuffer
+                self_sv.allowUpdate = true
+            end
+
+            dataBuffer = {}
+            dataIndex = 0
         end,
 
         -- Always update's the display. We highly do not suggest doing this as its VERY laggy.
@@ -783,7 +670,7 @@ function DisplayClass:sv_createData()
 
         -- Optimizes the display to the extreme. Will be costy during the optimization but will be a massive performance increase after it.
         optimize = function ()
-            self.sv.buffer.data[#self.sv.buffer.data + 1] = 8
+            --self.sv.buffer.network[#self.sv.buffer.network + 1] = {"OPTIMIZE", {}}
         end,
 
         -- Sets the optimization threshold. The lower, the less optimization it does but with better quality, the higher, the better optimization it does but with worser quality.
@@ -868,18 +755,23 @@ function DisplayClass:sv_createData()
             return usedWidth, usedHeight
         end
     }
+
+    sm_scrapcomputers_ascfManager_applyDisplayFunctions(display)
+
+    return display
 end
 
 function DisplayClass:server_onFixedUpdate()
-    local self_data = self.data
-    local data_width = self_data.width
-    local data_height = self_data.height
+    local self_sv = self.sv
+    local self_sv_buffer = self_sv.buffer
+    local self_sv_display = self_sv.display
     local self_network = self.network
     local sendToClients = self_network.sendToClients
-    local sendToClient = self_network.sendToClient
 
-    if #self.sv.buffer.network > 0 then
-        for _, data in pairs(self.sv.buffer.network) do
+    local networkBuffer = self_sv_buffer.network
+
+    if #networkBuffer > 0 then
+        for _, data in pairs(networkBuffer) do
             local instruction, params = unpack(data)
             local dest = networkInstructions[instruction]
 
@@ -894,26 +786,11 @@ function DisplayClass:server_onFixedUpdate()
             colorCache[self.shape.id] = nil
         end
 
-        self.sv.buffer.network = {}
+        self_sv_buffer.network = {}
     end
 
-    local drawTable = self.sv.buffer.drawTable
-    local tableBuffer = #drawTable > 0
-
-    if self.sv.allowUpdate or self.sv.autoUpdate then
+    if self_sv.allowUpdate or self_sv.autoUpdate then
         local dataBuffer = self.sv.buffer.data
-
-        if tableBuffer then
-            for _, table in pairs(drawTable) do
-                local optimisedTable = optimizeDisplayPixelStack(table, data_width, data_height, self.sv.display.threshold, true)
-                local dataBufferInd = #dataBuffer
-
-                for i, pixel in pairs(optimisedTable) do
-                    dataBufferInd = dataBufferInd + 1
-                    dataBuffer[dataBufferInd] = pixel
-                end
-            end
-        end
 
         if #sm_player_getAllPlayers() > 1 then
             local dataChunks = splitTable(dataBuffer, tableLimit)
@@ -927,34 +804,28 @@ function DisplayClass:server_onFixedUpdate()
             sendToClients(self_network, "cl_pushData")
         end
 
-        self.sv.buffer.data = {}
-        self.sv.buffer.drawTable = {}
-
-        self.sv.allowUpdate = false
+        self_sv_buffer.data = {}
+        self_sv.allowUpdate = false
     end
 
-    if self.sv.needSync and self.sv.synced and self.sv.pixel.pixelData then
-        self.sv.synced = false
+    if self_sv.synced and self_sv_buffer.syncBuffer then
+        self_sv.synced = false
+        self_sv.allowUpdate = true
+        self_sv_buffer.data = self_sv_buffer.syncBuffer
 
-        local player = self.sv.needSync
-        for index, pixel in pairs(self.sv.pixel.pixelData) do
-            pixel[5] = idToColor(pixel[5])
+        sendToClients(self_network, "cl_setTouchAllowed", {self_sv_display.touchAllowed})
+        sendToClients(self_network, "cl_setRenderDistance", {self_sv_display.renderDistance})
+        sendToClients(self_network, "cl_setThreshold", {self_sv_display.threshold})
 
-            sendToClient(self_network, player, "cl_drawPixel", pixel)
-        end
-
-        sendToClient(self_network, player, "cl_syncDisplay", {color = self.sv.pixel.backPanel, touch = self.sv.display.touchAllowed})
-        sendToClient(self_network, player, "cl_pushPixels")
-
-        self.sv.pixel.pixelData = {}
-        self.sv.needSync = nil
+        self_sv_buffer.syncBuffer = {}
     end
 end
 
 function DisplayClass:server_onCreate()
     self.sv = {
         display = {
-            threshold = 0
+            threshold = 0,
+            touchTbl = {}
         },
 
         pixel = {
@@ -964,39 +835,43 @@ function DisplayClass:server_onCreate()
 
         buffer = {
             data = {},
-            drawTable = {},
-            network = {}
+            network = {},
+            syncBuffer = {}
         },
     }
 end
 
-function DisplayClass:sv_setTouchData(data)
-    self.sv.display.touchData = data
+function DisplayClass:server_onDestroy()
+    if colorCache then
+        colorCache[self.shape.id] = nil
+    end
 end
 
-function DisplayClass:sv_syncDisplay(_, player)
-    self.sv.needSync = player
-end
+function DisplayClass:sv_mpScreenSync(data)
+    local sv_dataTbl = data[1]
+    local dataTbl = self.sv.buffer.syncBuffer
+    local len = #dataTbl
 
-function DisplayClass:sv_syncData(data)
-    if data.i == 1 then
-        self.sv.rebuildStr = data.string
-    else
-        self.sv.rebuildStr = self.sv.rebuildStr..data.string
+    for i = 1, #sv_dataTbl do
+        len = len + 1
+        dataTbl[len] = sv_dataTbl[i]
     end
 
-    if data.finished then 
-        self.sv.pixel.pixelData = sm.json.parseJsonString(self.sv.rebuildStr)
-
-        self.sv.rebuildStr = nil
+    if data[2] then
         self.sv.synced = true
     end
 end
 
-function DisplayClass:server_onDestroy()
-    if sm.scrapcomputers.backend.cameraColorCache then
-        sm.scrapcomputers.backend.cameraColorCache[self.shape.id] = nil
-    end
+function DisplayClass:sv_setTertiaryData(data)
+    self.sv.backPanel = data.backPanel
+    self.sv.display.touchAllowed = data.touchAllowed
+    self.sv.display.renderDistance = data.renderDistance
+    self.sv.display.threshold = data.threshold
+end
+
+function DisplayClass:sv_setTouchData(data)
+    self.sv.display.touchData = data[1]
+    self.sv.display.touchTbl[data[2]] = data[1]
 end
 
 -- CLIENT --
@@ -1025,24 +900,9 @@ function DisplayClass:cl_setUserHidden(bool)
     self.cl.display.userHidden = bool
 end
 
--- Selects a random ShapeRenderable from 0 to 255. Why not just use ShapeRenderable? If were to use that. We would reach the effect limit pretty easly.
--- So we do someting VERY janky and Iliegal by making 256 clone's of shaperenderable due to some fuckery on Scrap Mechanic so we can bypass the limit.
----@return string PixelShapeRenderableName The shape renderable to use for the pixel
-function DisplayClass:cl_selectShapeRenderable()
-    local str = "ScrapComputers - ShapeRenderable"..self.cl.pixel.selectionIndex
-
-    self.cl.pixel.selectionIndex = self.cl.pixel.selectionIndex + 1
-    if self.cl.pixel.selectionIndex == 256 then self.cl.pixel.selectionIndex = 0 end
-
-    return str
-end
-
 function DisplayClass:client_onCreate()
     self.cl = {
         pixel = {
-            pixels = {},
-            pixelData = {},
-            occupied = {},
             stoppedEffects = {},
             selectionIndex = 0,
 
@@ -1068,10 +928,12 @@ function DisplayClass:client_onCreate()
             threshold = 0
         },
 
+        pixels = {},
         startBuffer = {},
         stopBuffer = {},
-        tblParams = {},
-        optimiseBuffer = {},
+        newBuffer = {},
+        oldBuffer = {},
+        updatedPoints = {},
         stoppedIndex = 0
     }
 
@@ -1104,16 +966,8 @@ function DisplayClass:client_onCreate()
     effect_setScale(self.cl.backPanel.effect, bgScale)
 
     effect_start(self.cl.backPanel.effect)
-
-    if not sm.isHost then
-        self.network:sendToServer("sv_syncDisplay")
-    end
 end
 
-function DisplayClass:cl_syncDisplay(data)
-    effect_setParameter(self.cl.backPanel.effect, "color", data.color)
-    self.cl.display.touchAllowed = data.touch
-end
 
 function DisplayClass:cl_buildData(data)
     local sv_dataTbl = data[1]
@@ -1131,79 +985,49 @@ function DisplayClass:cl_buildData(data)
 end
 
 function DisplayClass:client_onFixedUpdate()
-    local width = self.data.width
+    local self_cl = self.cl
+    local self_cl_display = self_cl.display
+    local self_cl_backPanel = self_cl.backPanel
+    local self_data = self.data
+    local self_shape = self.shape
+
     local clock = os.clock()
     local pos = camera.getPosition()
     local dir = camera.getDirection()
-    local character = localPlayer.getPlayer().character
+    local player = localPlayer.getPlayer()
+    local playerName = player.name
+    local character = player.character
 
-    if self.cl.display.visTimer + displayHidingCooldown <= clock and character then
-        self.cl.display.visTimer = clock
+    local lockingInt = character:getLockingInteractable()
+    local ignoreFlags = lockingInt and lockingInt:hasSeat()
+    local lastLangUpdt = sm.scrapcomputers.languageManager.lastLanguageUpdate
+    local currTick = sm_game_getCurrentTick()
 
-        local worldPosition = self.shape.worldPosition
-        local shouldHide = false
+    self_cl.characterSeated = ignoreFlags
 
-        if sm_vec3_length(worldPosition - character.worldPosition) > self.cl.display.renderDistance then
+    if self_cl_display.visTimer + displayHidingCooldown <= clock and character then
+        self_cl_display.visTimer = clock
+
+        local worldPosition = self_shape.worldPosition
+        local shouldHide = ignoreFlags
+
+        if sm_vec3_length(worldPosition - character.worldPosition) > self_cl_display.renderDistance then
             shouldHide = true
         end
 
         if not shouldHide then
-            local bb = self.shape:getBoundingBox()
-
-            local at = sm.quat.getAt(self.shape.worldRotation)
-            local up = sm.quat.getUp(self.shape.worldRotation)
-
-            local boundry = {}
-
-            boundry[1] = worldPosition + at * bb.z / 2
-            boundry[2] = worldPosition - at * bb.z / 2
-
-            boundry[3] = worldPosition + up * bb.y / 2
-            boundry[4] = worldPosition - up * bb.y / 2
-
-            boundry[5] = boundry[4] + at * bb.z / 2
-            boundry[6] = boundry[4] - at * bb.z / 2
-
-            boundry[7] = boundry[3] + at * bb.z / 2
-            boundry[8] = boundry[3] - at * bb.z / 2
-
-            shouldHide = true
-
-            local dirDot = sm_vec3_dot(dir, sm_vec3_normalize(worldPosition - pos))
-
-            if dirDot > 0 then
-                local sm_render_getScreenCoordinatesFromWorldPosition = sm.render.getScreenCoordinatesFromWorldPosition
-
-                for i, bound in pairs(boundry) do
-                    local x, y = sm_render_getScreenCoordinatesFromWorldPosition(bound, width, height)
-
-                    if not ((x < 0 or x > width) or (y < 0 or y > height)) then
-                        shouldHide = false
-                        break
-                    end
-                end
-            end
-        end
-
-        if not shouldHide then
-            local startPos = worldPosition + sm.quat.getRight(self.shape.worldRotation) * 0.15
-            local diff = pos - worldPosition
-            local endPos = startPos + sm_vec3_normalize(diff) * sm_vec3_length(diff)
-
-            local hit, res = sm.physics.raycast(startPos, endPos)
-
-            if hit and res.type ~= "character" then
+            if sm_vec3_dot(dir, sm_vec3_normalize(worldPosition - pos)) < 0 then
                 shouldHide = true
             end
         end
 
-        if not self.cl.display.userHidden then
-            if shouldHide then
+        if not self_cl_display.userHidden then
+            if not ignoreFlags and shouldHide and not self_cl.prevHidden then
                 self:cl_setDisplayHidden({shouldHide})
-                self.cl.prevHidden = true
-            elseif not shouldHide and self.cl.prevHidden then
+                self_cl.prevHidden = true
+            elseif (not shouldHide or ignoreFlags) and self_cl.prevHidden then
                 self:cl_setDisplayHidden({shouldHide})
-                self.cl.prevHidden = false
+                self_cl.prevHidden = false
             end
         end
     end
@@ -1212,351 +1036,449 @@ function DisplayClass:client_onFixedUpdate()
         local players = sm.player.getAllPlayers()
         local len = #players
 
-        if len ~= self.cl.lastLen then
-            if not self.cl.lastLen or len > self.cl.lastLen then
-                local sendTbl = {}
-                local sendIndex = 0
+        if len ~= self_cl.lastLen then
+            if (not self_cl.lastLen or len > self_cl.lastLen) and #players > 1 then
+                local dataTbl = {3, colorToID(self_cl_backPanel.currentColor)}
+                local dataIndex = 2
 
-                for index, pixelData in pairs(self.cl.pixel.pixelData) do
-                    local x, y = indexToCoordinate(index, width)
-                    local data = {
-                        x,
-                        y,
-                        pixelData[1],
-                        pixelData[2],
-                        colorToID(pixelData[3])
-                    }
-
-                    sendIndex = sendIndex + 1
-                    sendTbl[sendIndex] = data
+                for index, data in pairs(self_cl.pixels) do
+                    dataIndex = dataIndex + 1
+                    dataTbl[dataIndex] = 1
+                    dataIndex = dataIndex + 1
+                    dataTbl[dataIndex] = index
+                    dataIndex = dataIndex + 1
+                    dataTbl[dataIndex] = colorToID(data[6])
                 end
 
-                local json = sm.json.writeJsonString(sendTbl)
-                local strings = sm_scrapcomputers_string_splitString(json, byteLimit)
+                local chunks = splitTable(dataTbl, tableLimit)
                 local self_network = self.network
+                local sendToServer = self_network.sendToServer
 
-                for i, string in pairs(strings) do
-                    self_network:sendToServer("sv_syncData", {string = string, i = i, finished = i == #strings})
+                local len = #chunks
+
+                for i, chunk in pairs(chunks) do
+                    sendToServer(self_network, "sv_mpScreenSync", {chunk, i == len})
                 end
+
+                local tertiaryData = {
+                    threshold = self_cl_display.threshold,
+                    touchAllowed = self_cl_display.touchAllowed,
+                    renderDistance = self_cl_display.renderDistance,
+                    backPanel = self_cl_backPanel.currentColor
+                }
+
+                sendToServer(self_network, "sv_setTertiaryData", tertiaryData)
             end
 
-            self.cl.lastLen = len
+            self_cl.lastLen = len
         end
     end
 
-    if self.cl.display.interacting and self.cl.display.interactState == 1 then
-        self.cl.display.interactState = 2
-    elseif not self.cl.display.interacting and self.cl.wasInteracting then
-        self.cl.wasInteracting = nil
-        self.cl.display.interactState = 3
-    end
+    local hit, res = sm_physics_raycast(pos, pos + dir * 7.5, nil, sm.physics.filter.dynamicBody + sm.physics.filter.staticBody)
 
-    if self.cl.deleteTouchData and self.cl.deleteTouchData + 1 <= sm.game.getCurrentTick() then
-        self.cl.deleteTouchData = nil
-        self.network:sendToServer("sv_setTouchData", nil)
-    end
+    if hit and res:getShape() == self_shape then
+        self_cl.isRaycasted = true
 
-    if self.cl.display.interacting or self.cl.display.interactState == 3 then
-        local hit, res = localPlayer.getRaycast(7.5)
-        local shape = res:getShape()
+        if self_cl.display.touchAllowed then
+            local roundedNorm = sm_vec3_new(round(res.normalLocal.x), round(res.normalLocal.y), round(res.normalLocal.z))
 
-        if (hit and shape and shape.id == self.shape.id) or self.cl.display.interactState == 3 then
-            if self.cl.display.interactState ~= 3 then
-                self.cl.point = self.shape:transformPoint(res.pointWorld)
-            end
-
-            local x, y = shapePosToPixelPos(self.cl.point, self.cl.display.widthScale, self.cl.display.heightScale, self.cl.pixel.pixelScale)
-            x = sm.util.clamp(x, 1, self.data.width)
-            y = sm.util.clamp(y, 1, self.data.height)
-
-            if not self.cl.display.interactState then self.cl.display.interactState = 1 end
-
-            local touchData = {
-                x = round(x),
-                y = round(y),
-
-                state = self.cl.display.interactState
-            }
-
-            self.network:sendToServer("sv_setTouchData", touchData)
-
-            if self.cl.display.interactState == 3 then
-                self.cl.display.interactState = nil
-                self.cl.deleteTouchData = sm.game.getCurrentTick()
-            end
+            self_cl.raycastValid = self_shape:getXAxis() == roundedNorm
+            self_cl.transformedPoint = self_shape:transformPoint(res.pointWorld)
         else
-            self.cl.display.interacting = false
-            self.cl.wasInteracting = nil
-            self.cl.display.interactState = 3
+            self_cl.raycastValid = false
+            self_cl.transformedPoint = nil
         end
+    else
+        self_cl.isRaycasted = false
+        self_cl.raycastValid = false
+        self_cl.transformedPoint = nil
+    end
+
+
+    if self_cl.raycastValid and self_cl.display.touchAllowed then
+        if self_cl.lastLangUpdate ~= lastLangUpdt or self_cl.seatState ~= self_cl.characterSeated then
+            self_cl.lastLangUpdate = lastLangUpdt
+            self_cl.seatState = self_cl.characterSeated
+
+            self_cl.interactionText = sm_scrapcomputers_languageManager_translatable("scrapcomputers.display.touchscreen", self_cl.characterSeated and tinkerBind or interactBind)
+        end
+    end
+
+    if (self_cl.interacting or self_cl.interactState == 3) and not self_cl.clearTick then
+        self_cl.wasInteracting = true
+
+        if not self_cl.interactState then
+            self_cl.interactState = 1
+        elseif self_cl.interactState == 1 then
+            self_cl.interactState = 2
+        end
+
+        if self_cl.transformedPoint then
+            local x, y = shapePosToPixelPos(self_cl.transformedPoint, self_cl_display.widthScale, self_cl_display.heightScale, self_cl.pixel.pixelScale)
+
+            self_cl.lastX = round(sm_util_clamp(x, 1, self_data.width))
+            self_cl.lastY = round(sm_util_clamp(y, 1, self_data.height))
+        end
+
+        self.network:sendToServer("sv_setTouchData", {{state = self_cl.interactState, x = self_cl.lastX, y = self_cl.lastY}, playerName})
+
+        if self_cl.interactState == 3 then
+            self_cl.interactState = nil
+            self_cl.clearTick = currTick
+        end
+    elseif self_cl.wasInteracting then
+        self_cl.wasInteracting = false
+        if self_cl.interactState then self_cl.interactState = 3 end
+    end
+
+    if self_cl.clearTick and self_cl.clearTick + 1 <= currTick then
+        self.network:sendToServer("sv_setTouchData", {nil, playerName})
+        self_cl.clearTick = nil
+    end
+
+    if (not self_cl.lastOptimise or self_cl.lastOptimise + optimiseCooldown <= clock) and self_cl.doOptimise and self_cl.hasUpdated then
+        self_cl.lastOptimise = clock
+        self_cl.hasUpdated = false
+
+        self:cl_optimiseDisplay()
     end
 end
 
 function DisplayClass:client_onUpdate()
-    local pos = camera.getPosition()
-    local dir = camera.getDirection()
-    local character = localPlayer.getPlayer().character
+    local self_cl = self.cl
 
-    local hit, res = sm.physics.raycast(pos, pos + dir * 7.5, character, 3)
-
-    if hit then
-        local shape = res:getShape()
-
-        if shape and shape.id == self.shape.id then
-            local lockingInt = character:getLockingInteractable()
-
-            if lockingInt and lockingInt:hasSeat() then
-                self:cl_checkRaycastValidity(res, true)
-                self.cl.isSeated = true
-            else
-                self:cl_checkRaycastValidity(res)
-                self.cl.isSeated = false
-            end
-        else
-            self.cl.raycastValid = false
-        end
-    else
-        self.cl.raycastValid = false
-    end
-end
-
-function DisplayClass:cl_checkRaycastValidity(res, isTinker)
-    if self.cl.display.touchAllowed then
-        local roundedNorm = sm_vec3_new(round(res.normalLocal.x), round(res.normalLocal.y), round(res.normalLocal.z))
-        self.cl.display.raycastValid = self.shape:getXAxis() == roundedNorm
-
-        if self.cl.display.raycastValid then
-            local isTinkerText = isTinker and sm.gui.getKeyBinding("Tinker", true) or sm.gui.getKeyBinding("Use", true)
-            sm.gui.setInteractionText("", sm.scrapcomputers.languageManager.translatable("scrapcomputers.display.touchscreen", isTinkerText), "")
-            sm.gui.setInteractionText("")
-        else
-            sm.gui.setInteractionText("")
-            sm.gui.setInteractionText("")
-        end
-    else
+    if self_cl.raycastValid and self_cl.display.touchAllowed and self_cl.interactionText then
+        sm.gui.setInteractionText("", self_cl.interactionText, "")
+        sm.gui.setInteractionText("")
+    elseif self_cl.isRaycasted then
         sm.gui.setInteractionText("")
         sm.gui.setInteractionText("")
-    end
-end
-
-function DisplayClass:cl_onTouch(state)
-    if self.cl.display.raycastValid then
-        sm.audio.play(state and "Button on" or "Button off")
-
-        self.cl.display.interacting = state
-
-        if not self.cl.wasInteracting then
-            self.cl.wasInteracting = true
-        end
     end
 end
 
 function DisplayClass:client_onInteract(character, state)
-    if self.cl.isSeated then return end
-    self:cl_onTouch(state)
+    local self_cl = self.cl
+
+    if state and not self_cl.characterSeated and self_cl.raycastValid then
+        self_cl.interacting = true
+    elseif (not state or not self_cl.raycastValid) and self_cl.wasInteracting then
+        self_cl.interacting = false
+    end
+
+    return false
+end
+
+function DisplayClass:client_canInteract()
+    return true
 end
 
 function DisplayClass:client_onTinker(character, state)
-    if not self.cl.isSeated then return end
-    self:cl_onTouch(state)
-end
-
----@param params table The parameters
-function DisplayClass:cl_drawPixel(params)
     local self_cl = self.cl
-    local self_data = self.data
-    local self_cl_pixel = self_cl.pixel
-    local pixels = self_cl_pixel.pixels
-    local pixelData = self_cl_pixel.pixelData
-    local occupiedTbl = self_cl_pixel.occupied
 
-    local params_x = params[1]
-    local params_y = params[2]
-    local params_color = params[5]
-    params_color = type(params_color) == "Color" and params_color or sm_color_new(params_color)
-    local params_scale_x = params[3]
-    local params_scale_y = params[4]
-
-    local data_width = self_data.width
-    local data_height = self_data.height
-    local backpanel_color = self_cl.backPanel.currentColor
-
-    if params_x > data_width or params_y > data_height or params_x + params_scale_x - 1 < 1 or params_y + params_scale_y - 1 < 1 then return end
-
-    if params_x < 1 then
-        params_scale_x = params_scale_x + params_x - 1
-        params_x = 1
-    end
-
-    if params_x + params_scale_x - 1 > data_width then
-        params_scale_x = data_width - params_x + 1
-    end
-
-    if params_y < 1 then
-        params_scale_y = params_scale_y + params_y - 1
-        params_y = 1
-    end
-
-    if params_y + params_scale_y - 1 > data_height then
-        params_scale_y = data_height - params_y + 1
-    end
-
-    local dataIndex = coordinateToIndex(params_x, params_y, data_width)
-    local occupied = occupiedTbl[dataIndex]
-    local effect = pixels[occupied]
-    local effectData = pixelData[occupied]
-
-    if params_scale_x == 1 and params_scale_y == 1 then
-        if not sm_exists(effect) then
-            if params_color ~= backpanel_color then
-                self:cl_createPixelEffect(params_x, params_y, params_scale_x, params_scale_y, params_color)
-            end
-            return
-        end
-
-        local effectData_x, effectData_y = indexToCoordinate(occupied, data_width)
-        local effectData_scale_x = effectData[1]
-        local effectData_scale_y = effectData[2]
-        local effectData_color = effectData[3]
-
-        if (effectData_scale_x ~= 1 or effectData_scale_y ~= 1) and params_color ~= effectData_color then
-            self:cl_splitEffect(effectData_x, effectData_y, params_x, params_y, params_scale_x, params_scale_y)
-            if params_color ~= backpanel_color then
-                self:cl_createPixelEffect(params_x, params_y, params_scale_x, params_scale_y, params_color)
-            end
-            return
-        end
-
-        if params_color ~= effectData_color then
-            effect_setParameter(effect, "color", params_color)
-            effectData[3] = params_color
-        end
-
-        if params_color ~= backpanel_color then
-            self:cl_startEffect(effect)
-        else
-            self:cl_stopEffect(effect, effectData, occupied)
-        end
-
-        return
-    end
-
-    local set = false
-    if effectData then
-        local effectData_x, effectData_y = indexToCoordinate(occupied, data_width)
-        local effectData_scale_x = effectData[1]
-        local effectData_scale_y = effectData[2]
-        local effectData_color = effectData[3]
-
-        if effectData_scale_x == params_scale_x and effectData_scale_y == params_scale_y and effectData_x == params_x and effectData_y == params_y then
-            if params_color ~= effectData_color then
-                effect_setParameter(effect, "color", params_color)
-
-                effectData[3] = params_color
-            end
-
-            if params_color ~= backpanel_color then
-                self:cl_startEffect(effect)
-            else
-                self:cl_stopEffect(effect, effectData, occupied)
-            end
-
-            set = true
-        end
-    end
-
-    if not set then
-        local x1, y1 = params_x, params_y
-
-        for _ = 1, params_scale_x * params_scale_y do
-            local dataIndex = coordinateToIndex(x1, y1, data_width)
-            local occupiedIndex = occupiedTbl[dataIndex]
-
-            if occupiedIndex then
-                local effectData = pixelData[occupiedIndex]
-                local split = false
-
-                if effectData then
-                    local effectData_x, effectData_y = indexToCoordinate(occupiedIndex, data_width)
-                    local effectData_scale_x = effectData[1]
-                    local effectData_scale_y = effectData[2]
-                    local effectData_color = effectData[3]
-
-                    if effectData_scale_x ~= 1 or effectData_scale_y ~= 1 then
-
-                        local existingMinX, existingMaxX = effectData_x, effectData_x + effectData_scale_x - 1
-                        local existingMinY, existingMaxY = effectData_y, effectData_y + effectData_scale_y - 1
-
-                        local drawingMinX, drawingMaxX = params_x, params_x + params_scale_x - 1
-                        local drawingMinY, drawingMaxY = params_y, params_y + params_scale_y - 1
-
-                        if existingMinX < drawingMinX or existingMinY < drawingMinY or existingMaxX > drawingMaxX or existingMaxY > drawingMaxY then
-                            self:cl_splitEffect(effectData_x, effectData_y, params_x, params_y, params_scale_x, params_scale_y)
-
-                            split = true
-                        end
-                    end
-                end
-
-                if not split then
-                    self:cl_stopEffect(pixels[occupiedIndex], effectData, occupiedIndex)
-                end
-            end
-
-            x1 = x1 + 1
-
-            if x1 > params_x + params_scale_x - 1 then
-                y1 = y1 + 1
-                x1 = params_x
-            end
-        end
-
-        if params_color ~= backpanel_color then
-            self:cl_createPixelEffect(params_x, params_y, params_scale_x, params_scale_y, params_color)
-        end
+    if state and self_cl.characterSeated and self_cl.raycastValid then
+        self_cl.interacting = true
+    elseif (not state or not self_cl.raycastValid) and self_cl.wasInteracting then
+        self_cl.interacting = false
     end
 end
 
-function DisplayClass:cl_scaledAdd(params)
-    local x, y = params[1], params[2]
-    local sx, sy = params[3], params[4]
-    local optimisedBuffer = self.cl.optimiseBuffer
-    local width = self.data.width
-    local x1, y1 = x, y
-    
-    for i = 1, sx * sy do
-        local index = coordinateToIndex(x1, y1, width)
-
-        optimisedBuffer[index] = nil
-
-        x1 = x1 + 1
-
-        if x1 > x + sx - 1 then
-            y1 = y1 + 1
-            x1 = x
-        end
-    end
-
-    self:cl_drawPixel(params)
-end
-
-function DisplayClass:cl_addToTable(params)
-    self.cl.optimiseBuffer[params[1]] = idToColor(params[2])
-end
-
-function DisplayClass:cl_formatDraw(params)
-    local width = self.data.width
-    local x, y = indexToCoordinate(params[1], width)
-    local sx, sy = indexToCoordinate(params[2], width)
-
-    self:cl_drawPixel({x, y, sx, sy, idToColor(params[3])})
+function DisplayClass:client_canTinker()
+    return true
 end
 
 function DisplayClass:cl_pushData()
+    local newBuffer = {}
+    local hasCleared = false
     local self_cl = self.cl
+    local self_cl_backPanel = self_cl.backPanel
+    local self_data = self.data
+    local width = self_data.width
+    local height = self_data.height
+    local updatedPoints = self_cl.updatedPoints
+
+    local function boundsAssert(x, y)
+        return x > 0 and x <= width and y > 0 and y <= height
+    end
+
+    local function addToTable(params)
+        local index = params[1]
+        newBuffer[index] = idToColor(params[2])
+
+        updatedPoints[index] = true
+    end
+
+    local function scaledAdd(params)
+        local x, y = params[1], params[2]
+        local sx, sy = params[3], params[4]
+        local color = params[5]
+    
+        local x1, y1 = x, y
+        local mx = sx + x - 1
+    
+        for _ = 1, sx * sy do
+            if boundsAssert(x1, y1) then
+                local index = coordinateToIndex(x1, y1, width)
+
+                updatedPoints[index] = true
+                newBuffer[index] = color
+            end
+
+            x1 = x1 + 1
+        
+            if x1 > mx then
+                x1 = x
+                y1 = y1 + 1
+            end
+        end
+    end
+
+    local function drawLine(params)
+        local x0, y0 = indexToCoordinate(params[1], width)
+        local x1, y1 = indexToCoordinate(params[2], width)
+        local color = params[3]
+        color =  type(color) == "Color" and color or idToColor(color)
+    
+        local dx = math_abs(x1 - x0)
+        local dy = math_abs(y1 - y0)
+        local sx = (x0 < x1) and 1 or -1
+        local sy = (y0 < y1) and 1 or -1
+        local err = dx - dy
+    
+        while true do
+            if boundsAssert(x0, y0) then
+                local index = coordinateToIndex(x0, y0, width)
+
+                updatedPoints[index] = true
+                newBuffer[index] = color
+            end
+    
+            if x0 == x1 and y0 == y1 then break end
+    
+            local e2 = err * 2
+            if e2 > -dy then
+                err = err - dy
+                x0 = x0 + sx
+            end
+    
+            if e2 < dx then
+                err = err + dx
+                y0 = y0 + sy
+            end
+        end
+    end
+
+    local function clearDisplay(params)
+        hasCleared = true
+        newBuffer = {}
+    
+        local color = params[1] and idToColor(params[1])
+    
+        if color and color ~= self_cl_backPanel.currentColor then
+            effect_setParameter(self_cl_backPanel.effect, "color", color)
+            self_cl_backPanel.currentColor = color
+        end
+    end
+
+    local function drawCircle(params)
+        local x, y = indexToCoordinate(params[1], width)
+        local radius = params[2]
+        local color = idToColor(params[3])
+        local isFilled = params[4]
+    
+        local f = 1 - radius
+        local ddF_x = 1
+        local ddF_y = -2 * radius
+        local cx = 0
+        local cy = radius
+    
+        local function plot(xp, yp)
+            if boundsAssert(xp, yp) then
+                local index = coordinateToIndex(xp, yp, width)
+
+                newBuffer[index] = color
+                updatedPoints[index] = true
+            end
+        end
+    
+        if isFilled then
+            scaledAdd({x - radius, y, radius * 2 + 1, 1, color})
+        else
+            plot(x, y + radius)
+            plot(x, y - radius)
+            plot(x + radius, y)
+            plot(x - radius, y)
+        end
+    
+        while cx < cy do
+            if f >= 0 then
+                cy = cy - 1
+                ddF_y = ddF_y + 2
+                f = f + ddF_y
+            end
+            cx = cx + 1
+            ddF_x = ddF_x + 2
+            f = f + ddF_x
+    
+            if isFilled then
+                scaledAdd({x - cx, y + cy, cx * 2 + 1, 1, color})
+                scaledAdd({x - cy, y + cx, cy * 2 + 1, 1, color})
+    
+                scaledAdd({x - cx, y - cy, cx * 2 + 1, 1, color})
+                scaledAdd({x - cy, y - cx, cy * 2 + 1, 1, color})
+            else
+                plot(x + cx, y + cy)
+                plot(x - cx, y + cy)
+                plot(x + cx, y - cy)
+                plot(x - cx, y - cy)
+                plot(x + cy, y + cx)
+                plot(x - cy, y + cx)
+                plot(x + cy, y - cx)
+                plot(x - cy, y - cx)
+            end
+        end
+    end
+
+    local function drawTriangle(params)
+        local x1, y1 = indexToCoordinate(params[1], width)
+        local x2, y2 = indexToCoordinate(params[2], width)
+        local x3, y3 = indexToCoordinate(params[3], width)
+        local color = idToColor(params[4])
+        local isFilled = params[5]
+    
+        local idx1 = coordinateToIndex(x1, y1, width)
+        local idx2 = coordinateToIndex(x2, y2, width)
+        local idx3 = coordinateToIndex(x3, y3, width)
+        drawLine({idx1, idx2, color})
+        drawLine({idx2, idx3, color})
+        drawLine({idx3, idx1, color})
+    
+        if isFilled then
+            local points = {{x = x1, y = y1}, {x = x2, y = y2}, {x = x3, y = y3}}
+            table_sort(points, function(a, b) return a.y < b.y end)
+    
+            local x0, y0 = points[1].x, points[1].y
+            local x1, y1 = points[2].x, points[2].y
+            local x2, y2 = points[3].x, points[3].y
+    
+            local invSlope1 = (y1 ~= y0) and ((x1 - x0) / (y1 - y0)) or 0
+            local invSlope2 = (y2 ~= y0) and ((x2 - x0) / (y2 - y0)) or 0
+            local invSlope3 = (y2 ~= y1) and ((x2 - x1) / (y2 - y1)) or 0
+    
+            local function fillSpan(y, xStart, xEnd)
+                local startX = math_floor(xStart + 0.5)
+                local endX = math_floor(xEnd + 0.5)
+                if startX > endX then startX, endX = endX, startX end
+    
+                for x = startX, endX do
+                    if boundsAssert(x, y) then
+                        local index = coordinateToIndex(x, y, width)
+
+                        newBuffer[index] = color
+                        updatedPoints[index] = true
+                    end
+                end
+            end
+    
+            for y = y0, y1 - 1 do
+                local xa = x0 + invSlope1 * (y - y0)
+                local xb = x0 + invSlope2 * (y - y0)
+                fillSpan(y, xa, xb)
+            end
+    
+            for y = y1, y2 do
+                local xa = x1 + invSlope3 * (y - y1)
+                local xb = x0 + invSlope2 * (y - y0)
+                fillSpan(y, xa, xb)
+            end
+        end
+    end    
+
+    local function drawRect(params)
+        local x, y = indexToCoordinate(params[1], width)
+        local rWidth, rHeight = indexToCoordinate(params[2], width)
+        local color = idToColor(params[3])
+        local isFilled = params[4]
+    
+        if isFilled then
+            scaledAdd({x, y, rWidth, rHeight, color})
+            return
+        end
+    
+        scaledAdd({x, y, rWidth, 1, color})
+        scaledAdd({x + rWidth - 1, y + 1, 1, rHeight - 2, color})
+        scaledAdd({x, y + 1, 1, rHeight - 2, color})
+        scaledAdd({x, y + rHeight - 1, rWidth, 1,  color})
+    end
+
+    local function drawText(params)
+        local params_x, params_y = indexToCoordinate(params[1], width)
+        local params_text = params[2]
+        local params_color = idToColor(params[3])
+        local params_font = params[4]
+        local params_maxWidth  = params[5]
+        local params_wordWrappingEnabled = params[6]
+    
+        local font, err = sm.scrapcomputers.fontManager.getFont(params_font)
+    
+        if not font then
+            sm.log.error("Fatal error! Failed to get the font! Error message: "..err)
+            sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.display.failed_to_find_font"))
+    
+            return
+        end
+    
+        local xSpacing = 0
+        local ySpacing = 0
+    
+        local i = 1
+    
+        local width = params_maxWidth or width
+    
+        if not params_wordWrappingEnabled then
+            width = math.huge
+        end
+    
+        while i <= #params_text do
+            local char = getUTF8Character(params_text, i)
+    
+            if char == "\n" then
+                xSpacing = 0
+                ySpacing = ySpacing + font.fontHeight
+            else
+                local fontLetter = font.charset[char] or font.errorChar
+    
+                if (params_x + xSpacing) + font.fontWidth > width then
+                    xSpacing = 0
+                    ySpacing = ySpacing + font.fontHeight
+                end
+    
+                for yPosition, row in pairs(fontLetter) do
+                    for xPosition = 1, #row, 1 do
+                        if string_sub(row, xPosition, xPosition) == "#" then
+                            local x, y = params_x + xSpacing + (xPosition - 1), params_y + ySpacing + (yPosition - 1)
+    
+                            if boundsAssert(x, y) then
+                                local index = coordinateToIndex(x, y, width)
+
+                                newBuffer[index] = params_color
+                                updatedPoints[index] = true
+                            end
+                        end
+                    end
+    
+                end
+    
+                xSpacing = xSpacing + font.fontWidth
+            end
+    
+            i = i + #char
+        end
+    end
+
     local data = self_cl.buffer.data
     local totalLen = #data
     local searchIndex = 0
+    local hasUpdated = false
 
     while searchIndex < totalLen do
         searchIndex = searchIndex + 1
@@ -1573,654 +1495,675 @@ function DisplayClass:cl_pushData()
         end
 
         if instruction == 1 then
-            self:cl_addToTable(currentParam)
+            addToTable(currentParam)
+            hasUpdated = true
         elseif instruction == 2 then
-            self:cl_drawLine(currentParam)
+            drawLine(currentParam)
+            hasUpdated = true
         elseif instruction == 3 then
-            self:cl_clearDisplay(currentParam)
+            clearDisplay(currentParam)
         elseif instruction == 4 then
-            self:cl_drawCircle(currentParam)
+            drawCircle(currentParam)
+            hasUpdated = true
         elseif instruction == 5 then
-            self:cl_drawTriangle(currentParam)
+            drawTriangle(currentParam)
+            hasUpdated = true
         elseif instruction == 6 then
-            self:cl_drawRect(currentParam)
-        elseif instruction == 7 then
-            self:cl_drawText(currentParam)
-        elseif instruction == 8 then
-            self:cl_optimizeDisplayEffects()
-        elseif instruction == 9 then
-            self:cl_formatDraw(currentParam)
+            drawRect(currentParam)
+            hasUpdated = true
+        else
+            drawText(currentParam)
+            hasUpdated = true
         end
     end
 
-    local self_data = self.data
-    local optimisedBuffer = optimizeDisplayPixelStack(self_cl.optimiseBuffer, self_data.width, self_data.height, self_cl.display.threshold)
-
-    for i, pixel in pairs(optimisedBuffer) do
-        self:cl_drawPixel(pixel)
-    end
-
-    self_cl.optimiseBuffer = {}
     self_cl.buffer.data = {}
 
-    self:cl_pushPixels()
-end
-
-function DisplayClass:cl_pushPixels()
-    local self_cl = self.cl
-    local startBuffer = self_cl.startBuffer
-
-    if not self_cl.display.isHidden then
-        for i, effect in pairs(startBuffer) do
-            if sm_exists(effect) then
-                effect_start(effect)
-            else
-                startBuffer[i] = nil
-            end
-        end
-    end
-
-    for i, effect in pairs(self_cl.stopBuffer) do
-        effect_stop(effect)
-    end
-
-    self_cl.startBuffer = {}
-    self_cl.stopBuffer = {}
-end
-
-function DisplayClass:cl_cacheCheck(index, color)
-    local self_cl = self.cl
-    local self_cl_pixel = self_cl.pixel
-    local occupied = self_cl_pixel.occupied[index]
-
-    if not occupied or not areColorsSimilar(self_cl_pixel.pixelData[occupied][3], color, self_cl.display.threshold) then
-        return true
-    end
-
-    return false
-end
-
--- Creates a pixel effect
----@param x number The x-coordinate of the pixel
----@param y number The y-coordinate of the pixel
----@param scale {x : number, y : number} The scale of the pixe;
----@param color Color The color of it
-function DisplayClass:cl_createPixelEffect(x, y, scale_x, scale_y, color)
-    local self_data = self.data
-    local self_cl = self.cl
-    local self_cl_pixel = self_cl.pixel
+    local self_interactable = self.interactable
     local self_cl_display = self_cl.display
-    local self_data_panelOffset = self_data.panelOffset
-    local data_width = self_data.width
+    local self_cl_pixel = self_cl.pixel
+    local oldBuffer = self_cl.oldBuffer
+    local pixels = self_cl.pixels
+    local stoppedIndex = self_cl.stoppedIndex
+    local stoppedEffects = self_cl_pixel.stoppedEffects
+    local threshold = self_cl_display.threshold
+    local backpanelColor = self_cl.backPanel.currentColor
+    local dataChange = {}
+    local colorChange = {}
+    local isHidden = self_cl_display.isHidden
+    local widthScale = self_cl_display.widthScale
+    local heightScale = self_cl_display.heightScale
+    local selectionIndex = self_cl_pixel.selectionIndex
+    local clock = os.clock()
 
+    local self_data_panelOffset = self_data.panelOffset
     local pixel_scale = self_cl_pixel.pixelScale
     local pixel_scale_y = pixel_scale.y
     local pixel_scale_z = pixel_scale.z
-
     local pixelDepth = self_data_panelOffset and self_data_panelOffset + 0.001 or 0.116
 
-    local newEffectData = {
-        scale_x,
-        scale_y,
-        color,
-    }
+    local function createEffect()
+        local effect 
+        
+        if stoppedIndex > 0 then
+            effect = stoppedEffects[stoppedIndex]
+    
+            stoppedEffects[stoppedIndex] = nil
+            stoppedIndex = stoppedIndex - 1
 
-    local newEffect
-    local effectId, cachedEffect = next(self_cl_pixel.stoppedEffects)
+            if not isHidden and not effect_isPlaying(effect) then
+                effect_start(effect)
+            end
+        else
+            effect = sm_effect_createEffect(effectPrefix..selectionIndex, self_interactable)
+            effect_setParameter(effect, "uuid", PIXEL_UUID)
 
-    if cachedEffect then
-        newEffect = cachedEffect
-        self_cl_pixel.stoppedEffects[effectId] = nil
-        self_cl.stoppedIndex = self_cl.stoppedIndex - 1
-    else
-        newEffect = sm_effect_createEffect(self:cl_selectShapeRenderable(), self.interactable)
-        effectId = newEffect.id
-        effect_setParameter(newEffect,"uuid", PIXEL_UUID)
-    end
+            selectionIndex = (selectionIndex + 1) % 256
 
-    local is1x1 = scale_x == 1 and scale_y == 1
-
-    local centerX = 0
-    local centerY = 0
-
-    if is1x1 then
-        effect_setScale(newEffect, sm_vec3_new(0, pixel_scale_y, pixel_scale_z))
-
-        centerX = x - 1
-        centerY = y - 1
-    else
-        effect_setScale(newEffect, sm_vec3_new(0, pixel_scale_y * scale_y, pixel_scale_z * scale_x))
-
-        centerX = ((scale_x / 2) + x - 1) - 0.5
-        centerY = ((scale_y / 2) + y - 1) - 0.5
-    end
-
-    local xPos, yPos = pixelPosToShapePos(centerX, centerY, self_cl_display.widthScale, self_cl_display.heightScale, pixel_scale)
-    effect_setOffsetPosition(newEffect, sm_vec3_new(pixelDepth, yPos, xPos))
-    effect_setParameter(newEffect, "color", color)
-
-    local dataIndex = coordinateToIndex(x, y, data_width)
-    self_cl_pixel.pixels[dataIndex] = newEffect
-    self_cl_pixel.pixelData[dataIndex] = newEffectData
-
-    local occupiedTbl = self_cl_pixel.occupied
-
-    if scale_x ~= 1 or scale_y ~= 1 then
-        local x1, y1 = x, y
-
-        for _ = 1, scale_x * scale_y do
-            local occupiedIndex = coordinateToIndex(x1, y1, data_width)
-            occupiedTbl[occupiedIndex] = dataIndex
-
-            x1 = x1 + 1
-
-            if x1 > x + scale_x - 1 then
-                y1 = y1 + 1
-                x1 = x
+            if not isHidden then
+                effect_start(effect)
             end
         end
-    else
-        occupiedTbl[dataIndex] = dataIndex
+    
+        return effect
     end
 
-    self:cl_startEffect(newEffect)
-end
-
--- Splits a effect
----@param x number The 1st x-coordinates
----@param y number The 1st y-coordinates
----@param x1 number The 2nd x-coordinates
----@param y1 number The 2nd y-coordinates
----@param newScale Vec3 The new scale.
-function DisplayClass:cl_splitEffect(x, y, x1, y1, sx, sy)
-    local dataIndex = coordinateToIndex(x, y, self.data.width)
-    local self_cl_pixel = self.cl.pixel
-    local effect = self_cl_pixel.pixels[dataIndex]
-    local effectData = self_cl_pixel.pixelData[dataIndex]
-    local oldScale_x = effectData[1]
-    local oldScale_y = effectData[2]
-    local oldColor = effectData[3]
-
-    self:cl_stopEffect(effect, effectData, dataIndex)
-
-    local minX, maxX = x1 - x, (x + oldScale_x - 1) - (x1 + sx - 1)
-    local minY, maxY = y1 - y, (y + oldScale_y - 1) - (y1 + sy - 1)
-
-    local minDrawn = false
-    local maxDrawn = false
-
-    if minX > 0 then
-        self:cl_createPixelEffect(x, y, minX, oldScale_y, oldColor)
-        minDrawn = true
+    local function createBasicData(index, color)
+        local x, y = indexToCoordinate(index, width)
+        local effect = createEffect()
+    
+        return {
+            effect,
+            1,
+            1,
+            x, 
+            y,
+            color
+        }
     end
 
-    if maxX > 0 then
-        local startPosX = x + oldScale_x - maxX
-        self:cl_createPixelEffect(startPosX, y, maxX, oldScale_y, oldColor)
-
-        maxDrawn = true
+    local function setEffectParameters(effectData)
+        local x, y = effectData[4], effectData[5]
+        local effect = effectData[1]
+        local sx, sy = effectData[2], effectData[3]
+    
+        local centerX, centerY
+    
+        if sx == 1 and sy == 1 then
+            effect_setScale(effect, sm_vec3_new(0, pixel_scale_y, pixel_scale_z))
+    
+            centerX = x - 1
+            centerY = y - 1
+        else
+            effect_setScale(effect, sm_vec3_new(0, pixel_scale_y * sy, pixel_scale_z * sx))
+    
+            centerX = ((sx / 2) + x - 1) - 0.5
+            centerY = ((sy / 2) + y - 1) - 0.5
+        end
+    
+        local xPos, yPos = pixelPosToShapePos(centerX, centerY, widthScale, heightScale, pixel_scale)
+        effect_setOffsetPosition(effect, sm_vec3_new(pixelDepth, yPos, xPos))
     end
 
-    if minY > 0 then
-        local startPosX = minDrawn and x + minX or x
-        local scaleX = oldScale_x
+    local function stopEffect(effect)
+        stoppedIndex = stoppedIndex + 1
+        stoppedEffects[stoppedIndex] = effect
 
-        if minDrawn then scaleX = scaleX - minX end
-        if maxDrawn then scaleX = scaleX - maxX end
-
-        self:cl_createPixelEffect(startPosX, y, scaleX, minY, oldColor)
+        effect_setOffsetPosition(effect, rePos)
     end
 
-    if maxY > 0 then
-        local startPosX = minDrawn and x + minX or x
-
-        local startPosY = y1 + sy
-        local scaleX = oldScale_x
-
-        if minDrawn then scaleX = scaleX - minX end
-        if maxDrawn then scaleX = scaleX - maxX end
-
-        self:cl_createPixelEffect(startPosX, startPosY, scaleX, maxY, oldColor)
-    end
-end
-
--- Optimise effects that are currently on the display, also does max optimisation, very expensive and weird
-function DisplayClass:cl_optimizeDisplayEffects()
-    local self_cl = self.cl
-    local self_cl_pixel = self_cl.pixel
-    local occupied = self_cl_pixel.occupied
-    local pixelData = self_cl_pixel.pixelData
-
-    local width, height = self.data.width, self.data.height
-
-    local threshold = self_cl.display.threshold
-    local processed = {}
-
-    local function findMaxDimensions(x, y, color, originalScaleX, originalScaleY)
-        local maxWidth, maxHeight = originalScaleX, originalScaleY
-
-        for i = x + originalScaleX, width do
-            local canExtendWidth = true
-            for j = y, y + maxHeight - 1 do
-                local occupiedIndex = occupied[coordinateToIndex(i, j, width)]
-
-                if not (occupiedIndex and not processed[occupiedIndex] and areColorsSimilar(pixelData[occupiedIndex][3], color, threshold)) then
-                    canExtendWidth = false
-                    break
+    local function meshNeighbours(index, sendColor)
+        local success = false
+        local function assignPixelsToFill(originReplace, originSx, originSy, originOx, originOy)
+            local x1, y1 = originOx, originOy
+            local mx = originOx + originSx - 1
+            for _ = 1, originSx * originSy do
+                pixels[coordinateToIndex(x1, y1, width)] = originReplace
+                x1 = x1 + 1
+                if x1 > mx then
+                    x1 = originOx
+                    y1 = y1 + 1
                 end
             end
+        end
+    
+        local originData = pixels[index]
+        local originSx, originSy, originOx, originOy = 1, 1, indexToCoordinate(index, width)
+        
+        if originData then
+            originSx, originSy = originData[2], originData[3]
+            originOx, originOy = originData[4], originData[5]
+            index = coordinateToIndex(originOx, originOy, width)
+        end
+    
+        local nxData = pixels[coordinateToIndex(originOx - 1, originOy, width)]
+        local pxData = pixels[coordinateToIndex(originOx + originSx, originOy, width)]
+        local nAvail = nxData and nxData[3] == originSy and nxData[5] == originOy and areColorsSimilar(sendColor, nxData[6], threshold)
+        local pAvail = pxData and pxData[3] == originSy and pxData[5] == originOy and areColorsSimilar(sendColor, pxData[6], threshold)
+    
+        local originReplace = nil
+        if nAvail and pAvail then
+            local sx = pxData[2]
+            local ox = pxData[4]
+            local x1, y1 = ox, pxData[5]
+            local mx = ox + sx - 1
+            for _ = 1, sx * pxData[3] do
+                pixels[coordinateToIndex(x1, y1, width)] = nxData
+                x1 = x1 + 1
+                if x1 > mx then
+                    x1 = ox
+                    y1 = y1 + 1
+                end
+            end
+            nxData[2] = nxData[2] + pxData[2] + originSx
+            originReplace, success = nxData, true
+            dataChange[nxData] = true
+            dataChange[pxData] = nil
+            stopEffect(pxData[1])
+        elseif nAvail then
+            nxData[2] = nxData[2] + originSx
+            originReplace, success = nxData, true
+            dataChange[nxData] = true
+        elseif pAvail then
+            pxData[2] = pxData[2] + originSx
+            pxData[4] = pxData[4] - originSx
+            originReplace, success = pxData, true
+            dataChange[pxData] = true
+        end
+    
+        if originReplace then
+            if originData then
+                stopEffect(originData[1])
+                dataChange[originData] = nil
+            end
+            assignPixelsToFill(originReplace, originSx, originSy, originOx, originOy)
+            originSx, originSy = originReplace[2], originReplace[3]
+            originOx, originOy = originReplace[4], originReplace[5]
+        end
 
-            if canExtendWidth then 
-                maxWidth = maxWidth + 1
-            else
-                break
+        local nyData = pixels[coordinateToIndex(originOx, originOy - 1, width)]
+        local pyData = pixels[coordinateToIndex(originOx, originOy + originSy, width)]
+        local nAvailY = nyData and nyData[2] == originSx and nyData[4] == originOx and areColorsSimilar(sendColor, nyData[6], threshold)
+        local pAvailY = pyData and pyData[2] == originSx and pyData[4] == originOx and areColorsSimilar(sendColor, pyData[6], threshold)
+    
+        local originReplace1 = nil
+        if nAvailY and pAvailY then
+            local sx = pyData[2]
+            local ox = pyData[4]
+            local x1, y1 = ox, pyData[5]
+            local mx = ox + sx - 1
+            for _ = 1, sx * pyData[3] do
+                pixels[coordinateToIndex(x1, y1, width)] = nyData
+                x1 = x1 + 1
+                if x1 > mx then
+                    x1 = ox
+                    y1 = y1 + 1
+                end
+            end
+            nyData[3] = nyData[3] + pyData[3] + originSy
+            originReplace1, success = nyData, true
+            dataChange[nyData] = true
+            dataChange[pyData] = nil
+            stopEffect(pyData[1])
+        elseif nAvailY then
+            nyData[3] = nyData[3] + originSy
+            originReplace1, success = nyData, true
+            dataChange[nyData] = true
+        elseif pAvailY then
+            pyData[3] = pyData[3] + originSy
+            pyData[5] = pyData[5] - originSy
+            originReplace1, success = pyData, true
+            dataChange[pyData] = true
+        end
+    
+        if originReplace1 then
+            originData = pixels[coordinateToIndex(originOx, originOy, width)]
+            if originData then
+                stopEffect(originData[1])
+                dataChange[originData] = nil
+            end
+            assignPixelsToFill(originReplace1, originSx, originSy, originOx, originOy)
+        end
+    
+        return success
+    end
+
+    local function splitX(index)
+        local effectData = pixels[index]
+        local _, y = indexToCoordinate(index, width)
+        local ex, ey, sx, sy, color = effectData[4], effectData[5], effectData[2], effectData[3], effectData[6]
+        local end_y = ey + sy - 1
+        local createIndex
+    
+        if y == ey or y == end_y then
+            local edgeY = (y == ey) and ey or end_y
+            createIndex = coordinateToIndex(ex, edgeY, width)
+            
+            local newData = createBasicData(createIndex, color)
+            newData[2] = sx
+    
+            for i = 0, sx - 1 do
+                pixels[createIndex + i] = newData
+            end
+    
+            dataChange[newData] = true
+
+            local effect = newData[1]
+            colorChange[effect.id] = {effect, color}
+    
+            if y == ey then
+                effectData[5] = ey + 1
+            end
+            effectData[3] = sy - 1
+            dataChange[effectData] = true
+        else
+            local centerIndex = coordinateToIndex(ex, y, width)
+            local centerData = createBasicData(centerIndex, color)
+            centerData[2] = sx
+    
+            for i = 0, sx - 1 do
+                pixels[centerIndex + i] = centerData
+            end
+    
+            dataChange[centerData] = true
+            
+            local effect = centerData[1]
+            colorChange[effect.id] = {effect, color}
+
+            local remainingHeight = end_y - y
+            local endData = createBasicData(coordinateToIndex(ex, y + 1, width), color)
+            endData[2], endData[3] = sx, remainingHeight
+    
+            for row = 0, remainingHeight - 1 do
+                local rowIndex = coordinateToIndex(ex, y + 1 + row, width)
+                for i = 0, sx - 1 do
+                    pixels[rowIndex + i] = endData
+                end
+            end
+    
+            dataChange[endData] = true
+
+            local effect = endData[1]
+            colorChange[effect.id] = {effect, color}
+    
+            effectData[3] = y - ey
+            dataChange[effectData] = true
+        end
+    end
+    
+    local function splitXY(index)
+        local effectData = pixels[index]
+        local x, _ = indexToCoordinate(index, width)
+        local ex, sx, color = effectData[4], effectData[2], effectData[6]
+        local edgeX = ex + sx - 1
+    
+        local newData = createBasicData(index, color)
+        pixels[index] = newData
+        dataChange[newData] = true
+
+        local effect = newData[1]
+        colorChange[effect.id] = {effect, color}
+    
+        if x == ex then
+            effectData[4] = ex + 1
+            effectData[2] = sx - 1
+        elseif x == edgeX then
+            effectData[2] = sx - 1
+        else
+            local endXOffset = edgeX - x
+            local endIndex = index + 1
+            local endData = createBasicData(endIndex, color)
+            endData[2] = endXOffset
+    
+            for i = 0, endXOffset - 1 do
+                pixels[endIndex + i] = endData
+            end
+    
+            dataChange[endData] = true
+
+            local effect = endData[1]
+            colorChange[effect.id] = {effect, color}
+    
+            effectData[2] = x - ex
+        end
+        
+        dataChange[effectData] = true
+    end
+
+    if (not hasUpdated and hasCleared) or not getFirst(self_cl.updatedPoints) then
+        local deleted = {}
+
+        for _, effectData in pairs(self_cl.pixels) do
+            local effect = effectData[1]
+            local id = effect.id
+
+            if sm_exists(effect) and not deleted[id] then
+                effect_destroy(effect)
+                deleted[id] = true
             end
         end
 
-        for j = y + originalScaleY, height do
-            local rowIsUniform = true
-            for i = x, x + maxWidth - 1 do
-                local occupiedIndex = occupied[coordinateToIndex(i, j, width)]
+        dataChange = {}
+        colorChange = {}
+        pixels = {}
+        oldBuffer = {}
+        updatedPoints = {}
 
-                if not (occupiedIndex and not processed[occupiedIndex] and areColorsSimilar(pixelData[occupiedIndex][3], color, threshold)) then
+        self_cl.pixels = {}
+        self_cl.oldBuffer = {}
+        self_cl.updatedPoints = {}
+    elseif hasUpdated then
+        local doOptimise = width * height > 4096
+
+        self_cl.hasUpdated = true
+        self_cl.doOptimise = doOptimise
+
+        for i, _ in pairs(updatedPoints) do
+            local colNew = newBuffer[i] or (hasCleared and backpanelColor) or nil
+            
+            if colNew and (colNew ~= oldBuffer[i] or colNew == backpanelColor) then
+                local effectPos = pixels[i]
+
+                if not effectPos and colNew ~= backpanelColor and (not doOptimise or not meshNeighbours(i, colNew)) then
+                    local data = createBasicData(i, colNew)
+                    pixels[i] = data
+                    dataChange[data] = true
+
+                    local effect = data[1]
+                    colorChange[effect.id] = {effect, colNew}
+                elseif effectPos then
+                    if effectPos[3] > 1 then splitX(i); effectPos = pixels[i] end
+                    if effectPos[2] > 1 then splitXY(i); effectPos = pixels[i] end
+                    if colNew == backpanelColor then
+                        stopEffect(effectPos[1])
+
+                        updatedPoints[i] = nil
+                        dataChange[effectPos] = nil
+                        pixels[i] = nil
+                    elseif not doOptimise or not meshNeighbours(i, colNew) then
+                        effectPos[6] = colNew
+
+                        local effect = effectPos[1]
+                        colorChange[effect.id] = {effect, colNew}
+                    end
+                end
+            end
+            
+            oldBuffer[i] = colNew
+        end
+        
+        for effectData, _ in pairs(dataChange) do
+            setEffectParameters(effectData)
+        end
+
+        for _, data in pairs(colorChange) do
+            effect_setParameter(data[1], "color", data[2])
+        end
+    end
+
+    self_cl.pixels = pixels
+    self_cl.oldBuffer = oldBuffer
+    self_cl.stoppedIndex = stoppedIndex
+    self_cl.updatedPoints = updatedPoints
+    self_cl_pixel.stoppedEffects = stoppedEffects
+    self_cl_pixel.selectionIndex = selectionIndex
+    self_cl.newBuffer = {}
+end
+
+function DisplayClass:cl_optimiseDisplay()
+    local self_cl = self.cl
+    local self_cl_pixel = self_cl.pixel
+    local self_cl_display = self_cl.display
+    local self_interactable = self.interactable
+    local self_data = self.data
+    local width, height = self_data.width, self_data.height
+    local threshold = self_cl_display.threshold
+    local pixels = self_cl.pixels
+    local stoppedIndex = self_cl.stoppedIndex
+    local stoppedEffects = self_cl_pixel.stoppedEffects
+    local selectionIndex = self_cl_pixel.selectionIndex
+    local isHidden = self_cl_display.isHidden
+
+    local self_data_panelOffset = self_data.panelOffset
+    local pixel_scale = self_cl_pixel.pixelScale
+    local pixel_scale_y = pixel_scale.y
+    local pixel_scale_z = pixel_scale.z
+    local pixelDepth = self_data_panelOffset and self_data_panelOffset + 0.001 or 0.116
+    local widthScale = self_cl_display.widthScale
+    local heightScale = self_cl_display.heightScale
+   
+    local function stopEffect(effect)
+        stoppedIndex = stoppedIndex + 1
+        stoppedEffects[stoppedIndex] = effect
+
+        effect_setOffsetPosition(effect, rePos)
+    end
+
+    local function createEffect()
+        local effect 
+        
+        if stoppedIndex > 0 then
+            effect = stoppedEffects[stoppedIndex]
+    
+            stoppedEffects[stoppedIndex] = nil
+            stoppedIndex = stoppedIndex - 1
+
+            if not isHidden and not effect_isPlaying(effect) then
+                effect_start(effect)
+            end
+        else
+            effect = sm_effect_createEffect(effectPrefix..selectionIndex, self_interactable)
+            effect_setParameter(effect, "uuid", PIXEL_UUID)
+
+            selectionIndex = (selectionIndex + 1) % 256
+
+            if not isHidden then
+                effect_start(effect)
+            end
+        end
+    
+        return effect
+    end
+
+    local function setEffectParameters(effectData)
+        local x, y = effectData[4], effectData[5]
+        local effect = effectData[1]
+        local sx, sy = effectData[2], effectData[3]
+    
+        local centerX, centerY
+    
+        if sx == 1 and sy == 1 then
+            effect_setScale(effect, sm_vec3_new(0, pixel_scale_y, pixel_scale_z))
+    
+            centerX = x - 1
+            centerY = y - 1
+        else
+            effect_setScale(effect, sm_vec3_new(0, pixel_scale_y * sy, pixel_scale_z * sx))
+    
+            centerX = ((sx / 2) + x - 1) - 0.5
+            centerY = ((sy / 2) + y - 1) - 0.5
+        end
+    
+        local xPos, yPos = pixelPosToShapePos(centerX, centerY, widthScale, heightScale, pixel_scale)
+        effect_setOffsetPosition(effect, sm_vec3_new(pixelDepth, yPos, xPos))
+
+        effect_setParameter(effect, "color", effectData[6])
+    end
+
+    local function createBasicData(index, color)
+        local x, y = indexToCoordinate(index, width)
+        local effect = createEffect()
+    
+        return {
+            effect,
+            1,
+            1,
+            x, 
+            y,
+            color
+        }
+    end
+
+    local processed = {}
+
+    local function findMaxDimensions(startIndex, color)
+        local maxWidth, maxHeight = 1, 1
+        local x, y = indexToCoordinate(startIndex, width)
+        processed[startIndex] = true
+    
+        
+        for i = x + 1, width do
+            local j = coordinateToIndex(i, y, width)
+            local pixel = pixels[j]
+    
+            if not pixel or processed[j] or not areColorsSimilar(pixel[6], color, threshold) then
+                break
+            end
+    
+            processed[j] = true
+            maxWidth = maxWidth + 1
+        end
+   
+        for j = y + 1, height do
+            local rowIsUniform = true
+            local tempIndices = {}
+            local tempIndex = 0
+    
+            for i = x, x + maxWidth - 1 do
+                local j = coordinateToIndex(i, j, width)
+                local pixel = pixels[j]
+    
+                if not pixel or processed[j] or not areColorsSimilar(pixel[6], color, threshold) then
                     rowIsUniform = false
                     break
                 end
+    
+                tempIndex = tempIndex + 1
+                tempIndices[tempIndex] = j
             end
-
-            if rowIsUniform then 
-                maxHeight = maxHeight + 1
-            else
+    
+            if not rowIsUniform then
                 break
             end
+    
+            for _, index in ipairs(tempIndices) do
+                processed[index] = true
+            end
+    
+            maxHeight = maxHeight + 1
         end
-
+    
         return maxWidth, maxHeight
     end
 
-    local function markBlockAsProcessed(x, y, maxWidth, maxHeight)
-        local i, j = x, y
+    local itterated = {}
+    local newPixels = {}
+    local keyIndex = 0
+    local sortedKeys = {}
 
-        for _ = 1, maxWidth * maxHeight do
-            processed[coordinateToIndex(i, j, width)] = true
+    for index, effectData in pairs(pixels) do
+        local effect = effectData[1]
+        local effectId = effect.id
 
-            i = i + 1
-
-            if i > x + maxWidth - 1 then
-                j = j + 1
-                i = x
-            end
+        if not itterated[effectId] then
+            itterated[effectId] = true
+            stopEffect(effect)
         end
+
+        local x, y = indexToCoordinate(index, width)
+
+        keyIndex = keyIndex + 1
+        sortedKeys[keyIndex] = {index, effectData, x, y}
     end
 
-    local x, y = 1, 1
+    table_sort(sortedKeys, function(a, b)
+        local ay = a[4]
+        local by = b[4]
 
-    for _ = 1, width * height do
-        local occupiedIndex = occupied[coordinateToIndex(x, y, width)]
-
-        if occupiedIndex and not processed[occupiedIndex] then
-            local selectedPixel = pixelData[occupiedIndex]
-
-            local color = selectedPixel[3]
-            local maxWidth, maxHeight = findMaxDimensions(x, y, color, selectedPixel[1], selectedPixel[2])
-
-            self:cl_drawPixel({
-                x,
-                y,
-                maxWidth, 
-                maxHeight,
-                color,
-            })
-
-            markBlockAsProcessed(x, y, maxWidth, maxHeight)
-        end
-
-        x = x + 1
-
-        if x > width then
-            y = y + 1
-            x = 1
-        end
-    end
-end
-
-function DisplayClass:cl_drawLine(params)
-    local self_data = self.data
-    local width = self_data.width
-    local height = self_data.height
-
-    local x0, y0 = indexToCoordinate(params[1], width)
-    local x1, y1 = indexToCoordinate(params[2], width)
-    local color = params[3]
-    color =  type(color) == "Color" and color or idToColor(color)
-
-    local dx = math.abs(x1 - x0)
-    local dy = math.abs(y1 - y0)
-    local sx = (x0 < x1) and 1 or -1
-    local sy = (y0 < y1) and 1 or -1
-    local err = dx - dy
-
-    local optimiseBuffer = self.cl.optimiseBuffer
-
-    while true do
-        if x0 > 0 and y0 > 0 and x0 <= width and y0 <= height then
-            local index = coordinateToIndex(x0, y0, width)
-
-            if self:cl_cacheCheck(index, color) then
-                optimiseBuffer[index] = color
-            end
-        end
-
-        if x0 == x1 and y0 == y1 then break end
-
-        local e2 = err * 2
-        if e2 > -dy then
-            err = err - dy
-            x0 = x0 + sx
-        end
-
-        if e2 < dx then
-            err = err + dx
-            y0 = y0 + sy
-        end
-    end
-end
-
-function DisplayClass:cl_drawCircle(params)
-    local width = self.data.width
-    local height = self.data.height
-
-    local x, y = indexToCoordinate(params[1], width)
-    local radius = params[2]
-    local color = idToColor(params[3])
-    local isFilled = params[4]
-
-    local f = 1 - radius
-    local ddF_x = 1
-    local ddF_y = -2 * radius
-    local cx = 0
-    local cy = radius
-
-    local optimiseBuffer = self.cl.optimiseBuffer
-
-    local function plot(xp, yp)
-        local index = coordinateToIndex(xp, yp, width)
-
-        if xp >= 1 and xp <= width and yp >= 1 and yp <= height and self:cl_cacheCheck(index, color) then
-            optimiseBuffer[index] = color
-        end
-    end
-
-    if isFilled then
-        self:cl_scaledAdd({x - radius, y, radius * 2 + 1, 1, color})
-    else
-        plot(x, y + radius)
-        plot(x, y - radius)
-        plot(x + radius, y)
-        plot(x - radius, y)
-    end
-
-    while cx < cy do
-        if f >= 0 then
-            cy = cy - 1
-            ddF_y = ddF_y + 2
-            f = f + ddF_y
-        end
-        cx = cx + 1
-        ddF_x = ddF_x + 2
-        f = f + ddF_x
-
-        if isFilled then
-            self:cl_scaledAdd({x - cx, y + cy, cx * 2 + 1, 1, color})
-            self:cl_scaledAdd({x - cy, y + cx, cy * 2 + 1, 1, color})
-
-            self:cl_scaledAdd({x - cx, y - cy, cx * 2 + 1, 1, color})
-            self:cl_scaledAdd({x - cy, y - cx, cy * 2 + 1, 1, color})
+        if ay == by then
+            return a[3] < b[3]
         else
-            plot(x + cx, y + cy)
-            plot(x - cx, y + cy)
-            plot(x + cx, y - cy)
-            plot(x - cx, y - cy)
-            plot(x + cy, y + cx)
-            plot(x - cy, y + cx)
-            plot(x + cy, y - cx)
-            plot(x - cy, y - cx)
+            return ay < by
         end
-    end
-end
+    end)
 
-function DisplayClass:cl_drawTriangle(params)
-    local width = self.data.width
-    local height = self.data.height
-    local optimiseBuffer = self.cl.optimiseBuffer
+    for _, keyData in pairs(sortedKeys) do
+        local index, effectData = keyData[1], keyData[2]
+        local effect = effectData[1]
+        local effectId = effect.id
 
-    local x1, y1 = indexToCoordinate(params[1], width)
-    local x2, y2 = indexToCoordinate(params[2], width)
-    local x3, y3 = indexToCoordinate(params[3], width)
-    local color = idToColor(params[4])
-    local isFilled = params[5]
-
-    self:cl_drawLine({coordinateToIndex(x1, y1, width), coordinateToIndex(x2, y2, width), color})
-    self:cl_drawLine({coordinateToIndex(x2, y2, width), coordinateToIndex(x3, y3, width), color})
-    self:cl_drawLine({coordinateToIndex(x3, y3, width), coordinateToIndex(x1, y1, width), color})
-
-    if isFilled then
-        local sortedPoints = {
-            {x = x1, y = y1},
-            {x = x2, y = y2},
-            {x = x3, y = y3}
-        }
-        table_sort(sortedPoints, function(a, b) return a.y < b.y end)
-
-        local x0, y0 = sortedPoints[1].x, sortedPoints[1].y
-        local x1, y1 = sortedPoints[2].x, sortedPoints[2].y
-        local x2, y2 = sortedPoints[3].x, sortedPoints[3].y
-
-        local function interpolate(x0, y0, x1, y1, x)
-            return x0 + (x - y0) * (x1 - x0) / (y1 - y0)
+        if not itterated[effectId] then
+            itterated[effectId] = true
+            stopEffect(effect)
         end
 
-        for y = y0, y2 do
-            local xa = y < y1 and interpolate(x0, y0, x1, y1, y) or interpolate(x1, y1, x2, y2, y)
-            local xb = y < y1 and interpolate(x0, y0, x2, y2, y) or interpolate(x0, y0, x2, y2, y)
+        if not processed[index] then
+            local sx, sy = findMaxDimensions(index, effectData[6])
 
-            if xa > xb then xa, xb = xb, xa end
+            local newData = createBasicData(index, effectData[6])
+            newData[2] = sx
+            newData[3] = sy
 
-            for x = math_floor(xa + 0.5), math_floor(xb + 0.5) do
-                if x >= 1 and x <= width and y >= 1 and y <= height then
-                    local index = coordinateToIndex(x, y, width)
+            local x, y = newData[4], newData[5]
+            local x1, y1 = x, y
+            local mx = x + sx - 1
 
-                    if self:cl_cacheCheck(index, color) then
-                        optimiseBuffer[index] = color
-                    end
+            for _ = 1, sx * sy do
+                newPixels[coordinateToIndex(x1, y1, width)] = newData
+
+                x1 = x1 + 1
+
+                if x1 > mx then
+                    x1 = x
+                    y1 = y1 + 1
                 end
             end
+
+            setEffectParameters(newData)
         end
     end
-end
 
-function DisplayClass:cl_drawRect(params)
-    local screenWidth = self.data.width
-    local x, y = indexToCoordinate(params[1], screenWidth)
-    local width, height = indexToCoordinate(params[2], screenWidth)
-    local color = idToColor(params[3])
-    local isFilled = params[4]
-
-    if isFilled then
-        self:cl_scaledAdd({x, y, width, height, color})
-        return
-    end
-
-    self:cl_scaledAdd({x,             y, width,    1,             color})
-    self:cl_scaledAdd({x + width - 1, y + 1,       1, height - 2, color})
-    self:cl_scaledAdd({x,             y + 1,       1, height - 2, color})
-    self:cl_scaledAdd({x,             y + height - 1, width, 1,   color})
-end
-
-function DisplayClass:cl_drawText(params)
-    local data_width = self.data.width
-    local params_x, params_y = indexToCoordinate(params[1], self.data.width)
-    local params_text = params[2]
-    local params_color = idToColor(params[3])
-    local params_font = params[4]
-    local params_maxWidth  = params[5]
-    local params_wordWrappingEnabled = params[6]
-
-    local font, err = sm.scrapcomputers.fontManager.getFont(params_font)
-
-    if not font then
-        sm.log.error("Fatal error! Failed to get the font! Error message: "..err)
-        sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.display.failed_to_find_font"))
-
-        return
-    end
-
-    local xSpacing = 0
-    local ySpacing = 0
-
-    local i = 1
-
-    local width = params_maxWidth or data_width
-    local optimiseBuffer = self.cl.optimiseBuffer
-
-    -- Hacky way but it reduces the amount of code to write
-    if not params_wordWrappingEnabled then
-        width = math.huge
-    end
-
-    while i <= #params_text do
-        local char = getUTF8Character(params_text, i)
-
-        if char == "\n" then
-            xSpacing = 0
-            ySpacing = ySpacing + font.fontHeight
-        else
-            local fontLetter = font.charset[char] or font.errorChar
-
-            if (params_x + xSpacing) + font.fontWidth > width then
-                xSpacing = 0
-                ySpacing = ySpacing + font.fontHeight
-            end
-
-            for yPosition, row in pairs(fontLetter) do
-                for xPosition = 1, #row, 1 do
-                    if row:sub(xPosition, xPosition) == "#" then
-                        local index = coordinateToIndex(params_x + xSpacing + (xPosition - 1), params_y + ySpacing + (yPosition - 1), width)
-
-                        if self:cl_cacheCheck(index, params_color) then
-                            optimiseBuffer[index] = params_color
-                        end
-                    end
-                end
-
-            end
-
-            xSpacing = xSpacing + font.fontWidth
-        end
-
-        i = i + #char
-    end
-end
-
-function DisplayClass:cl_clearDisplay(params)
-    local self_cl = self.cl
-    local self_cl_pixel = self_cl.pixel
-    local self_cl_backPanel = self_cl.backPanel
-    local pixelData = self_cl.pixel.pixelData
-
-    for i, effect in pairs(self_cl_pixel.pixels) do
-        self:cl_stopEffect(effect, pixelData[i], i)
-    end
-
-    self_cl_pixel.pixels = {}
-    self_cl_pixel.pixelData = {}
-    self_cl_pixel.occupied = {}
-
-    local color = params[1] and idToColor(params[1])
-
-    if color then
-        effect_setParameter(self_cl_backPanel.effect, "color", color)
-        self_cl_backPanel.currentColor = color
-    end
+    self_cl.pixels = newPixels
+    self_cl.stoppedIndex = stoppedIndex
+    self_cl_pixel.stoppedEffects = stoppedEffects
+    self_cl_pixel.selectionIndex = selectionIndex
 end
 
 function DisplayClass:cl_setDisplayHidden(params)
     local setHidden = params[1]
+    local self_cl = self.cl
 
-    if setHidden ~= self.cl.display.isHidden then
-        self.cl.display.isHidden = setHidden
+    if setHidden ~= self_cl.display.isHidden then
+        self_cl.display.isHidden = setHidden
 
-        for i, effect in pairs(self.cl.pixel.pixels) do
-            if sm_exists(effect) then
+        local itterated = {}
+        for _, effectData in pairs(self_cl.pixels) do
+            local effect = effectData[1]
+            local id = effect.id
+
+            if sm_exists(effect) and not itterated[id] then
                 if setHidden then
-                    effect_stop(effect)
+                    if effect_isPlaying(effect) then
+                        effect_stop(effect)
+                    end
                 else
-                    effect_start(effect)
-                end
-            end
-        end
-    end
-end
-
-function DisplayClass:cl_startEffect(effect)
-    local self_cl = self.cl
-    local effectId = effect.id
-    self_cl.stopBuffer[effectId] = nil
-
-    if not effect_isPlaying(effect) then
-        self_cl.startBuffer[effectId] = effect
-    end
-end
-
-function DisplayClass:cl_stopEffect(effect, effectData, dataIndex, temporary)
-    local self_cl = self.cl
-    local self_cl_pixel = self_cl.pixel
-    local effectId = effect.id
-    self_cl.startBuffer[effectId] = nil
-
-    if effect_isPlaying(effect) then
-        self_cl.stopBuffer[effectId] = effect
-    end
-    
-    if not temporary then
-        if self_cl.stoppedIndex < 65537 then
-            self_cl.stoppedIndex = self_cl.stoppedIndex + 1
-            self_cl_pixel.stoppedEffects[effectId] = effect
-        else
-            effect_destroy(effect)
-        end
-
-        local occupiedTbl = self_cl_pixel.occupied
-        local width = self.data.width
-
-        if effectData then
-            local effectData_x, effectData_y = indexToCoordinate(dataIndex, width)
-            local xScale, yScale = effectData[1], effectData[2]
-
-            if xScale ~= 1 or yScale ~= 1 then
-                local x1, y1 = effectData_x, effectData_y
-
-                for _ = 1, xScale * yScale do
-                    local occupiedIndex = coordinateToIndex(x1, y1, width)
-
-                    occupiedTbl[occupiedIndex] = nil
-
-                    x1 = x1 + 1
-
-                    if x1 > effectData_x + xScale - 1 then
-                        y1 = y1 + 1
-                        x1 = effectData_x
+                    if not effect_isPlaying(effect) then
+                        effect_start(effect)
                     end
                 end
-            else
-                occupiedTbl[dataIndex] = nil
             end
 
-            self_cl_pixel.pixels[dataIndex] = nil
-            self_cl_pixel.pixelData[dataIndex] = nil
+            itterated[id] = true
+        end
+
+        if setHidden then
+            for _, effect in pairs(self_cl.pixel.stoppedEffects) do
+                if effect_isPlaying(effect) then
+                    effect_stop(effect)
+                end
+            end
         end
     end
-    
 end
 
 sm.scrapcomputers.componentManager.toComponent(DisplayClass, "Displays", true)

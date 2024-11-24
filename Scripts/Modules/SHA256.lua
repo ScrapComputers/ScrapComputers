@@ -23,6 +23,7 @@ local function sha256(str)
 		return (shifted - fraction) + fraction * (2 ^ 32)
 	end
 
+	-- Random numbers. what the fuck are they?
 	local k = {
 		0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
 		0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -155,4 +156,34 @@ function sm.scrapcomputers.sha256.encode(str)
 	sm.scrapcomputers.errorHandler.assertArgument(str, nil, {"string"})
 
 	return sha256(str)
+end
+
+---Generates a random SHA256 which is HARD to predict.
+local counter = 0
+
+local randomTableIndex = 1
+local randomTable = {}
+for x = 1, 16, 1 do
+	for y = 1, 16, 1 do
+		local entropy = math.random() * os.clock() * math.sin(x * y) * math.cos(os.clock()) * math.random(1, 100)
+        randomTable[#randomTable+1] = entropy
+	end
+end
+
+local function nextRandom()
+	local output = randomTable[randomTableIndex]
+	if randomTableIndex >= #randomTable then
+		randomTableIndex = 1
+	else
+		randomTableIndex = randomTableIndex + 1
+	end
+
+	return output
+end
+
+function sm.scrapcomputers.sha256.random()
+    local hash = sha256(tostring((nextRandom() + os.clock() + os.time()) * counter))
+    counter = counter + 1
+
+    return hash
 end

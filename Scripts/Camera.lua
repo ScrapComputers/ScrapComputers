@@ -218,17 +218,6 @@ local function makeSafe(result)
 }
 end
 
----@param color Color The first color
----@param color1 Color The seccond color
----@param threshold number (Optional) The threshold of how accruate it should be. By default its 0 aka exactly same color.
----@return boolean colorSame If this is true. then the 2 colors are similar from the threshold.
-function areColorsSimilar(color, color1, threshold)
-    threshold = threshold or 0
-
-    local distance = colorDistance(color.r, color.g, color.b, color1.r, color1.g, color1.b)
-    return distance <= threshold
-end
-
 ---@param r1 number The first color for Red
 ---@param g1 number The first color for Green
 ---@param b1 number The first color for Blue
@@ -236,12 +225,24 @@ end
 ---@param g2 number The seccond color for Green
 ---@param b2 number The seccond color for Blue
 ---@return number colorDistance The distance between the 2 color's.
-function colorDistance(r1, g1, b1, r2, g2, b2)
+local function colorDistance(r1, g1, b1, r2, g2, b2)
     local dr = r2 - r1
     local dg = g2 - g1
     local db = b2 - b1
 
     return math.sqrt(dr ^ 2 + dg ^ 2 + db ^ 2)
+end
+
+---@param color Color The first color
+---@param color1 Color The seccond color
+---@param threshold number (Optional) The threshold of how accruate it should be. By default its 0 aka exactly same color.
+---@return boolean colorSame If this is true. then the 2 colors are similar from the threshold.
+local function areColorsSimilar(color, color1, threshold)
+    if not color or not color1 then return false end
+    threshold = threshold or 0
+
+    local distance = colorDistance(color.r, color.g, color.b, color1.r, color1.g, color1.b)
+    return distance <= threshold
 end
 
 -- SERVER --
@@ -403,11 +404,6 @@ function CameraClass:sv_createData()
             if #pixels > 0 then
                 display.drawFromTable(pixels)
             end
-
-            if math.ceil(self.sv.screenSection) == math.ceil(width / sliceWidth) and self.sv.hasDrawn then
-                display.optimize()
-                self.sv.hasDrawn = false
-            end
         end,
 
         ---Takes a frame and draws it. (Designed for video & Has shadows)
@@ -448,11 +444,6 @@ function CameraClass:sv_createData()
 
             if #pixels > 0 then
                 display.drawFromTable(pixels)
-            end
-
-            if math.ceil(self.sv.screenSection) == math.ceil(width / sliceWidth) and self.sv.hasDrawn then
-                display.optimize()
-                self.sv.hasDrawn = false
             end
         end,
 
@@ -496,11 +487,6 @@ function CameraClass:sv_createData()
 
             if #pixels > 0 then
                 display.drawFromTable(pixels)
-            end
-
-            if math.ceil(self.sv.screenSection) == math.ceil(width / sliceWidth) and self.sv.hasDrawn then
-                display.optimize()
-                self.sv.hasDrawn = false
             end
         end,
 
@@ -744,7 +730,7 @@ function CameraClass:sv_drawFrame(rays, coordinateTbl, width, height)
         local modifier = 1
 
         if hit then
-            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.4
+            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
             color = getObjCol(result) * time
 
             if result.type ~= "limiter" then
@@ -782,7 +768,7 @@ function CameraClass:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height
 
         if hit then
             if result.type ~= "limiter" then
-                local modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.4
+                local modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
 
                 if type(mask) == "table" then
                     color = blackColor
@@ -869,7 +855,7 @@ function CameraClass:sv_drawAdvancedFrame(rays, coordinateTbl, width, height)
         local modifier = 1
 
         if hit then
-            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.4
+            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
             color = getObjCol(result, true) * time
 
             if result.type ~= "limiter" then
@@ -985,12 +971,12 @@ function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, he
         local x, y = coord[1] + xOffset, coord[2] + yOffset
         local coordIndex = coordinateToIndex(x, y, width)
 
-        self.sv.hasDrawn = true
-
-        pixelIndex = pixelIndex + 1
-        pixels[pixelIndex] = {x = x, y = y, color = color}
-            
-        self.sv.cachedColors[coordIndex] = color
+        if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], color, threshold) then
+            pixelIndex = pixelIndex + 1
+            pixels[pixelIndex] = {x = x, y = y, color = color}
+                
+            self.sv.cachedColors[coordIndex] = color
+        end
     end
 
     return pixels
@@ -1049,8 +1035,6 @@ function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, w
             local finalColor = applySunShader(result, color, time, sunDir)
 
             if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], finalColor, threshold) then
-                self.sv.hasDrawn = true
-
                 pixelIndex = pixelIndex + 1
                 pixels[pixelIndex] = {x = x, y = y, color = finalColor}
 
@@ -1075,8 +1059,6 @@ function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, w
         local coordIndex = coordinateToIndex(x, y, width)
 
         if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], pointData.color, threshold) then
-            self.sv.hasDrawn = true
-
             finalPixelIndex = finalPixelIndex + 1
             pixels[finalPixelIndex] = {x = x, y = y, color = pointData.color}
 

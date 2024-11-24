@@ -1,17 +1,23 @@
---- Manages the enviroment variables for the Computer!
-sm.scrapcomputers.enviromentManager = {}
+--- Manages the environment variables for the Computer!
+sm.scrapcomputers.environmentManager = {}
 
--- Lets you hook the EnviromentManager so you can add your own ENV to it!
+-- Lets you hook the environmentManager so you can add your own ENV to it!
 ---@type function[]
-sm.scrapcomputers.enviromentManager.enviromentHooks = {}
+sm.scrapcomputers.environmentManager.environmentHooks = {}
 
----Creates a enviroment variables table and returns it
+---Creates a environment variables table and returns it
 ---@param self ShapeClass This should be the "self" keyword. A.K.A your class
----@return table enviromentVariables The created enviroment variables.
-function sm.scrapcomputers.enviromentManager.createEnv(self)
+---@return table environmentVariables The created environment variables.
+function sm.scrapcomputers.environmentManager.createEnv(self)
     sm.scrapcomputers.errorHandler.assertArgument(self, nil, {"table"}, {"ShapeClass"})
     
-    local enviromentVariables = {
+    if not sm.scrapcomputers.config.getConfig then
+        sm.scrapcomputers.config.initConfig()
+    end
+
+    local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
+
+    local environmentVariables = {
         print = function (...)
             local text = ""
             
@@ -104,8 +110,7 @@ function sm.scrapcomputers.enviromentManager.createEnv(self)
             sinh = math.sinh,
             sqrt = math.sqrt,
             tan = math.tan,
-            tanh = math.tanh,
-            randomseed = math.randomseed
+            tanh = math.tanh
         },
 		bit = {
             tobit = bit.tobit,
@@ -138,7 +143,7 @@ function sm.scrapcomputers.enviromentManager.createEnv(self)
 
         ---Loads a string and lets you execute it
         ---@param code string The code to execute
-        ---@param env table The enviroment variables it can use
+        ---@param env table The environment variables it can use
         ---@param bytecodeMode boolean? If it should execute bytecode or not. You must have unsafe env enabled to use bytecode!
         ---@return function?
         ---@return string?
@@ -171,6 +176,7 @@ function sm.scrapcomputers.enviromentManager.createEnv(self)
             getLasers = function () return sm.scrapcomputers.componentManager.getComponents("Lasers", self.interactable, true) end,
             getGPSs = function () return sm.scrapcomputers.componentManager.getComponents("GPSs", self.interactable, true) end,
             getSeatControllers = function () return sm.scrapcomputers.componentManager.getComponents("SeatControllers", self.interactable, false) end,
+            getLights = function () return sm.scrapcomputers.componentManager.getComponents("Lights", self.interactable, true) end,
 
             getReg = function (registerName)
                 sm.scrapcomputers.errorHandler.assertArgument(registerName, nil, {"string"})
@@ -211,25 +217,83 @@ function sm.scrapcomputers.enviromentManager.createEnv(self)
                     return sm.scrapcomputers.json.toTable (root, true) 
                 end,
             },
-
-            fontmanager = {
+            font = {
                 getDefaultFont = sm.scrapcomputers.fontManager.getDefaultFont,
                 getDefaultFontName = sm.scrapcomputers.fontManager.getDefaultFontName,
                 getFont = sm.scrapcomputers.fontManager.getFont,
                 getFontNames = sm.scrapcomputers.fontManager.getFontNames,
             },
 
+            ascfont = {
+                applyDisplayFunctions = sm.scrapcomputers.ascfManager.applyDisplayFunctions,
+                calcTextSize = sm.scrapcomputers.ascfManager.calcTextSize,
+                drawText = sm.scrapcomputers.ascfManager.drawTextSafe,
+                getFontInfo = function (fontName)
+                    local font, errMsg = sm.scrapcomputers.ascfManager.getFontInfo(fontName)
+                    if font then
+                        return sm.scrapcomputers.table.clone(font), nil
+                    end
+
+                    return nil, errMsg
+                end,
+            },
+            example = {
+                getExamples = function ()
+                    return sm.scrapcomputers.table.clone(sm.scrapcomputers.exampleManager.getExamples())
+                end,
+                
+                getTotalExamples = sm.scrapcomputers.exampleManager.getTotalExamples,
+            },
+            language = {
+                getLanguages = function ()
+                    return sm.scrapcomputers.table.clone(sm.scrapcomputers.languageManager.getLanguages())
+                end,
+                
+                getSelectedLanguage = sm.scrapcomputers.languageManager.getSelectedLanguage,
+                getTotalLanguages = sm.scrapcomputers.languageManager.getTotalLanguages,
+                translatable = sm.scrapcomputers.languageManager.translatable
+            },
+            syntax = sm.scrapcomputers.syntaxManager,
+
             color = sm.scrapcomputers.color,
             util = sm.scrapcomputers.util,
-            vec3 = sm.scrapcomputers.vec3,
+            vec3 = sm.scrapcomputers.vector3,
             audio = sm.scrapcomputers.audio,
             base64 = sm.scrapcomputers.base64,
             md5 = sm.scrapcomputers.md5,
             sha256 = sm.scrapcomputers.sha256,
             table = sm.scrapcomputers.table,
-            bitStream = sm.scrapcomputers.BitStream,
-            vpbs = sm.scrapcomputers.VPBS,
+            bitstream = sm.scrapcomputers.bitstream,
             string = sm.scrapcomputers.string,
+            virtualdisplay = sm.scrapcomputers.virtualdisplay,
+            multidisplay = sm.scrapcomputers.multidisplay,
+
+            config = {
+                getConfigNames = function ()
+                    local list = {}
+                    for _, config in pairs(sm.scrapcomputers.config.configurations) do
+                        table.insert(config.id)
+                    end
+
+                    return list
+                end,
+
+                getTotalConfigurations = sm.scrapcomputers.config.getTotalConfigurations,
+                configExists = sm.scrapcomputers.config.configExists,
+                nameToId = sm.scrapcomputers.config.nameToId,
+                
+                getConfig = function (id)
+                    return sm.scrapcomputers.table.clone(sm.scrapcomputers.config.getConfig(id))
+                end,
+
+                getConfigByIndex = function (index)
+                    return sm.scrapcomputers.table.clone(sm.scrapcomputers.config.getConfigByIndex(index))
+                end
+            },
+
+            isUnsafeEnvEnabled = function ()
+                return isUnsafeENV
+            end
         },
 
 		sm = {
@@ -250,46 +314,48 @@ function sm.scrapcomputers.enviromentManager.createEnv(self)
             color = sm.color,
             uuid = sm.uuid,
             json = {
+                open = sm.json.open,
+                
                 parseJsonString = function(root) 
                     return sm.scrapcomputers.json.toTable(root, true) 
                 end,
 
                 writeJsonString = function(root) 
-                    return sm.scrapcomputers.json.toString(root, true, false) 
+                    return sm.scrapcomputers.json.toString(root, true, false)
                 end
             }
         },
     }
 
-    enviromentVariables._ENV = enviromentVariables
-    enviromentVariables._G = enviromentVariables
+    environmentVariables._ENV = environmentVariables
+    environmentVariables._G = environmentVariables
 
-    if not sm.scrapcomputers.config.getConfig then
-        sm.scrapcomputers.config.initConfig()
+    if isUnsafeENV then
+        environmentVariables._G = _G
+
+        environmentVariables.self = self
+
+        environmentVariables.sm = sm
+
+        environmentVariables.string = string
+        environmentVariables.table = table
+        environmentVariables.math = math
+        environmentVariables.bit = bit
+        environmentVariables.os = os
+
+        environmentVariables.sc.json = sm.scrapcomputers.json
+        environmentVariables.sc.font = sm.scrapcomputers.fontManager
+        environmentVariables.sc.ascfont = sm.scrapcomputers.ascfManager
+        environmentVariables.sc.example = sm.scrapcomputers.exampleManager
+        environmentVariables.sc.language = sm.scrapcomputers.languageManager
+        environmentVariables.sc.config = sm.scrapcomputers.config
     end
 
-    if sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2 then
-        enviromentVariables._G = _G
+    for _, environmentHook in pairs(sm.scrapcomputers.environmentManager.environmentHooks) do
+        local contents = environmentHook(self)
 
-        enviromentVariables.self = self
-
-        enviromentVariables.sm = sm
-
-        enviromentVariables.string = string
-        enviromentVariables.table = table
-        enviromentVariables.math = math
-        enviromentVariables.bit = bit
-        enviromentVariables.os = os
-
-        enviromentVariables.sc.json = sm.scrapcomputers.json
-        enviromentVariables.sc.fontmanager = sm.scrapcomputers.fontManager
+        environmentVariables = sm.scrapcomputers.table.merge(environmentVariables, contents)
     end
 
-    for _, enviromentHook in pairs(sm.scrapcomputers.enviromentManager.enviromentHooks) do
-        local contents = enviromentHook(self)
-
-        enviromentVariables = sm.scrapcomputers.table.merge(enviromentVariables, contents)
-    end
-
-    return enviromentVariables
+    return environmentVariables
 end

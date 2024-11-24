@@ -16,6 +16,7 @@ local __sm_item_isTool = sm.item.isTool
 local __sm_uuid_new = sm.uuid.new
 
 dofile("$CONTENT_40639a2c-bb9f-4d4f-b88c-41bfe264ffa8/Scripts/ModDatabase.lua")
+dofile("$CONTENT_DATA/Scripts/Config.lua")
 
 ---@class BanSystem : ToolClass
 BanSystemClass = class()
@@ -30,6 +31,7 @@ local bannedMods = {
 
 -- SERVER --
 
+-- Borrowed from Moddatabase to prevent hooking
 local function IsModLoaded(Shapesets, Toolsets, LocalId)
     if Shapesets[LocalId] then
         for shapeset, shapeUuids in __pairs (Shapesets[LocalId]) do
@@ -70,6 +72,7 @@ local function IsModLoaded(Shapesets, Toolsets, LocalId)
     return nil
 end
 
+-- This is the only reason why we needed the moddatabase. It's so that i don't have to fucking run a server to get info for all mods.
 local Shapesets = __sm_json_open("$CONTENT_40639a2c-bb9f-4d4f-b88c-41bfe264ffa8/Scripts/data/shapesets.json")
 local Toolsets = __sm_json_open("$CONTENT_40639a2c-bb9f-4d4f-b88c-41bfe264ffa8/Scripts/data/toolsets.json")
 

@@ -9,6 +9,7 @@ KeyboardClass.colorHighlight = sm.color.new(0xff00ffff)
 
 -- CLIENT / SERVER --
 
+--- Copy & Pasted from the dictonary, We have this fucking function everywhere, yet we still dont have a UTF8 Module for it.
 ---@param str string The character
 ---@param index integer The index to get it at
 ---@return string character The UTF8 character
@@ -26,8 +27,6 @@ function getUTF8Character(str, index)
 
     return string.sub(str, index, index + byteCount - 1)
 end
-
-local interactionStr = "<p textShadow='true' bg='' color='#ffffff' spacing='5'>Press" .. sm.gui.getKeyBinding("Use", true) .. "to start typing</p>"
 
 -- SERVER --
 
@@ -76,8 +75,7 @@ function KeyboardClass:client_onCreate()
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Keyboard)
     self.cl.gui:setTextChangedCallback("TextBox", "cl_onKeystroke")
     self.cl.gui:setText("TextBox", "0")
-    self.cl.gui:setText("Exit", sm.scrapcomputers.languageManager.translatable("scrapcomputers.keyboard.exit")
-)
+    self.cl.gui:setText("Exit", sm.scrapcomputers.languageManager.translatable("scrapcomputers.keyboard.exit"))
     self.cl.gui:setButtonCallback("Exit", "cl_onExit")
 end
 
@@ -96,7 +94,11 @@ function KeyboardClass:client_onFixedUpdate()
 end
 
 function KeyboardClass:client_canInteract()
-    sm.gui.setInteractionText("", interactionStr, "")
+    -- sm.gui.setInteractionText sucks. They can suck my sweaty balls.
+    local translatableText = sm.scrapcomputers.languageManager.translatable("scrapcomputers.keyboard.press_to_type_text", "[TEXT_SPLIT]")
+    local firstPart, secondPart = translatableText:match("^(.-)%[TEXT_SPLIT%](.*)$")
+
+    sm.gui.setInteractionText(firstPart, sm.gui.getKeyBinding("Use", true), secondPart)
     sm.gui.setInteractionText("")
     return true
 end

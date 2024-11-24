@@ -99,19 +99,25 @@
     // Laser
     "875b7675-2365-49c2-a7b0-9b6a09a0a001": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Laser",
-        "description": "The Laser allows you to perform a raycast and get the data from it such as the hit type, pointWorld, normalWorld, you name it!"
+        "description": "The Laser allows you to perform a raycast and get the data from it such as the hit type, pointWorld, normalWorld, you name it!\n\n#f9f1a5Model by Bruno Alexa"
     },
 
     // GPS
     "dd4967a9-dfd1-42eb-b48c-414a123bffe2": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] GPS",
-        "description": "The GPS allows you to get important telemetry about itself like a real GPS! This includes things like position, acceleration, velocity and rotation!\n\n#444444Not a wheel, smoke detector or a apple airtag"
+        "description": "The GPS allows you to get important telemetry about itself like a real GPS! This includes things like position, acceleration, velocity and rotation!\n\n#444444The community forced VeraDev to remodel the GPS so VeraDev doesn't get harrased"
     },
 
     // Seat Controller
     "e0f54d87-49e1-43e0-b5fc-c9f562840a76": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Seat Controller",
         "description": "This component allows you to connect a seat and interact with it. You can access information like the WS & AD powers, you can also interact with the seats connected buttons and switches"
+    },
+    
+    // Light
+    "f824937c-7638-4b2a-93aa-e89eb1d9c753": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Light (LED)",
+        "description": "The light component lets you change its color and get its color! Basicly a RGB LED in Scrap Mechanic!"
     },
 
 

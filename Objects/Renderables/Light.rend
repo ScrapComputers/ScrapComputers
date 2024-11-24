@@ -1,0 +1,27 @@
+{
+    "lodList": [
+       {
+          "includes": [
+             "POSITION",
+             "UV0",
+             "UV1",
+             "NORMAL",
+             "TANGENTS",
+             "BLEND_INDICES",
+             "BLEND_WEIGHTS"
+          ],
+          "mesh": "$CONTENT_DATA/Objects/Mesh/Light.obj",
+          "minViewSize": 20,
+          "subMeshList": [
+             {
+                "material": "DifAsg",
+                "textureList": [
+                   "$CONTENT_DATA/Objects/Textures/transparent.png",
+                   "$CONTENT_DATA/Objects/Textures/extreme_glow.png",
+                   "$CONTENT_DATA/Objects/Textures/transparent.png"
+                ]
+             }
+          ]
+       }
+    ]
+ }

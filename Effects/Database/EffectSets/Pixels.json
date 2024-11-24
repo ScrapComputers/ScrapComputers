@@ -1,4116 +1,2317 @@
 {
     // Backpanel
     "ScrapComputers - ShapeRenderableBackPanel": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
 
     // Pixels
     "ScrapComputers - ShapeRenderable0": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable1": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable2": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable3": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable4": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable5": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable6": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable7": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable8": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable9": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable10": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable11": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable12": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable13": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable14": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable15": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable16": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable17": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable18": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable19": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable20": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable21": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable22": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable23": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable24": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable25": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable26": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable27": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable28": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable29": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable30": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable31": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable32": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable33": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable34": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable35": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable36": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable37": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable38": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable39": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable40": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable41": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable42": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable43": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable44": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable45": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable46": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable47": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable48": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable49": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable50": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable51": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable52": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable53": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable54": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable55": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable56": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable57": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable58": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable59": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable60": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable61": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable62": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable63": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable64": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable65": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable66": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable67": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable68": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable69": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable70": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable71": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable72": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable73": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable74": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable75": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable76": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable77": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable78": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable79": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable80": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable81": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable82": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable83": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable84": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable85": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable86": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable87": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable88": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable89": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable90": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable91": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable92": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable93": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable94": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable95": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable96": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable97": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable98": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable99": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable100": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable101": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable102": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable103": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable104": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable105": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable106": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable107": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable108": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable109": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable110": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable111": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable112": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable113": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable114": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable115": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable116": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable117": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable118": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable119": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable120": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable121": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable122": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable123": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable124": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable125": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable126": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable127": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable128": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable129": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable130": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable131": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable132": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable133": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable134": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable135": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable136": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable137": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable138": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable139": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable140": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable141": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable142": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable143": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable144": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable145": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable146": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable147": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable148": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable149": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable150": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable151": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable152": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable153": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable154": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable155": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable156": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable157": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable158": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable159": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable160": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable161": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable162": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable163": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable164": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable165": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable166": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable167": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable168": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable169": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable170": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable171": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable172": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable173": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable174": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable175": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable176": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable177": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable178": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable179": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable180": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable181": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable182": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable183": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable184": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable185": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable186": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable187": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable188": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable189": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable190": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable191": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable192": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable193": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable194": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable195": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable196": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable197": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable198": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable199": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable200": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable201": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable202": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable203": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable204": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable205": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable206": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable207": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable208": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable209": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable210": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable211": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable212": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable213": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable214": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable215": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable216": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable217": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable218": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable219": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable220": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable221": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable222": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable223": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable224": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable225": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable226": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable227": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable228": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable229": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable230": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable231": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable232": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable233": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable234": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable235": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable236": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable237": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable238": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable239": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable240": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable241": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable242": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable243": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable244": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable245": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable246": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable247": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable248": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable249": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable250": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable251": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable252": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable253": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable254": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     },
     "ScrapComputers - ShapeRenderable255": {
-        "parameterList": {
-            "uuid": "null",
-            "color": 0
-        },
+        
         "effectList": [
             {
-                "type": "shapeRenderable",
-                "name": "",
-                "parameters": [
-                    "uuid",
-                    "color"
-                ]
+                "type": "shapeRenderable"
+                
             }
         ]
     }

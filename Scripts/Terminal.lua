@@ -92,7 +92,8 @@ function TerminalClass:client_onCreate()
         text = {},
         gui = nil,
         inputtedString = "",
-}
+        character = nil
+    }
 end
 
 function TerminalClass:client_onInteract(character, state)
@@ -102,17 +103,28 @@ function TerminalClass:client_onInteract(character, state)
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Terminal, true, {backgroundAlpha = 0.5})
 
-    self.cl.gui:setText("TerminalData", self:cl_formatText())
-    self.cl.gui:setText("InputHistoryList", self:cl_formatInputHistory())
+    self.cl.gui:setText("termData", self:cl_formatText())
+    self.cl.gui:setText("historyList", self:cl_formatInputHistory())
 
-    self.cl.gui:setTextChangedCallback ("InputText", "cl_setInputTextFromGUI")
-    self.cl.gui:setTextAcceptedCallback("InputText", "cl_summitInput")
+    self.cl.gui:setTextChangedCallback ("inputBox", "cl_setInputTextFromGUI")
+    self.cl.gui:setTextAcceptedCallback("inputBox", "cl_summitInput")
 
-    self.cl.gui:setButtonCallback("InputHistoryList_Button", "cl_clearHistory")
-    self.cl.gui:setButtonCallback("InputText_Button", "cl_summitInput")
+    self.cl.gui:setButtonCallback("historyClearBtn", "cl_clearHistory")
+    self.cl.gui:setButtonCallback("submitBtn", "cl_summitInput")
+
+    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
 
     self:cl_runTranslations()
     self.cl.gui:open()
+
+    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
+    self.cl.character = character
+end
+
+function TerminalClass:cl_onGuiClose()
+    if self.cl.character then
+        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
+    end
 end
 
 function TerminalClass:cl_setInputTextFromGUI(widget, text)
@@ -126,15 +138,15 @@ function TerminalClass:cl_summitInput(widget, name)
     self.network:sendToServer("sv_receiveInput", self.cl.inputtedString)
     self.network:sendToServer("sv_setInputHistory", self.cl.inputHistory)
 
-    self.cl.gui:setText("InputText", "")
-    self.cl.gui:setText("InputHistoryList", self:cl_formatInputHistory())
+    self.cl.gui:setText("inputBox", "")
+    self.cl.gui:setText("historyList", self:cl_formatInputHistory())
 
     self.cl.inputtedString = ""
 end
 
 function TerminalClass:cl_clearHistory(widget, name)
     self.cl.inputHistory = {}
-    self.cl.gui:setText("InputHistoryList", "")
+    self.cl.gui:setText("historyList", "")
 
     self.network:sendToServer("sv_setInputHistory", self.cl.inputHistory)
 end
@@ -172,7 +184,7 @@ function TerminalClass:cl_setText(text)
 
     -- Set it on the gui if it exists
     if sm.exists(self.cl.gui) then
-        self.cl.gui:setText("TerminalData", self:cl_formatText())
+        self.cl.gui:setText("termData", self:cl_formatText())
     end
 end
 
@@ -181,14 +193,15 @@ function TerminalClass:cl_setInputHistory(inputHistory)
     self.cl.inputHistory = inputHistory
 
     if sm.exists(self.cl.gui) then
-        self.cl.gui:setText("InputHistoryList", self:cl_formatInputHistory())
+        self.cl.gui:setText("historyList", self:cl_formatInputHistory())
     end
 end
 
 function TerminalClass:cl_runTranslations()
-    self.cl.gui:setText("Title"                  , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.title"           ))
-    self.cl.gui:setText("InputText_Button"       , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.summit_inputbtn" ))
-    self.cl.gui:setText("InputHistoryList_Button", sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.clear_historybtn"))
+    self.cl.gui:setText("title"          , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.title"           ))
+    self.cl.gui:setText("historyTitle"   , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.title_history"   ))
+    self.cl.gui:setText("submitBtn"      , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.summit_inputbtn" ))
+    self.cl.gui:setText("historyClearBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.clear_historybtn"))
 end
 
 sm.scrapcomputers.componentManager.toComponent(TerminalClass, "Terminals", true)

@@ -14,6 +14,8 @@ function OutputRegisterClass:sv_createData()
     return {
         name = self.storage:load() or "",
         power = 0,
+
+        -- The only time SC_PRIVATE was used.
         SC_PRIVATE_interactable = self.interactable
 }
 end
@@ -50,7 +52,8 @@ function OutputRegisterClass:client_onCreate()
     self.cl = {
         gui = nil,
         userInput = "",
-        registerName = ""
+        registerName = "",
+        character = nil
     }
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, false, {backgroundAlpha = 0.5})
@@ -58,7 +61,14 @@ function OutputRegisterClass:client_onCreate()
     self.cl.gui:setText("Button", sm.scrapcomputers.languageManager.translatable("scrapcomputers.other.save_and_closebtn"))
     
     self.cl.gui:setTextChangedCallback("Input", "cl_onTextChanged")
-    self.cl.gui:setButtonCallback ("Button", "cl_onSave")
+    self.cl.gui:setButtonCallback("Button", "cl_onSave")
+    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
+end
+
+function OutputRegisterClass:cl_onGuiClose()
+    if self.cl.character then
+        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
+    end
 end
 
 function OutputRegisterClass:cl_setName(name)
@@ -72,6 +82,8 @@ function OutputRegisterClass:client_onInteract(character, state)
     self.cl.userInput = self.cl.registerName
 
     self.cl.gui:open()
+    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
+    self.cl.character = character
 end
 
 function OutputRegisterClass:cl_onTextChanged(widget, newText)

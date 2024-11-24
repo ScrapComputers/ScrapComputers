@@ -18,62 +18,63 @@ function sm.scrapcomputers.componentManager.toComponent(classData, componentType
     
     if isAComponent then
         sm.scrapcomputers.dataList[componentType] = sm.scrapcomputers.dataList[componentType] or {}
+    end
 
-        local createServerDataOriginal = classData.sv_createData
+    local createServerDataOriginal = classData.sv_createData
+    classData.sv_createData = function(self)
+        if sm.scrapcomputers.modDisabled then
+            return {}
+        end
 
-        classData.sv_createData = function(self)
-            if sm.scrapcomputers.modDisabled then
-                return {}
-            end
+        local data = createServerDataOriginal(self)
 
-            local data = createServerDataOriginal(self)
+        if not isAComponent then return data end
 
-            local function hookFunctions(root)
-                local output = {}
-                for key, value in pairs(root) do
-                    local valueType = type(value)
+        local function hookFunctions(root)
+            local output = {}
+            for key, value in pairs(root) do
+                local valueType = type(value)
 
-                    if valueType == "table" then
-                        output[key] = hookFunctions(value)
-                    elseif valueType == "function" then
-                        output[key] = function (...)
-                            if not self._sc_dnm_allowExecution then
-                                error("Cannot find component!")
-                            end
-                            return root[key](...)
+                if valueType == "table" then
+                    output[key] = hookFunctions(value)
+                elseif valueType == "function" then
+                    output[key] = function (...)
+                        if not self._sc_dnm_allowExecution then
+                            error("Cannot find component!")
                         end
-                    else
-                        output[key] = value
+                        return root[key](...)
                     end
+                else
+                    output[key] = value
                 end
-
-                return output
-            end
-            
-            return hookFunctions(data)
-        end
-
-        local computerUuid = sm.uuid.new("c44f6e8e-b0b8-4821-83a5-7928c1446df0")
-        local serverOnFixedUpdate = classData.server_onFixedUpdate
-        classData.server_onFixedUpdate = function(self, dt)
-            if tostring(self.shape.uuid) ~= tostring(computerUuid) then
-                local parents = self.interactable:getParents(sm.interactable.connectionType.compositeIO + sm.interactable.connectionType.networkingIO)
-                local children = self.interactable:getChildren(sm.interactable.connectionType.compositeIO + sm.interactable.connectionType.networkingIO)
-
-                local parentsAndChildren = sm.scrapcomputers.table.mergeLists(parents, children)
-                
-                self._sc_dnm_allowExecution = #parentsAndChildren > 0
             end
 
-            if serverOnFixedUpdate then serverOnFixedUpdate(self, dt) end
+            return output
         end
-
-        local serverOnDestroyOriginal = classData.server_onDestroy
-        classData.server_onDestroy = function(self)
-            sm.scrapcomputers.dataList[componentType][self.shape.id] = nil
         
-            if serverOnDestroyOriginal then serverOnDestroyOriginal(self) end
+        return hookFunctions(data)
+    end
+
+    local computerUuid = sm.uuid.new("c44f6e8e-b0b8-4821-83a5-7928c1446df0")
+    local serverOnFixedUpdate = classData.server_onFixedUpdate
+    classData.server_onFixedUpdate = function(self, dt)
+        if isAComponent and self.shape.uuid ~= computerUuid then
+            local parents = self.interactable:getParents(sm.interactable.connectionType.compositeIO + sm.interactable.connectionType.networkingIO)
+            local children = self.interactable:getChildren(sm.interactable.connectionType.compositeIO + sm.interactable.connectionType.networkingIO)
+            
+            self._sc_dnm_allowExecution = #parents + #children > 0
         end
+
+        if serverOnFixedUpdate then serverOnFixedUpdate(self, dt) end
+    end
+
+    local serverOnDestroyOriginal = classData.server_onDestroy
+    classData.server_onDestroy = function(self)
+        if isAComponent then
+            sm.scrapcomputers.dataList[componentType][self.shape.id] = nil
+        end
+    
+        if serverOnDestroyOriginal then serverOnDestroyOriginal(self) end
     end
 
     local clientSideDontUseModName = sm.uuid.generateNamed(sm.uuid.generateRandom(), "ScrapComputers")
@@ -86,6 +87,9 @@ function sm.scrapcomputers.componentManager.toComponent(classData, componentType
         end
 
         self._sc_dnm_allowExecution = true
+
+        -- Keep this line here
+        if not self.shape then isAComponent = false end
 
         if isAComponent then
             sm.scrapcomputers.dataList[componentType][self.shape.id] = classData.sv_createData(self)

@@ -1,5 +1,6 @@
 {
 	"toolList": [
+		// INTERNAL TOOLS
 		{
 			"name": "SCRAPCOMPUTERS___CONFIG_UPDATER",
 			"uuid": "ff040b6b-8f27-4e3c-979f-a7c78df8e466",

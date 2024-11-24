@@ -1,5 +1,6 @@
 local noExceptionsMessage = "No exceptions!"
 local byteLimit = 65000
+--local formatAllowedLimit = 5000 -- 5K
 local formatAllowedLimit = 75000 -- 75K
 
 ---@class ComputerClass : ShapeClass
@@ -22,65 +23,62 @@ local function is2ndStringCutOff(str1, str2)
     end
 end
 
-local function parseErrorMessage(errorMessage)
-    local lineNumbers = {}
+---@param errorMessage string
+---@return string
+---@return table
+local function parseErrorMessage(errorMessage, code)
+    ---@type string
     local rawErrorMessage = errorMessage:gsub("%[string%s+\"[^\"]-\"%]:%d+:", ""):gsub("@?input:%d+:", ""):match("^%s*(.-)%s*$")
+    local tracebackString = errorMessage:sub(1, #errorMessage - #rawErrorMessage - 1)
+        :gsub("@input", "[string \"[LuaVM]\"]") -- Lua patterns fucking suck! I hope they burn in hell!
+        
+    local safeRawErrorMessage = rawErrorMessage:gsub("#", "##")
 
-    for lineNumber in errorMessage:gmatch("input:(%d+):") do
-        table.insert(lineNumbers, lineNumber)
+    if errorMessage:find("input:%d+:") and not errorMessage:find("@input:%d+: ") then
+        local msgStart, msgEnd = errorMessage:find("input:%d+:")
+        local lineNumber = errorMessage:sub(msgStart + 6, msgEnd - 1)
+        
+        return "#e74856ERROR: On parsing: [LuaVM]:" .. lineNumber .. ": " .. safeRawErrorMessage, {lineNumber}
     end
 
-    lineNumbers = sm.scrapcomputers.table.reverse(lineNumbers)
-
-    if errorMessage:find("input:%d+:") and not errorMessage:find("@input:%d+:") then
-        return "#e74856ERROR: On parsing: [LuaVM]:" .. lineNumbers[1] .. ": " .. rawErrorMessage:gsub("#", "##"), lineNumbers
+    if rawErrorMessage:sub(1, #"@virtual") == "@virtual" then
+        local safeErrorMessage = errorMessage:gsub("@virtual:%d+: ", ""):gsub("#", "##")
+        local multilineWarning = [[----- Fatal LBI Error -----
+\tYou generally shouldn't get this error message, as this is a error caused by the LBI itself and it isn't with your code.
+\tReport this error message to the ScrapComputers Team and tell us the error message above & how you can reproduce this ASAP!]]
+        return "#e74856FATAL LBI ERROR: " .. safeErrorMessage .. "#f9f1a5\n" .. multilineWarning:gsub("\\t", "\t"), {}
     end
 
-    local errorPaths = {}
-    for errorPath in errorMessage:gmatch("%[string%s+\"[^\"]-\"%]:%d+:") do
-        local filePath, line = errorPath:match("%[string%s+\"(.-)\"%]:(%d+):")
-        table.insert(errorPaths, {filePath, line})
-    end
-
-    local overloadTraceBack = false
-
-    if #errorPaths > 10 then
-        for i = #errorPaths, 20, -1 do
-            table.remove(errorPaths, i)
+    local traceback = {}
+    local firstLuaVM
+    local shouldWarn = false
+    for file, line in tracebackString:gmatch("%[string \"([^\"]+)\"%]:(%d+):") do
+        if line ~= "0" then
+            if not firstLuaVM and file ~= "[LuaVM]" then
+                firstLuaVM = {file = file, line = line}
+            end
+            table.insert(traceback, {file = file, line = line})
+        else
+            shouldWarn = true
         end
-
-        overloadTraceBack = true
     end
 
-    if #lineNumbers > 10 then
-        for i = #lineNumbers, 10, -1 do
-            table.remove(lineNumbers, i)
-        end
+    firstLuaVM = firstLuaVM or traceback[1] or {file = "NaN", line = "NaN"}
 
-        overloadTraceBack = true
+    local output = "#e74856ERROR: " .. firstLuaVM.file .. ":" .. firstLuaVM.line .. ": " .. safeRawErrorMessage .. "\n" .. "#f9f1a5----- Lua Error Traceback -----"
+    if shouldWarn then
+        output = "#f9f1a5WARNING: LBI (LuaVM) has failed to retreive the Line where the error happened! This is not the fault for the LBI.\n" ..  output
+    end
+    local lines = {}
+
+    for index, data in pairs(traceback) do
+        output = output .. "\n\t"
+        table.insert(lines, data.line)
+
+        output = output .. data.file .. ":" .. data.line .. ":"
     end
 
-
-    local firstSection = ""
-    if #errorPaths > 0 then
-        firstSection = errorPaths[#errorPaths][1] .. ":" .. errorPaths[#errorPaths][2] .. ": "
-    end
-
-    local output = "#e74856ERROR: " .. firstSection .. rawErrorMessage:gsub("#", "##") .. "\n#f9f1a5----- Lua Error Traceback -----\n"
-
-    for index, lineNumber in pairs(lineNumbers) do
-        output = output .. "\t\t[LuaVM] in " .. (index == 1 and "" or "function ") .. ":" .. lineNumber .. ":\n"
-    end
-
-    for _, errorPath in pairs(errorPaths) do
-        output = output .. "\t\t" .. errorPath[1] .. ":" .. errorPath[2] .. ":" .. "\n"
-    end
-
-    if overloadTraceBack then
-        output = output .. "\t\t...\n"
-    end
-
-    return output:sub(1,-1), lineNumbers
+    return output, lines
 end
 
 -- SERVER --
@@ -90,7 +88,7 @@ function ComputerClass:server_onCreate()
         exceptionMessage = noExceptionsMessage,
         exceptionLines = {},
         alwaysOnDisabled = false,
-        env = sm.scrapcomputers.enviromentManager.createEnv(self),
+        env = sm.scrapcomputers.environmentManager.createEnv(self),
         wait1Tick = false,
         previousActive = false,
         canResetError = false,
@@ -157,15 +155,14 @@ function ComputerClass:server_onFixedUpdate(deltaTime)
 
     if self.interactable.active ~= active then
         if active then
-            self.sv.env = sm.scrapcomputers.enviromentManager.createEnv(self)
+            self.sv.env = sm.scrapcomputers.environmentManager.createEnv(self)
             self.sv.exceptionMessage = noExceptionsMessage
             self.sv.exceptionLines = {}
             
             self:sv_syncClients()
 
             local function run()
-                local safeCode = self.sv.saved.code:gsub("##", "#")
-
+                local safeCode = self.sv.saved.code:gsub("##", "#"):gsub("⁄", "\\")
                 local func, errorMessage = sm.scrapcomputers.luavm.loadstring(safeCode, self.sv.env)
                 if not func then error(errorMessage) end
 
@@ -208,7 +205,7 @@ function ComputerClass:sv_serverSync(data)
     elseif data.type == 2 then
         self.sv.saved.alwaysOn = data.packet
     else
-        sm.log.warning("ScrapComputers: Unknown server sync data on Computer! Type=[" .. sm.scrapcomputers.toString(data.type) .. "]\n\tData: " .. sm.scrapcomputers.toString(data.packet))
+        sm.scrapcomputers.logger.warn("Computer.lua", "Unknown server sync data on Computer! Type=[" .. sm.scrapcomputers.toString(data.type) .. "]\n\tData: " .. sm.scrapcomputers.toString(data.packet))
         return
     end
 
@@ -223,7 +220,11 @@ function ComputerClass:sv_syncClients()
         self.network:sendToClients("cl_rebuildCode", {string = string, i = i})
     end
 
-    self.network:sendToClients("cl_clientSync", {alwaysOn = self.sv.saved.alwaysOn, exceptionMessage = self.sv.exceptionMessage, exceptionLines = self.sv.exceptionLines})
+    self.network:sendToClients("cl_clientSync", {
+        alwaysOn = self.sv.saved.alwaysOn,
+        exceptionMessage = self.sv.exceptionMessage,
+        exceptionLines = self.sv.exceptionLines,
+    })
 end
 
 function ComputerClass:sv_resyncClient(data, player)
@@ -233,7 +234,11 @@ function ComputerClass:sv_resyncClient(data, player)
         self.network:sendToClient(player, "cl_rebuildCode", {string = string, i = i})
     end
 
-    self.network:sendToClient(player, "cl_clientSync", {alwaysOn = self.sv.saved.alwaysOn, exceptionMessage = self.sv.exceptionMessage, exceptionLines = self.sv.exceptionLines})
+    self.network:sendToClient(player, "cl_clientSync", {
+        alwaysOn = self.sv.saved.alwaysOn,
+        exceptionMessage = self.sv.exceptionMessage,
+        exceptionLines = self.sv.exceptionLines,
+    })
 end
 
 function ComputerClass:sv_runFunction(func, arg)
@@ -257,7 +262,7 @@ function ComputerClass:sv_callException(errorMessage)
     end
 
     local success, errorMessage2 = pcall(run)
-    self.sv.exceptionMessage, self.sv.exceptionLines = parseErrorMessage(success and errorMessage or errorMessage2)
+    self.sv.exceptionMessage, self.sv.exceptionLines = parseErrorMessage(success and errorMessage or errorMessage2, self.sv.saved.code)
     self.sv.alwaysOnDisabled = true
 
     self:sv_syncClients()
@@ -277,6 +282,7 @@ function ComputerClass:client_onCreate()
         code = "",
         unsavedCode = "",
         alwaysOn = false,
+        character = nil,
     }
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Computer, false, {backgroundAlpha = 0.5})
@@ -291,14 +297,15 @@ function ComputerClass:client_onCreate()
     self.cl.gui:setButtonCallback("revertChanges", "cl_revertChangesBtn")
     self.cl.gui:setButtonCallback("alwaysOn", "cl_setAlwaysOnState")
     self.cl.gui:setButtonCallback("formatTextBtn", "cl_formatTextBtn")
+    self.cl.gui:setButtonCallback("openESNSconfigBtn", "cl_openESNSconfig")
 
     self.cl.gui:setOnCloseCallback("cl_onGuiClose")
+
+    self.network:sendToServer("sv_resyncClient")
 end
 
 function ComputerClass:client_onInteract(character, state)
     if not state then return end
-
-    self.network:sendToServer("sv_resyncClient")
 
     local exampleText = ""
 
@@ -312,7 +319,8 @@ function ComputerClass:client_onInteract(character, state)
     self.cl.unsavedCode = code
 
     self.cl.gui:setText("examplesList", exampleText:sub(1, #exampleText - 1))
-
+    self.cl.gui:setText("exceptionData", self.cl.exceptionMessage)
+    
     if #code > formatAllowedLimit then
         local safeCode = code:gsub("#", "##")
 
@@ -322,6 +330,9 @@ function ComputerClass:client_onInteract(character, state)
     end
 
     self.cl.gui:open()
+
+    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
+    self.cl.character = character
 end
 
 function ComputerClass:client_onFixedUpdate()
@@ -340,9 +351,10 @@ function ComputerClass:cl_clientSync(data)
 
     self.cl.exceptionMessage = data.exceptionMessage
     self.cl.exceptionLines = data.exceptionLines
+
     self:cl_runTranslations()
 
-    if data.exceptionMessage ~= noExceptionsMessage and not (#self.cl.code > formatAllowedLimit) then
+    if not (#self.cl.code > formatAllowedLimit) then
         local safeCode = self.cl.code:gsub("\\", "⁄")
         self.cl.gui:setText("scriptData", sm.scrapcomputers.syntaxManager.highlightCode(safeCode, self.cl.exceptionLines))
     end
@@ -356,7 +368,14 @@ end
 
 -- GUI Callbacks --
 
+-- Note, the code below here are bombarded with translations so they are basicly half the level readability of SComputer's entire source code.
+-- And also the length of these translations are bigger than the wall of china.
+
 function ComputerClass:cl_onGuiClose()
+    if self.cl.character then
+        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
+    end
+
     if sm.scrapcomputers.config.getConfig("scrapcomputers.computer.autosave").selectedOption == 1 then return end
 
     self:cl_saveCode()
@@ -374,13 +393,16 @@ function ComputerClass:cl_scriptDataTextChange(widget, text)
 
     if #text > formatAllowedLimit then
         if text:sub(1, #oldCode) == oldCode or is2ndStringCutOff(oldCode, text) then
-            self.cl.gui:setText("scriptData", text)
+            local text2 = text:gsub("#", "##")
+            self.cl.gui:setText("scriptData", text2)
         end
         return
     end
 
     if text:sub(1, #oldCode) == oldCode or is2ndStringCutOff(oldCode, text) then
-        self:cl_formatTextBtn()
+        local code = self.cl.unsavedCode:gsub("\\", "⁄")
+        self.cl.exceptionLines = {}
+        self.cl.gui:setText("scriptData", sm.scrapcomputers.syntaxManager.highlightCode(code, {}))
     end
 end
 
@@ -428,9 +450,11 @@ function ComputerClass:cl_saveButtonBtn(widget, name)
     self:cl_saveCode()
     self:cl_setLogMessage(3 * 40, "16c60c", sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.savedcode"))
 
-    local code = self.cl.unsavedCode:gsub("\\", "⁄"):gsub("##", "#")
-    self.cl.exceptionLines = {}
-    self.cl.gui:setText("scriptData", sm.scrapcomputers.syntaxManager.highlightCode(code, {}))
+    if #self.cl.code < formatAllowedLimit then
+        local code = self.cl.code:gsub("\\", "⁄"):gsub("##", "#")
+        self.cl.exceptionLines = {}
+        self.cl.gui:setText("scriptData", sm.scrapcomputers.syntaxManager.highlightCode(code, {}))
+    end
 end
 
 function ComputerClass:cl_revertChangesBtn(widget, name)
@@ -481,6 +505,8 @@ function ComputerClass:cl_saveCode()
     end
 end
 
+-- Other --
+
 function ComputerClass:cl_syncServer(type, data)
     self.network:sendToServer("sv_serverSync", {type = type, packet = data})
 end
@@ -508,8 +534,10 @@ function ComputerClass:cl_runTranslations()
 
     self.cl.gui:setText("scriptSave"   , sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.save_button"))
     self.cl.gui:setText("revertChanges", sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.revert_changes_button"))
-    self.cl.gui:setText("formatTextBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.format_text_button"))
     self.cl.gui:setText("loadExample"  , sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.load_example_button"))
+
+    self.cl.gui:setText("formatTextBtn", "#eeeeee" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.format_text_button"))
+    self.cl.gui:setText("openESNSconfigBtn", "#eeeeee" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.open_esncfg_button"))
 
     local alwaysOnText = sm.scrapcomputers.languageManager.translatable("scrapcomputers.computer.always_on_toggable_button", self.cl.alwaysOn and "#16C60CTrue" or "#E74856False")
     self.cl.gui:setText("alwaysOn", alwaysOnText)

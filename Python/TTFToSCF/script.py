@@ -54,7 +54,10 @@ def CreateMap(FontPath, FontName, FontWidth, FontHeight, AdditionalPadding, Outp
 
         bitmap = [[1 if image.getpixel((x, y)) > 0 else 0 for x in range(image.width)] for y in range(image.height)]
         contents = ["".join("#" if bit else "." for bit in row) + "." * AdditionalPadding for row in bitmap]
-
+        
+        while contents and contents[-1] == ("." * FontWidth):
+            contents.pop()
+        
         # Check if the character is blank
         blankRow = "." * (FontWidth + AdditionalPadding)
         if all(row == blankRow for row in contents) and char != " ":
@@ -75,41 +78,17 @@ def CreateMap(FontPath, FontName, FontWidth, FontHeight, AdditionalPadding, Outp
         f.write(f"sm.scrapcomputers.fontManager.fonts[\"{FontName}\"] = data")
 
 def main():
-    if len(sys.argv) > 1 and sys.argv[1].lower() == "--auto":
-        for file in os.listdir("Fonts"):
-            if not file.endswith(".txt"):
-                with open(f"Fonts/{file.removesuffix('.ttf')}.txt", "r") as f:
-                    lines = f.readlines()
+    for file in os.listdir("Fonts"):
+        if not file.endswith(".txt"):
+            with open(f"Fonts/{file.removesuffix('.ttf')}.txt", "r") as f:
+                lines = f.readlines()
 
-                    FontWidth, FontHeight = map(int, lines[0].split("x"))
-                    AdditionalPadding = int(lines[1])
+                FontWidth, FontHeight = map(int, lines[0].split("x"))
+                AdditionalPadding = int(lines[1])
 
-                    CreateMap(f"Fonts/{file}", file.removesuffix(".ttf"), FontWidth, FontHeight, AdditionalPadding, f"Generated/{file.removesuffix('.ttf')}.lua")
+                CreateMap(f"Fonts/{file}", file.removesuffix(".ttf"), FontWidth, FontHeight, AdditionalPadding, f"Generated/{file.removesuffix('.ttf')}.lua")
 
-                    print(f"Generated Font: \"{file.removesuffix('.ttf')}\"")
-        return
-    
-    print("The selected font would be the font.ttf in the directory where this script.py file is located.")
-    
-    FontName = input("Font name: ")
-
-    while True:
-        try:
-            FontWidth, FontHeight = map(int, input("Font size (width x height): ").split('x'))
-            break
-        except ValueError:
-            print("Invalid input format. Please enter width and height separated by 'x'. (Example: 5x6)")
-
-    while True:
-        try:
-            AdditionalPadding = int(input("Additional Padding (x only!): "))
-            break
-        except ValueError:
-            print("Not a number!")
-
-    CreateMap("font.ttf", FontName, FontWidth, FontHeight, AdditionalPadding, "GeneratedFont.lua")
-
-    print("Generated font!")
+                print(f"Generated Font: \"{file.removesuffix('.ttf')}\"")
 
 if __name__ == "__main__":
     main()

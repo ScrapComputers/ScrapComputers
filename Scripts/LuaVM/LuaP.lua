@@ -154,10 +154,14 @@ end
 -- create an instruction from a number (for OP_SETLIST)
 ------------------------------------------------------------------------
 function luaP:CREATE_Inst(c)
-  local o = c % 64
-  c = (c - o) / 64
-  local a = c % 256
-  c = (c - a) / 256
+  -- Extract the lower 6 bits (c % 64)
+  local o = bit.band(c, 0x3F)        -- o = c % 64
+  c = bit.rshift(c, 6)               -- c = (c - o) / 64, shift right by 6 bits
+
+  -- Extract the next 8 bits (c % 256)
+  local a = bit.band(c, 0xFF)        -- a = c % 256
+  c = bit.rshift(c, 8)               -- c = (c - a) / 256, shift right by 8 bits
+
   return self:CREATE_ABx(o, a, c)
 end
 
@@ -167,16 +171,18 @@ end
 function luaP:Instruction(i)
   if i.Bx then
     -- change to OP/A/B/C format
-    i.C = i.Bx % 512
-    i.B = (i.Bx - i.C) / 512
+    i.C = bit.band(i.Bx, 0x1FF)          -- i.Bx % 512, get the lower 9 bits
+    i.B = bit.rshift(i.Bx, 9)            -- (i.Bx - i.C) / 512, shift right by 9 bits
   end
-  local I = i.A * 64 + i.OP
-  local c0 = I % 256
-  I = i.C * 64 + (I - c0) / 256  -- 6 bits of A left
-  local c1 = I % 256
-  I = i.B * 128 + (I - c1) / 256  -- 7 bits of C left
-  local c2 = I % 256
-  local c3 = (I - c2) / 256
+
+  local I = bit.bor(bit.lshift(i.A, 6), i.OP)  -- i.A * 64 + i.OP
+  local c0 = bit.band(I, 0xFF)                 -- I % 256, get the lower 8 bits
+  I = bit.bor(bit.lshift(i.C, 6), bit.rshift(I, 8))  -- i.C * 64 + (I // 256)
+  local c1 = bit.band(I, 0xFF)                 -- I % 256
+  I = bit.bor(bit.lshift(i.B, 7), bit.rshift(I, 8))  -- i.B * 128 + (I // 256)
+  local c2 = bit.band(I, 0xFF)                 -- I % 256
+  local c3 = bit.rshift(I, 8)                  -- (I // 256)
+
   return string.char(c0, c1, c2, c3)
 end
 
@@ -186,20 +192,31 @@ end
 function luaP:DecodeInst(x)
   local byte = string.byte
   local i = {}
+  
+  -- Decode first byte
   local I = byte(x, 1)
-  local op = I % 64
+  local op = bit.band(I, 0x3F)          -- I % 64, extract the lower 6 bits
   i.OP = op
-  I = byte(x, 2) * 4 + (I - op) / 64  -- 2 bits of c0 left
-  local a = I % 256
+  
+  -- Decode second byte
+  I = bit.bor(bit.lshift(byte(x, 2), 2), bit.rshift(I, 6))  -- byte(x, 2) * 4 + (I - op) / 64
+  local a = bit.band(I, 0xFF)           -- I % 256, extract the lower 8 bits
   i.A = a
-  I = byte(x, 3) * 4 + (I - a) / 256  -- 2 bits of c1 left
-  local c = I % 512
+  
+  -- Decode third byte
+  I = bit.bor(bit.lshift(byte(x, 3), 2), bit.rshift(I, 8))  -- byte(x, 3) * 4 + (I - a) / 256
+  local c = bit.band(I, 0x1FF)          -- I % 512, extract the lower 9 bits
   i.C = c
-  i.B = byte(x, 4) * 2 + (I - c) / 512 -- 1 bits of c2 left
+  
+  -- Decode fourth byte
+  i.B = bit.bor(bit.lshift(byte(x, 4), 1), bit.rshift(I, 9))  -- byte(x, 4) * 2 + (I - c) / 512
+
+  -- Check opmode and calculate Bx if necessary
   local opmode = self.OpMode[tonumber(string.sub(self.opmodes[op + 1], 7, 7))]
   if opmode ~= "iABC" then
-    i.Bx = i.B * 512 + i.C
+    i.Bx = bit.bor(bit.lshift(i.B, 9), i.C)  -- i.B * 512 + i.C
   end
+  
   return i
 end
 

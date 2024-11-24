@@ -122,7 +122,8 @@ function AntennaClass:client_onCreate()
         gui = nil, ---@type GuiInterface?
         name = "",
         newName = "",
-        oldName = ""
+        oldName = "",
+        character = nil
     }
 end
 
@@ -140,7 +141,17 @@ function AntennaClass:client_onInteract(character, state)
     self.cl.gui:setTextChangedCallback("Input", "client_onTextChanged")
     self.cl.gui:setButtonCallback("Button", "client_onAccepted")
 
+    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
+
     self.cl.gui:open()
+    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
+    self.cl.character = character
+end
+
+function AntennaClass:cl_onGuiClose()
+    if self.cl.character then
+        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
+    end
 end
 
 function AntennaClass:client_onFixedUpdate()

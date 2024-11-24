@@ -9,21 +9,50 @@ sm.scrapcomputers = {}
 
 ---------------------------------------------------------------------------------------
 
+local storageConfigKey = "1974022346117ab44f08add85a6b6e49a5bc13ce3a3cabf3b8769d13cbe4043f5b40fba363441a17f0ec4308d0072dade43a7cf8e934a595611e73e543df1c48"
 
-local modules = {"ErrorHandler", "String", "Audio", "Base64", "Color", "JSON", "MD5", "SHA256", "Table", "Util", "Vector3", "BitStream", "VPBS"}
+local isDevEnv
+function sm.scrapcomputers.isDeveloperEnvironment()
+    if type(isDevEnv) == "boolean" then
+        return isDevEnv
+    end
+    
+    -- This is a very hacky solution!
+    -- Our Public build generator replaces all uuid's so we can release playtesting builds.
+    -- But because the 2 mods have completly diffirent uuid's, we can just check if the first character is a 3 as that
+    -- is the starting character of the dev uuid. If its a 6, thats the public build.
+    local isPlaytestingOrDevBuild = ("632be32f-6ebd-414e-a061-d45906ae4dc6"):sub(1, 1) == "3"
+    
+    if isPlaytestingOrDevBuild then
+        isDevEnv = true
+    else
+        isDevEnv = false
+    end
+    
+    return isDevEnv
+end
+sm.scrapcomputers.isDeveloperEnvironment()
+
+---------------------------------------------------------------------------------------
+
+--A table relating to special backend activities that need to happen between components
+sm.scrapcomputers.backend = {}
+
+-- Do not fucking put any modules behind ErrorHandler, so that you atleast can have proper error handling.
+local modules = {"Logger", "ErrorHandler", "String", "Audio", "Base64", "Color", "JSON", "MD5", "SHA256", "Table", "Util", "Vector2", "Vector3", "BitStream", "VirtualDisplay", "Multidisplay"}
 
 for _, module in pairs(modules) do
     local modulePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Modules/" .. module .. ".lua"
     dofile(modulePath)
 
-    sm.log.info("ScrapComputers: Loaded Module: " .. modulePath)
+    sm.scrapcomputers.logger.info("Config.lua", "Loaded Module: " .. modulePath)
 end
 
---A table relating to special backend activities that need to happen between components
-sm.scrapcomputers.backend = {}
 
 ---Contains all functions, data (or whatever). Eg: Displays is a list of all displays in ScrapComputers.
 sm.scrapcomputers.dataList = {
+    -- Removing all of these causes all of the components to break. I have no fucking idea why but IDC.
+
     ["Displays"] = {},
     ["Harddrives"] = {},
     ["Holograms"] = {},
@@ -41,8 +70,10 @@ sm.scrapcomputers.dataList = {
     ["GPSs"] = {},
     ["SeatControllers"] = {},
     
-    ["NetworkInterfaces"] = {}
+    ["NetworkInterfaces"] = {} -- This is not a component and we have a system to make this not needed, but it works so fuck you.
 }
+
+sm.scrapcomputers.logger.info("Config.lua", "Loaded pre-installed components!")
 
 -- Paths to layout files
 sm.scrapcomputers.layoutFiles = {
@@ -53,15 +84,21 @@ sm.scrapcomputers.layoutFiles = {
     Harddrive = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Harddrive.layout",
     Keyboard = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Keyboard.layout",
     Banned = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Banned.layout",
+    ComputerESNSConfig = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/ComputerESNSConfig.layout"
 }
+
+sm.scrapcomputers.logger.info("Config.lua", "Loaded layout file shortcuts!")
 
 -- Paths to json files
 sm.scrapcomputers.jsonFiles = {
     ExamplesList = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/examples.json",
     HarddriveExamples = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/hdd_examples.json",
     AudioList = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/audio.json",
-    BuiltInFonts = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/fonts.json"
+    BuiltInFonts = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/fonts.json",
+    ExternalSoftwareComminucation = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/externalcom.json",
 }
+
+sm.scrapcomputers.logger.info("Config.lua", "Loaded json file shortcuts!")
 
 -- Prefix used to hide variables and tables inside component's computer api.
 sm.scrapcomputers.privateDataPrefix = "SC_PRIVATE_"
@@ -82,7 +119,7 @@ end
 sm.scrapcomputers.config = {}
 
 -- The key for sm.storage
-sm.scrapcomputers.config.key = "1974022346117ab44f08add85a6b6e49a5bc13ce3a3cabf3b8769d13cbe4043f5b40fba363441a17f0ec4308d0072dade43a7cf8e934a595611e73e543df1c48"
+sm.scrapcomputers.config.key = storageConfigKey
 
 -- Please do not use! Use sm.scrapcomputers.config.createConfig instead of this table!
 ---@type Configuration[]
@@ -96,56 +133,23 @@ function sm.scrapcomputers.config.createDefaultConfigs(onlyDefaultConfigs)
 
     sm.scrapcomputers.errorHandler.assertArgument(onlyDefaultConfigs, nil, {"boolean"})
 
-    local config = {
-        {
-            id = "scrapcomputers.computer.safe_or_unsafe_env",
-            name = "TRANSLATABLE_TEXT_ONLY",
-            description = "TRANSLATABLE_TEXT_ONLY",
-            selectedOption = 1,
-            hostOnly = false,
-            options = {"Safe Env", "Unsafe Env"}
-        },
-        {
-            id = "scrapcomputers.configurator.admin_only",
-            name = "TRANSLATABLE_TEXT_ONLY",
-            description = "TRANSLATABLE_TEXT_ONLY",
-            selectedOption = 1,
-            hostOnly = true,
-            options = {"TRANSLATABLE_TEXT_ONLY", "TRANSLATABLE_TEXT_ONLY"}
-        },
-        {
-            id = "scrapcomputers.hologram.max_objects",
-            name = "TRANSLATABLE_TEXT_ONLY",
-            description = "TRANSLATABLE_TEXT_ONLY",
-            selectedOption = 1,
-            hostOnly = false,
-            options = {"Unlimited", "16 Max", "32 Max", "64 Max", "128 Max", "256 Max", "512 Max", "1024 Max", "2048 Max", "4096 Max"}
-        },
-        {
-            id = "scrapcomputers.computer.autosave",
-            name = "TRANSLATABLE_TEXT_ONLY",
-            description = "TRANSLATABLE_TEXT_ONLY",
-            selectedOption = 1,
-            hostOnly = false,
-            options = {"TRANSLATABLE_TEXT_ONLY", "TRANSLATABLE_TEXT_ONLY"}
-        },
-        {
-            id = "scrapcomputers.computer.reset_error_on_restart",
-            name = "TRANSLATABLE_TEXT_ONLY",
-            description = "TRANSLATABLE_TEXT_ONLY",
-            selectedOption = 2,
-            hostOnly = false,
-            options = {"Disabled", "Enabled"}
-        },
-        {
-            id = "scrapcomputers.global.selectedLanguage",
-            name = "TRANSLATABLE_TEXT_ONLY",
-            description = "UNKNOWN_DESCRIPTION",
-            selectedOption = 1,
-            hostOnly = true,
-            options = {"Automatic"}
-        }
-    }
+    local config = {}
+
+    -- Naughty function. Trying to save code?
+    local function dirtySuperNaughtyCreateConfig(id, selectedOption, hostOnly, totalOptions)
+        local cfg = {id = id, name = "TRANSLATABLE_TEXT_ONLY", description = "UNKNOWN_DESCRIPTION", selectedOption = selectedOption, hostOnly = hostOnly, options = {}}
+        for _ = 1, totalOptions do cfg.options[#cfg.options+1] = "TRANSLATABLE_TEXT_ONLY" end
+        config[#config+1] = cfg
+    end
+
+    -- You like playing among us?
+    dirtySuperNaughtyCreateConfig("scrapcomputers.computer.safe_or_unsafe_env"    , 1, false , 2)
+    dirtySuperNaughtyCreateConfig("scrapcomputers.configurator.admin_only"        , 1, true  , 2)
+    config[#config+1] = {id="scrapcomputers.hologram.max_objects",name="TRANSLATABLE_TEXT_ONLY",description="TRANSLATABLE_TEXT_ONLY",selectedOption=1,hostOnly=false,options={"Unlimited","16 Max","32 Max","64 Max","128 Max","256 Max","512 Max","1024 Max","2048 Max","4096 Max"}}
+    dirtySuperNaughtyCreateConfig("scrapcomputers.computer.autosave"              , 1, false , 2)
+    dirtySuperNaughtyCreateConfig("scrapcomputers.computer.reset_error_on_restart", 2, false , 2)
+    dirtySuperNaughtyCreateConfig("scrapcomputers.computer.nanvalues"             , 2, false , 2)
+    dirtySuperNaughtyCreateConfig("scrapcomputers.global.selectedLanguage"        , 1, true  , 1)
 
     if onlyDefaultConfigs then return config end
 
@@ -294,7 +298,7 @@ function sm.scrapcomputers.config.configExists(id)
     return false
 end
 
-sm.log.info("ScrapComputers: Loaded internal config manager!")
+sm.scrapcomputers.logger.info("Config.lua", "Loaded conifg API!")
 
 ---@class Configuration A configuration for ScrapComputers.
 ---@field id string The id of the config. Reccommended to be in this format to not cause any conflicts: `[MOD_NAME].[COMPONENT_NAME].[CONFIG_NAME]`
@@ -306,17 +310,17 @@ sm.log.info("ScrapComputers: Loaded internal config manager!")
 
 ---------------------------------------------------------------------------------------
 
-local managers = {"EnvManager", "ComponentManager", "FontManager", "SyntaxManager", "ExampleManager", "LanguageManager"}
+local managers = {"EnvManager", "ComponentManager", "FontManager", "SyntaxManager", "ExampleManager", "LanguageManager", "ASCFManager"}
 
 for _, manager in pairs(managers) do
     local managerPath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Managers/" .. manager .. ".lua"
     dofile(managerPath)
 
-    sm.log.info("ScrapComputers: Loaded Manager: " .. managerPath)
+    sm.scrapcomputers.logger.info("Config.lua", "Loaded manager: ", managerPath)
 end
 
 ---------------------------------------------------------------------------------------
 
 dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/LuaVM/Main.lua")
 
-sm.log.info("ScrapComputers: Loaded Config.lua")
+sm.scrapcomputers.logger.info("Config.lua", "Fully loaded core internals of the mod!")
