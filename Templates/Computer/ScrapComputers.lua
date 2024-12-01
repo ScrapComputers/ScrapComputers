@@ -1034,7 +1034,8 @@ function Display.drawText(x, y, text, color, fontName, maxWidth, wordWrappingEna
 ---@param width integer The width of the image
 ---@param height integer The height of the image
 ---@param path string The path of the image. Put `example.json` here to load a example image (256x256 image)
-function Display.loadImage( width, height, path ) end
+---@param localSearch boolean If loadImage searches $CONTENT_DATA when looking for the image file
+function Display.loadImage( width, height, path, localSearch ) end
 
 ---Returns the dimensions of the display.
 ---@return number width The width of the display
