@@ -539,14 +539,13 @@ function DisplayClass:sv_createData()
         ---@param width integer The width of the display
         ---@param height integer The height of the display
         ---@param path string The max width before it wraps around
-        ---@param localSearch boolean If loadImage searches $CONTENT_DATA when looking for the image file
-        loadImage = function(width, height, path, localSearch)
+        ---@param customSearch boolean If the path is a custom path or not
+        loadImage = function(width, height, path, customSearch)
             sm_scrapcomputers_errorHandler_assertArgument(width, 1, {"integer"})
             sm_scrapcomputers_errorHandler_assertArgument(height, 2, {"integer"})
-
             sm_scrapcomputers_errorHandler_assertArgument(path, 3, {"string"})
 
-            local fileLocation = localSearch and "$CONTENT_DATA/"..path or imagePath..path
+            local fileLocation = customSearch and path or imagePath..path
             sm_scrapcomputers_errorHandler_assert(sm.json.fileExists(fileLocation), 3, "Image doesnt exist")
 
             local imageTbl = sm.json.open(fileLocation)
@@ -1902,7 +1901,13 @@ function DisplayClass:cl_pushData()
             for i, colNew in pairs(newBuffer) do
                 local effectPos = pixels[i]
 
-                if effectPos and effectPos[6] ~= colNew then
+                if not effectPos and colNew ~= backpanelColor and (not doOptimise or not meshNeighbours(i, colNew)) then
+                    local data = createBasicData(i, colNew)
+
+                    pixels[i] = data
+                    dataChange[data] = true
+                    colorChange[data[1]] = colNew
+                elseif effectPos and effectPos[6] ~= colNew then
                     if effectPos[3] > 1 then splitX(i); effectPos = pixels[i] end
                     if effectPos[2] > 1 then splitXY(i); effectPos = pixels[i] end
 
@@ -1916,12 +1921,6 @@ function DisplayClass:cl_pushData()
                         effectPos[6] = colNew
                         colorChange[effectPos[1]] = colNew
                     end
-                elseif colNew ~= backpanelColor and (not doOptimise or not meshNeighbours(i, colNew)) then
-                    local data = createBasicData(i, colNew)
-
-                    pixels[i] = data
-                    dataChange[data] = true
-                    colorChange[data[1]] = colNew
                 end
             end
         end
@@ -2158,11 +2157,12 @@ function DisplayClass:cl_optimiseDisplay()
     end
 
     if stoppedIndex > 100 then
-        for i = 100, stoppedIndex do
+        for i = 101, stoppedIndex do
             effect_destroy(stoppedEffects[i])
             stoppedEffects[i] = nil
-            stoppedIndex = stoppedIndex - 1
         end
+
+        stoppedIndex = 100
     end
 
     self_cl.pixels = newPixels
