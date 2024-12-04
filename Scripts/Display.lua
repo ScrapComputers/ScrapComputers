@@ -88,13 +88,13 @@ local networkInstructions = {
 }
 
 local dataCountLookup = {
-    2,
     3,
-    1,
-    4,
     5,
-    4,
-    6
+    1,
+    5,
+    8,
+    6,
+    7
 }
 
 function pixelPosToShapePos(x, y, widthScale, heightScale, pixelScale)
@@ -274,7 +274,9 @@ function DisplayClass:sv_createData()
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = 4
         dataIndex = dataIndex + 1
-        dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+        dataBuffer[dataIndex] = round(x)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = round(y)
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = round(radius)
         dataIndex = dataIndex + 1
@@ -305,11 +307,17 @@ function DisplayClass:sv_createData()
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = 5
         dataIndex = dataIndex + 1
-        dataBuffer[dataIndex] = coordinateToIndex(round(x1), round(y1), data_width)
+        dataBuffer[dataIndex] = round(x1)
         dataIndex = dataIndex + 1
-        dataBuffer[dataIndex] = coordinateToIndex(round(x2), round(y2), data_width)
+        dataBuffer[dataIndex] = round(y1)
         dataIndex = dataIndex + 1
-        dataBuffer[dataIndex] = coordinateToIndex(round(x3), round(y3), data_width)
+        dataBuffer[dataIndex] = round(x2)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = round(y2)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = round(x3)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = round(y3)
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = colorToID(color)
         dataIndex = dataIndex + 1
@@ -335,9 +343,13 @@ function DisplayClass:sv_createData()
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = 6
         dataIndex = dataIndex + 1
-        dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+        dataBuffer[dataIndex] = round(x)
         dataIndex = dataIndex + 1
-        dataBuffer[dataIndex] = coordinateToIndex(round(width), round(height), data_width)
+        dataBuffer[dataIndex] = round(y)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = round(width)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = round(height)
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = colorToID(color)
         dataIndex = dataIndex + 1
@@ -361,7 +373,9 @@ function DisplayClass:sv_createData()
             dataIndex = dataIndex + 1
             dataBuffer[dataIndex] = 1
             dataIndex = dataIndex + 1
-            dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+            dataBuffer[dataIndex] = round(x)
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = round(y)
             dataIndex = dataIndex + 1
             dataBuffer[dataIndex] = colorToID(color)
 
@@ -389,7 +403,9 @@ function DisplayClass:sv_createData()
                 dataIndex = dataIndex + 1
                 dataBuffer[dataIndex] = 1
                 dataIndex = dataIndex + 1
-                dataBuffer[dataIndex] = coordinateToIndex(round(pixel_x), round(pixel_y), data_width)
+                dataBuffer[dataIndex] = round(pixel_x)
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = round(pixel_y)
                 dataIndex = dataIndex + 1
                 dataBuffer[dataIndex] = colorToID(pixel_color)
             end
@@ -428,9 +444,13 @@ function DisplayClass:sv_createData()
             dataIndex = dataIndex + 1
             dataBuffer[dataIndex] = 2
             dataIndex = dataIndex + 1
-            dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+            dataBuffer[dataIndex] = round(x)
             dataIndex = dataIndex + 1
-            dataBuffer[dataIndex] = coordinateToIndex(round(x1), round(y1), data_width)
+            dataBuffer[dataIndex] = round(y)
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = round(x1)
+            dataIndex = dataIndex + 1
+            dataBuffer[dataIndex] = round(y1)
             dataIndex = dataIndex + 1
             dataBuffer[dataIndex] = colorToID(color)
 
@@ -519,7 +539,9 @@ function DisplayClass:sv_createData()
                 dataIndex = dataIndex + 1
                 dataBuffer[dataIndex] = 7
                 dataIndex = dataIndex + 1
-                dataBuffer[dataIndex] = coordinateToIndex(round(x), round(y), data_width)
+                dataBuffer[dataIndex] = round(x)
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = round(y)
                 dataIndex = dataIndex + 1
                 dataBuffer[dataIndex] = text
                 dataIndex = dataIndex + 1
@@ -1261,9 +1283,9 @@ function DisplayClass:cl_pushData()
     local hasUpdated = false
     local newBufferLen = 0
 
-    local function addPixel(x, y, color, index)
+    local function addPixel(x, y, color)
         if x > 0 and x <= width and y > 0 and y <= height then
-            index = index or (y - 1) * width + x
+            index = (y - 1) * width + x
 
             newBufferLen = newBufferLen + 1
             newBuffer[index] = color
@@ -1272,10 +1294,9 @@ function DisplayClass:cl_pushData()
     end
 
     local function addToTable(params)
-        local index = params[1]
-        local x, y = indexToCoordinate(index, width)
+        local x, y = params[1], params[2]
 
-        addPixel(x, y, idToColor(params[2]), index)
+        addPixel(x, y, idToColor(params[3]))
 
         hasUpdated = true
     end
@@ -1299,9 +1320,9 @@ function DisplayClass:cl_pushData()
     end
 
     local function drawLine(params)
-        local x0, y0 = indexToCoordinate(params[1], width)
-        local x1, y1 = indexToCoordinate(params[2], width)
-        local color = params[3]
+        local x0, y0 = params[1], params[2]
+        local x1, y1 = params[3], params[4]
+        local color = params[5]
         color =  type(color) == "Color" and color or idToColor(color)
     
         local dx = math_abs(x1 - x0)
@@ -1343,10 +1364,10 @@ function DisplayClass:cl_pushData()
     end
 
     local function drawCircle(params)
-        local x, y = indexToCoordinate(params[1], width)
-        local radius = params[2]
-        local color = idToColor(params[3])
-        local isFilled = params[4]
+        local x, y = params[1], params[2]
+        local radius = params[3]
+        local color = idToColor(params[4])
+        local isFilled = params[5]
     
         local f = 1 - radius
         local ddF_x = 1
@@ -1399,18 +1420,15 @@ function DisplayClass:cl_pushData()
     end
 
     local function drawTriangle(params)
-        local x1, y1 = indexToCoordinate(params[1], width)
-        local x2, y2 = indexToCoordinate(params[2], width)
-        local x3, y3 = indexToCoordinate(params[3], width)
-        local color = idToColor(params[4])
-        local isFilled = params[5]
-    
-        local idx1 = coordinateToIndex(x1, y1, width)
-        local idx2 = coordinateToIndex(x2, y2, width)
-        local idx3 = coordinateToIndex(x3, y3, width)
-        drawLine({idx1, idx2, color})
-        drawLine({idx2, idx3, color})
-        drawLine({idx3, idx1, color})
+        local x1, y1 = params[1], params[2]
+        local x2, y2 = params[3], params[4]
+        local x3, y3 = params[5], params[6]
+        local color = idToColor(params[7])
+        local isFilled = params[8]
+
+        drawLine({x1, y1, x2, y2, color})
+        drawLine({x2, y2, x3, y3, color})
+        drawLine({x3, y3, x1, y1, color})
     
         if isFilled then
             local points = {{x = x1, y = y1}, {x = x2, y = y2}, {x = x3, y = y3}}
@@ -1451,10 +1469,10 @@ function DisplayClass:cl_pushData()
     end    
 
     local function drawRect(params)
-        local x, y = indexToCoordinate(params[1], width)
-        local rWidth, rHeight = indexToCoordinate(params[2], width)
-        local color = idToColor(params[3])
-        local isFilled = params[4]
+        local x, y = params[1], params[2]
+        local rWidth, rHeight = params[3], params[4]
+        local color = idToColor(params[5])
+        local isFilled = params[6]
     
         if isFilled then
             scaledAdd(x, y, rWidth, rHeight, color)
@@ -1470,12 +1488,12 @@ function DisplayClass:cl_pushData()
     end
 
     local function drawText(params)
-        local params_x, params_y = indexToCoordinate(params[1], width)
-        local params_text = params[2]
-        local params_color = idToColor(params[3])
-        local params_font = params[4]
-        local params_maxWidth  = params[5]
-        local params_wordWrappingEnabled = params[6]
+        local params_x, params_y = params[1], params[2]
+        local params_text = params[3]
+        local params_color = idToColor(params[4])
+        local params_font = params[5]
+        local params_maxWidth  = params[6]
+        local params_wordWrappingEnabled = params[7]
     
         local font, err = sm_scrapcomputers_fontManager_getFont(params_font)
         local font_width = font.fontWidth
