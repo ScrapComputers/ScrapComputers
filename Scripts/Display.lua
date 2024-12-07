@@ -577,7 +577,9 @@ function DisplayClass:sv_createData()
                 dataIndex = dataIndex + 1
                 dataBuffer[dataIndex] = 1
                 dataIndex = dataIndex + 1
-                dataBuffer[dataIndex] = coordinateToIndex(x, y, data_width)
+                dataBuffer[dataIndex] = x
+                dataIndex = dataIndex + 1
+                dataBuffer[dataIndex] = y
                 dataIndex = dataIndex + 1
                 dataBuffer[dataIndex] = colorToID(color)
 
@@ -1900,8 +1902,22 @@ function DisplayClass:cl_pushData()
                     dataChange[data] = true
                     colorChange[data[1]] = colNew
                 elseif effectPos and effectPos[6] ~= colNew then
-                    if effectPos[3] > 1 then splitX(i); effectPos = pixels[i] end
-                    if effectPos[2] > 1 then splitXY(i); effectPos = pixels[i] end
+                    local sx, sy = effectPos[2], effectPos[3]
+
+                    if sx > 1 and sy > 1 then
+                        splitX(i)
+                        splitXY(i)
+
+                        effectPos = pixels[i]
+                    elseif sy > 1 then
+                        splitX(i)
+
+                        effectPos = pixels[i]
+                    elseif sx > 1 then
+                        splitXY(i)
+
+                        effectPos = pixels[i]
+                    end
 
                     if not colNew then
                         stopEffect(effectPos[1])
@@ -1918,18 +1934,33 @@ function DisplayClass:cl_pushData()
         else
             for i, colNew in pairs(newBuffer) do
                 local effectPos = pixels[i]
+                local equals = colNew == backpanelColor
 
-                if not effectPos and colNew ~= backpanelColor and (not doOptimise or not meshNeighbours(i, colNew)) then
+                if not effectPos and not equals and (not doOptimise or not meshNeighbours(i, colNew)) then
                     local data = createBasicData(i, colNew)
 
                     pixels[i] = data
                     dataChange[data] = true
                     colorChange[data[1]] = colNew
                 elseif effectPos and effectPos[6] ~= colNew then
-                    if effectPos[3] > 1 then splitX(i); effectPos = pixels[i] end
-                    if effectPos[2] > 1 then splitXY(i); effectPos = pixels[i] end
+                    local sx, sy = effectPos[2], effectPos[3]
 
-                    if colNew == backpanelColor then
+                    if sx > 1 and sy > 1 then
+                        splitX(i)
+                        splitXY(i)
+
+                        effectPos = pixels[i]
+                    elseif sy > 1 then
+                        splitX(i)
+
+                        effectPos = pixels[i]
+                    elseif sx > 1 then
+                        splitXY(i)
+
+                        effectPos = pixels[i]
+                    end
+
+                    if equals then
                         stopEffect(effectPos[1])
 
                         updatedPoints[i] = nil
