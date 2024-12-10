@@ -98,8 +98,10 @@ local dataCountLookup = {
 }
 
 function pixelPosToShapePos(x, y, widthScale, heightScale, pixelScale)
-    local xPos = -(widthScale / 2) + (pixelScale.z / 200) + (x * pixelScale.z / 100) + 0.02
-    local yPos = -(heightScale / 2) + (pixelScale.y / 200) + (y * pixelScale.y / 100) + 0.02
+    local v1 = pixelScale.z / 100
+    local v2 = pixelScale.y / 100
+    local xPos = -(widthScale / 2) + v1 / 2 + x * v1 + 0.02
+    local yPos = -(heightScale / 2) + v2 / 2 + y * v2 + 0.02
 
     return xPos, yPos
 end
@@ -1129,10 +1131,14 @@ function DisplayClass:client_onFixedUpdate()
                 local dataIndex = 2
 
                 for index, data in pairs(self_cl.pixels) do
+                    local x, y = indexToCoordinate(index, self_data.width)
+
                     dataIndex = dataIndex + 1
                     dataTbl[dataIndex] = 1
                     dataIndex = dataIndex + 1
-                    dataTbl[dataIndex] = index
+                    dataTbl[dataIndex] = x
+                    dataIndex = dataIndex + 1
+                    dataTbl[dataIndex] = y
                     dataIndex = dataIndex + 1
                     dataTbl[dataIndex] = colorToID(data[6])
                 end
@@ -1668,23 +1674,13 @@ function DisplayClass:cl_pushData()
     end
 
     local function setEffectParameters(effectData)
-        local x, y = effectData[4], effectData[5]
-        local effect = effectData[1]
-        local sx, sy = effectData[2], effectData[3]
+        local x, y, effect, sx, sy = effectData[4], effectData[5], effectData[1], effectData[2], effectData[3]
     
-        local centerX, centerY
+        local scaleY, scaleX = pixel_scale_y * sy, pixel_scale_z * sx
+        local centerX = x - 1 + ((sx > 1) and (sx / 2 - 0.5) or 0)
+        local centerY = y - 1 + ((sy > 1) and (sy / 2 - 0.5) or 0)
     
-        if sx == 1 and sy == 1 then
-            effect_setScale(effect, sm_vec3_new(0, pixel_scale_y, pixel_scale_z))
-    
-            centerX = x - 1
-            centerY = y - 1
-        else
-            effect_setScale(effect, sm_vec3_new(0, pixel_scale_y * sy, pixel_scale_z * sx))
-    
-            centerX = ((sx / 2) + x - 1) - 0.5
-            centerY = ((sy / 2) + y - 1) - 0.5
-        end
+        effect_setScale(effect, sm_vec3_new(0, scaleY, scaleX))
     
         local xPos, yPos = pixelPosToShapePos(centerX, centerY, widthScale, heightScale, pixel_scale)
         effect_setOffsetPosition(effect, sm_vec3_new(pixelDepth, yPos, xPos))
@@ -1760,44 +1756,40 @@ function DisplayClass:cl_pushData()
     end
     
 
-    local function splitX(index)
+    local function splitX(index, ncheck, ncolor)
         local effectData = pixels[index]
         local _, y = indexToCoordinate(index, width)
         local ex, ey, sx, sy, color = effectData[4], effectData[5], effectData[2], effectData[3], effectData[6]
         local end_y = ey + sy - 1
         local createIndex
+        local returnData
     
         if y == ey or y == end_y then
-            local edgeY = (y == ey) and ey or end_y
-            createIndex = coordinateToIndex(ex, edgeY, width)
-            
-            local newData = createBasicData(createIndex, color)
-            newData[2] = sx
-    
-            for i = 0, sx - 1 do
-                pixels[createIndex + i] = newData
-            end
-    
-            dataChange[newData] = true
-            colorChange[newData[1]] = color
-
             if y == ey then
                 effectData[5] = ey + 1
             end
+
             effectData[3] = sy - 1
             dataChange[effectData] = true
-        else
-            local centerIndex = coordinateToIndex(ex, y, width)
-            local centerData = createBasicData(centerIndex, color)
-            centerData[2] = sx
-    
-            for i = 0, sx - 1 do
-                pixels[centerIndex + i] = centerData
-            end
-    
-            dataChange[centerData] = true
-            colorChange[centerData[1]] = color
 
+            if not ncheck or (ncheck and ncolor) then
+                local edgeY = (y == ey) and ey or end_y
+                createIndex = coordinateToIndex(ex, edgeY, width)
+                
+                local newData = createBasicData(createIndex, color)
+                newData[2] = sx
+                returnData = newData
+        
+                for i = 0, sx - 1 do
+                    pixels[createIndex + i] = newData
+                end
+        
+                dataChange[newData] = true
+                colorChange[newData[1]] = color
+            else
+                pixels[index] = nil
+            end
+        else
             local remainingHeight = end_y - y
             local endData = createBasicData(coordinateToIndex(ex, y + 1, width), color)
             endData[2], endData[3] = sx, remainingHeight
@@ -1814,20 +1806,33 @@ function DisplayClass:cl_pushData()
     
             effectData[3] = y - ey
             dataChange[effectData] = true
+
+            if not ncheck or (ncheck and ncolor) then
+                local centerIndex = coordinateToIndex(ex, y, width)
+                local centerData = createBasicData(centerIndex, color)
+                centerData[2] = sx
+                returnData = centerData
+        
+                for i = 0, sx - 1 do
+                    pixels[centerIndex + i] = centerData
+                end
+        
+                dataChange[centerData] = true
+                colorChange[centerData[1]] = color
+            else
+                pixels[index] = nil
+            end
         end
+
+        return returnData
     end
     
-    local function splitXY(index)
+    local function splitXY(index, ncolor)
         local effectData = pixels[index]
         local x, _ = indexToCoordinate(index, width)
         local ex, sx, color = effectData[4], effectData[2], effectData[6]
         local edgeX = ex + sx - 1
-    
-        local newData = createBasicData(index, color)
-
-        pixels[index] = newData
-        dataChange[newData] = true
-        colorChange[newData[1]] = color
+        local returnData
     
         if x == ex then
             effectData[4] = ex + 1
@@ -1851,6 +1856,19 @@ function DisplayClass:cl_pushData()
         end
         
         dataChange[effectData] = true
+
+        if ncolor then
+            local newData = createBasicData(index, color)
+
+            returnData = newData
+            pixels[index] = newData
+            dataChange[newData] = true
+            colorChange[newData[1]] = color
+        else
+            pixels[index] = nil
+        end
+
+        return returnData
     end
 
     if (not hasUpdated and hasCleared) or not getFirst(updatedPoints) then
@@ -1894,40 +1912,37 @@ function DisplayClass:cl_pushData()
             for i in pairs(updatedPoints) do
                 local colNew = newBuffer[i]
                 local effectPos = pixels[i]
-
-                if not effectPos and colNew and (not doOptimise or not meshNeighbours(i, colNew)) then
-                    local data = createBasicData(i, colNew)
-                    
-                    pixels[i] = data
-                    dataChange[data] = true
-                    colorChange[data[1]] = colNew
-                elseif effectPos and effectPos[6] ~= colNew then
+            
+                if not effectPos then
+                    if colNew and (not doOptimise or not meshNeighbours(i, colNew)) then
+                        local data = createBasicData(i, colNew)
+                        pixels[i] = data
+                        dataChange[data] = true
+                        colorChange[data[1]] = colNew
+                    end
+                else
                     local sx, sy = effectPos[2], effectPos[3]
 
-                    if sx > 1 and sy > 1 then
-                        splitX(i)
-                        splitXY(i)
-
-                        effectPos = pixels[i]
-                    elseif sy > 1 then
-                        splitX(i)
-
-                        effectPos = pixels[i]
-                    elseif sx > 1 then
-                        splitXY(i)
-
-                        effectPos = pixels[i]
-                    end
-
-                    if not colNew then
-                        stopEffect(effectPos[1])
-
-                        updatedPoints[i] = nil
-                        dataChange[effectPos] = nil
-                        pixels[i] = nil
-                    elseif not doOptimise or not meshNeighbours(i, colNew) then
-                        effectPos[6] = colNew
-                        colorChange[effectPos[1]] = colNew
+                    if effectPos[6] ~= colNew then
+                        if sx > 1 and sy > 1 then
+                            splitX(i)
+                            effectPos = splitXY(i, colNew)
+                        elseif sy > 1 then
+                            effectPos = splitX(i, true, colNew)
+                        elseif sx > 1 then
+                            effectPos = splitXY(i, colNew)
+                        elseif not colNew then
+                            stopEffect(effectPos[1])
+                            updatedPoints[i] = nil
+                            dataChange[effectPos] = nil
+                            pixels[i] = nil
+                            effectPos = nil
+                        end
+            
+                        if effectPos and (not doOptimise or not meshNeighbours(i, colNew)) then
+                            effectPos[6] = colNew
+                            colorChange[effectPos[1]] = colNew
+                        end
                     end
                 end
             end
@@ -1935,43 +1950,41 @@ function DisplayClass:cl_pushData()
             for i, colNew in pairs(newBuffer) do
                 local effectPos = pixels[i]
                 local equals = colNew == backpanelColor
-
-                if not effectPos and not equals and (not doOptimise or not meshNeighbours(i, colNew)) then
-                    local data = createBasicData(i, colNew)
-
-                    pixels[i] = data
-                    dataChange[data] = true
-                    colorChange[data[1]] = colNew
-                elseif effectPos and effectPos[6] ~= colNew then
-                    local sx, sy = effectPos[2], effectPos[3]
-
-                    if sx > 1 and sy > 1 then
-                        splitX(i)
-                        splitXY(i)
-
-                        effectPos = pixels[i]
-                    elseif sy > 1 then
-                        splitX(i)
-
-                        effectPos = pixels[i]
-                    elseif sx > 1 then
-                        splitXY(i)
-
-                        effectPos = pixels[i]
+            
+                if not effectPos then
+                    if not equals and (not doOptimise or not meshNeighbours(i, colNew)) then
+                        local data = createBasicData(i, colNew)
+                        pixels[i] = data
+                        dataChange[data] = true
+                        colorChange[data[1]] = colNew
                     end
-
-                    if equals then
-                        stopEffect(effectPos[1])
-
-                        updatedPoints[i] = nil
-                        dataChange[effectPos] = nil
-                        pixels[i] = nil
-                    elseif not doOptimise or not meshNeighbours(i, colNew) then
-                        effectPos[6] = colNew
-                        colorChange[effectPos[1]] = colNew
+                else
+                    if effectPos[6] ~= colNew then
+                        local sx, sy = effectPos[2], effectPos[3]
+        
+                        if sx > 1 and sy > 1 then
+                            splitX(i)
+                            effectPos = splitXY(i, not equals)
+                        elseif sy > 1 then
+                            effectPos = splitX(i, true, not equals)
+                        elseif sx > 1 then
+                            effectPos = splitXY(i, not equals)
+                        elseif equals then
+                            stopEffect(effectPos[1])
+                            updatedPoints[i] = nil
+                            dataChange[effectPos] = nil
+                            pixels[i] = nil
+                            effectPos = nil
+                        end
+            
+                        if effectPos and (not doOptimise or not meshNeighbours(i, colNew)) then
+                            effectPos[6] = colNew
+                            colorChange[effectPos[1]] = colNew
+                        end
                     end
                 end
             end
+            
         end
         
         for effectData, _ in pairs(dataChange) do
@@ -2048,29 +2061,20 @@ function DisplayClass:cl_optimiseDisplay()
     end
 
     local function setEffectParameters(effectData)
-        local x, y = effectData[4], effectData[5]
-        local effect = effectData[1]
-        local sx, sy = effectData[2], effectData[3]
+        local x, y, effect, sx, sy, color = effectData[4], effectData[5], effectData[1], effectData[2], effectData[3], effectData[6]
     
-        local centerX, centerY
+        local scaleY, scaleX = pixel_scale_y * sy, pixel_scale_z * sx
+        local centerX = x - 1 + ((sx > 1) and (sx / 2 - 0.5) or 0)
+        local centerY = y - 1 + ((sy > 1) and (sy / 2 - 0.5) or 0)
     
-        if sx == 1 and sy == 1 then
-            effect_setScale(effect, sm_vec3_new(0, pixel_scale_y, pixel_scale_z))
-    
-            centerX = x - 1
-            centerY = y - 1
-        else
-            effect_setScale(effect, sm_vec3_new(0, pixel_scale_y * sy, pixel_scale_z * sx))
-    
-            centerX = ((sx / 2) + x - 1) - 0.5
-            centerY = ((sy / 2) + y - 1) - 0.5
-        end
-    
+        effect_setScale(effect, sm_vec3_new(0, scaleY, scaleX))
+
         local xPos, yPos = pixelPosToShapePos(centerX, centerY, widthScale, heightScale, pixel_scale)
         effect_setOffsetPosition(effect, sm_vec3_new(pixelDepth, yPos, xPos))
 
-        effect_setParameter(effect, "color", effectData[6])
+        effect_setParameter(effect, "color", color)
     end
+    
 
     local function createBasicData(index, color)
         local x, y = indexToCoordinate(index, width)
@@ -2080,7 +2084,7 @@ function DisplayClass:cl_optimiseDisplay()
             effect,
             1,
             1,
-            x, 
+            x,
             y,
             color
         }
