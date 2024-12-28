@@ -407,6 +407,16 @@ function sm.scrapcomputers.ascfManager.applyDisplayFunctions(display)
     display.calcASCFTextSize = sm.scrapcomputers.ascfManager.calcTextSize
 end
 
+function sm.scrapcomputers.ascfManager.getFontNames()
+	local fontNames = {}
+
+	for fontName, _ in pairs(sm.scrapcomputers.ascfManager.fonts) do
+		table.insert(fontNames, fontName)
+	end
+
+	return fontNames
+end
+
 ------------------------------------------------------------------------------------------------------------------------------
 
 if sm.scrapcomputers.table.getTableSize(sm.scrapcomputers.ascfManager.fonts ) > 0 then

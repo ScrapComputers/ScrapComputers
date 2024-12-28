@@ -236,6 +236,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 
                     return nil, errMsg
                 end,
+				getFontNames = sm.scrapcomputers.ascfManager.getFontNames
             },
             example = {
                 getExamples = function ()
