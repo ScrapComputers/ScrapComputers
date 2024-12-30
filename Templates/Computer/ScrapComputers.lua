@@ -201,8 +201,9 @@ function debug(...) end
 
 -- Sends an alert message to all players in the world.
 ---@param message string The message to send
----@param duration number The duration before the alert message fades out
-function alert(message, duration) end
+---@param duration number? The duration before the alert message fades out
+---@param player Player? The player to send to. Cannot be used in Safe-Env
+function alert(message, duration, player) end
 
 -- Pauses execution for the specified duration.
 -- Note that this will freeze your game during the duration, as Scrap Mechanic is single-threaded!

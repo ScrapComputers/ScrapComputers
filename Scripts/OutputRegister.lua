@@ -30,9 +30,17 @@ function OutputRegisterClass:server_onCreate()
     self.network:sendToClients("cl_setName", name)
 end
 
-function OutputRegisterClass:sv_setName(name)
+function OutputRegisterClass:sv_setName(name, player)
     sm.scrapcomputers.dataList["OutputRegisters"][self.shape.id].name = name
     self.storage:save(name)
+
+	-- How the fuck did we forgot to do mulitplayer testing on fucking registers?
+	
+	for _, plr in pairs(sm.player.getAllPlayers()) do
+		if plr.id ~= player.id then
+			self.network:sendToClient(plr, "cl_setName", name)
+		end
+	end
 end
 
 function OutputRegisterClass:sv_onRecievePowerUpdate(power)
@@ -73,6 +81,7 @@ end
 
 function OutputRegisterClass:cl_setName(name)
     self.cl.registerName = name
+	self.cl.gui:setText("Input", self.cl.registerName)
 end
 
 function OutputRegisterClass:client_onInteract(character, state)

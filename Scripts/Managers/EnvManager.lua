@@ -32,16 +32,26 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 
         ---@param message string
         ---@param duration number?
-        alert = function(message, duration)
+        ---@param player Player?
+        alert = function(message, duration, player)
             duration = duration or 5
 
             sm.scrapcomputers.errorHandler.assertArgument(message, 1, {"string"})
             sm.scrapcomputers.errorHandler.assertArgument(duration, 2, {"number", "nil"})
+            sm.scrapcomputers.errorHandler.assertArgument(player, 3, {"Player", "nil"})
             
-            self.network:sendToClients("cl_alert", {message, duration})
+            if not isUnsafeENV and player then
+                error("Cannot use Player argument in safe-env!")
+            end
+
+            if player then
+                self.network:sendToClient(player, "cl_alert", {message, duration})
+            else
+                self.network:sendToClients("cl_alert", {message, duration})
+            end
         end,
 
-		debug = function (...)
+        debug = function (...)
             print("[SC]: ", unpack({...}))
         end,
 
