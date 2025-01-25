@@ -151,6 +151,22 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 		select = select,
 		unpack = unpack,
 
+        class = class,
+        setmetatable = function (tbl, metatable)
+            for index, value in pairs(metatable) do
+                tbl[index] = value
+            end
+
+            tbl["__raw_metatable_sconly"] = metatable
+            tbl = class(tbl)()
+
+            return tbl
+        end,
+
+        getmetatable = function (tbl)
+            return sm.scrapcomputers.table.clone(tbl["__raw_metatable_sconly"])
+        end,
+
         ---Loads a string and lets you execute it
         ---@param code string The code to execute
         ---@param env table The environment variables it can use
