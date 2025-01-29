@@ -1,6 +1,6 @@
 ---@class WriterClass : ShapeClass
 OutputRegisterClass = class()
-OutputRegisterClass.maxParentCount = 1
+OutputRegisterClass.maxParentCount = -1
 OutputRegisterClass.maxChildCount = -1
 OutputRegisterClass.connectionInput = sm.interactable.connectionType.compositeIO
 OutputRegisterClass.connectionOutput = sm.interactable.connectionType.logic + sm.interactable.connectionType.power

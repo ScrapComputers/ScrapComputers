@@ -1,6 +1,6 @@
 ---@class ReaderClass : ShapeClass
 InputRegisterClass = class()
-InputRegisterClass.maxParentCount = 1
+InputRegisterClass.maxParentCount = -1
 InputRegisterClass.maxChildCount = -1
 InputRegisterClass.connectionOutput = sm.interactable.connectionType.compositeIO
 InputRegisterClass.connectionInput = sm.interactable.connectionType.logic + sm.interactable.connectionType.power
