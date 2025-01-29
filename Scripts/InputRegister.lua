@@ -27,23 +27,29 @@ function InputRegisterClass:server_onCreate()
 end
 
 function InputRegisterClass:server_onFixedUpdate()
-    local parent = self.interactable:getSingleParent()
+    local parents = self.interactable:getParents()
 
-    if parent then
-        local power = parent.power
+    if parents then
+        for _, parent in ipairs(parents) do
+            local power = parent.power
 
-        if parent.type == "button" or parent.type == "lever" then
-            power = parent.active and 1 or 0
-        end
+            if parent.type == "button" or parent.type == "lever" then
+                power = parent.active and 1 or 0
+            end
 
-        if self.sv.lastPower ~= power then
-            self.sv.lastPower = power
+            if self.sv.lastPower ~= power then
+                self.sv.lastPower = power
 
-            sm.scrapcomputers.dataList["InputRegisters"][self.shape.id].power = power
+                sm.scrapcomputers.dataList["InputRegisters"][self.shape.id].power = power
 
-            -- Update the interactable's power and active state
-            self.interactable.power = power
-            self.interactable.active = power > 0
+                -- Update the interactable's power and active state
+                self.interactable.power = power
+                self.interactable.active = power > 0
+            end
+
+            if power > 0 then
+                break
+            end
         end
     end
 end
