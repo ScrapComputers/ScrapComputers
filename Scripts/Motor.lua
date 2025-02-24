@@ -64,6 +64,14 @@ function MotorClass:sv_createData()
             self.sv.force = force
             self.sv.updatePistonValues = true
         end,
+
+        ---Gets the bearing's current angle. Note that only 1 bearing can be connected!
+        ---@return number angle The current angle
+        getCurrentAngle = function ()
+            sm.scrapcomputers.errorHandler.assert(#self.sv.bearings == 1, nil, "Only 1 bearing can be connected!")
+
+            return math.deg(self.sv.bearings[1]:getAngle())
+        end,
     }
 end
 

@@ -1285,6 +1285,10 @@ function Motor.setLength(length) end
 ---@param force number The force to set for the piston(s)
 function Motor.setForce(force) end
 
+---Gets the bearing's current angle. Note that only 1 bearing can be connected!
+---@return number angle The current angle
+function Motor.getCurrentAngle() end
+
 ---@class Radar The radar allows you to scan objects around it.
 local Radar = {}
 
