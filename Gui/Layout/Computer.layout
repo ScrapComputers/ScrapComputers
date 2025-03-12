@@ -40,6 +40,11 @@
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_Button"/>
             </Widget>
+            <Widget type="Button" skin="GenderButton" position_real="0.026022304832713755 0.02178649237472767 0.19702602230483271 0.04357298474945534" name="openESNSconfigBtn">
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#eeeeeeESNS Config"/>
+            </Widget>
         </Widget>
         <Widget type="Widget" skin="BackgroundPopup" position_real="0.79532163742690054 0 0.20643274853801169 0.99782608695652175">
             <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 0.99150141643059486 0.045751633986928102" align="Center Top" name="examplesTitle">

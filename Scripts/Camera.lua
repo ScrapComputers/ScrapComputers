@@ -886,9 +886,9 @@ function CameraClass:sv_drawAdvancedFrame(rays, coordinateTbl, width, height)
 
     local shadowResults = sm.physics.multicast(shadowRays)
     local finalPixelIndex = #pixels
-
-    for i, data in pairs(shadowResults) do
-        local hit, result = data  [1], data[2]
+    for i = 1, tblIndex, 1 do
+        local data = shadowResults[i]
+        local hit, result = data[1], data[2]
         local pointData = pointTbl[i]
 
         if hit and (result.pointWorld - pointData.point):length() > 0.05 then
@@ -901,7 +901,7 @@ function CameraClass:sv_drawAdvancedFrame(rays, coordinateTbl, width, height)
         finalPixelIndex = finalPixelIndex + 1
         pixels[finalPixelIndex] = {x = x, y = y, color = pointData.color}
     end
-
+    
     return pixels
 end
 
@@ -1046,7 +1046,8 @@ function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, w
     local shadowResults = sm.physics.multicast(shadowRays)
     local finalPixelIndex = #pixels
 
-    for i, data in pairs(shadowResults) do
+    for i = 1, tblIndex, 1 do
+        local data = shadowResults[i]
         local hit, result = data[1], data[2]
         local pointData = pointTbl[i]
 

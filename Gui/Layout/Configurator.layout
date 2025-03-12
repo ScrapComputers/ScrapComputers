@@ -3,7 +3,7 @@
     <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 0.80729166666666663 0.78148148148148144" name="BackPanel">
         <Widget type="TextBox" skin="TextBox" position_real="0 0.023696682464454975 1 0.062796208530805683" align="Center Top" name="Title">
             <Property key="TextAlign" value="Center"/>
-            <Property key="FontName" value="SM_ButtonLarge"/>
+            <Property key="FontName" value="SM_Header"/>
             <Property key="TextShadow" value="true"/>
             <Property key="Caption" value="SCRAPCOMPUTERS CONFIGURATOR"/>
         </Widget>

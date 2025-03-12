@@ -45,3 +45,37 @@ function sm.scrapcomputers.util.generateNumberGradient(numbers, numNumbers)
 
     return gradient
 end
+
+---Maps a value from rangeA (fromMin & fromMax) to rangeB (toMin & toMax)
+---@param value number The number to map
+---@param fromMin number The old mininum range.
+---@param fromMax number The old max range.
+---@param toMin number The new mininum range.
+---@param toMax number The new max range.
+---@return number
+function sm.scrapcomputers.util.mapValue(value, fromMin, fromMax, toMin, toMax)
+    sm.scrapcomputers.errorHandler.assertArgument(value  , 1, {"number"})
+    sm.scrapcomputers.errorHandler.assertArgument(fromMin, 2, {"number"})
+    sm.scrapcomputers.errorHandler.assertArgument(fromMax, 3, {"number"})
+    sm.scrapcomputers.errorHandler.assertArgument(toMin  , 4, {"number"})
+    sm.scrapcomputers.errorHandler.assertArgument(toMax  , 5, {"number"})
+
+    local ratio = (value - fromMin) / (fromMax - fromMin)
+    return toMin + (ratio * (toMax - toMin))
+end
+
+
+function sm.scrapcomputers.util.setmetatable(tbl, metatable)
+    for index, value in pairs(metatable) do
+        tbl[index] = value
+    end
+
+    tbl["__raw_metatable"] = metatable
+    tbl = class(tbl)()
+
+    return tbl
+end
+
+function sm.scrapcomputers.util.getmetatable(tbl)
+    return sm.scrapcomputers.table.clone(tbl["__raw_metatable"])
+end

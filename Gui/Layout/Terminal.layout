@@ -4,7 +4,7 @@
         <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 0.73565217391304349 1">
             <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 1 0.045751633986928102" align="Center Top" name="title">
                 <Property key="TextAlign" value="Center"/>
-                <Property key="FontName" value="SM_ButtonLarge"/>
+                <Property key="FontName" value="SM_Header"/>
                 <Property key="TextShadow" value="true"/>
                 <Property key="Caption" value="TERMINAL"/>
             </Widget>
@@ -27,7 +27,7 @@
         <Widget type="Widget" skin="BackgroundPopup" position_real="0.74550724637681154 0 0.25449275362318841 1">
             <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 1.0022779043280183 0.045751633986928102" align="Center Top" name="historyTitle">
                 <Property key="TextAlign" value="Center"/>
-                <Property key="FontName" value="SM_ButtonLarge"/>
+                <Property key="FontName" value="SM_Header"/>
                 <Property key="TextShadow" value="true"/>
                 <Property key="Caption" value="INPUTS"/>
             </Widget>

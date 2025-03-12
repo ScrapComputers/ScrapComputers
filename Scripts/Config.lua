@@ -9,6 +9,10 @@ sm.scrapcomputers = {}
 
 ---------------------------------------------------------------------------------------
 
+-- Converts
+
+---------------------------------------------------------------------------------------
+
 local storageConfigKey = "1974022346117ab44f08add85a6b6e49a5bc13ce3a3cabf3b8769d13cbe4043f5b40fba363441a17f0ec4308d0072dade43a7cf8e934a595611e73e543df1c48"
 
 local isDevEnv
@@ -26,7 +30,24 @@ function sm.scrapcomputers.isDeveloperEnvironment()
     if isPlaytestingOrDevBuild then
         isDevEnv = true
     else
-        isDevEnv = false
+        if sm.scrapcomputers.config then
+            local config = sm.scrapcomputers.config.getConfig("config.scrapcomputers.global.developerenvironment")
+            isDevEnv = config.selectedOption == 2
+        else
+            ---@type Configuration[]
+            local configs = sm.storage.load(storageConfigKey)
+            for _, config in pairs(configs) do
+                if config.id == "config.scrapcomputers.global.developerenvironment" then
+                    isDevEnv = config.selectedOption == 2
+                    return isDevEnv
+                end
+            end
+    
+            -- Please stop.
+            print("Please stop breaking our mod :c")
+            isDevEnv = false
+            return isDevEnv
+        end
     end
     
     return isDevEnv
@@ -39,7 +60,7 @@ sm.scrapcomputers.isDeveloperEnvironment()
 sm.scrapcomputers.backend = {}
 
 -- Do not fucking put any modules behind ErrorHandler, so that you atleast can have proper error handling.
-local modules = {"Logger", "ErrorHandler", "String", "Audio", "Base64", "Color", "JSON", "MD5", "SHA256", "Table", "Util", "Vector2", "Vector3", "BitStream", "VirtualDisplay", "Multidisplay"}
+local modules = {"Logger", "ErrorHandler", "String", "Audio", "Base64", "LZ4", "Color", "JSON", "MD5", "SHA256", "Table", "Util", "Vector2", "Vector3", "BitStream", "NBS", "VirtualDisplay", "Multidisplay"}
 
 for _, module in pairs(modules) do
     local modulePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Modules/" .. module .. ".lua"
@@ -53,6 +74,7 @@ end
 sm.scrapcomputers.dataList = {
     -- Removing all of these causes all of the components to break. I have no fucking idea why but IDC.
 
+    ["Computers"] = {},
     ["Displays"] = {},
     ["Harddrives"] = {},
     ["Holograms"] = {},
@@ -69,6 +91,7 @@ sm.scrapcomputers.dataList = {
     ["Lasers"] = {},
     ["GPSs"] = {},
     ["SeatControllers"] = {},
+    ["GravityControllers"] = {},
     
     ["NetworkInterfaces"] = {} -- This is not a component and we have a system to make this not needed, but it works so fuck you.
 }
@@ -150,6 +173,7 @@ function sm.scrapcomputers.config.createDefaultConfigs(onlyDefaultConfigs)
     dirtySuperNaughtyCreateConfig("scrapcomputers.computer.reset_error_on_restart", 2, false , 2)
     dirtySuperNaughtyCreateConfig("scrapcomputers.computer.nanvalues"             , 2, false , 2)
     dirtySuperNaughtyCreateConfig("scrapcomputers.global.selectedLanguage"        , 1, true  , 1)
+    dirtySuperNaughtyCreateConfig("scrapcomputers.global.developerenvironment"    , 1, true  , 2)
 
     if onlyDefaultConfigs then return config end
 
@@ -310,7 +334,7 @@ sm.scrapcomputers.logger.info("Config.lua", "Loaded conifg API!")
 
 ---------------------------------------------------------------------------------------
 
-local managers = {"EnvManager", "ComponentManager", "FontManager", "SyntaxManager", "ExampleManager", "LanguageManager", "ASCFManager"}
+local managers = {"EnvManager", "ComponentManager", "FontManager", "SyntaxManager", "ExampleManager", "LanguageManager", "ASCFManager", "ExternalComManager"}
 
 for _, manager in pairs(managers) do
     local managerPath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Managers/" .. manager .. ".lua"

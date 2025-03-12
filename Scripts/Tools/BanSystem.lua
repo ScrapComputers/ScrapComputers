@@ -23,10 +23,10 @@ BanSystemClass = class()
 
 local bannedMods = {
     -- {Mod Name, Mod local id, BanLevel, Reason}
-    -- If BanLevel is 1. Then you get the popup once in your world.
+    -- If BanLevel is 1. Then you get the popup once in your world
     -- If BanLevel is 2. You get the popup every 30 secconds
     -- If BanLevel is 3. You nolonger be able to use ScrapComputers on this world unless that mod/addon gets removed from the world
-    -- If BanLevel is 4. ScrapComputers WILL FUCKING KILL YOUR SHITTY ASS WORLD AND BURN IT IN THE 8TH LAYER OF HELL
+    -- If BanLevel is 4. ScrapComputers will crash the game if the addon is dangerous enough to damage your game
 }
 
 -- SERVER --

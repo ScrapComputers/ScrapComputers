@@ -38,11 +38,11 @@ function SpeakerClass:sv_createData()
 
     return {
         beep = function ()
-            table.insert(self.sv.buffer, {"cl_playNote", {"ScrapComputers - AUDIO1", 10, {pitch = 100}}})
+            table.insert(self.sv.buffer, {"ScrapComputers - AUDIO1", 10, {pitch = 100}})
         end,
 
         longBeep = function ()
-            table.insert(self.sv.buffer, {"cl_playNote", {"ScrapComputers - AUDIO1", 25, {pitch = 100}}})
+            table.insert(self.sv.buffer, {"ScrapComputers - AUDIO1", 25, {pitch = 100}})
         end,
 
         ---@param pitch number The pitch
@@ -56,7 +56,7 @@ function SpeakerClass:sv_createData()
             sm.scrapcomputers.errorHandler.assert(durationTicks > 0, nil, "bad argument #3, Expected higher number than 0")
             sm.scrapcomputers.errorHandler.assert(note <= 9 and note >= 0, nil, "bad argument #1, Out of bounds! (0 to 10!)")
 
-            table.insert(self.sv.buffer, {"cl_playNote", {"ScrapComputers - AUDIO" .. sm.scrapcomputers.toString(note), durationTicks or 40, {pitch = pitch}}})
+            table.insert(self.sv.buffer, {"ScrapComputers - AUDIO" .. sm.scrapcomputers.toString(note), durationTicks or 40, {pitch = pitch}})
         end,
 
         -- Plays whatever sound effect you specify!
@@ -72,13 +72,21 @@ function SpeakerClass:sv_createData()
             
             checkParameters(name, params or {})
 
-            table.insert(self.sv.buffer, {"cl_playNote", {"ScrapComputers - " .. name, durationTicks or 40, params or {}}})
+            table.insert(self.sv.buffer, {"ScrapComputers - " .. name, durationTicks or 40, params or {}})
+        end,
+
+        SC_PRIVATE_fastPlaySound = function (name, params, durationTicks)
+            self.sv.buffer[#self.sv.buffer+1] = {"ScrapComputers - " .. name, durationTicks, params}
+        end,
+
+        getId = function ()
+            return self.shape.id
         end,
 
         stopAllAudio = function ()
             self.sv.killAll = true
         end
-}
+    }
 end
 
 function SpeakerClass:server_onCreate()
@@ -90,10 +98,7 @@ end
 
 function SpeakerClass:server_onFixedUpdate()
     if #self.sv.buffer > 0 then
-        for _, ClFunc in pairs(self.sv.buffer)  do
-            self.network:sendToClients(ClFunc[1], ClFunc [2])
-        end
-    
+        self.network:sendToClients("cl_playNotes", self.sv.buffer)
         self.sv.buffer = {}
     end
 
@@ -107,7 +112,7 @@ end
 
 function SpeakerClass:client_onCreate()
     self.cl = {
-        effects = {},
+        effects = {}, --- @type Effect[]
         effectBuffer = {},
     }
 end
@@ -152,6 +157,12 @@ function SpeakerClass:cl_playNote(params)
 
     table.insert(self.cl.effectBuffer, effect:getId(), math.floor(durationTicks))
     table.insert(self.cl.effects, effect:getId(), effect)
+end
+
+function SpeakerClass:cl_playNotes(notes)
+    for _, note in pairs(notes) do
+        self:cl_playNote(note)
+    end
 end
 
 sm.scrapcomputers.componentManager.toComponent(SpeakerClass, "Speakers", true)

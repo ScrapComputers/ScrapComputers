@@ -201,7 +201,7 @@ function debug(...) end
 
 -- Sends an alert message to all players in the world.
 ---@param message string The message to send
----@param duration number? The duration before the alert message fades out
+---@param duration number The duration before the alert message fades out
 ---@param player Player? The player to send to. Cannot be used in Safe-Env
 function alert(message, duration, player) end
 
@@ -439,114 +439,74 @@ function sc.base64.encode(data) end
 ---@return string data The decoded string
 function sc.base64.decode(data) end
 
--- A stream of bits. Used for networking for example.
 ---@class BitStream
-local Bitstream = {}
+---A stream of bits, primarily used for networking and binary data manipulation.
+local BitStream = {}
 
----Dumps the buffer
----@return string buffer The dumped buffer
-function self:dumpString() end
+---Writes a sequence of bits to the stream.
+---@param value integer The value to write.
+---@param numBits integer The number of bits to write from the value.
+function BitStream:writeBits(value, numBits) end
 
----Dumps the buffer (As Base64)
----@return string buffer The dumped buffer
-function self:dumpBase64() end
+---Reads a sequence of bits from the stream.
+---@param numBits integer The number of bits to read.
+---@return integer The extracted value.
+function BitStream:readBits(numBits) end
 
----Dumps the buffer (As Hex)
----@return string buffer The dumped buffer
-function self:dumpHex() end
+---Writes an unsigned integer in Big Endian format.
+---@param value integer The unsigned integer value to write.
+---@param numBits integer The number of bits to use for the value.
+function BitStream:writeUInt(value, numBits) end
 
----Reads a number from the bit stream (Big Endian)
----@param byteSize integer Size of the number in bytes
----@return integer number The read number
-function self:readNumberBE(byteSize) end
+---Reads an unsigned integer in Big Endian format.
+---@param numBits integer The number of bits to read.
+---@return integer The extracted unsigned integer.
+function BitStream:readUInt(numBits) end
 
----Reads a number from the bit stream (Little Endian)
----@param byteSize integer Size of the number in bytes
----@return integer number The read number
-function self:readNumberLE(byteSize) end
+---Writes a signed integer in Big Endian format.
+---@param value integer The signed integer value to write.
+---@param numBits integer The number of bits to use for the value.
+function BitStream:writeInt(value, numBits) end
 
---- Writes a float using IEEE 754 standard (Big Endian)
----@param value number The float value to encode
----@return integer encodedFloat The encoded float as integer
-function self:encodeFloat(value) end
+---Reads a signed integer in Big Endian format.
+---@param numBits integer The number of bits to read.
+---@return integer The extracted signed integer.
+function BitStream:readInt(numBits) end
 
---- Reads a float using IEEE 754 standard (Big Endian)
----@param bytes integer The 4-byte integer representation of the float
----@return number decodedFloat The decoded float
-function self:decodeFloat(bytes) end
+---Writes a single byte (8 bits) to the stream.
+---@param value integer The byte value to write (0-255).
+function BitStream:writeByte(value) end
 
---- Reads a double using IEEE 754 standard (Big Endian)
----@param bytes integer The 8-byte integer representation of the double
----@return number decodedDouble The decoded double
-function self:decodeDouble(bytes) end
+---Reads a single byte (8 bits) from the stream.
+---@return integer The extracted byte value.
+function BitStream:readByte() end
 
---- Writes a double using IEEE 754 standard (Big Endian)
----@param value number The double value to encode
----@return integer encodedDouble The encoded double as integer
-function self:encodeDouble(value) end
+---Writes a sequence of bytes to the stream.
+---@param bytes string The byte sequence to write.
+function BitStream:writeBytes(bytes) end
 
----Reads a byte from the bit stream
----@return integer byte The read byte
-function self:readByte() end
+---Reads a sequence of bytes from the stream.
+---@param numBytes integer The number of bytes to read.
+---@return string The extracted byte sequence.
+function BitStream:readBytes(numBytes) end
 
----Writes a byte to the bit stream
----@param byte string The byte to write
-function self:writeByte(byte) end
+---Writes a floating-point number in Big Endian format (32-bit IEEE 754).
+---@param value number The float value to write.
+function BitStream:writeFloat(value) end
 
----Reads a string of a given size from the bit stream
----@param size integer The size of the string
----@param stopNulByte boolean? If it should stop by a nul byte
----@return string str The read string
-function self:readStringEx(size, stopNulByte) end
+---Reads a floating-point number in Big Endian format (32-bit IEEE 754).
+---@return number The extracted float value.
+function BitStream:readFloat() end
 
----Writes a float to the bit stream (Big Endian)
----@param value number The float value to write
-function self:writeFloatBE(value) end
+---Resets the bit stream, clearing all data.
+function BitStream:reset() end
 
----Reads a float from the bit stream (Big Endian)
----@return number value The read float value
-function self:readFloatBE() end
+---Aligns the bit stream to the next byte boundary.
+function BitStream:align() end
 
----Writes a double to the bit stream (Big Endian)
----@param value number The double value to write
-function self:writeDoubleBE(value) end
-
----Reads a double from the bit stream (Big Endian)
----@return number value The read double value
-function self:readDoubleBE() end
-
----Writes a float to the bit stream (Little Endian)
----@param value number The float value to write
-function self:writeFloatLE(value) end
-
----Reads a float from the bit stream (Little Endian)
----@return number value The read float value
-function self:readFloatLE() end
-
----Writes a double to the bit stream (Little Endian)
----@param value number The double value to write
-function self:writeDoubleLE(value) end
-
----Reads a double from the bit stream (Little Endian)
----@return number value The read double value
-function self:readDoubleLE()  end
-
----Reads a string from the bit stream
----@param isLittleEndian boolean? If it is in little endian or big endian, Defaults to little endian.
----@param stopNulByte boolean? If it should stop by a nul byte
----@return string str The read string
-function self:readString(isLittleEndian, stopNulByte) end
-
----Skips bytes
----@param bytes integer The amount of bytes to skip
-function self:skipBytes(bytes) end
-
----Seeks to a new position
----@param newPosition integer The new position
-function self:seek(newPosition) end
-
--- Lets you read and write via packet buffers. Useful for networking!
-sc.bitstream = {}
+---Converts the bit stream to a string representation.
+---@return string The string representation of the bit stream.
+function BitStream:tostring() end
 
 -- Creates a new BitStream stream
 ---@param data string? Optional pre-appended binary data
@@ -576,6 +536,10 @@ function sc.color.newSingular(rgbNumber) end
 ---@param numColors integer The ammount of blending each color gets in the gradient table.
 ---@return Color[] colorGradient The generated gradient table.
 function sc.color.generateGradient(colors, numColors) end
+
+---Creates a blank color
+---@return Color color The blank color
+function sc.color.blank() end
 
 ---Allows you to create an MD5 stream for generating MD5 hashes.
 ---@class MD5Stream
@@ -823,14 +787,17 @@ sc.multidisplay = {}
 function sc.multidisplay.new(displays, columns, rows) end
 
 ---The font manager module for handling TrueType fonts
+---@deprecated Avoid using ASCFManager! A planned reimplementation of it is coming!
 sc.ascfont = {}
 
+---@deprecated Avoid using ASCFManager! A planned reimplementation of it is coming!
 ---Gets information about the font
 ---@param fontName string The name of the font
 ---@return ASCFont fontData The font data
 ---@return string? error The error message, if any
 function sc.ascfont.getFontInfo(fontName) end
 
+---@deprecated Avoid using ASCFManager! A planned reimplementation of it is coming!
 ---Calculates the size of a given text using a specified font
 ---@param fontName string The name of the font
 ---@param text string The text to measure
@@ -840,6 +807,7 @@ function sc.ascfont.getFontInfo(fontName) end
 ---@return number height The height of the text
 function sc.ascfont.calcTextSize(fontName, text, fontSize, rotation) end
 
+---@deprecated Avoid using ASCFManager! A planned reimplementation of it is coming!
 ---Draws text to a display
 ---@param display Display The display to draw on
 ---@param xOffset number The x-coordinate offset
@@ -851,6 +819,54 @@ function sc.ascfont.calcTextSize(fontName, text, fontSize, rotation) end
 ---@param fontSize number The size of the font to use
 ---@param colorToggled boolean? Whether the text color can change dynamically (optional)
 function sc.ascfont.drawText(display, xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled) end
+
+---@class NBSPlayer A player for the NBS format.
+local NBSPlayer = {}
+
+---Plays a tick
+function NBSPlayer:update() end
+
+---Starts the player
+function NBSPlayer:start() end
+
+---Stops the player
+function NBSPlayer:stop() end
+
+---Returns true if the player is playing.
+function NBSPlayer:isPlaying() end
+
+---Gets the current tick of the player
+---@return number tick The current tick of the player.
+function NBSPlayer:getCurrentTicK() end
+
+---Returns true If it would loop or not.
+---@return boolean isLooped If it is looped or not.
+function NBSPlayer:isLooped() end
+
+---Sets the player to ether loop or not.
+---@param state boolean New looped state.
+function NBSPlayer:setLooped( state ) end
+
+-- A Library that lets you play music with the NBS (Note Block Studio) format.
+sc.nbs = {}
+
+---Loads a NBS file.
+---@param nbsData string The raw NBS data.
+---@return NBSPlayer nbsPlayer The nbs player
+function sc.nbs.loadNBS(nbsData) end
+
+---The LZ4 module lets you encode/decode binary data with the LZ4 compression format!
+sc.lz4 = {}
+
+---Decodes a string to LZ4
+---@param input string The string to decode
+---@return string data The decoded string
+function sc.lz4.decode(input) end
+
+---Encodes a string to LZ4
+---@param input string The string to encode
+---@return string data The encoded string
+function sc.lz4.encode(input) end
 
 ----------------------------------------------------------------------------------------------------
 ---                                                                                              --- 
@@ -1089,7 +1105,7 @@ function Display.getOptimizationThreshold() end
 
 ---Calculates the size of the text.
 ---@param text string The text to be calculated
----@param font string The font to use
+---@param font string? The font to use
 ---@param maxWidth integer? The max width before it wraps around
 ---@param wordWrappingEnabled boolean? If it should do word wrapping or not.
 ---@param dynamicHeight boolean? If the height should be dynamic towards the actual text instead of the font's height. Only works if word wrapping is disabled.
@@ -1097,6 +1113,7 @@ function Display.getOptimizationThreshold() end
 ---@return number height The height of the text
 function Display.calcTextSize(text, font, maxWidth, wordWrappingEnabled, dynamicHeight) end
 
+---@deprecated
 ---Draws ASCF text to a display
 ---@param xOffset number The x-coordinate
 ---@param yOffset number The y-coordinate
@@ -1108,6 +1125,7 @@ function Display.calcTextSize(text, font, maxWidth, wordWrappingEnabled, dynamic
 ---@param colorToggled boolean? If it should support colors or not in text.
 function Display.drawASCFText( xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled ) end
 
+---@deprecated
 ---Calculates text size.
 ---@param fontName string THe name of the font
 ---@param text string The text
@@ -1116,6 +1134,15 @@ function Display.drawASCFText( xOffset, yOffset, text, fontName, color, rotation
 ---@return number width The width the font consumes
 ---@return number hegiht The height the font consumes
 function Display.calcASCFTextSize( fontName, text, fontSize, rotation ) end
+
+---Takes a snapshot of the display
+function Display.takeSnapshot() end
+
+-- Gets a pixel from the screen snapshot
+---@param x integer The x coordinate
+---@param y integer The y coordinate
+---@return Color Color The color of the pixel in the x, y position
+function Display.getPixel(x, y) end
 
 ---@class GPS A GPS allows you to get rotation, position, velocities, and more!
 local GPS = {}
@@ -1346,6 +1373,10 @@ function Speaker.playNote(pitch, note, durationTicks) end
 ---@param durationTicks number The duration the sound will play in ticks.
 function Speaker.playSound(name, params, durationTicks) end
 
+---Gets the ID of the speaker
+---@return integer id The id of the speaker
+function Speaker.getId() end
+
 ---Stops all currently playing audio.
 function Speaker.stopAllAudio() end
 
@@ -1430,3 +1461,19 @@ function Light.getColor() end
 ---Sets the color
 ---@param color MultiColorTypeNonNil The new color
 function Light.setColor(color) end
+
+---@class GravityController
+---A component that allows modifying the gravity of the attached creation.
+local GravityController = {}
+
+---Sets whether the gravity modulation is enabled or not.
+---@param bool boolean Whether the gravity is enabled or not.
+function GravityController.setGravityEnabled(bool) end
+
+---Sets the gravity multiplier for the attached creation.
+---@param multiplier number The gravity multiplier to apply. 0 is no gravity, 1 is normal gravity, etc.
+function GravityController.setMultiplier(multiplier) end
+
+---Gets the current gravity multiplier.
+---@return number multiplier The current gravity multiplier.
+function GravityController.getMultiplier() end

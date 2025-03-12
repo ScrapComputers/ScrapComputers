@@ -73,6 +73,7 @@
     
     // Display
     "scrapcomputers.display.failed_to_find_font"                       : "Failed to find the font! Something might have broken! Contact the ScrapComputers Team ASAP!",
+    "scrapcomputers.display.touchscreen_multi"                         : "Press %s or %s for touchscreen", // 2 Arguments. which is the keybind text (with style)
     "scrapcomputers.display.touchscreen"                               : "Press %s for touchscreen", // 1 Argument. which is the keybind text (with style)
 
     // Other

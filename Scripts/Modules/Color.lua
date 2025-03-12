@@ -72,3 +72,21 @@ end
 function sm.scrapcomputers.color.blank()
     return sm.color.new(0, 0, 0, 0)
 end
+
+---This function mixes 2 colors based on transparancy, letting you to fake transparancy.
+---@param colorA Color The color to be mixed
+---@param colorB Color The color to mix.
+---@return Color color The new color.
+function sm.scrapcomputers.color.mixColorsTransparency(colorA, colorB)
+    return sm.color.new(
+        sm.util.lerp(colorA.r, colorB.r, colorB.a),
+        sm.util.lerp(colorA.g, colorB.g, colorB.a),
+        sm.util.lerp(colorA.b, colorB.b, colorB.a)
+    )
+end
+
+---Clones a color, although we aren't sure if this is needed
+---@param color Color The color to clone
+function sm.scrapcomputers.color.clone(color)
+    return sm.color.new(color.r, color.g, color.b, color.a)
+end

@@ -12,6 +12,8 @@ ComputerClass.connectionOutput = sm.interactable.connectionType.compositeIO
 ComputerClass.colorNormal = sm.color.new(0xaaaaaaff)
 ComputerClass.colorHighlight = sm.color.new(0xffffffff)
 
+sm.scrapcomputers.backend.pid = {}
+
 -- SERVER + CLIENT --
 
 local function is2ndStringCutOff(str1, str2)
@@ -21,6 +23,30 @@ local function is2ndStringCutOff(str1, str2)
     else
         return false
     end
+end
+
+local function generateTableHash(tbl)
+    local hash = 0
+    local prime = 31
+
+    for key, value in pairs(tbl) do
+        local keyHash = (type(key) == "number" and key or #key)
+
+        local valueHash = 0
+        if type(value) == "number" then
+            valueHash = value
+        elseif type(value) == "string" then
+            for i = 1, #value do
+                valueHash = valueHash + string.byte(value, i)
+            end
+        elseif type(value) == "boolean" then
+            valueHash = value and 0x32 or 0x84
+        end
+
+        hash = hash + (keyHash * prime + valueHash)
+    end
+
+    return hash % (2^32)
 end
 
 ---@param errorMessage string
@@ -92,14 +118,24 @@ function ComputerClass:server_onCreate()
         wait1Tick = false,
         previousActive = false,
         canResetError = false,
+        dataListHash = nil
     }
     self.sv.saved = self.storage:load()
 
     if not self.sv.saved then
         self.sv.saved = {
-            code = "",
+            code = sm.scrapcomputers.exampleManager.getExamples()[1].script,
             alwaysOn = false,
+            identifier = sm.scrapcomputers.sha256.random(),
+            displayName = "Computer #" .. tostring(self.interactable.id)
         }
+
+        self.storage:save(self.sv.saved)
+    end
+
+    if not self.sv.saved.identifier then
+        self.sv.saved.identifier = sm.scrapcomputers.sha256.random()
+        self.sv.saved.displayName = "Computer #" .. tostring(self.interactable.id)
 
         self.storage:save(self.sv.saved)
     end
@@ -107,9 +143,16 @@ function ComputerClass:server_onCreate()
     self:sv_syncClients()
 end
 
+function ComputerClass:server_onDestroy()
+    sm.scrapcomputers.dataList["Computers"][self.interactable.id] = nil
+end
+
 function ComputerClass:server_onFixedUpdate(deltaTime)
+    self:sv_pidImplementation()
+
     if self.sv.wait1Tick then
         self.sv.wait1Tick = false
+        self:sv_updateDataList()
         return
     end
 
@@ -124,6 +167,7 @@ function ComputerClass:server_onFixedUpdate(deltaTime)
             end
         end
     elseif not self.sv.saved.alwaysOn then
+        self:sv_updateDataList()
         return
     end
 
@@ -150,6 +194,7 @@ function ComputerClass:server_onFixedUpdate(deltaTime)
 
     if self:sv_hasException() then
         self.interactable.active = false
+        self:sv_updateDataList()
         return
     end
 
@@ -164,10 +209,11 @@ function ComputerClass:server_onFixedUpdate(deltaTime)
             local function run()
                 local safeCode = self.sv.saved.code:gsub("##", "#"):gsub("⁄", "\\")
                 local func, errorMessage = sm.scrapcomputers.luavm.loadstring(safeCode, self.sv.env)
-                if not func then error(errorMessage) end
 
+                if not func then error(errorMessage) end
+   
                 func()
-                
+
                 self:sv_runFunction(self.sv.env.onLoad)
             end
 
@@ -185,6 +231,29 @@ function ComputerClass:server_onFixedUpdate(deltaTime)
     if active then
         self:sv_runFunction(self.sv.env.onUpdate, deltaTime)
     end
+    self:sv_updateDataList()
+end
+
+function ComputerClass:sv_updateDataList()
+    local data = {
+        identifer = self.sv.saved.identifier,
+        displayName = self.sv.saved.displayName,
+        exception = {
+            hasException = self:sv_hasException(),
+            exceptionMessage = self.sv.exceptionMessage,
+            exceptionLines = self.sv.exceptionLines
+        },
+        config = {
+            alwaysOn = self.sv.saved.alwaysOn,
+        }
+    }
+    local dataHash = generateTableHash(data)
+
+    if self.sv.dataListHash == dataHash then return end
+    self.sv.dataListHash = dataHash
+
+    sm.scrapcomputers.dataList["Computers"][self.interactable.id] = data
+    self.network:sendToClients("cl_updateDataList", data)
 end
 
 function ComputerClass:sv_hasException()
@@ -204,6 +273,8 @@ function ComputerClass:sv_serverSync(data)
         self.sv.exceptionLines = {}
     elseif data.type == 2 then
         self.sv.saved.alwaysOn = data.packet
+    elseif data.type == 3 then
+        self.sv.saved.displayName = data.packet
     else
         sm.scrapcomputers.logger.warn("Computer.lua", "Unknown server sync data on Computer! Type=[" .. sm.scrapcomputers.toString(data.type) .. "]\n\tData: " .. sm.scrapcomputers.toString(data.packet))
         return
@@ -224,6 +295,8 @@ function ComputerClass:sv_syncClients()
         alwaysOn = self.sv.saved.alwaysOn,
         exceptionMessage = self.sv.exceptionMessage,
         exceptionLines = self.sv.exceptionLines,
+        identifier = self.sv.saved.identifier,
+        displayName = self.sv.saved.displayName
     })
 end
 
@@ -238,6 +311,8 @@ function ComputerClass:sv_resyncClient(data, player)
         alwaysOn = self.sv.saved.alwaysOn,
         exceptionMessage = self.sv.exceptionMessage,
         exceptionLines = self.sv.exceptionLines,
+        identifier = self.sv.saved.identifier,
+        displayName = self.sv.saved.displayName
     })
 end
 
@@ -268,6 +343,61 @@ function ComputerClass:sv_callException(errorMessage)
     self:sv_syncClients()
 end
 
+function ComputerClass:sv_callOnReload()
+    self:sv_runFunction(self.sv.env.onReload)
+end
+
+function ComputerClass:sv_movingAverage(num, count)
+    if not self.sv.runningAverageBuffer then self.sv.runningAverageBuffer = {} end
+    if not self.sv.nextRunningAverage then self.sv.nextRunningAverage = 0 end
+  
+    self.sv.runningAverageBuffer[self.sv.nextRunningAverage] = num;
+    self.sv.nextRunningAverage = (self.sv.nextRunningAverage + 1)%count
+  
+    local runningAverage = 0
+
+    for k, v in pairs(self.sv.runningAverageBuffer) do
+        if k >= count then
+            v = 0
+        else
+            runningAverage = runningAverage + v
+        end
+    end
+
+    return runningAverage / count;
+end
+
+function ComputerClass:sv_pidImplementation()
+    local pid = sm.scrapcomputers.backend.pid
+    local processValue = pid.processValue or 0
+    local setValue = pid.setValue or 0
+    local p = pid.p or 0
+    local i = pid.i or 0
+    local d = pid.d or 0
+    local deltatimeI = pid.deltatimeI or 1
+    local deltatimeD = pid.deltatimeD or 1
+    local limit = 4096
+
+    deltatimeD = sm.util.clamp(deltatimeD, 1, limit)
+    deltatimeI = sm.util.clamp(deltatimeI, 1, limit)
+
+    local _error = setValue - processValue
+
+    if not self.sv.bufferIndex then self.sv.bufferIndex = 0 end
+    if not self.sv.buffer_d then self.sv.buffer_d = {} end
+
+    self.sv.buffer_d[self.sv.bufferIndex] = _error
+
+    local lasterror = (self.sv.buffer_d[(self.sv.bufferIndex - deltatimeD)%20] == nil) and _error or self.sv.buffer_d[(self.sv.bufferIndex - deltatimeD)%20]
+    local output = _error * p  + self:sv_movingAverage(_error, deltatimeI) * i  + (_error - lasterror) * d
+
+    output = sm.util.clamp(output, -limit, limit)
+
+    self.sv.bufferIndex = (self.sv.bufferIndex + 1)%20
+
+    sm.scrapcomputers.backend.pid.output = output
+end
+
 -- CLIENT --
 
 function ComputerClass:client_onCreate()
@@ -283,6 +413,8 @@ function ComputerClass:client_onCreate()
         unsavedCode = "",
         alwaysOn = false,
         character = nil,
+        identifier = nil,
+        displayName = nil,
     }
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Computer, false, {backgroundAlpha = 0.5})
@@ -300,6 +432,13 @@ function ComputerClass:client_onCreate()
     self.cl.gui:setButtonCallback("openESNSconfigBtn", "cl_openESNSconfig")
 
     self.cl.gui:setOnCloseCallback("cl_onGuiClose")
+    if not sm.scrapcomputers.isDeveloperEnvironment() then
+        self.cl.gui:setVisible("openESNSconfigBtn", false)
+    end
+    
+    self.cl.esnsGui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.ComputerESNSConfig, false, {backgroundAlpha = 0.5})
+    self.cl.esnsGui:setTextChangedCallback("displayName", "cl_esnsDisplayNameChanged")
+    self.cl.esnsGui:setOnCloseCallback("cl_onESNSGuiClose")
 
     self.network:sendToServer("sv_resyncClient")
 end
@@ -345,12 +484,19 @@ function ComputerClass:client_onFixedUpdate()
     end
 end
 
+function ComputerClass:client_onDestroy()
+    sm.scrapcomputers.dataList["Computers"][self.interactable.id] = nil
+end
+
 function ComputerClass:cl_clientSync(data)
     self.cl.unsavedCode = self.cl.code
     self.cl.alwaysOn = data.alwaysOn
 
     self.cl.exceptionMessage = data.exceptionMessage
     self.cl.exceptionLines = data.exceptionLines
+
+    self.cl.identifier = data.identifier
+    self.cl.displayName = data.displayName
 
     self:cl_runTranslations()
 
@@ -455,6 +601,10 @@ function ComputerClass:cl_saveButtonBtn(widget, name)
         self.cl.exceptionLines = {}
         self.cl.gui:setText("scriptData", sm.scrapcomputers.syntaxManager.highlightCode(code, {}))
     end
+
+    if self.interactable.active then
+        self.network:sendToServer("sv_callOnReload")
+    end
 end
 
 function ComputerClass:cl_revertChangesBtn(widget, name)
@@ -505,6 +655,27 @@ function ComputerClass:cl_saveCode()
     end
 end
 
+-- ESNS Config --
+
+function ComputerClass:cl_openESNSconfig(widget, name)
+    self.cl.gui:close()
+
+    local safeDisplayName = self.cl.displayName:gsub("#", "##")
+    self.cl.esnsGui:setText("identifer", self.cl.identifier)
+    self.cl.esnsGui:setText("displayName", safeDisplayName)
+    
+    self.cl.esnsGui:open()
+end
+
+function ComputerClass:cl_esnsDisplayNameChanged(widget, text)
+    self.cl.displayName = text
+    self:cl_syncServer(3, self.cl.displayName)
+end
+
+function ComputerClass:cl_onESNSGuiClose()
+    self:client_onInteract(self.cl.character, true)
+end
+
 -- Other --
 
 function ComputerClass:cl_syncServer(type, data)
@@ -514,6 +685,10 @@ end
 function ComputerClass:cl_setLogMessage(totalTicks, textColor, message)
     self.cl.hideLogIn = totalTicks
     self.cl.gui:setText("log", (textColor and "#" .. textColor or "") .. message)
+end
+
+function ComputerClass:cl_updateDataList(data)
+    sm.scrapcomputers.dataList["Computers"] = data
 end
 
 -- Env related functions --

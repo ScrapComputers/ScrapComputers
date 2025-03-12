@@ -70,8 +70,10 @@
 
     "scrapcomputers.configurator.resetpopup.title"                     : "Configuraties resetten?",
     "scrapcomputers.configurator.resetpopup.description"               : "U kunt deze wijziging niet ongedaan maken!",
+
     // Display
     "scrapcomputers.display.failed_to_find_font"                       : "Het lettertype is niet gevonden! Misschien is er iets kapot gegaan! Neem zo snel mogelijk contact op met het ScrapComputers Team!",
+    "scrapcomputers.display.touchscreen_multi"                         : "Druk %s of %s in voor touchscreen", // 2 Arguments. which is the keybind text (with style)
     "scrapcomputers.display.touchscreen"                               : "Druk op %s voor touchscreen.", // 1 Argument. which is the keybind text (with style)
 
     // Other

@@ -120,6 +120,17 @@
         "description": "The light component lets you change its color and get its color! Basicly a RGB LED in Scrap Mechanic!"
     },
 
+    
+    // Gravity Controlers
+    "478f981e-73c2-447f-9ee9-0c6937cf9f5c": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Small Gravity Controller",
+        "description": "Lets you toggle gravity of your creation!"
+    },
+
+    "150fbf90-b9b9-40d7-9ff2-040fa0db0b92": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Gravity Controller",
+        "description": "Lets you toggle gravity of your creation!"
+    },
 
     // 1x1 Displays
     "a1c2dde3-45d4-43eb-b95a-32e4ff3b6e36": {

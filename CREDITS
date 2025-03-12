@@ -5,7 +5,7 @@ All projects used by ScrapComputers would be credited. These include like the fo
 ==================================================================================================================================
 
 Credits to Yueliang for the Lua bytecode interperter and FiOne for the Interperter to actually execute the bytecode. They are the
-reason of how we made our Lua Virtual Machine very fast! (more than 10x faster than LuaInLua which Scriptable)
+reason of how we made our Lua Virtual Machine very fast!
 
 NOTE: Also credits to ScrapVM! Why? Because we are actually using the yueliang from them because for some reason there is no github
 repo. and i could only fine one at a archive website...
@@ -29,3 +29,5 @@ the sources from here so aslong you dont use our fonts we have but download them
 | More Perfect DOS VGA | 8x16  | https://laemeur.sdf.org/fonts/             | Unknown      | Bottom of the website mentions its free to use                     |
 | Pixel Operator       | Multi | https://www.dafont.com/pixel-operator.font | 2018.10.04-4 | Licensed with: CC0 1.0 Universal License (No Copyright in context) |
 | Commodore 64         | 8x8   | https://style64.org/c64-truetype           | 1.2.1        | Compattable with our license                                       |
+
+(We have more fonts that we didn't specificy but we forgot where the sources are for them)

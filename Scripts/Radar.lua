@@ -62,7 +62,13 @@ end
 
 function RadarClass:sv_calculateTargets()
     local bodies = sm.body.getAllBodies()
+    local players = sm.player.getAllPlayers()
+    local units = sm.unit.getAllUnits()
+
     local losCreations = {} ---@type Body[][]
+    local losCreationsCheck
+    local losUnits = {} ---@type Unit|Player[][]
+    local losUnitsCheck
 
     local radarPos = self.shape.worldPosition
     local radarAt = sm.quat.getAt(self.shape.worldRotation)
@@ -70,6 +76,7 @@ function RadarClass:sv_calculateTargets()
 
     local vAngleRad = math.rad(self.sv.vAngle / 2)
     local hAngleRad = math.rad(self.sv.hAngle / 2)
+    local surfaceAreaBound = self.sv.hAngle * self.sv.vAngle / 80
 
     for _, body in pairs(bodies) do
         local bool = isBodyInCreation(body, self.shape.body:getCreationBodies())
@@ -114,6 +121,7 @@ function RadarClass:sv_calculateTargets()
 
                         if bool1 and not losCreations[creationId] then
                             losCreations[creationId] = resBody:getCreationBodies()
+                            losCreationsCheck = true
                         end
                     end
                 end
@@ -123,9 +131,50 @@ function RadarClass:sv_calculateTargets()
         ::continue::
     end
 
+    local function unitCheck(unit)
+        local character = unit.character
+        local characterPos = character.worldPosition
+        local dir = characterPos - radarPos
+
+        if dir:length() ~= 0 then
+            local distance = dir:length()
+            dir = dir:normalize()
+
+            local verticalAngle = math.asin(dir:dot(radarUp))
+
+            if math.abs(verticalAngle) > vAngleRad then
+                return
+            end
+
+            local horizontalDir = dir - radarUp * dir:dot(radarUp)
+            local horizontalAngle = math.acos(radarAt:dot(horizontalDir:normalize()))
+
+            if horizontalAngle > hAngleRad then
+                return
+            end
+
+            local hit, res = sm.physics.raycast(radarPos, radarPos + dir * distance, self.shape.body)
+
+            if hit then
+                if res.type == "character" then
+                    losUnits[unit.id] = unit
+                    losUnitsCheck = true
+                end
+            end
+        end
+    end
+
+    for _, player in pairs(players) do
+        unitCheck(player)
+    end
+
+    for _, unit in pairs(units) do
+        unitCheck(unit)
+    end
+
     local validTargets = {}
 
-    if losCreations ~= {} then
+    if losUnitsCheck or losCreationsCheck then
         for _, creation in pairs(losCreations) do
             local minBound ---@type Vec3?
             local maxBound ---@type Vec3?
@@ -158,11 +207,19 @@ function RadarClass:sv_calculateTargets()
                 local bb = maxBound - minBound
                 local surfaceArea = ((bb.x * bb.z + bb.x * bb.y + bb.z * bb.y) / 2 / math.sqrt(distance)) * 8
 
-                local surfaceAreaBound = self.sv.hAngle * self.sv.vAngle / 80
-
                 if surfaceArea > surfaceAreaBound or distance < 200 then
-                    table.insert(validTargets, {creation, surfaceArea})
+                    table.insert(validTargets, {creation, surfaceArea, "creation"})
                 end
+            end
+        end
+
+        for _, unit in pairs(losUnits) do
+            local character = unit.character
+            local distance = (self.shape.worldPosition - character.worldPosition):length()
+            local surfaceArea = (character:getHeight() * character:getMass()) / math.sqrt(distance)
+
+            if surfaceArea > surfaceAreaBound or distance < 200 then
+                table.insert(validTargets, {unit, surfaceArea, "unit"})
             end
         end
     end
@@ -171,16 +228,25 @@ function RadarClass:sv_calculateTargets()
 
     if #validTargets > 0 then
         for _, data in pairs(validTargets) do
-            local creation, surfaceArea = unpack(data) ---@type Body[], number
-            local averagePos = sm.vec3.zero()
+            local type = data[3]
 
-            for _, body in pairs(creation) do
-                averagePos = averagePos + body:getCenterOfMassPosition()
+            if type == "creation" then
+                local creation, surfaceArea = unpack(data) ---@type Body[], number
+                local averagePos = sm.vec3.zero()
+
+                for _, body in pairs(creation) do
+                    averagePos = averagePos + body:getCenterOfMassPosition()
+                end
+
+                averagePos = averagePos / #creation
+
+                table.insert(finalTargets, {position = averagePos, surfaceArea = surfaceArea, type = type, id = creation[1]:getCreationId()})
+            elseif type == "unit" then
+                local unit, surfaceArea = unpack(data)
+                local character = unit.character
+
+                table.insert(finalTargets, {position = character.worldPosition, surfaceArea = surfaceArea, type = type, id = unit.id})
             end
-
-            averagePos = averagePos / #creation
-
-            table.insert(finalTargets, {position = averagePos, surfaceArea = surfaceArea})
         end
     end
 

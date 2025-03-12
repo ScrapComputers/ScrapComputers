@@ -1,309 +1,163 @@
--- Lets you read and write via packet buffers. You can use this for networking!
 sm.scrapcomputers.bitstream = {}
 
----Creates a new BitStream Stream
----@param data string? Pre-appended binary data.
----@return BitStream
 function sm.scrapcomputers.bitstream.new(data)
-    sm.scrapcomputers.errorHandler.assertArgument(data, nil, {"string", "nil"})
+    local self = unpack({sm.scrapcomputers.bitstream})
+    self.data = {}
 
-    local self = {}
-    self.data = data or ""
-    self.pos = 1
-    self.size = data and #data or 0
-
-    ---Dumps the buffer
-    ---@return string buffer The dumped buffer
-    function self:dumpString()
-        return self.data
-    end
-
-    ---Dumps the buffer (As Base64)
-    ---@return string buffer The dumped buffer
-    function self:dumpBase64()
-        return sm.scrapcomputers.base64.encode(self:dumpString())
-    end
-
-    ---Dumps the buffer (As Hex)
-    ---@return string buffer The dumped buffer
-    function self:dumpHex()
-        local hexData = ""
-        local dumpedData = self:dumpString()
-
-        for index = 1, #dumpedData do
-            hexData = hexData .. string.format("%02X", dumpedData:sub(index, index):byte())
+    if data then
+        for char in data:gmatch(".") do
+            table.insert(self.data, string.byte(char))
         end
-
-        return hexData
     end
 
-    ---Reads a number from the bit stream (Big Endian)
-    ---@param byteSize integer Size of the number in bytes
-    ---@return integer number The read number
-    function self:readNumberBE(byteSize)
-        sm.scrapcomputers.errorHandler.assertArgument(byteSize, nil, {"integer"})
-        sm.scrapcomputers.errorHandler.assert(byteSize > 0 and byteSize <= 64, nil, "Out of bounds! (1-64 Range)")
-
-        if self.pos + byteSize - 1 > self.size then
-            error("Not enough data to read")
-        end
-
-        local number = 0
-        for i = 0, byteSize - 1 do
-            local byte = self.data:sub(self.pos + (byteSize - 1 - i), self.pos + (byteSize - 1 - i)):byte() or 0
-            number = number + (byte * 2 ^ (i * 8))
-        end
-
-        self.pos = self.pos + byteSize
-        return number
-    end
-
-    ---Reads a number from the bit stream (Little Endian)
-    ---@param byteSize integer Size of the number in bytes
-    ---@return integer number The read number
-    function self:readNumberLE(byteSize)
-        sm.scrapcomputers.errorHandler.assertArgument(byteSize, nil, {"integer"})
-        sm.scrapcomputers.errorHandler.assert(byteSize > 0 and byteSize <= 64, nil, "Out of bounds! (1-64 Range)")
-
-        if self.pos + byteSize - 1 > self.size then
-            error("Not enough data to read")
-        end
-
-        local number = 0
-        for i = 0, byteSize - 1 do
-            local byte = self.data:sub(self.pos + i, self.pos + i):byte() or 0
-            number = number + (byte * 2 ^ (i * 8))
-        end
-
-        self.pos = self.pos + byteSize
-        return number
-    end
-
-    --- Writes a float using IEEE 754 standard (Big Endian)
-    ---@param value number The float value to encode
-    ---@return integer encodedFloat The encoded float as integer
-    function self:encodeFloat(value)
-        if value == 0.0 then return 0 end
-        if value ~= value then return 0x7FC00000 end -- NaN
-        if value == math.huge then return 0x7F800000 end -- Positive Infinity
-        if value == -math.huge then return 0xFF800000 end -- Negative Infinity
-
-        local sign = value < 0 and 1 or 0
-        value = math.abs(value)
-
-        local exponent = 0
-        while value >= 2 do
-            value = value / 2
-            exponent = exponent + 1
-        end
-        while value < 1 and exponent > -127 do
-            value = value * 2
-            exponent = exponent - 1
-        end
-
-        if exponent >= 128 then error("Float overflow") end
-
-        local fraction = (value * 8388608) - 8388608
-
-        return bit.bor(
-            bit.lshift(sign, 31),
-            bit.lshift(exponent + 127, 23),
-            bit.band(fraction, 0x007FFFFF)
-        )
-    end
-
-    --- Reads a float using IEEE 754 standard (Big Endian)
-    ---@param bytes integer The 4-byte integer representation of the float
-    ---@return number decodedFloat The decoded float
-    function self:decodeFloat(bytes)
-        local sign = bit.rshift(bytes, 31) == 1 and -1 or 1
-        local exponent = bit.rshift(bit.band(bytes, 0x7F800000), 23) - 127
-        local fraction = bit.band(bytes, 0x007FFFFF)
-
-        if exponent == 128 then
-            if fraction == 0 then return sign * math.huge end -- Infinity
-            return 0/0 -- NaN
-        end
-
-        local value = 0
-        if exponent == -127 then
-            value = fraction / 8388608
-        else
-            value = (fraction + 8388608) * math.pow(2, exponent)
-        end
-
-        return sign * value
-    end
-
-    --- Reads a double using IEEE 754 standard (Big Endian)
-    ---@param bytes integer The 8-byte integer representation of the double
-    ---@return number decodedDouble The decoded double
-    function self:decodeDouble(bytes)
-        local sign = bit.rshift(bytes, 63) == 1 and -1 or 1
-        local exponent = bit.rshift(bit.band(bytes, 0x7FF0000000000000), 52) - 1023
-        local fraction = bit.band(bytes, 0x000FFFFFFFFFFFFF)
-
-        if exponent == 2047 then
-            if fraction == 0 then return sign * math.huge end -- Infinity
-            return 0/0 -- NaN
-        end
-
-        local value = 0
-        if exponent == -1023 then
-            value = fraction / 4503599627370496
-        else
-            value = (fraction + 4503599627370496) * math.pow(2, exponent)
-        end
-
-        return sign * value
-    end
-
-    --- Writes a double using IEEE 754 standard (Big Endian)
-    ---@param value number The double value to encode
-    ---@return integer encodedDouble The encoded double as integer
-    function self:encodeDouble(value)
-        if value == 0.0 then return 0 end
-        if value ~= value then return 0x7FF8000000000000 end -- NaN
-        if value == math.huge then return 0x7FF0000000000000 end -- Positive Infinity
-        if value == -math.huge then return 0xFFF0000000000000 end -- Negative Infinity
-
-        local sign = value < 0 and 1 or 0
-        value = math.abs(value)
-
-        local exponent = 0
-        while value >= 2 do
-            value = value / 2
-            exponent = exponent + 1
-        end
-        while value < 1 and exponent > -1023 do
-            value = value * 2
-            exponent = exponent - 1
-        end
-
-        if exponent >= 1024 then error("Double overflow") end
-
-        local fraction = (value * 4503599627370496) - 4503599627370496
-
-        return bit.bor(
-            bit.lshift(sign, 63),
-            bit.lshift(exponent + 1023, 52),
-            bit.band(fraction, 0x000FFFFFFFFFFFFF)
-        )
-    end
-
-    ---Reads a byte from the bit stream
-    ---@return integer byte The read byte
-    function self:readByte()
-        return self:readNumberLE(1)
-    end
-
-    ---Writes a byte to the bit stream
-    ---@param byte string The byte to write
-    function self:writeByte(byte)
-        sm.scrapcomputers.errorHandler.assertArgument(byte, nil, {"string"})
-        sm.scrapcomputers.errorHandler.assert(#byte == 1, nil, "Not a byte!")
-
-        self:writeNumberLE(1, string.byte(byte))
-    end
-
-    ---Reads a string of a given size from the bit stream
-    ---@param size integer The size of the string
-    ---@param stopNulByte boolean? If it should stop by a nul byte
-    ---@return string str The read string
-    function self:readStringEx(size, stopNulByte)
-        sm.scrapcomputers.errorHandler.assertArgument(size           , 1, {"integer"       })
-        sm.scrapcomputers.errorHandler.assertArgument(sistopNulByteze, 2, {"boolean", "nil"})
-
-        local str = ""
-        for _ = 1, size do
-            local byte = self:readByte()
-            if byte == 0 and stopNulByte then
-                break
-            end
-
-            str = str .. string.char(byte)
-        end
-
-        return str
-    end
-
-       ---Writes a float to the bit stream (Big Endian)
-    ---@param value number The float value to write
-    function self:writeFloatBE(value)
-        local encoded = self:encodeFloat(value)
-        self:writeNumberBE(4, encoded)
-    end
-
-    ---Reads a float from the bit stream (Big Endian)
-    ---@return number value The read float value
-    function self:readFloatBE()
-        local encoded = self:readNumberBE(4)
-        return self:decodeFloat(encoded)
-    end
-
-    ---Writes a double to the bit stream (Big Endian)
-    ---@param value number The double value to write
-    function self:writeDoubleBE(value)
-        local encoded = self:encodeDouble(value)
-        self:writeNumberBE(8, encoded)
-    end
-
-    ---Reads a double from the bit stream (Big Endian)
-    ---@return number value The read double value
-    function self:readDoubleBE()
-        local encoded = self:readNumberBE(8)
-        return self:decodeDouble(encoded)
-    end
-
-    ---Writes a float to the bit stream (Little Endian)
-    ---@param value number The float value to write
-    function self:writeFloatLE(value)
-        local encoded = self:encodeFloat(value)
-        self:writeNumberLE(4, encoded)
-    end
-
-    ---Reads a float from the bit stream (Little Endian)
-    ---@return number value The read float value
-    function self:readFloatLE()
-        local encoded = self:readNumberLE(4)
-        return self:decodeFloat(encoded)
-    end
-
-    ---Writes a double to the bit stream (Little Endian)
-    ---@param value number The double value to write
-    function self:writeDoubleLE(value)
-        local encoded = self:encodeDouble(value)
-        self:writeNumberLE(8, encoded)
-    end
-
-    ---Reads a double from the bit stream (Little Endian)
-    ---@return number value The read double value
-    function self:readDoubleLE()
-        local encoded = self:readNumberLE(8)
-        return self:decodeDouble(encoded)
-    end
-
-    ---Reads a string from the bit stream
-    ---@param isLittleEndian boolean? If it is in little endian or big endian, Defaults to little endian.
-    ---@param stopNulByte boolean? If it should stop by a nul byte
-    ---@return string str The read string
-    function self:readString(isLittleEndian, stopNulByte)
-        sm.scrapcomputers.errorHandler.assertArgument(isLittleEndian, 1, {"boolean", "nil"})
-        sm.scrapcomputers.errorHandler.assertArgument(stopNulByte   , 2, {"boolean", "nil"})
-        
-        if isLittleEndian or type(isLittleEndian) == "nil"  then
-            return self:readStringEx(self:readNumberLE(4), stopNulByte)
-        end
-        return self:readStringEx(self:readNumberBE(4), stopNulByte)
-    end
-
-    function self:skipBytes(bytes)
-        self.pos = self.pos + bytes
-    end
-
-    function self:seek(newPosition)
-        self.pos = newPosition
-    end
+    self.bitPos = 0
 
     return self
+end
+
+function sm.scrapcomputers.bitstream:writeBits(value, numBits)
+    for i = numBits - 1, 0, -1 do
+        local byteIndex = math.floor(self.bitPos / 8) + 1
+        local bitOffset = self.bitPos % 8
+        local bitToWrite = bit.band(bit.rshift(value, i), 1)
+
+        self.data[byteIndex] = self.data[byteIndex] or 0
+        self.data[byteIndex] = bit.bor(self.data[byteIndex], bit.lshift(bitToWrite, 7 - bitOffset))
+
+        self.bitPos = self.bitPos + 1
+    end
+end
+
+function sm.scrapcomputers.bitstream:readBits(numBits)
+    local value = 0
+    for i = numBits - 1, 0, -1 do
+        local byteIndex = math.floor(self.bitPos / 8) + 1
+        local bitOffset = self.bitPos % 8
+        local bitValue = bit.band(bit.rshift(self.data[byteIndex], 7 - bitOffset), 1)
+
+        value = bit.bor(value, bit.lshift(bitValue, i))
+        self.bitPos = self.bitPos + 1
+    end
+    return value
+end
+
+
+-- Writing an unsigned integer in Big Endian
+function sm.scrapcomputers.bitstream:writeUInt(value, numBits)
+    local numBytes = math.floor(numBits / 8)
+
+    for i = 0, numBytes - 1 do
+        local byte = bit.band(bit.rshift(value, (numBytes - i - 1) * 8), 0xFF)
+        self:writeByte(byte)
+    end
+end
+
+-- Reading an unsigned integer in Big Endian
+function sm.scrapcomputers.bitstream:readUInt(numBits)
+    local value = 0
+    local numBytes = math.floor(numBits / 8)
+    
+    for i = 0, numBytes - 1 do
+        local byte = self:readByte()
+        value = bit.bor(value, bit.lshift(byte, (numBytes - i - 1) * 8))
+    end
+
+    return value
+end
+
+-- Writing a signed integer in Big Endian
+function sm.scrapcomputers.bitstream:writeInt(value, numBits)
+    if value < 0 then value = value + bit.lshift(1, numBits) end
+    self:writeUInt(value, numBits)
+end
+
+-- Reading a signed integer in Big Endian
+function sm.scrapcomputers.bitstream:readInt(numBits)
+    local value = self:readUInt(numBits)
+    local maxVal = bit.lshift(1, numBits - 1)
+    if value >= maxVal then value = value - bit.lshift(1, numBits) end
+    return value
+end
+
+function sm.scrapcomputers.bitstream:writeByte(value)
+    self:writeBits(value, 8)
+end
+
+function sm.scrapcomputers.bitstream:readByte()
+    return self:readBits(8)
+end
+
+function sm.scrapcomputers.bitstream:writeBytes(bytes)
+    for i = 1, #bytes do
+        self:writeByte(bytes:byte(i))
+    end
+end
+
+function sm.scrapcomputers.bitstream:readBytes(numBytes)
+    local bytes = {}
+    for i = 1, numBytes do
+        table.insert(bytes, string.char(self:readByte()))
+    end
+    return table.concat(bytes)
+end
+
+-- Writing a float in Big Endian (32-bit IEEE 754 format)
+function sm.scrapcomputers.bitstream:writeFloat(value)
+    local sign = 0
+    if value < 0 then
+        sign = 1
+        value = -value
+    end
+
+    local mantissa, exponent = math.frexp(value)
+    mantissa = (mantissa * 2 - 1) * math.ldexp(0.5, 24)
+    exponent = exponent + 126
+
+    local b1 = bit.bor(bit.lshift(sign, 7), bit.rshift(exponent, 1))
+    local b2 = bit.bor(bit.lshift(bit.band(exponent, 1), 7), bit.rshift(mantissa, 16))
+    local b3 = bit.band(bit.rshift(mantissa, 8), 0xFF)
+    local b4 = bit.band(mantissa, 0xFF)
+
+    self:writeByte(b1)
+    self:writeByte(b2)
+    self:writeByte(b3)
+    self:writeByte(b4)
+end
+
+-- Reading a float in Big Endian (32-bit IEEE 754 format)
+function sm.scrapcomputers.bitstream:readFloat()
+    local b1 = self:readByte()
+    local b2 = self:readByte()
+    local b3 = self:readByte()
+    local b4 = self:readByte()
+
+    local sign = bit.rshift(b1, 7)
+    local exponent = bit.band(bit.lshift(b1, 1), 0xFF) + bit.rshift(b2, 7) - 127
+    local mantissa = bit.bor(bit.lshift(bit.band(b2, 0x7F), 16), bit.lshift(b3, 8), b4) + math.ldexp(1, 23)
+    local value = math.ldexp(mantissa, exponent - 23)
+    
+    if sign == 1 then value = -value end
+    return value
+end
+
+function sm.scrapcomputers.bitstream:reset()
+    self.data = {}
+    self.bitPos = 0
+end
+
+function sm.scrapcomputers.bitstream:align()
+    local bitOffset = self.bitPos % 8
+
+    if bitOffset > 0 then
+        local bitsToAlign = 8 - bitOffset
+        self.bitPos = self.bitPos + bitsToAlign
+    end
+end
+
+function sm.scrapcomputers.bitstream:tostring()
+    local output = {}
+    for _, byte in ipairs(self.data) do
+        table.insert(output, string.char(byte))
+    end
+    return table.concat(output)
 end

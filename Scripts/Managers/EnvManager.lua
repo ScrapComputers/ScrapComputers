@@ -50,7 +50,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                 self.network:sendToClients("cl_alert", {message, duration})
             end
         end,
-
+        
         debug = function (...)
             print("[SC]: ", unpack({...}))
         end,
@@ -65,11 +65,11 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             while os.clock() < endClock do end
         end,
 
-		tostring = sm.scrapcomputers.toString,
+        tostring = sm.scrapcomputers.toString,
 
-		tonumber = tonumber,
-		type = type,
-		string = {
+        tonumber = tonumber,
+        type = type,
+        string = {
             byte = string.byte,
             char = string.char,
             find = string.find,
@@ -84,14 +84,14 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             sub = string.sub,
             upper = string.upper
         },
-		table = {
+        table = {
             insert = table.insert,
             maxn = table.maxn,
             remove = table.remove,
             sort = table.sort,
             concat = table.concat
         },
-		math = {
+        math = {
             abs = math.abs,
             acos = math.acos,
             asin = math.asin,
@@ -120,9 +120,20 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             sinh = math.sinh,
             sqrt = math.sqrt,
             tan = math.tan,
-            tanh = math.tanh
+            tanh = math.tanh,
+            pid = function(processValue, setValue, p, i, d, deltatime_i, deltatime_d)
+                sm.scrapcomputers.backend.pid.processValue = processValue
+                sm.scrapcomputers.backend.pid.setValue = setValue
+                sm.scrapcomputers.backend.pid.p = p
+                sm.scrapcomputers.backend.pid.i = i
+                sm.scrapcomputers.backend.pid.d = d
+                sm.scrapcomputers.backend.pid.deltatime_i = deltatime_i
+                sm.scrapcomputers.backend.pid.deltatime_d = deltatime_d
+
+                return sm.scrapcomputers.backend.pid.output
+            end
         },
-		bit = {
+        bit = {
             tobit = bit.tobit,
             tohex = bit.tohex,
             bnot = bit.bnot,
@@ -136,36 +147,24 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             ror = bit.ror,
             bswap = bit.bswap
         },
-		os = {
+        os = {
             clock = os.clock,
             difftime = os.difftime,
             time = os.time
         },
-		assert = assert,
-		error = error,
-		ipairs = ipairs,
-		pairs = pairs,
-		next = next,
-		pcall = pcall,
-		xpcall = xpcall,
-		select = select,
-		unpack = unpack,
-
+        assert = assert,
+        error = error,
+        ipairs = ipairs,
+        pairs = pairs,
+        next = next,
+        pcall = pcall,
+        xpcall = xpcall,
+        select = select,
+        unpack = unpack,
         class = class,
-        setmetatable = function (tbl, metatable)
-            for index, value in pairs(metatable) do
-                tbl[index] = value
-            end
 
-            tbl["__raw_metatable_sconly"] = metatable
-            tbl = class(tbl)()
-
-            return tbl
-        end,
-
-        getmetatable = function (tbl)
-            return sm.scrapcomputers.table.clone(tbl["__raw_metatable_sconly"])
-        end,
+        setmetatable = sm.scrapcomputers.util.setmetatable,
+        getmetatable = sm.scrapcomputers.util.getmetatable,
 
         ---Loads a string and lets you execute it
         ---@param code string The code to execute
@@ -203,6 +202,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             getGPSs = function () return sm.scrapcomputers.componentManager.getComponents("GPSs", self.interactable, true) end,
             getSeatControllers = function () return sm.scrapcomputers.componentManager.getComponents("SeatControllers", self.interactable, false) end,
             getLights = function () return sm.scrapcomputers.componentManager.getComponents("Lights", self.interactable, true) end,
+            getGravityControllers = function () return sm.scrapcomputers.componentManager.getComponents("GravityControllers", self.interactable, true) end,
 
             getReg = function (registerName)
                 sm.scrapcomputers.errorHandler.assertArgument(registerName, nil, {"string"})
@@ -262,7 +262,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 
                     return nil, errMsg
                 end,
-				getFontNames = sm.scrapcomputers.ascfManager.getFontNames
+                getFontNames = sm.scrapcomputers.ascfManager.getFontNames
             },
             example = {
                 getExamples = function ()
@@ -287,6 +287,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             vec3 = sm.scrapcomputers.vector3,
             audio = sm.scrapcomputers.audio,
             base64 = sm.scrapcomputers.base64,
+            lz4 = sm.scrapcomputers.lz4,
             md5 = sm.scrapcomputers.md5,
             sha256 = sm.scrapcomputers.sha256,
             table = sm.scrapcomputers.table,
@@ -294,7 +295,10 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             string = sm.scrapcomputers.string,
             virtualdisplay = sm.scrapcomputers.virtualdisplay,
             multidisplay = sm.scrapcomputers.multidisplay,
-
+            nbs = {
+                loadNBS = sm.scrapcomputers.nbs.loadNBS
+            },
+            
             config = {
                 getConfigNames = function ()
                     local list = {}
@@ -323,7 +327,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             end
         },
 
-		sm = {
+        sm = {
             vec3 = sm.vec3,
             util = {
                 axesToQuat = sm.util.axesToQuat,
@@ -367,6 +371,18 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
         environmentVariables.string = string
         environmentVariables.table = table
         environmentVariables.math = math
+        environmentVariables.math.pid = function(processValue, setValue, p, i, d, deltatime_i, deltatime_d)
+            sm.scrapcomputers.backend.pid.processValue = processValue
+            sm.scrapcomputers.backend.pid.setValue = setValue
+            sm.scrapcomputers.backend.pid.p = p
+            sm.scrapcomputers.backend.pid.i = i
+            sm.scrapcomputers.backend.pid.d = d
+            sm.scrapcomputers.backend.pid.deltatime_i = deltatime_i
+            sm.scrapcomputers.backend.pid.deltatime_d = deltatime_d
+
+            return sm.scrapcomputers.backend.pid.output
+        end
+
         environmentVariables.bit = bit
         environmentVariables.os = os
 

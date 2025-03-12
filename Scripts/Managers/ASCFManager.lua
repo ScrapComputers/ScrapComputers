@@ -195,7 +195,7 @@ end
 ---@param rotation number? The rotation
 ---@return number width The width the font consumes
 ---@return number hegiht The height the font consumes
-function sm.scrapcomputers.ascfManager.calcTextSize(fontName, text, fontSize, rotation)
+function sm.scrapcomputers.ascfManager.calcTextSize(fontName, text, fontSize, rotation, maxWidth, coloredMode)
     rotation = rotation or 0
     local radians = rotation * math_pi / 180
 
@@ -203,6 +203,12 @@ function sm.scrapcomputers.ascfManager.calcTextSize(fontName, text, fontSize, ro
     sm_scrapcomputers_errorHandler_assert(font, 5, status == -1 and "Font not found!" or "Font not found! (Unstable Mod Warning)")
     
     local scale = fontSize / font.metadata.resolution
+
+    local text = text
+    if coloredMode then
+        text, _  = parseText(text)
+    end
+
     local characters = sm_scrapcomputers_string_toCharacters(text)
 
     local minX, maxX, minY, maxY = math_huge, -math_huge, math_huge, -math_huge
@@ -215,7 +221,7 @@ function sm.scrapcomputers.ascfManager.calcTextSize(fontName, text, fontSize, ro
             if gylph then
                 gylph.advanceWidth = gylph.advanceWidth * 4
             end
-        elseif char == "\n" then
+        elseif char == "\n" or (maxWidth and (currentX + (gylph.advanceWidth * scale)) >= maxWidth) then
             currentX = 0
             currentY = currentY + (fontSize * lineSpacing)
         end

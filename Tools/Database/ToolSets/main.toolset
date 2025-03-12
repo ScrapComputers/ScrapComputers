@@ -1,15 +1,5 @@
 {
 	"toolList": [
-		// INTERNAL TOOLS
-		{
-			"name": "SCRAPCOMPUTERS___CONFIG_UPDATER",
-			"uuid": "ff040b6b-8f27-4e3c-979f-a7c78df8e466",
-			"previewRenderable": "$GAME_DATA/Character/Char_Tools/char_connecttool_preview.rend",
-			"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
-			"showInInventory": false,
-			"autoTool": true,
-			"script": { "class": "ConfigManagerClass", "file": "$CONTENT_DATA/Scripts/Tools/ConfigManager.lua" }
-		},
 		{
 			"name": "SCRAPCOMPUTERS___BAN_SYSTEM",
 			"uuid": "2615b6ab-b765-49dd-b842-021b49202170",

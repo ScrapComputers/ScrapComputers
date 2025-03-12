@@ -1,41 +1,37 @@
 -- Base64 encoding and decoding library
 sm.scrapcomputers.base64 = {}
 
+local b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
 ---Encodes a string to base64
 ---@param data string The string to encode
 ---@return string data The encoded string
 function sm.scrapcomputers.base64.encode(data)
     sm.scrapcomputers.errorHandler.assertArgument(data, nil, {"string"})
 
-    local base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-    local binaryRepresentation = {}
+    local output = {}
+    local len = #data
+    local i = 1
 
-    for index = 1, #data do
-        local asciiValue = data:byte(index)
-        local binaryString = ""
-        
-        for j = 7, 0, -1 do
-            binaryString = binaryString .. (bit.band(asciiValue, bit.lshift(1, j)) ~= 0 and "1" or "0")
+    while i <= len do
+        local a, b, c = data:byte(i, i+2)
+        local bits = bit.bor(bit.lshift(a or 0, 16), bit.lshift(b or 0, 8), (c or 0))
+
+        table.insert(output, b64chars:sub(bit.band(bit.rshift(bits, 18), 0x3F) + 1, bit.band(bit.rshift(bits, 18), 0x3F) + 1))
+        table.insert(output, b64chars:sub(bit.band(bit.rshift(bits, 12), 0x3F) + 1, bit.band(bit.rshift(bits, 12), 0x3F) + 1))
+
+        if b then
+            table.insert(output, b64chars:sub(bit.band(bit.rshift(bits, 6), 0x3F) + 1, bit.band(bit.rshift(bits, 6), 0x3F) + 1))
         end
-        
-        binaryRepresentation[#binaryRepresentation + 1] = binaryString
+
+        if c then
+            table.insert(output, b64chars:sub(bit.band(bits, 0x3F) + 1, bit.band(bits, 0x3F) + 1))
+        end
+
+        i = i + 3
     end
 
-    local concatedbinaryRepresentation = table.concat(binaryRepresentation) .. "0000"
-    local base64Encoded = {}
-
-    for binarySegment in concatedbinaryRepresentation:gmatch("%d%d%d?%d?%d?%d?") do
-        if #binarySegment < 6 then break end
-        local index = 0
-        
-        for index2 = 1, 6 do
-            index = index + (binarySegment:sub(index2, index2) == "1" and bit.lshift(1, 6 - index2) or 0)
-        end
-        
-        base64Encoded[#base64Encoded + 1] = base64Chars:sub(index + 1, index + 1)
-    end
-
-    return table.concat(base64Encoded) .. ({"", "==", "="})[#data % 3 + 1]
+    return table.concat(output)
 end
 
 ---Decodes a string to base64
@@ -44,39 +40,36 @@ end
 function sm.scrapcomputers.base64.decode(data)
     sm.scrapcomputers.errorHandler.assertArgument(data, nil, {"string"})
 
-    local base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-    data = data:gsub("[^" .. base64Chars .. "=]", "")
+    local b64lookup = {}
 
-    local binaryRepresentation = {}
-
-    for index = 1, #data do
-        local character = data:sub(index, index)
-
-        if character == "=" then break end
-
-        local index2 = base64Chars:find(character) - 1
-        local binaryString = ""
-
-        for j = 5, 0, -1 do
-            binaryString = binaryString .. (bit.band(index2, bit.lshift(1, j)) ~= 0 and "1" or "0")
-        end
-
-        binaryRepresentation[#binaryRepresentation + 1] = binaryString
+    for i = 1, #b64chars do
+        b64lookup[b64chars:sub(i, i)] = i - 1
     end
 
-    local concatedbinaryRepresentation = table.concat(binaryRepresentation)
-    local decodedString = {}
-    for binarySegment in concatedbinaryRepresentation:gmatch("%d%d%d%d%d%d%d%d") do
-        if #binarySegment ~= 8 then break end
+    b64lookup['='] = 0
 
-        local asciiValue = 0
+    local output = {}
+    local buffer = 0
+    local bitsCollected = 0
+
+    for i = 1, #data do
+        local char = data:sub(i, i)
+        local value = b64lookup[char]
         
-        for i = 1, 8 do
-            asciiValue = asciiValue + (binarySegment:sub(i, i) == "1" and bit.lshift(1, 8 - i) or 0)
+        if value == nil then
+            error("Invalid Base64 character: " .. char)
         end
-        
-        decodedString[#decodedString + 1] = string.char(asciiValue)
+
+        buffer = bit.bor(bit.lshift(buffer, 6), value)
+        bitsCollected = bitsCollected + 6
+
+        if bitsCollected >= 8 then
+            bitsCollected = bitsCollected - 8
+            local byte = bit.band(bit.rshift(buffer, bitsCollected), 0xFF)
+
+            table.insert(output, string.char(byte))
+        end
     end
 
-    return table.concat(decodedString)
+    return table.concat(output)
 end

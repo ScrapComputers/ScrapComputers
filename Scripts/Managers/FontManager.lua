@@ -1,15 +1,13 @@
--- This if statement ensures the font manager is initialized, so you don't have to reload your world.
-if not sm.scrapcomputers.fontManager then
-    -- The fontmanager lets you manage fonts and get them.
-    sm.scrapcomputers.fontManager = {}
+-- The fontmanager lets you manage fonts and get them.
+sm.scrapcomputers.fontManager = sm.scrapcomputers.fontManager or {
+    fonts = {}, ---@type SCFont[] Table that will hold all available fonts.
+}
 
-    ---@type SCFont[] Table that will hold all available fonts.
-    sm.scrapcomputers.fontManager.fonts = {}
-end
-
-local builtInFonts = sm.json.open(sm.scrapcomputers.jsonFiles.BuiltInFonts)
-for _, fontName in pairs(builtInFonts) do
-    dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Fonts/" .. fontName .. ".lua")
+if not next(sm.scrapcomputers.fontManager.fonts) then
+    local builtInFonts = sm.json.open(sm.scrapcomputers.jsonFiles.BuiltInFonts)
+    for _, fontName in pairs(builtInFonts) do
+        dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Fonts/" .. fontName .. ".lua")
+    end
 end
 
 --- Retrieves a font by name.
