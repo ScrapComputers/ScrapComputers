@@ -35,7 +35,7 @@ function sm.scrapcomputers.isDeveloperEnvironment()
             isDevEnv = config.selectedOption == 2
         else
             ---@type Configuration[]
-            local configs = sm.storage.load(storageConfigKey)
+            local configs = sm.storage.load(storageConfigKey) or {}
             for _, config in pairs(configs) do
                 if config.id == "config.scrapcomputers.global.developerenvironment" then
                     isDevEnv = config.selectedOption == 2
@@ -43,8 +43,6 @@ function sm.scrapcomputers.isDeveloperEnvironment()
                 end
             end
     
-            -- Please stop.
-            print("Please stop breaking our mod :c")
             isDevEnv = false
             return isDevEnv
         end
