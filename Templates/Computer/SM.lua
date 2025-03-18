@@ -537,3 +537,15 @@ Color.r = {}
 ---Get the hex representation of the color.  
 ---@return string
 function Color:getHexStr() end
+
+---Information about projectiles are located in `/Data/Projectiles/projectiles.json`.  
+sm.projectile = {}
+
+---Calculate the ballistic arc of a projectile. There are two potential solutions to the problem.   
+---One with a low fire angle and one with a high fire angle. Solutions can be nil if no solution is found.  
+---@param firePos Vec3 The position the projectile is fired from.
+---@param targetPos Vec3 The position the projectile should hit.
+---@param velocity number The fire velocity of the projectile.
+---@param gravity number The gravity ( positive down ).
+---@return Vec3, Vec3
+function sm.projectile.solveBallisticArc(firePos, targetPos, velocity, gravity) end

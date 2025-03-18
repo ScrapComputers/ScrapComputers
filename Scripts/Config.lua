@@ -58,7 +58,7 @@ sm.scrapcomputers.isDeveloperEnvironment()
 sm.scrapcomputers.backend = {}
 
 -- Do not fucking put any modules behind ErrorHandler, so that you atleast can have proper error handling.
-local modules = {"Logger", "ErrorHandler", "String", "Audio", "Base64", "LZ4", "Color", "JSON", "MD5", "SHA256", "Table", "Util", "Vector2", "Vector3", "BitStream", "NBS", "VirtualDisplay", "Multidisplay"}
+local modules = {"Logger", "ErrorHandler", "String", "Audio", "Base64", "LZ4", "Color", "JSON", "MD5", "SHA256", "Table", "Util", "Vector2", "Vector3", "BitStream", "NBS", "MIDI", "VirtualDisplay", "Multidisplay"}
 
 for _, module in pairs(modules) do
     local modulePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Modules/" .. module .. ".lua"

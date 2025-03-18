@@ -868,6 +868,39 @@ function sc.lz4.decode(input) end
 ---@return string data The encoded string
 function sc.lz4.encode(input) end
 
+---@class MIDIPlayer A MIDI player instance
+local MIDIPlayer = {}
+
+---Starts the player
+function MIDIPlayer:start() end
+
+---Stops the player
+function MIDIPlayer:stop() end
+
+---Returns true if it is playing.
+---@return boolean isPlaying If it is playing.
+function MIDIPlayer:isPlaying() end
+
+---Toggles song looping.
+---@param loop boolean If it should loop or not.
+function MIDIPlayer:toggleLoop(loop) end
+
+---Returns true if it is looped
+---@return boolean isLooped If it is looped or not.
+function MIDIPlayer:isLooped() end
+
+---Plays the actual audio. Needs to be called every tick.
+function MIDIPlayer:update() end
+
+---Library that allows you to play MIDI files (through converter)
+sc.midi = {}
+
+---Creates a MIDI player
+---@param data table MIDI data generated from the conveter.
+---@param speaker Speaker The speaker to play it to
+---@return MIDIPlayer midiPlayer A Midiplayer instance
+function sc.midi.createPlayer(data, speaker) end
+
 ----------------------------------------------------------------------------------------------------
 ---                                                                                              --- 
 ---   ██████╗ ██████╗ ███╗   ███╗██████╗  ██████╗ ███╗   ██╗███████╗███╗   ██╗████████╗███████╗  ---
@@ -1477,3 +1510,11 @@ function GravityController.setMultiplier(multiplier) end
 ---Gets the current gravity multiplier.
 ---@return number multiplier The current gravity multiplier.
 function GravityController.getMultiplier() end
+
+---Gets the mass of the body the gravity controller is placed on.
+---@return number mass The body mass.
+function GravityController.getBodyMass() end
+
+---Gets the mass of the creation the gravity controller is placed on.
+---@return number mass The creation mass.
+function GravityController.getCreationMass() end

@@ -11,7 +11,6 @@ GravityControllerClass.colorHighlight = sm.color.new(0x969696ff)
 
 function GravityControllerClass:sv_createData()
     return {
-
         setMultiplier = function(multiplier)
             sm.scrapcomputers.errorHandler.assertArgument(multiplier, 1, {"number"})
 
@@ -26,6 +25,20 @@ function GravityControllerClass:sv_createData()
             sm.scrapcomputers.errorHandler.assertArgument(bool, 1, {"boolean"})
 
             self.sv.gravity = bool
+        end,
+
+        getBodyMass = function()
+            return self.shape.body.mass / 10
+        end,
+
+        getCreationMass = function()
+            local mass = 0
+
+            for _, body in pairs(self.shape.body:getCreationBodies()) do
+                mass = mass + body.mass / 10
+            end
+
+            return mass
         end
    }
 end

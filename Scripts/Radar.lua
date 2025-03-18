@@ -216,7 +216,7 @@ function RadarClass:sv_calculateTargets()
         for _, unit in pairs(losUnits) do
             local character = unit.character
             local distance = (self.shape.worldPosition - character.worldPosition):length()
-            local surfaceArea = (character:getHeight() * character:getMass()) / math.sqrt(distance)
+            local surfaceArea = (character:getHeight() * character.mass) / math.sqrt(distance)
 
             if surfaceArea > surfaceAreaBound or distance < 200 then
                 table.insert(validTargets, {unit, surfaceArea, "unit"})
@@ -233,19 +233,45 @@ function RadarClass:sv_calculateTargets()
             if type == "creation" then
                 local creation, surfaceArea = unpack(data) ---@type Body[], number
                 local averagePos = sm.vec3.zero()
+                local averageVelo = sm.vec3.zero()
+                local mass = 0
+                local isDynamic = true
 
                 for _, body in pairs(creation) do
                     averagePos = averagePos + body:getCenterOfMassPosition()
+                    averageVelo = averageVelo + body.velocity
+                    mass = mass + body.mass / 10
+
+                    if isDynamic and body:isStatic() then
+                        isDynamic = false
+                    end
                 end
 
                 averagePos = averagePos / #creation
+                averageVelo = averageVelo / #creation
 
-                table.insert(finalTargets, {position = averagePos, surfaceArea = surfaceArea, type = type, id = creation[1]:getCreationId()})
+                table.insert(finalTargets, {
+                    position = averagePos, 
+                    velocity = averageVelo, 
+                    isDynamic = isDynamic, 
+                    mass = mass, 
+                    surfaceArea = surfaceArea, 
+                    type = type, 
+                    id = creation[1]:getCreationId()
+                })
             elseif type == "unit" then
                 local unit, surfaceArea = unpack(data)
                 local character = unit.character
 
-                table.insert(finalTargets, {position = character.worldPosition, surfaceArea = surfaceArea, type = type, id = unit.id})
+                table.insert(finalTargets, {
+                    position = character.worldPosition, 
+                    velocity = character.velocity,
+                    isDynamic = true,
+                    mass = character.mass, 
+                    surfaceArea = surfaceArea, 
+                    type = type, 
+                    id = unit.id
+                })
             end
         end
     end

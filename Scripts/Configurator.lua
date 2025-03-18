@@ -6,7 +6,7 @@ ConfiguratorClass = class()
 ---@param params {[1]: string, [2]: integer} The parameters
 function ConfiguratorClass:sv_setConfig(params)
     local id, selectedOption = unpack(params)
-
+    print(sm.scrapcomputers.config)
     sm.scrapcomputers.config.setConfig(id, selectedOption)
 end
 

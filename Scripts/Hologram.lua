@@ -150,45 +150,45 @@ function HologramClass:sv_createData()
     return {
         ---Creates a cube object
         ---@param position Vec3 The position of the object
-        ---@param rotation Vec3 The rotation of the object
+        ---@param rotation MultiRotationType The rotation of the object
         ---@param scale Vec3 The scale of the object
         ---@param color Color|string The color of the object
         ---@return integer id The id of the object
         createCube = function (position, rotation, scale, color)
             sm.scrapcomputers.errorHandler.assertArgument(position, 1, {"Vec3"})
-            sm.scrapcomputers.errorHandler.assertArgument(rotation, 2, {"Vec3"})
+            sm.scrapcomputers.errorHandler.assertArgument(rotation, 2, {"Vec3", "Quat"})
             sm.scrapcomputers.errorHandler.assertArgument(scale, 3, {"Vec3"})
             sm.scrapcomputers.errorHandler.assertArgument(color, 4, {"Color", "string"})
             
-            return createObject(CUBE_UUID, position, sm.quat.fromEuler(rotation), scale, (type(color) == "Color" and color:getHexStr() or color))
+            return createObject(CUBE_UUID, position, type(rotation) == "Quat" and rotation or sm.quat.fromEuler(rotation), scale, (type(color) == "Color" and color:getHexStr() or color))
         end,
 
         ---Creates a sphere object
         ---@param position Vec3 The position of the object
-        ---@param rotation Vec3 The rotation of the object
+        ---@param rotation MultiRotationType The rotation of the object
         ---@param scale Vec3 The scale of the object
         ---@param color Color|string The color of the object
         ---@return integer id The id of the object
         createSphere = function (position, rotation, scale, color)
             sm.scrapcomputers.errorHandler.assertArgument(position, 1, {"Vec3"})
-            sm.scrapcomputers.errorHandler.assertArgument(rotation, 2, {"Vec3"})
+            sm.scrapcomputers.errorHandler.assertArgument(rotation, 2, {"Vec3", "Quat"})
             sm.scrapcomputers.errorHandler.assertArgument(scale, 3, {"Vec3"})
             sm.scrapcomputers.errorHandler.assertArgument(color, 4, {"Color", "string"})
             
-            return createObject(SPHERE_UUID, position, sm.quat.fromEuler(rotation), scale, (type(color) == "Color" and color:getHexStr() or color))
+            return createObject(SPHERE_UUID, position, type(rotation) == "Quat" and rotation or sm.quat.fromEuler(rotation), scale, (type(color) == "Color" and color:getHexStr() or color))
         end,
 
         ---Like createCube or createSphere but u can pass any kind of object from whatever loaded mod! (Via UUID)
         ---@param uuid Uuid The uuid of the object
         ---@param position Vec3 The position of the object
-        ---@param rotation Vec3 The rotation of the object
+        ---@param rotation MultiRotationType The rotation of the object
         ---@param scale Vec3 The scale of the object
         ---@param color Color|string The color of the object
         ---@return integer id The id of the object
         createCustomObject = function (uuid, position, rotation, scale, color)
             sm.scrapcomputers.errorHandler.assertArgument(uuid, 1, {"Uuid", "string"})
             sm.scrapcomputers.errorHandler.assertArgument(position, 2, {"Vec3"})
-            sm.scrapcomputers.errorHandler.assertArgument(rotation, 3, {"Vec3"})
+            sm.scrapcomputers.errorHandler.assertArgument(rotation, 3, {"Vec3", "Quat"})
             sm.scrapcomputers.errorHandler.assertArgument(scale, 4, {"Vec3"})
             sm.scrapcomputers.errorHandler.assertArgument(color, 5, {"Color", "string"})
 
@@ -197,7 +197,7 @@ function HologramClass:sv_createData()
             sm.scrapcomputers.errorHandler.assert(not uuid:isNil(), nil, "UUID cannot be nil!")
             sm.scrapcomputers.errorHandler.assert(sm.shape.uuidExists(uuid), nil, "UUID doesnt exist! (Or its not a shape!)")
 
-            return createObject(uuid, position, sm.quat.fromEuler(rotation), scale, (type(color) == "Color" and color:getHexStr() or color))
+            return createObject(uuid, position, type(rotation) == "Quat" and rotation or sm.quat.fromEuler(rotation), scale, (type(color) == "Color" and color:getHexStr() or color))
         end,
 
         ---Gets the object via Object id and returns a table containing the data of that object or nil since it dosen't exist.

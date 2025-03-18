@@ -282,19 +282,22 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             },
             syntax = sm.scrapcomputers.syntaxManager,
 
-            color = sm.scrapcomputers.color,
-            util = sm.scrapcomputers.util,
-            vec3 = sm.scrapcomputers.vector3,
-            audio = sm.scrapcomputers.audio,
-            base64 = sm.scrapcomputers.base64,
-            lz4 = sm.scrapcomputers.lz4,
-            md5 = sm.scrapcomputers.md5,
-            sha256 = sm.scrapcomputers.sha256,
-            table = sm.scrapcomputers.table,
-            bitstream = sm.scrapcomputers.bitstream,
-            string = sm.scrapcomputers.string,
-            virtualdisplay = sm.scrapcomputers.virtualdisplay,
-            multidisplay = sm.scrapcomputers.multidisplay,
+            -- DO NOT REMVOE CLONING! They prevent you from fucking up the mod from referenced tables!
+
+            color          = sm.scrapcomputers.table.clone(sm.scrapcomputers.color),
+            util           = sm.scrapcomputers.table.clone(sm.scrapcomputers.util),
+            vec3           = sm.scrapcomputers.table.clone(sm.scrapcomputers.vector3),
+            audio          = sm.scrapcomputers.table.clone(sm.scrapcomputers.audio),
+            base64         = sm.scrapcomputers.table.clone(sm.scrapcomputers.base64),
+            lz4            = sm.scrapcomputers.table.clone(sm.scrapcomputers.lz4),
+            md5            = sm.scrapcomputers.table.clone(sm.scrapcomputers.md5),
+            sha256         = sm.scrapcomputers.table.clone(sm.scrapcomputers.sha256),
+            table          = sm.scrapcomputers.table.clone(sm.scrapcomputers.table),
+            bitstream      = sm.scrapcomputers.table.clone(sm.scrapcomputers.bitstream),
+            string         = sm.scrapcomputers.table.clone(sm.scrapcomputers.string),
+            virtualdisplay = sm.scrapcomputers.table.clone(sm.scrapcomputers.virtualdisplay),
+            multidisplay   = sm.scrapcomputers.table.clone(sm.scrapcomputers.multidisplay),
+            midi           = sm.scrapcomputers.table.clone(sm.scrapcomputers.midi),
             nbs = {
                 loadNBS = sm.scrapcomputers.nbs.loadNBS
             },
@@ -354,6 +357,10 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                 writeJsonString = function(root) 
                     return sm.scrapcomputers.json.toString(root, true, false)
                 end
+            },
+
+            projectile = {
+                solveBallisticArc = sm.projectile.solveBallisticArc
             }
         },
     }
@@ -399,6 +406,6 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 
         environmentVariables = sm.scrapcomputers.table.merge(environmentVariables, contents)
     end
-
+    
     return environmentVariables
 end
