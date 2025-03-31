@@ -688,7 +688,7 @@ function ComputerClass:cl_setLogMessage(totalTicks, textColor, message)
 end
 
 function ComputerClass:cl_updateDataList(data)
-    sm.scrapcomputers.dataList["Computers"] = data
+    sm.scrapcomputers.dataList["Computers"][self.interactable.id] = data
 end
 
 -- Env related functions --
