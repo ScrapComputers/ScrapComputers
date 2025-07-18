@@ -1131,6 +1131,8 @@ function CameraClass:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, thresh
         local coordinates = coordinateTbl[i]
         local x, y = coordinates[1], coordinates[2]
 
+        local coordIndex = coordinateToIndex(x, y, width)
+        
         result = isUnsafeENV and result or makeSafe(result)
 
         local color = colorToID(drawer(hit, result, x, y))
