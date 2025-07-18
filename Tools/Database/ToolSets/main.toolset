@@ -1,12 +1,5 @@
 {
 	"toolList": [
-		{
-			"name": "SCRAPCOMPUTERS___SUPER_DOPE_ASS_SYNTAX_EDITOR",
-			"uuid": "fe942317-ed49-49ac-bde9-31a74355c28d",
-			"previewRenderable": "$CONTENT_DATA/Animations/Char_Tools/char_connecttool_preview.rend",
-			"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
-			"script": { "class": "SyntaxEditorClass", "file": "$CONTENT_DATA/Scripts/Tools/SyntaxEditor.lua" }
-		},
 		// INTERNAL TOOLS
 		{
 			"name": "SCRAPCOMPUTERS___EXTERNAL_COM",
