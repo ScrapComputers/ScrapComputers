@@ -12,8 +12,6 @@ ComputerClass.connectionOutput = sm.interactable.connectionType.compositeIO
 ComputerClass.colorNormal = sm.color.new(0xaaaaaaff)
 ComputerClass.colorHighlight = sm.color.new(0xffffffff)
 
-sm.scrapcomputers.backend.pid = {}
-
 -- SERVER + CLIENT --
 
 local function is2ndStringCutOff(str1, str2)
@@ -107,6 +105,14 @@ local function parseErrorMessage(errorMessage, code)
     return output, lines
 end
 
+local function compressCode(data)
+    return sm.scrapcomputers.base64.encode(sm.scrapcomputers.keywordCompression.compress(data))
+end
+
+local function decompressCode(data)
+    return sm.scrapcomputers.keywordCompression.decompress(sm.scrapcomputers.base64.decode(data))
+end
+
 -- SERVER --
 
 function ComputerClass:server_onCreate()
@@ -118,19 +124,42 @@ function ComputerClass:server_onCreate()
         wait1Tick = false,
         previousActive = false,
         canResetError = false,
-        dataListHash = nil
+        dataListHash = nil,
+        cachedCode = nil
     }
     self.sv.saved = self.storage:load()
-
+    
     if not self.sv.saved then
+        self.sv.cachedCode = sm.scrapcomputers.exampleManager.getExamples()[1].script
+
         self.sv.saved = {
-            code = sm.scrapcomputers.exampleManager.getExamples()[1].script,
+            version = 1,
+            code = compressCode(self.sv.cachedCode),
             alwaysOn = false,
             identifier = sm.scrapcomputers.sha256.random(),
             displayName = "Computer #" .. tostring(self.interactable.id)
         }
 
         self.storage:save(self.sv.saved)
+    end
+
+    if not self.sv.saved.version then
+        self.sv.saved.version = 1
+        self.sv.cachedCode = self.sv.saved.code
+        self.sv.saved.code = compressCode(self.sv.saved.code)
+        self.storage:save(self.sv.saved)
+    else
+        -- This edge case likey never happens but just incase.
+        
+        local success, result = pcall(decompressCode, self.sv.saved.code)
+        
+        if success then
+            self.sv.cachedCode = result
+        else
+            self.sv.cachedCode = self.sv.saved.code
+            self.sv.saved.code = compressCode(self.sv.saved.code)
+            self.storage:save(self.sv.saved)
+        end
     end
 
     if not self.sv.saved.identifier then
@@ -148,8 +177,6 @@ function ComputerClass:server_onDestroy()
 end
 
 function ComputerClass:server_onFixedUpdate(deltaTime)
-    self:sv_pidImplementation()
-
     if self.sv.wait1Tick then
         self.sv.wait1Tick = false
         self:sv_updateDataList()
@@ -207,8 +234,22 @@ function ComputerClass:server_onFixedUpdate(deltaTime)
             self:sv_syncClients()
 
             local function run()
-                local safeCode = self.sv.saved.code:gsub("##", "#"):gsub("⁄", "\\")
-                local func, errorMessage = sm.scrapcomputers.luavm.loadstring(safeCode, self.sv.env)
+                local func, errorMessage = nil, nil
+  
+                if self.sv.saved.cachedBytecode then
+                    func, errorMessage = sm.scrapcomputers.luavm.bytecodeLoadstring(sm.scrapcomputers.base64.decode(self.sv.saved.cachedBytecode), self.sv.env)
+                else
+                    local safeCode = self.sv.cachedCode:gsub("##", "#"):gsub("⁄", "\\")
+                    func, errorMessage = sm.scrapcomputers.luavm.loadstring(safeCode, self.sv.env)
+                    --func, errorMessage = loadstring(safeCode)
+
+                    if func then
+                        --setfenv(func, self.sv.env)
+
+                        self.sv.saved.cachedBytecode = sm.scrapcomputers.base64.encode(errorMessage)
+                        self.storage:save(self.sv.saved)
+                    end
+                end
 
                 if not func then error(errorMessage) end
    
@@ -262,14 +303,21 @@ end
 
 function ComputerClass:sv_serverSync(data)
     if data.type == 1 then
+        self.sv.saved.cachedBytecode = nil
         self.sv.saved.code = data.packet.i == 1 and data.packet.string or self.sv.saved.code .. data.packet.string
+        
+        if not data.packet.finished then
+            return
+        end
 
-        if not data.packet.finished then return end
+        self.sv.cachedCode = self.sv.saved.code
+        self.sv.saved.code = compressCode(self.sv.saved.code)
 
         self.sv.alwaysOnDisabled = false
         self.interactable.active = false
         self.sv.wait1Tick = true
         self.sv.exceptionMessage = noExceptionsMessage
+        self.sv.debugConsoleLines = {}
         self.sv.exceptionLines = {}
     elseif data.type == 2 then
         self.sv.saved.alwaysOn = data.packet
@@ -285,7 +333,7 @@ function ComputerClass:sv_serverSync(data)
 end
 
 function ComputerClass:sv_syncClients()
-    local strings = sm.scrapcomputers.string.splitString(self.sv.saved.code:gsub("##", "#"), byteLimit)
+    local strings = sm.scrapcomputers.string.splitString(self.sv.cachedCode:gsub("##", "#"), byteLimit)
 
     for i, string in pairs(strings) do
         self.network:sendToClients("cl_rebuildCode", {string = string, i = i})
@@ -301,7 +349,7 @@ function ComputerClass:sv_syncClients()
 end
 
 function ComputerClass:sv_resyncClient(data, player)
-    local strings = sm.scrapcomputers.string.splitString(self.sv.saved.code:gsub("##", "#"), byteLimit)
+    local strings = sm.scrapcomputers.string.splitString(self.sv.cachedCode:gsub("##", "#"), byteLimit)
 
     for i, string in pairs(strings) do
         self.network:sendToClient(player, "cl_rebuildCode", {string = string, i = i})
@@ -337,7 +385,7 @@ function ComputerClass:sv_callException(errorMessage)
     end
 
     local success, errorMessage2 = pcall(run)
-    self.sv.exceptionMessage, self.sv.exceptionLines = parseErrorMessage(success and errorMessage or errorMessage2, self.sv.saved.code)
+    self.sv.exceptionMessage, self.sv.exceptionLines = parseErrorMessage(success and errorMessage or errorMessage2, self.sv.cachedCode)
     self.sv.alwaysOnDisabled = true
 
     self:sv_syncClients()
@@ -345,57 +393,6 @@ end
 
 function ComputerClass:sv_callOnReload()
     self:sv_runFunction(self.sv.env.onReload)
-end
-
-function ComputerClass:sv_movingAverage(num, count)
-    if not self.sv.runningAverageBuffer then self.sv.runningAverageBuffer = {} end
-    if not self.sv.nextRunningAverage then self.sv.nextRunningAverage = 0 end
-  
-    self.sv.runningAverageBuffer[self.sv.nextRunningAverage] = num;
-    self.sv.nextRunningAverage = (self.sv.nextRunningAverage + 1)%count
-  
-    local runningAverage = 0
-
-    for k, v in pairs(self.sv.runningAverageBuffer) do
-        if k >= count then
-            v = 0
-        else
-            runningAverage = runningAverage + v
-        end
-    end
-
-    return runningAverage / count;
-end
-
-function ComputerClass:sv_pidImplementation()
-    local pid = sm.scrapcomputers.backend.pid
-    local processValue = pid.processValue or 0
-    local setValue = pid.setValue or 0
-    local p = pid.p or 0
-    local i = pid.i or 0
-    local d = pid.d or 0
-    local deltatimeI = pid.deltatimeI or 1
-    local deltatimeD = pid.deltatimeD or 1
-    local limit = 4096
-
-    deltatimeD = sm.util.clamp(deltatimeD, 1, limit)
-    deltatimeI = sm.util.clamp(deltatimeI, 1, limit)
-
-    local _error = setValue - processValue
-
-    if not self.sv.bufferIndex then self.sv.bufferIndex = 0 end
-    if not self.sv.buffer_d then self.sv.buffer_d = {} end
-
-    self.sv.buffer_d[self.sv.bufferIndex] = _error
-
-    local lasterror = (self.sv.buffer_d[(self.sv.bufferIndex - deltatimeD)%20] == nil) and _error or self.sv.buffer_d[(self.sv.bufferIndex - deltatimeD)%20]
-    local output = _error * p  + self:sv_movingAverage(_error, deltatimeI) * i  + (_error - lasterror) * d
-
-    output = sm.util.clamp(output, -limit, limit)
-
-    self.sv.bufferIndex = (self.sv.bufferIndex + 1)%20
-
-    sm.scrapcomputers.backend.pid.output = output
 end
 
 -- CLIENT --
@@ -415,6 +412,7 @@ function ComputerClass:client_onCreate()
         character = nil,
         identifier = nil,
         displayName = nil,
+        allowedToFormatForSyncing = false
     }
 
     self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Computer, false, {backgroundAlpha = 0.5})
@@ -445,6 +443,7 @@ end
 
 function ComputerClass:client_onInteract(character, state)
     if not state then return end
+    self.cl.allowedToFormatForSyncing = true
 
     local exampleText = ""
 
@@ -500,7 +499,7 @@ function ComputerClass:cl_clientSync(data)
 
     self:cl_runTranslations()
 
-    if not (#self.cl.code > formatAllowedLimit) then
+    if self.cl.allowedToFormatForSyncing and not (#self.cl.code > formatAllowedLimit) then
         local safeCode = self.cl.code:gsub("\\", "⁄")
         self.cl.gui:setText("scriptData", sm.scrapcomputers.syntaxManager.highlightCode(safeCode, self.cl.exceptionLines))
     end
@@ -589,6 +588,7 @@ function ComputerClass:cl_formatTextBtn(widget, name)
     
     local code = self.cl.unsavedCode:gsub("\\", "⁄")
     self.cl.exceptionLines = {}
+
     self.cl.gui:setText("scriptData", sm.scrapcomputers.syntaxManager.highlightCode(code, {}))
 end
 

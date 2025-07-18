@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.92708333333333337 0.84722222222222221" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 0.68258426966292129 1">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 0.098360655737704916" align="HStretch Top" name="mainTitle">
+                <Property key="FontName" value="SM_Header"/>
+                <Property key="Caption" value="SYNTAX HIGHLIGHT EDITOR"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.01646090534979424 0.098360655737704916 0.46090534979423869 0.73770491803278693">
+                <Property key="MultiLine" value="true"/>
+                <Property key="WordWrap" value="true"/>
+                <Property key="TabPrinting" value="true"/>
+                <Property key="Caption" value="Here would be options that you can configure, Each option would let you change the style of something in the Code Preview."/>
+                <Property key="FontName" value="DejaVuSansFont_28"/>
+            </Widget>
+            <Widget type="EditBox" skin="PhotoDescription" position_real="0.48971193415637859 0.098360655737704916 0.49382716049382713 0.4098360655737705">
+                <Property key="FontName" value="DejaVuSansFont_15"/>
+                <Property key="ReadOnly" value="true"/>
+                <Property key="MultiLine" value="true"/>
+                <Property key="WordWrap" value="true"/>
+                <Property key="MaxTextLength" value="999999999"/>
+                <Property key="TabPrinting" value="true"/>
+                <Property key="Caption" value="This is going to be the description of what the option does. It tells you what it is used for.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."/>
+            </Widget>
+            <Widget type="Button" skin="ToggleButton" position_real="0.48148148148148145 0.90710382513661203 0.50205761316872433 0.07650273224043716">
+                <Property key="Caption" value="Option Enabled: #16c60cYes"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.80246913580246915 0.51366120218579236 0.18106995884773663 0.065573770491803282">
+                <Property key="Caption" value="Set Value"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.80246913580246915 0.57923497267759561 0.18106995884773663 0.065573770491803282">
+                <Property key="Caption" value="Set Value"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.80246913580246915 0.64480874316939896 0.18106995884773663 0.065573770491803282">
+                <Property key="Caption" value="Set Value"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.80246913580246915 0.7103825136612022 0.18106995884773663 0.065573770491803282">
+                <Property key="Caption" value="Set Value"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.80246913580246915 0.77595628415300544 0.18106995884773663 0.065573770491803282">
+                <Property key="Caption" value="Set Value"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.80246913580246915 0.84153005464480879 0.18106995884773663 0.065573770491803282">
+                <Property key="Caption" value="Set Value"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.48559670781893005 0.51912568306010931 0.31275720164609055 0.054644808743169397">
+                <Property key="FontName" value="Default"/>
+                <Property key="Caption" value="Example Value"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.48559670781893005 0.58469945355191255 0.31275720164609055 0.054644808743169397">
+                <Property key="FontName" value="Default"/>
+                <Property key="Caption" value="Example Value"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.48559670781893005 0.65027322404371579 0.31275720164609055 0.054644808743169397">
+                <Property key="FontName" value="Default"/>
+                <Property key="Caption" value="Example Value"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.48559670781893005 0.71584699453551914 0.31275720164609055 0.054644808743169397">
+                <Property key="FontName" value="Default"/>
+                <Property key="Caption" value="Example Value"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.48559670781893005 0.78142076502732238 0.31275720164609055 0.054644808743169397">
+                <Property key="FontName" value="Default"/>
+                <Property key="Caption" value="Example Value"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.48559670781893005 0.84699453551912574 0.31275720164609055 0.054644808743169397">
+                <Property key="FontName" value="Default"/>
+                <Property key="Caption" value="Example Value"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.012345679012345678 0.90710382513661203 0.23456790123456789 0.081967213114754092">
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="Caption" value="Create/Overwrite Theme"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.24691358024691357 0.90710382513661203 0.23456790123456789 0.081967213114754092">
+                <Property key="Caption" value="Delete Theme"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.01646090534979424 0.84699453551912574 0.4567901234567901 0.054644808743169397">
+                <Property key="Caption" value="Option selector"/>
+                <Property key="FontName" value="Default"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="BackgroundPopup" position_real="0.6910112359550562 0 0.3089887640449438 1">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 0.098360655737704916" align="HStretch Top" name="codePreviewTitle">
+                <Property key="FontName" value="SM_Header"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="CODE PREVIEW / THEME SELECTOR"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.036363636363636362 0.11475409836065574 0.92727272727272725 0.78688524590163933">
+                <Property key="MultiLine" value="true"/>
+                <Property key="WordWrap" value="true"/>
+                <Property key="MaxTextLength" value="999999999"/>
+                <Property key="FontName" value="DejaVuSansFont_28"/>
+                <Property key="TabPrinting" value="true"/>
+                <Property key="Caption" value="This is where how your theme would look like. Making it All-In-One system.\n\nIf you change the tab to &quot;Theme Selector&quot;, a list of themes would be here.\n\nNote that in Code Preview, The button in this section would be invisible/disabled"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.50727272727272732 0.90710382513661203 0.45454545454545453 0.081967213114754092" name="saveBtn">
+                <Property key="Caption" value="Load Theme"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="InventoryTab" position_real="0.50727272727272732 0.07650273224043716 0.42727272727272725 0.03825136612021858">
+                <Property key="Caption" value="Theme Selector"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_Tab"/>
+            </Widget>
+            <Widget type="Button" skin="InventoryTab" position_real="0.061818181818181821 0.07650273224043716 0.41636363636363638 0.03825136612021858">
+                <Property key="FontName" value="SM_Tab"/>
+                <Property key="Caption" value="Code Preview"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="StateSelected" value="true"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.036363636363636362 0.91803278688524592 0.46363636363636362 0.060109289617486336">
+                <Property key="Caption" value="Theme Name Goes Here"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="Default"/>
+            </Widget>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings>
+        <Property key="IncludeDirectory" value=""/>
+        <Property key="PanelName" value=""/>
+        <Property key="PanelNamespace" value=""/>
+        <Property key="SourceDirectory" value=""/>
+    </CodeGeneratorSettings>
+</MyGUI>

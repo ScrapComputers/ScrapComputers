@@ -90,7 +90,7 @@ function NetworkPortClass:server_readPacket()
 end
 
 function NetworkPortClass:server_sendPacket(data)
-    table.insert(self.sv.packets, data)
+    table.insert(self.sv.packets, type(data) == "table" and sm.scrapcomputers.table.clone({data}) or data)
 end
 
 -- CLIENT --

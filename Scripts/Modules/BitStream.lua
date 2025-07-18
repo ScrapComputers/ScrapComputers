@@ -101,7 +101,6 @@ function sm.scrapcomputers.bitstream:readBytes(numBytes)
     return table.concat(bytes)
 end
 
--- Writing a float in Big Endian (32-bit IEEE 754 format)
 function sm.scrapcomputers.bitstream:writeFloat(value)
     local sign = 0
     if value < 0 then
@@ -124,7 +123,6 @@ function sm.scrapcomputers.bitstream:writeFloat(value)
     self:writeByte(b4)
 end
 
--- Reading a float in Big Endian (32-bit IEEE 754 format)
 function sm.scrapcomputers.bitstream:readFloat()
     local b1 = self:readByte()
     local b2 = self:readByte()
@@ -138,6 +136,89 @@ function sm.scrapcomputers.bitstream:readFloat()
     
     if sign == 1 then value = -value end
     return value
+end
+
+function sm.scrapcomputers.bitstream:writeUIntV(value)
+    local byte
+
+    if value < 0x80 then
+        self:writeByte(value)
+        return
+    end
+
+    byte = bit.bor(bit.band(value, 0x7F), 0x80)
+    self:writeByte(byte)
+    value = bit.rshift(value, 7)
+
+    if value < 0x80 then
+        self:writeByte(value)
+        return
+    end
+
+    byte = bit.bor(bit.band(value, 0x7F), 0x80)
+    self:writeByte(byte)
+    value = bit.rshift(value, 7)
+
+    if value < 0x80 then
+        self:writeByte(value)
+        return
+    end
+
+    byte = bit.bor(bit.band(value, 0x7F), 0x80)
+    self:writeByte(byte)
+    value = bit.rshift(value, 7)
+
+    self:writeByte(value) -- final byte, no continuation bit
+end
+
+function sm.scrapcomputers.bitstream:readUIntV()
+    local result = 0
+    local shift = 0
+
+    local byte = self:readByte()
+    result = bit.bor(result, bit.lshift(bit.band(byte, 0x7F), shift))
+    if bit.band(byte, 0x80) == 0 then
+        return result
+    end
+
+    shift = shift + 7
+    byte = self:readByte()
+    result = bit.bor(result, bit.lshift(bit.band(byte, 0x7F), shift))
+    if bit.band(byte, 0x80) == 0 then
+        return result
+    end
+
+    shift = shift + 7
+    byte = self:readByte()
+    result = bit.bor(result, bit.lshift(bit.band(byte, 0x7F), shift))
+    if bit.band(byte, 0x80) == 0 then
+        return result
+    end
+
+    shift = shift + 7
+    byte = self:readByte()
+    result = bit.bor(result, bit.lshift(bit.band(byte, 0x7F), shift))
+    if bit.band(byte, 0x80) == 0 then
+        return result
+    end
+
+    shift = shift + 7
+    byte = self:readByte()
+    result = bit.bor(result, bit.lshift(byte, shift))
+    return result
+end
+
+-- Variable-length Signed Integer (safe)
+function sm.scrapcomputers.bitstream:writeIntV(value)
+    -- ZigZag encode 32-bit signed integer to unsigned
+    local zz = bit.bxor(bit.lshift(value, 1), bit.arshift(value, 31))
+    self:writeUIntV(zz)
+end
+
+function sm.scrapcomputers.bitstream:readIntV()
+    local zz = self:readUIntV()
+    -- ZigZag decode: (zz >> 1) ^ -(zz & 1)
+    return bit.bxor(bit.rshift(zz, 1), -bit.band(zz, 1))
 end
 
 function sm.scrapcomputers.bitstream:reset()

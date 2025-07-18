@@ -101,7 +101,9 @@ end
 function AntennaClass:server_sendActualPacket(data)
     local networkPort = sm.scrapcomputers.table.getItemAt(sm.scrapcomputers.componentManager.getComponents("NetworkInterfaces", self.interactable, false, sm.interactable.connectionType.networkingIO, true), 1)
     
-    networkPort:server_sendPacket(data)
+    if networkPort then
+        networkPort:server_sendPacket(data)
+    end
 end
 
 function AntennaClass:server_sendPacket(data)

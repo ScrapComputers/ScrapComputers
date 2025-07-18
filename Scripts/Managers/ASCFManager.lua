@@ -15,34 +15,35 @@ local math_sin = math.sin
 local string_byte = string.byte
 local string_sub = string.sub
 
+local pairs = pairs
+local type = type
+
 sm.scrapcomputers.ascfManager = sm.scrapcomputers.ascfManager or {
     ---@type table<string, ASCFont> A array of loaded fonts.
     fonts = {},
 }
 
-sm.scrapcomputers.backend.ascfManager = sm.scrapcomputers.backend.ascfManager or {
+local ascfManager = sm.scrapcomputers.ascfManager
+
+ascfManager.backend = ascfManager.backend or {
     notFoundFonts = {},
     builtInFontsLoaded = false
 }
 
+local ascfManagerBackend = ascfManager.backend
+
 -- Some fonts stupidly dont have space character
 ---@param font ASCFont
 ---@param character string
-local function spaceGylphIfNotThere(font, character, fontSize)
+local function spaceGylphIfNotThere(font, character)
     local glyph = font.glyphs[character]
     if character ~= " " then return glyph end
 
-    if not glyph then
-        ---@type ASCFont.Glyph
-        local fakeGlyph = {
-            advanceWidth = (font.metadata.boundingBox.xMax - font.metadata.boundingBox.xMin) / 2,
-            metrics = font.metadata.boundingBox,
-            triangles = {}
-        }
-
-        return fakeGlyph
-    end
-    return glyph
+    return glyph or {
+        advanceWidth = (font.metadata.boundingBox.xMax - font.metadata.boundingBox.xMin) / 2,
+        metrics = font.metadata.boundingBox,
+        triangles = {}
+    }
 end
 
 local function getUTF8Character(str, index)
@@ -64,32 +65,33 @@ end
 ---@return ASCFont?
 ---@return integer
 local function findOrLoadFont(fontName)
-    for tblFontName, font in pairs(sm.scrapcomputers.ascfManager.fonts) do
+    for tblFontName, font in pairs(ascfManager.fonts) do
         if tblFontName == fontName and type(font) == "table" then
             return font, 0
         end
     end
 
-    local path = sm.scrapcomputers.ascfManager.fonts[fontName]
+    local path = ascfManager.fonts[fontName]
     if not path then
-        sm.scrapcomputers.backend.ascfManager.notFoundFonts[fontName] = true
+        ascfManagerBackend.notFoundFonts[fontName] = true
         return nil, -1
     end
 
-    if sm.scrapcomputers.backend.ascfManager.notFoundFonts[fontName] then
+    if ascfManagerBackend.notFoundFonts[fontName] then
         return nil, -1
     end
 
     sm.scrapcomputers.logger.info("ASCFManager.lua", "Loading font:", path)
 
     if not sm.json.fileExists(path) then
-        sm.scrapcomputers.logger.fatal("ASCFManager.lua", "Font does not exist! This shouldn't be possble. Mod may be unstable!")
-        sm.scrapcomputers.backend.ascfManager.notFoundFonts[fontName] = true
+        sm.scrapcomputers.logger.fatal("ASCFManager.lua",
+            "Font does not exist! This shouldn't be possble. Mod may be unstable!")
+        ascfManagerBackend.notFoundFonts[fontName] = true
         return nil, -2
     end
 
-    sm.scrapcomputers.ascfManager.fonts[fontName] = sm.json.open(path)
-    return sm.scrapcomputers.ascfManager.fonts[fontName], 1
+    ascfManager.fonts[fontName] = sm.json.open(path)
+    return ascfManager.fonts[fontName], 1
 end
 
 local function parseText(text)
@@ -99,7 +101,7 @@ local function parseText(text)
 
     local colorMode = false
     local colorText = ""
-    
+
     local appliedColors = 0
     local reducedOffset = 0
 
@@ -113,7 +115,7 @@ local function parseText(text)
             if #colorText == 6 then
                 colorMode = false
                 appliedColors = appliedColors + 1
-                
+
                 indexColorChange[index - (7 * appliedColors) + 1 - reducedOffset] = colorText
                 colorText = ""
             end
@@ -143,12 +145,12 @@ end
 ---NOTE 1, This would cache the font path and not load it!
 ---NOTE 2, FontPath should be the full path where the font your adding would be, and do not use $CONTENT_DATA but instead $CONTENT_[YOUR_MOD_UUID] to prevent confusion!
 ---@param fontPath string Path to the font
-function sm.scrapcomputers.ascfManager.addFont(fontPath)
-    sm_scrapcomputers_errorHandler_assertArgument(fontPath, nil, {"string"})
+function ascfManager.addFont(fontPath)
+    sm_scrapcomputers_errorHandler_assertArgument(fontPath, nil, { "string" })
     sm_scrapcomputers_errorHandler_assert(sm.json.fileExists(fontPath), nil, "File not found!")
 
     local filename = fontPath:match("([^/]+)%.%w+$")
-    sm.scrapcomputers.ascfManager.fonts[filename] = fontPath
+    ascfManager.fonts[filename] = fontPath
     sm.scrapcomputers.logger.info("ASCFManager.lua", "Cached font", fontPath)
 end
 
@@ -156,10 +158,10 @@ end
 ---@param fontName string The name of the font
 ---@return ASCFont? font Information of the font
 ---@return string? errMsg The error message if it failed getting the font
-function sm.scrapcomputers.ascfManager.getFontInfo(fontName)
-    sm_scrapcomputers_errorHandler_assertArgument(fontName, nil, {"string"})
+function ascfManager.getFontInfo(fontName)
+    sm_scrapcomputers_errorHandler_assertArgument(fontName, nil, { "string" })
 
-    local font = sm.scrapcomputers.ascfManager.fonts[fontName]
+    local font = ascfManager.fonts[fontName]
     if not font then
         return nil, "Font not found!"
     end
@@ -175,8 +177,8 @@ end
 ---@param fontName string The name of the font
 ---@return boolean success If it succeeded
 ---@return string? errMsg The error message
-function sm.scrapcomputers.ascfManager.loadFont(fontName)
-    sm_scrapcomputers_errorHandler_assertArgument(fontName, nil, {"string"})
+function ascfManager.loadFont(fontName)
+    sm_scrapcomputers_errorHandler_assertArgument(fontName, nil, { "string" })
     local _, status = findOrLoadFont(fontName)
 
     if status == -1 then
@@ -195,18 +197,19 @@ end
 ---@param rotation number? The rotation
 ---@return number width The width the font consumes
 ---@return number hegiht The height the font consumes
-function sm.scrapcomputers.ascfManager.calcTextSize(fontName, text, fontSize, rotation, maxWidth, coloredMode)
+function ascfManager.calcTextSize(fontName, text, fontSize, rotation, maxWidth, coloredMode)
     rotation = rotation or 0
     local radians = rotation * math_pi / 180
 
     local font, status = findOrLoadFont(fontName)
-    sm_scrapcomputers_errorHandler_assert(font, 5, status == -1 and "Font not found!" or "Font not found! (Unstable Mod Warning)")
-    
+    sm_scrapcomputers_errorHandler_assert(font, 5,
+        status == -1 and "Font not found!" or "Font not found! (Unstable Mod Warning)")
+
     local scale = fontSize / font.metadata.resolution
 
     local text = text
     if coloredMode then
-        text, _  = parseText(text)
+        text, _ = parseText(text)
     end
 
     local characters = sm_scrapcomputers_string_toCharacters(text)
@@ -215,9 +218,9 @@ function sm.scrapcomputers.ascfManager.calcTextSize(fontName, text, fontSize, ro
 
     local currentX, currentY = 0, 0
     for _, char in ipairs(characters) do
-        local gylph = spaceGylphIfNotThere(font, char, fontSize)
+        local gylph = spaceGylphIfNotThere(font, char)
         if char == "\t" then
-            gylph = sm_scrapcomputers_table_clone(spaceGylphIfNotThere(font, " ", fontSize))
+            gylph = sm_scrapcomputers_table_clone(spaceGylphIfNotThere(font, " "))
             if gylph then
                 gylph.advanceWidth = gylph.advanceWidth * 4
             end
@@ -225,13 +228,13 @@ function sm.scrapcomputers.ascfManager.calcTextSize(fontName, text, fontSize, ro
             currentX = 0
             currentY = currentY + (fontSize * lineSpacing)
         end
-        
+
         if gylph then
             for _, triangle in pairs(gylph.triangles) do
                 local vertices = {
-                    {currentX + (triangle.v1[1] * scale), currentY + -(triangle.v1[2] * scale) + fontSize},
-                    {currentX + (triangle.v2[1] * scale), currentY + -(triangle.v2[2] * scale) + fontSize},
-                    {currentX + (triangle.v3[1] * scale), currentY + -(triangle.v3[2] * scale) + fontSize}
+                    { currentX + (triangle[1][1] * scale), currentY + -(triangle[1][2] * scale) + fontSize },
+                    { currentX + (triangle[2][1] * scale), currentY + -(triangle[2][2] * scale) + fontSize },
+                    { currentX + (triangle[3][1] * scale), currentY + -(triangle[3][2] * scale) + fontSize }
                 }
 
                 for _, vertex in ipairs(vertices) do
@@ -263,15 +266,16 @@ end
 ---@param rotation number? The rotation
 ---@param fontSize number The size of the font to use
 ---@param colorToggled boolean? If it should support colors or not in text.
-function sm.scrapcomputers.ascfManager.drawText(display, xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled)
+function ascfManager.drawText(display, xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled)
     local font, status = findOrLoadFont(fontName)
-    sm_scrapcomputers_errorHandler_assert(font, 5, status == -1 and "Font not found!" or "Font not found! (Unstable Mod Warning)")
-    
-    local displayWidth, _ = display.getDimensions()
+    sm_scrapcomputers_errorHandler_assert(font, 5,
+        status == -1 and "Font not found!" or "Font not found! (Unstable Mod Warning)")
+
+    local displayWidth, displayHeight = display.getDimensions()
     local scale = fontSize / font.metadata.resolution
-    
+
     local text, colorIndexes = text, {}
-    
+
     if colorToggled then
         text, colorIndexes = parseText(text)
     end
@@ -302,8 +306,6 @@ function sm.scrapcomputers.ascfManager.drawText(display, xOffset, yOffset, text,
         characterIndex1 = characterIndex1 + #char
     end
 
-    local _, displayHeight = display.getDimensions()
-    
     totalWidth = math_max(totalWidth, currentLineWidth)
     local centerX = xOffset + (totalWidth / 2)
     local centerY = yOffset + (totalHeight / 2)
@@ -324,60 +326,54 @@ function sm.scrapcomputers.ascfManager.drawText(display, xOffset, yOffset, text,
         if newColor then
             currentColor = newColor
         end
-        local forcedNewLine = false
+
         local gylph = spaceGylphIfNotThere(font, char, fontSize)
         if char == "\t" then
-            gylph = sm_scrapcomputers_table_clone(spaceGylphIfNotThere(font, " ", fontSize))
-            currentX = currentX + ((gylph.advanceWidth * 4) * scale)
-            goto continue
+            currentX = currentX + (font.metadata.boundingBox.xMax - font.metadata.boundingBox.xMin) * scale
         end
 
-        if gylph and (currentX + (gylph.advanceWidth * scale)) >= displayWidth then
-            forcedNewLine = true
-        end
-
-        if char == "\n" or forcedNewLine then
+        if char == "\n" or (gylph and (currentX + (gylph.advanceWidth * scale)) >= displayWidth) then
             currentX = xOffset
             currentY = currentY + (fontSize * lineSpacing)
         end
+        
+        if gylph then
+            if currentY >= displayHeight then return end
+            for _, triangle in pairs(gylph.triangles) do
+                local vertices = {
+                    { currentX + (triangle[1][1] * scale), currentY + -(triangle[1][2] * scale) + fontSize },
+                    { currentX + (triangle[2][1] * scale), currentY + -(triangle[2][2] * scale) + fontSize },
+                    { currentX + (triangle[3][1] * scale), currentY + -(triangle[3][2] * scale) + fontSize }
+                }
 
-        if not gylph then goto continue end
+                local rotatedVertices = {}
+                for _, vertex in pairs(vertices) do
+                    local x, y = vertex[1], vertex[2]
+                    local dx, dy = x - centerX, y - centerY
+                    local rotatedX = cosR * dx - sinR * dy + centerX
+                    local rotatedY = sinR * dx + cosR * dy + centerY
 
-        if currentY <= -((gylph.metrics.yMax - gylph.metrics.yMin) * scale) then goto continue end
-        if currentY >= displayHeight then return end
-        for _, triangle in pairs(gylph.triangles) do
-            local vertices = {
-                {currentX + (triangle.v1[1] * scale), currentY + -(triangle.v1[2] * scale) + fontSize},
-                {currentX + (triangle.v2[1] * scale), currentY + -(triangle.v2[2] * scale) + fontSize},
-                {currentX + (triangle.v3[1] * scale), currentY + -(triangle.v3[2] * scale) + fontSize}
-            }
+                    rotatedVertices[#rotatedVertices + 1] = rotatedX
+                    rotatedVertices[#rotatedVertices + 1] = rotatedY
+                end
 
-            local rotatedVertices = {}
-            for i, vertex in ipairs(vertices) do
-                local x, y = vertex[1], vertex[2]
-                local dx, dy = x - centerX, y - centerY
-                local rotatedX = cosR * dx - sinR * dy + centerX
-                local rotatedY = sinR * dx + cosR * dy + centerY
+                display_drawFilledTriangle(
+                    rotatedVertices[1], rotatedVertices[2],
+                    rotatedVertices[3], rotatedVertices[4],
+                    rotatedVertices[5], rotatedVertices[6],
 
-                rotatedVertices[i] = {rotatedX, rotatedY}
+                    currentColor
+                )
             end
 
-            display_drawFilledTriangle(
-                rotatedVertices[1][1], rotatedVertices[1][2],
-                rotatedVertices[2][1], rotatedVertices[2][2],
-                rotatedVertices[3][1], rotatedVertices[3][2],
-                currentColor
-            )
+            currentX = currentX + (gylph.advanceWidth * scale)
         end
 
-        currentX = currentX + (gylph.advanceWidth * scale)
-
-        ::continue::
         characterIndex2 = characterIndex2 + #char
     end
 end
 
-local sm_scrapcomputers_ascfManager_drawText = sm.scrapcomputers.ascfManager.drawText
+local sm_scrapcomputers_ascfManager_drawText = ascfManager.drawText
 
 ---Draws text to a display.
 ---@param display Display The display
@@ -389,49 +385,80 @@ local sm_scrapcomputers_ascfManager_drawText = sm.scrapcomputers.ascfManager.dra
 ---@param rotation number? The rotation
 ---@param fontSize number The size of the font to use
 ---@param colorToggled boolean? If it should support colors or not in text.
-function sm.scrapcomputers.ascfManager.drawTextSafe(display, xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled)
-    sm_scrapcomputers_errorHandler_assertArgument(display     , 1, {"table" }, {"Display"})
-    sm_scrapcomputers_errorHandler_assertArgument(xOffset     , 2, {"number"}             )
-    sm_scrapcomputers_errorHandler_assertArgument(yOffset     , 3, {"number"}             )
-    sm_scrapcomputers_errorHandler_assertArgument(text        , 4, {"string"}             )
-    sm_scrapcomputers_errorHandler_assertArgument(color       , 5, {"Color", "string"}    )
-    sm_scrapcomputers_errorHandler_assertArgument(rotation    , 6, {"number", "nil"}      )
-    sm_scrapcomputers_errorHandler_assertArgument(fontSize    , 7, {"number"}             )
-    sm_scrapcomputers_errorHandler_assertArgument(colorToggled, 8, {"boolean", "nil"}     )
+function ascfManager.drawTextSafe(display, xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled)
+    sm_scrapcomputers_errorHandler_assertArgument(display, 1, { "table" }, { "Display" })
+    sm_scrapcomputers_errorHandler_assertArgument(xOffset, 2, { "number" })
+    sm_scrapcomputers_errorHandler_assertArgument(yOffset, 3, { "number" })
+    sm_scrapcomputers_errorHandler_assertArgument(text, 4, { "string" })
+    sm_scrapcomputers_errorHandler_assertArgument(color, 5, { "Color", "string" })
+    sm_scrapcomputers_errorHandler_assertArgument(rotation, 6, { "number", "nil" })
+    sm_scrapcomputers_errorHandler_assertArgument(fontSize, 7, { "number" })
+    sm_scrapcomputers_errorHandler_assertArgument(colorToggled, 8, { "boolean", "nil" })
 
     colorToggled = type(colorToggled) == "nil" and true or colorToggled
     rotation = math_rad(rotation) or 0
 
-    sm_scrapcomputers_ascfManager_drawText(display, xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled)
+    sm_scrapcomputers_ascfManager_drawText(display, xOffset, yOffset, text, fontName, color, rotation, fontSize,
+        colorToggled)
 end
 
 ---Applies functions to displays, You shouldn't use this generally.
 ---No error handling provided
 ---@param display Display The display.
-function sm.scrapcomputers.ascfManager.applyDisplayFunctions(display)
-    display.drawASCFText     = function (...) sm.scrapcomputers.ascfManager.drawTextSafe(display, ...) end -- Remove "Safe" to remove error handling & nil checking!
-    display.calcASCFTextSize = sm.scrapcomputers.ascfManager.calcTextSize
+function ascfManager.applyDisplayFunctions(display)
+    display.drawASCFText     = function(...) ascfManager.drawTextSafe(display, ...) end  -- Remove "Safe" to remove error handling & nil checking!
+    display.calcASCFTextSize = ascfManager.calcTextSize
 end
 
-function sm.scrapcomputers.ascfManager.getFontNames()
-	local fontNames = {}
+function ascfManager.getFontNames()
+    local fontNames = {}
 
-	for fontName, _ in pairs(sm.scrapcomputers.ascfManager.fonts) do
-		table.insert(fontNames, fontName)
-	end
+    for fontName, _ in pairs(ascfManager.fonts) do
+        table.insert(fontNames, fontName)
+    end
 
-	return fontNames
+    return fontNames
 end
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-if sm.scrapcomputers.table.getTableSize(sm.scrapcomputers.ascfManager.fonts ) > 0 then
+if sm.scrapcomputers.table.getTableSize(ascfManager.fonts) > 0 then
     return
 end
 
-local installedFonts = {"BebasNeue-Regular","CALIBRI","ComicSans-Bold","ComicSans-BoldItalic","ComicSans-Italic","ComicSans-Regular","Courier New","DejaVuSans","DINEngschriftStd","DINMittelschriftStd","FiraCode-Bold","FiraCode-Light","FiraCode-Medium","FiraCode-Regular","FiraCode-Retina","FiraCode-SemiBold","Futura-Bold","Futura-Oblique","Futura","GRUPO3","Helvetica Black Condensed Oblique","Helvetica Black Condensed","Helvetica Black Oblique","helvetica black","Helvetica Bold Condensed","Helvetica Bold Narrow Oblique","Helvetica Condensed Bold Oblique","Helvetica Condensed Oblique","Helvetica Condensed Regular","Helvetica Extra Compressed Regular","Helvetica Inserat Roman","Helvetica Light Condensed","Helvetica Roman","Helvetica Rounded Black","Helvetica Rounded Bold Oblique","Helvetica Rounded Bold","Helvetica Rounded Condensed Bold","Helvetica Rounded LT Std Bold Condensed Oblique","Helvetica Ultra Compressed","Helvetica-Bold Oblique","Helvetica-Bold","helvetica-compressed","helvetica-light","Helvetica-LightOblique","Helvetica-Narrow Bold","Helvetica-Narrow Roman","Helvetica-Narrow-Oblique","Helvetica-Oblique","helvetica-rounded-bold","Helvetica","helvetica_condensed","JetBrainsMono-Bold","JetBrainsMono-BoldItalic","JetBrainsMono-ExtraBold","JetBrainsMono-ExtraBoldItalic","JetBrainsMono-ExtraLight","JetBrainsMono-ExtraLightItalic","JetBrainsMono-Italic","JetBrainsMono-Light","JetBrainsMono-LightItalic","JetBrainsMono-Medium","JetBrainsMono-MediumItalic","JetBrainsMono-Regular","JetBrainsMono-SemiBold","JetBrainsMono-SemiBoldItalic","JetBrainsMono-Thin","JetBrainsMono-ThinItalic","JetBrainsMonoNL-Bold","JetBrainsMonoNL-BoldItalic","JetBrainsMonoNL-ExtraBold","JetBrainsMonoNL-ExtraBoldItalic","JetBrainsMonoNL-ExtraLight","JetBrainsMonoNL-ExtraLightItalic","JetBrainsMonoNL-Italic","JetBrainsMonoNL-Light","JetBrainsMonoNL-LightItalic","JetBrainsMonoNL-Medium","JetBrainsMonoNL-MediumItalic","JetBrainsMonoNL-Regular","JetBrainsMonoNL-SemiBold","JetBrainsMonoNL-SemiBoldItalic","JetBrainsMonoNL-Thin","JetBrainsMonoNL-ThinItalic","Lato-Heavy","Lato-Medium","Lato-MediumItalic","NotoSans-Bold","NotoSans-Italic","NotoSans-Medium","NotoSans-Regular","NotoSans-SemiBold","NotoSansCJKsc-Regular","Oswald-Bold","Oswald-ExtraLight","Oswald-Light","Oswald-Medium","Oswald-Regular","Oswald-SemiBold","Raleway-Black","Raleway-BlackItalic","Raleway-Bold","Raleway-BoldItalic","Raleway-ExtraBold","Raleway-ExtraBoldItalic","Raleway-ExtraLight","Raleway-ExtraLightItalic","Raleway-Italic","Raleway-Light","Raleway-LightItalic","Raleway-Medium","Raleway-MediumItalic","Raleway-Regular","Raleway-SemiBold","Raleway-SemiBoldItalic","Raleway-Thin","Raleway-ThinItalic","Santa Catalina1","SourceCodePro-Black","SourceCodePro-BlackIt","SourceCodePro-Bold","SourceCodePro-BoldIt","SourceCodePro-ExtraLight","SourceCodePro-ExtraLightIt","SourceCodePro-It","SourceCodePro-Light","SourceCodePro-LightIt","SourceCodePro-Medium","SourceCodePro-MediumIt","SourceCodePro-Regular","SourceCodePro-Semibold","SourceCodePro-SemiboldIt","SovjetBox","TimesNewRoman-Bold","TimesNewRoman-BoldItalic","TimesNewRoman-Italic","TimesNewRoman-Regular","Xolonium-Bold"}
+local installedFonts = { "BebasNeue-Regular", "CALIBRI", "ComicSans-Bold", "ComicSans-BoldItalic", "ComicSans-Italic",
+    "ComicSans-Regular", "Courier New", "DejaVuSans", "DINEngschriftStd", "DINMittelschriftStd", "FiraCode-Bold",
+    "FiraCode-Light", "FiraCode-Medium", "FiraCode-Regular", "FiraCode-Retina", "FiraCode-SemiBold", "Futura-Bold",
+    "Futura-Oblique", "Futura", "GRUPO3", "Helvetica Black Condensed Oblique", "Helvetica Black Condensed",
+    "Helvetica Black Oblique", "helvetica black", "Helvetica Bold Condensed", "Helvetica Bold Narrow Oblique",
+    "Helvetica Condensed Bold Oblique", "Helvetica Condensed Oblique", "Helvetica Condensed Regular",
+    "Helvetica Extra Compressed Regular", "Helvetica Inserat Roman", "Helvetica Light Condensed", "Helvetica Roman",
+    "Helvetica Rounded Black", "Helvetica Rounded Bold Oblique", "Helvetica Rounded Bold",
+    "Helvetica Rounded Condensed Bold", "Helvetica Rounded LT Std Bold Condensed Oblique", "Helvetica Ultra Compressed",
+    "Helvetica-Bold Oblique", "Helvetica-Bold", "helvetica-compressed", "helvetica-light", "Helvetica-LightOblique",
+    "Helvetica-Narrow Bold", "Helvetica-Narrow Roman", "Helvetica-Narrow-Oblique", "Helvetica-Oblique",
+    "helvetica-rounded-bold", "Helvetica", "helvetica_condensed", "JetBrainsMono-Bold", "JetBrainsMono-BoldItalic",
+    "JetBrainsMono-ExtraBold", "JetBrainsMono-ExtraBoldItalic", "JetBrainsMono-ExtraLight",
+    "JetBrainsMono-ExtraLightItalic", "JetBrainsMono-Italic", "JetBrainsMono-Light", "JetBrainsMono-LightItalic",
+    "JetBrainsMono-Medium", "JetBrainsMono-MediumItalic", "JetBrainsMono-Regular", "JetBrainsMono-SemiBold",
+    "JetBrainsMono-SemiBoldItalic", "JetBrainsMono-Thin", "JetBrainsMono-ThinItalic", "JetBrainsMonoNL-Bold",
+    "JetBrainsMonoNL-BoldItalic", "JetBrainsMonoNL-ExtraBold", "JetBrainsMonoNL-ExtraBoldItalic",
+    "JetBrainsMonoNL-ExtraLight", "JetBrainsMonoNL-ExtraLightItalic", "JetBrainsMonoNL-Italic", "JetBrainsMonoNL-Light",
+    "JetBrainsMonoNL-LightItalic", "JetBrainsMonoNL-Medium", "JetBrainsMonoNL-MediumItalic", "JetBrainsMonoNL-Regular",
+    "JetBrainsMonoNL-SemiBold", "JetBrainsMonoNL-SemiBoldItalic", "JetBrainsMonoNL-Thin", "JetBrainsMonoNL-ThinItalic",
+    "Lato-Heavy", "Lato-Medium", "Lato-MediumItalic", "NotoSans-Bold", "NotoSans-Italic", "NotoSans-Medium",
+    "NotoSans-Regular", "NotoSans-SemiBold", "NotoSansCJKsc-Regular", "Oswald-Bold", "Oswald-ExtraLight", "Oswald-Light",
+    "Oswald-Medium", "Oswald-Regular", "Oswald-SemiBold", "Raleway-Black", "Raleway-BlackItalic", "Raleway-Bold",
+    "Raleway-BoldItalic", "Raleway-ExtraBold", "Raleway-ExtraBoldItalic", "Raleway-ExtraLight",
+    "Raleway-ExtraLightItalic", "Raleway-Italic", "Raleway-Light", "Raleway-LightItalic", "Raleway-Medium",
+    "Raleway-MediumItalic", "Raleway-Regular", "Raleway-SemiBold", "Raleway-SemiBoldItalic", "Raleway-Thin",
+    "Raleway-ThinItalic", "Santa Catalina1", "SourceCodePro-Black", "SourceCodePro-BlackIt", "SourceCodePro-Bold",
+    "SourceCodePro-BoldIt", "SourceCodePro-ExtraLight", "SourceCodePro-ExtraLightIt", "SourceCodePro-It",
+    "SourceCodePro-Light", "SourceCodePro-LightIt", "SourceCodePro-Medium", "SourceCodePro-MediumIt",
+    "SourceCodePro-Regular", "SourceCodePro-Semibold", "SourceCodePro-SemiboldIt", "SovjetBox", "TimesNewRoman-Bold",
+    "TimesNewRoman-BoldItalic", "TimesNewRoman-Italic", "TimesNewRoman-Regular", "Xolonium-Bold" }
 for _, installedFont in pairs(installedFonts) do
     local path = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/AdvancedFonts/" .. installedFont .. ".ascf"
 
-    sm.scrapcomputers.ascfManager.addFont(path)
+    ascfManager.addFont(path)
 end

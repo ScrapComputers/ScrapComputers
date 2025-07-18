@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.68229166666666663 0.65740740740740744" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 1 1">
+            <Widget type="TextBox" skin="SMTextBox_NoBackground" position_real="0 0 1 0.11267605633802817">
+                <Property key="FontName" value="SM_Header"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="ESNS Config"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.31603053435114503 0.11971830985915492 0.66412213740458015 0.07605633802816901" name="identifer">
+                <Property key="Caption" value="No identifier Specified!"/>
+                <Property key="ReadOnly" value="true"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.31603053435114503 0.22535211267605634 0.66030534351145043 0.07605633802816901" name="displayName">
+                <Property key="Caption" value="Computer ##1"/>
+            </Widget>
+            <Widget type="TextBox" skin="SMTextBox_NoBackground" position_real="0.011450381679389313 0.11971830985915492 0.29389312977099236 0.07605633802816901">
+                <Property key="Caption" value="Identifier (Read-Only)"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="TextBox" skin="SMTextBox_NoBackground" position_real="0.015267175572519083 0.22535211267605634 0.29007633587786258 0.07605633802816901">
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="Caption" value="Display Name:"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBoxEmpty" position_real="0.022900763358778626 0.61408450704225348 0.9580152671755725 0.33098591549295775">
+                <Property key="TextAlign" value="Default"/>
+                <Property key="MultiLine" value="true"/>
+                <Property key="FontName" value="DejaVuSansFont_28"/>
+                <Property key="TabPrinting" value="true"/>
+                <Property key="Caption" value="ScrapComputers has a external software comminucator system called ESNS (External Software Network System), It lets you comminucate between ScrapComputers and programs outside the game without the usage of any DLL mods (Mods that modify the game&apos;s lua to be extended), This is where you can configure properties for programs to be able to access it.\n\nProperties:\n    Identifier: The identifier actually used to choose which computer. You generally don&apos;t have to know this (unless your making a program for ScrapComputers)\n    Display Name: The name used so you do not have to know the entire identifier and can use a easy-to-understand name. Only for visuals."/>
+                <Property key="WordWrap" value="true"/>
+                <Property key="Static" value="true"/>
+                <Property key="ReadOnly" value="true"/>
+            </Widget>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

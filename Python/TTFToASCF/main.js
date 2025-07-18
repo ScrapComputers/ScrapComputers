@@ -236,11 +236,11 @@ const ConvertFont = async (FontName) => {
         // At this stage, Triangles array contains triangle definitions.
         for (let i = 0; i < Triangles.length; i++) {
             const [i1, i2, i3] = Triangles[i];
-            Output.triangles.push({
-                v1: [VertexData[i1 * 2], VertexData[i1 * 2 + 1]],
-                v2: [VertexData[i2 * 2], VertexData[i2 * 2 + 1]],
-                v3: [VertexData[i3 * 2], VertexData[i3 * 2 + 1]],
-            });
+            Output.triangles.push([
+                [VertexData[i1 * 2], VertexData[i1 * 2 + 1]],
+                [VertexData[i2 * 2], VertexData[i2 * 2 + 1]],
+                [VertexData[i3 * 2], VertexData[i3 * 2 + 1]],
+            ]);
         }
 
         for (const Unicode of Unicodes)

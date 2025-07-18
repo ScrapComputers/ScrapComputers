@@ -3,6 +3,23 @@ dofile("$CONTENT_DATA/Scripts/Config.lua")
 ---@class ConfigManagerClass : ShapeClass
 ConfigManagerClass = class()
 
+local function movingAverage(num, averageBuffer, bufferIndex, count)
+    averageBuffer[bufferIndex] = num;
+    bufferIndex = (bufferIndex + 1)%count
+  
+    local runningAverage = 0
+
+    for k, v in pairs(averageBuffer) do
+        if k >= count then
+            v = 0
+        else
+            runningAverage = runningAverage + v
+        end
+    end
+
+    return runningAverage / count, averageBuffer, bufferIndex
+end
+
 function ConfigManagerClass:server_onCreate()
     sm.scrapcomputers.config.initConfig()
 
@@ -40,6 +57,27 @@ function ConfigManagerClass:server_onFixedUpdate()
         end
     else
         self.sv.serverStartingTick = self.sv.serverStartingTick + 1
+    end
+
+    if sm.scrapcomputers.PIDHandler and sm.scrapcomputers.table.getTableSize(sm.scrapcomputers.PIDHandler.processes) > 0 then
+        if sm.scrapcomputers.table.getTableSize(sm.scrapcomputers.dataList["Computers"]) == 0 then
+            sm.scrapcomputers.PIDHandler.processes = {}
+        end
+
+        for _, process in pairs(sm.scrapcomputers.PIDHandler.processes) do
+            local _error = process.setValue - process.processValue
+            process.dBuffer[process.dBufferIndex] = _error
+            local lasterror = (process.dBuffer[(process.dBufferIndex - process.deltatimeD)%20] == nil) and _error or process.dBuffer[(process.dBufferIndex - process.deltatimeD)%20]
+            
+            local maOut
+            maOut, process.averageBuffer, process.bufferIndex = movingAverage(_error, process.averageBuffer, process.bufferIndex, process.deltatimeI)
+            
+            local output = _error * process.p + maOut * process.i + (_error - lasterror) * process.d
+            output = sm.util.clamp(output, -4096, 4096)
+
+            process.dBufferIndex = (process.dBufferIndex + 1)%20
+            process.PIDOut = output
+        end
     end
 end
 

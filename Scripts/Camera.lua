@@ -6,6 +6,12 @@ local scrap_generateGradient = sm.scrapcomputers.color.generateGradient
 local sm_game_getTimeOfDay = sm.game.getTimeOfDay
 local sm_vec3_normalize = sm.vec3.normalize
 local sm_vec3_dot = sm.vec3.dot
+local math_floor = math.floor
+
+local bit_band = bit.band
+local bit_rshift = bit.rshift
+local bit_bor = bit.bor
+local bit_lshift = bit.lshift
 
 ---@class CameraClass : ShapeClass
 CameraClass = class()
@@ -49,6 +55,18 @@ local groundColorCache = {}
 
 local skyColorGradientSize = 100000
 
+local function formatVec(vec3)
+    return "" .. math.floor(vec3.x * 5) .. "" .. math.floor(vec3.y * 5) .. "" .. math.floor(vec3.z * 5)
+end
+
+local function coordinateToIndex(x, y, width)
+    return (y - 1) * width + x
+end
+
+local function indexToCoordinate(index, width)
+    return (index - 1) % width + 1, math_floor((index - 1) / width) + 1
+end
+
 local function map(value, low, high, low1, high1)
     local inputRange = high - low
     local outputRange = high1 - low1
@@ -75,6 +93,29 @@ local function getSkyColor()
     local selectedColor = skyColorGradient[selectedIndex]
 
     return selectedColor or sm_color_new("FF0000")
+end
+
+local function areColorsSimilar(color1, color2, threshold)
+    if threshold == 0 then return color1 == color2 end
+
+    local r1, g1, b1 = bit_band(bit_rshift(color1, 16), 255), bit_band(bit_rshift(color1, 8), 255), bit_band(color1, 255)
+    local r2, g2, b2 = bit_band(bit_rshift(color2, 16), 255), bit_band(bit_rshift(color2, 8), 255), bit_band(color2, 255)
+
+    local dr, dg, db = r1 - r2, g1 - g2, b1 - b2
+    return (dr * dr + dg * dg + db * db) <= (threshold * 255)^2 * 3
+end
+
+local function colorToID(color)
+    if not color then
+        color = sm_color_new(0, 0, 0)
+    elseif type(color) == "string" then
+        color = sm_color_new(color)
+    elseif type(color) == "number" then
+        return color
+    end
+
+    local scale = 255
+    return bit_bor(bit_lshift(math_floor(color.r * scale), 16), bit_lshift(math_floor(color.g * scale), 8), math_floor(color.b * scale))
 end
 
 ---@param result RaycastResult The raycast
@@ -115,10 +156,6 @@ end
 ---@param raycastResult RaycastResult The raycast result
 ---@return Color color The color of the object
 local function getObjCol(raycastResult, advanced)
-    local function formatVec(vec3)
-        return "" .. math.floor(vec3.x * 5) .. "" .. math.floor(vec3.y * 5) .. "" .. math.floor(vec3.z * 5)
-    end
-
     if not raycastResult then
         return getSkyColor()
     end
@@ -162,7 +199,7 @@ local function getObjCol(raycastResult, advanced)
         local div = 1
         local x, y = -1, -1
 
-        for i = 1, 25 do
+        for _ = 1, 25 do
             local fColor = materialsTable[sm_physics_getGroundMaterial(sm_vec3_new(x, y, 0) + point)] or groundColor
 
             average_r = average_r + fColor.r
@@ -215,34 +252,7 @@ local function makeSafe(result)
         valid = result.valid,
         material = material,
         color = color
-}
-end
-
----@param r1 number The first color for Red
----@param g1 number The first color for Green
----@param b1 number The first color for Blue
----@param r2 number The seccond color for Red
----@param g2 number The seccond color for Green
----@param b2 number The seccond color for Blue
----@return number colorDistance The distance between the 2 color's.
-local function colorDistance(r1, g1, b1, r2, g2, b2)
-    local dr = r2 - r1
-    local dg = g2 - g1
-    local db = b2 - b1
-
-    return math.sqrt(dr ^ 2 + dg ^ 2 + db ^ 2)
-end
-
----@param color Color The first color
----@param color1 Color The seccond color
----@param threshold number (Optional) The threshold of how accruate it should be. By default its 0 aka exactly same color.
----@return boolean colorSame If this is true. then the 2 colors are similar from the threshold.
-local function areColorsSimilar(color, color1, threshold)
-    if not color or not color1 then return false end
-    threshold = threshold or 0
-
-    local distance = colorDistance(color.r, color.g, color.b, color1.r, color1.g, color1.b)
-    return distance <= threshold
+    }
 end
 
 -- SERVER --
@@ -378,7 +388,7 @@ function CameraClass:sv_createData()
 
             local width1, height1 = display.getDimensions()
 
-            width = width  or width1
+            width = width or width1
             height = height or height1
 
             local displayId = display.getId()
@@ -399,7 +409,7 @@ function CameraClass:sv_createData()
             local thershold = display.getOptimizationThreshold()
 
             local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
-            local pixels = self:sv_drawVideoFrame(rays, coordinateTbl, thershold, width, height)
+            local pixels = self:sv_drawVideoFrame(rays, coordinateTbl, thershold, width, height, displayId)
 
             if #pixels > 0 then
                 display.drawFromTable(pixels)
@@ -440,7 +450,7 @@ function CameraClass:sv_createData()
             local thershold = display.getOptimizationThreshold()
 
             local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
-            local pixels = self:sv_drawAdvancedVideoFrame(rays, coordinateTbl, thershold, width, height)
+            local pixels = self:sv_drawAdvancedVideoFrame(rays, coordinateTbl, thershold, width, height, displayId)
 
             if #pixels > 0 then
                 display.drawFromTable(pixels)
@@ -483,7 +493,7 @@ function CameraClass:sv_createData()
             local thershold = display.getOptimizationThreshold()
 
             local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
-            local pixels = self:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, thershold, width, height)
+            local pixels = self:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, thershold, width, height, displayId)
 
             if #pixels > 0 then
                 display.drawFromTable(pixels)
@@ -557,6 +567,7 @@ function CameraClass:server_onCreate()
         raycastPreCache = {},
         cachedCoordinates = {},
         cachedColors = {},
+        cachedShadows = {},
 
         screenSection = 0,
 
@@ -588,7 +599,7 @@ function CameraClass:server_onFixedUpdate()
     end
 
     if self.sv.forced and not sm.scrapcomputers.backend.cameraColorCache[self.sv.forced] then
-        self.sv.cachedColors = {}
+        self.sv.cachedColors[self.sv.forced] = {}
         self.sv.forced = nil
     end
 end
@@ -730,7 +741,10 @@ function CameraClass:sv_drawFrame(rays, coordinateTbl, width, height)
         local modifier = 1
 
         if hit then
-            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
+            if result.type ~= "terrainSurface" then
+                modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
+            end
+            
             color = getObjCol(result) * time
 
             if result.type ~= "limiter" then
@@ -906,6 +920,9 @@ function CameraClass:sv_drawAdvancedFrame(rays, coordinateTbl, width, height)
 end
 
 function CameraClass:sv_drawCustomFrame(rays, coordinateTbl, drawer, width, height)
+    local xOffset = self.sv.xOffset
+    local yOffset = self.sv.yOffset
+
     local pixelCount = #rays
     local pixels = {}
     local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
@@ -921,15 +938,10 @@ function CameraClass:sv_drawCustomFrame(rays, coordinateTbl, drawer, width, heig
 
         result = isUnsafeENV and result or makeSafe(result)
 
-        local color = drawer(hit, result, x, y)
-        local colorType = type(color)
-
-        sm.scrapcomputers.errorHandler.assert(colorType == "string" or colorType == "Color", nil, "Camera drawer function has returned a malformed color.")
-        ---@diagnostic disable-next-line: cast-local-type
-        color = colorType == "string" and sm_color_new(color) or color
+        local color = colorToID(drawer(hit, result, x, y))
 
         pixelIndex = pixelIndex + 1
-        pixels[pixelIndex] = {x = x, y = y, color = color}
+        pixels[pixelIndex] = {x = x + xOffset, y = y + yOffset, color = color}
     end
 
     return pixels
@@ -937,13 +949,15 @@ end
 
 -- VIDEO --
 
-function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, height)
+function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, height, displayId)
     local pixelCount = #rays
-    local cachedColors = self.sv.cachedColors
+
+    self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
+    local cachedColors = self.sv.cachedColors[displayId]
+
     local pixels = {}
     local time = math.abs(sm_game_getTimeOfDay() + 0.5)
     local defaultColor = getSkyColor()
-    local rangeFactor = self.sv.range * 1.1
 
     local range = self.sv.range
     local xOffset = self.sv.xOffset
@@ -958,7 +972,9 @@ function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, he
         local modifier = 1
 
         if hit then
-            modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.6
+            if result.type ~= "terrainSurface" then
+                modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.6
+            end
             
             color = getObjCol(result) * time
 
@@ -967,24 +983,29 @@ function CameraClass:sv_drawVideoFrame(rays, coordinateTbl, threshold, width, he
             end
         end
 
+        color = colorToID(color)
+
         local coord = coordinateTbl[i]
         local x, y = coord[1] + xOffset, coord[2] + yOffset
         local coordIndex = coordinateToIndex(x, y, width)
 
-        if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], color, threshold) then
+        if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
             pixelIndex = pixelIndex + 1
             pixels[pixelIndex] = {x = x, y = y, color = color}
                 
-            self.sv.cachedColors[coordIndex] = color
+            self.sv.cachedColors[displayId][coordIndex] = color
         end
     end
 
     return pixels
 end
 
-function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, width, height)
+function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, width, height, displayId)
     local pixelCount = #rays
-    local cachedColors = self.sv.cachedColors
+
+    self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
+    local cachedColors = self.sv.cachedColors[displayId]
+
     local pixels = {}
     local pointTbl = {}
     local shadowRays = {}
@@ -1016,29 +1037,46 @@ function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, w
                 color = applyFog(color, result.fraction, range, fogColor) * modifier
             end
 
-            tblIndex = tblIndex + 1
-            pointTbl[tblIndex] = {point = result.pointWorld, color = color, index = i}
+            if result.type == "terrainSurface" and self.sv.cachedShadows[formatVec(result.pointWorld)] then
+                local coordinate = coordinateTbl[i]
+                local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
+                local coordIndex = coordinateToIndex(x, y, width)
 
-            local startPos = result.pointWorld + -sunDir * shadowRange
+                color = colorToID(color * shadowMult)
 
-            shadowRays[tblIndex] = {
-                type = type,
-                startPoint = startPos,
-                endPoint = startPos + sunDir * shadowRange,
-                mask = filter,
-            }
+                if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
+                    pixelIndex = pixelIndex + 1
+                    pixels[pixelIndex] = {x = x, y = y, color = color}
+
+                    self.sv.cachedColors[displayId][coordIndex] = color
+                end
+            else
+                tblIndex = tblIndex + 1
+                pointTbl[tblIndex] = {point = result.pointWorld, color = color, index = i}
+
+                local startPos = result.pointWorld + -sunDir * shadowRange
+
+                shadowRays[tblIndex] = {
+                    type = type,
+                    startPoint = startPos,
+                    endPoint = startPos + sunDir * shadowRange,
+                    mask = filter,
+                }
+            end
         else
             local coordinate = coordinateTbl[i]
-            local x, y = coordinate[1] + xOffset, coordinate[2] + xOffset
+            local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
             local coordIndex = coordinateToIndex(x, y, width)
 
             local finalColor = applySunShader(result, color, time, sunDir)
 
-            if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], finalColor, threshold) then
+            finalColor = colorToID(finalColor)
+
+            if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], finalColor, threshold)) then
                 pixelIndex = pixelIndex + 1
                 pixels[pixelIndex] = {x = x, y = y, color = finalColor}
 
-                self.sv.cachedColors[coordIndex] = finalColor
+                self.sv.cachedColors[displayId][coordIndex] = finalColor
             end
         end
     end
@@ -1052,29 +1090,37 @@ function CameraClass:sv_drawAdvancedVideoFrame(rays, coordinateTbl, threshold, w
         local pointData = pointTbl[i]
 
         if hit and (result.pointWorld - pointData.point):length() > 0.05 then
+            self.sv.cachedShadows[formatVec(result.pointWorld)] = true
             pointData.color = pointData.color * shadowMult
         end
+
+        pointData.color = colorToID(pointData.color)
 
         local coordinate = coordinateTbl[pointData.index]
         local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
         local coordIndex = coordinateToIndex(x, y, width)
 
-        if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], pointData.color, threshold) then
+        if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], pointData.color, threshold)) then
             finalPixelIndex = finalPixelIndex + 1
             pixels[finalPixelIndex] = {x = x, y = y, color = pointData.color}
 
-            self.sv.cachedColors[coordIndex] = pointData.color
+            self.sv.cachedColors[displayId][coordIndex] = pointData.color
         end
     end
 
     return pixels
 end
 
-function CameraClass:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, threshold, width, height)
+function CameraClass:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, threshold, width, height, displayId)
+    local xOffset = self.sv.xOffset
+    local yOffset = self.sv.yOffset
+    
     local pixelCount = #rays
     local pixels = {}
     local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
-    local cachedColors = self.sv.cachedColors
+    
+    self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
+    local cachedColors = self.sv.cachedColors[displayId]
 
     local pixelIndex = 0
 
@@ -1087,15 +1133,13 @@ function CameraClass:sv_drawCustomVideoFrame(rays, coordinateTbl, drawer, thresh
 
         result = isUnsafeENV and result or makeSafe(result)
 
-        local color = drawer(hit, result, x, y)
-        local colorType = type(color)
+        local color = colorToID(drawer(hit, result, x, y))
 
-        sm.scrapcomputers.errorHandler.assert(colorType == "string" or colorType == "Color", nil, "Camera drawer function has returned a malformed color.")
-        color = colorType == "Color" and color or sm_color_new(color)
-
-        if not cachedColors[coordIndex] or not areColorsSimilar(cachedColors[coordIndex], color, threshold) then
+        if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
             pixelIndex = pixelIndex + 1
-            pixels[pixelIndex] = {x = x, y = y, color = color}
+            pixels[pixelIndex] = {x = x + xOffset, y = y + yOffset, color = color}
+
+            self.sv.cachedColors[displayId][coordIndex] = color
         end
     end
 

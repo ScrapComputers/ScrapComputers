@@ -17,6 +17,21 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 
     local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
 
+    local function createpid(processID)
+        sm.scrapcomputers.PIDHandler.createProcess(processID)
+    end
+
+    local function removepid(processID)
+        sm.scrapcomputers.PIDHandler.removeProcess(processID)
+    end
+
+    local function pid(processID, processValue, setValue, p, i, d, deltatime_i, deltatime_d)
+        sm.scrapcomputers.PIDHandler.setProcess(processID, processValue, setValue, p, i, d, deltatime_i, deltatime_d)
+    
+        local pidData = sm.scrapcomputers.PIDHandler.getProcess(processID)
+        return pidData.PIDOut
+    end
+
     local environmentVariables = {
         print = function (...)
             local text = ""
@@ -121,17 +136,9 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             sqrt = math.sqrt,
             tan = math.tan,
             tanh = math.tanh,
-            pid = function(processValue, setValue, p, i, d, deltatime_i, deltatime_d)
-                sm.scrapcomputers.backend.pid.processValue = processValue
-                sm.scrapcomputers.backend.pid.setValue = setValue
-                sm.scrapcomputers.backend.pid.p = p
-                sm.scrapcomputers.backend.pid.i = i
-                sm.scrapcomputers.backend.pid.d = d
-                sm.scrapcomputers.backend.pid.deltatime_i = deltatime_i
-                sm.scrapcomputers.backend.pid.deltatime_d = deltatime_d
-
-                return sm.scrapcomputers.backend.pid.output
-            end
+            pid = pid,
+            createpid = createpid,
+            removepid = removepid
         },
         bit = {
             tobit = bit.tobit,
@@ -239,9 +246,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                     return sm.scrapcomputers.json.toString(root, true, prettify, indent) 
                 end,
 
-                toTable = function(root) 
-                    return sm.scrapcomputers.json.toTable (root, true) 
-                end,
+                toTable = sm.json.parseJsonString, -- Backwards Compatability
             },
             font = {
                 getDefaultFont = sm.scrapcomputers.fontManager.getDefaultFont,
@@ -280,7 +285,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                 getTotalLanguages = sm.scrapcomputers.languageManager.getTotalLanguages,
                 translatable = sm.scrapcomputers.languageManager.translatable
             },
-            syntax = sm.scrapcomputers.syntaxManager,
+            syntax = sm.scrapcomputers.table.clone(sm.scrapcomputers.syntaxManager),
 
             -- DO NOT REMVOE CLONING! They prevent you from fucking up the mod from referenced tables!
 
@@ -351,14 +356,13 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                 open = sm.json.open,
                 
                 parseJsonString = function(root) 
-                    return sm.scrapcomputers.json.toTable(root, true) 
+                    return sm.json.parseJsonString(root, true) 
                 end,
 
                 writeJsonString = function(root) 
                     return sm.scrapcomputers.json.toString(root, true, false)
                 end
             },
-
             projectile = {
                 solveBallisticArc = sm.projectile.solveBallisticArc
             }
@@ -378,17 +382,9 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
         environmentVariables.string = string
         environmentVariables.table = table
         environmentVariables.math = math
-        environmentVariables.math.pid = function(processValue, setValue, p, i, d, deltatime_i, deltatime_d)
-            sm.scrapcomputers.backend.pid.processValue = processValue
-            sm.scrapcomputers.backend.pid.setValue = setValue
-            sm.scrapcomputers.backend.pid.p = p
-            sm.scrapcomputers.backend.pid.i = i
-            sm.scrapcomputers.backend.pid.d = d
-            sm.scrapcomputers.backend.pid.deltatime_i = deltatime_i
-            sm.scrapcomputers.backend.pid.deltatime_d = deltatime_d
-
-            return sm.scrapcomputers.backend.pid.output
-        end
+        environmentVariables.math.pid = pid
+        environmentVariables.math.createpid = createpid
+        environmentVariables.math.removepid = removepid
 
         environmentVariables.bit = bit
         environmentVariables.os = os
@@ -406,6 +402,6 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 
         environmentVariables = sm.scrapcomputers.table.merge(environmentVariables, contents)
     end
-    
+
     return environmentVariables
 end

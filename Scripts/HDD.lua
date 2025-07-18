@@ -31,7 +31,7 @@ function HDDClass:sv_createData()
         -- Returns the self.savedData variable
         ---@return table data The data
         load = function ()
-            return self.sv.savedData
+            return type(self.sv.savedData) == "string" and sm.json.parseJsonString(self.sv.savedData) or self.sv.savedData 
         end,
 
         -- Saves data to the shape itself
@@ -81,7 +81,8 @@ end
 ---@param params {[1]: string, [2]: boolean} The data
 function HDDClass:sv_saveData(params)
     local data, souldUpdateToClients = unpack(params)
-    self.sv.savedData = data
+    
+    self.sv.savedData = sm.json.writeJsonString(data)
     self.storage:save(self.sv.savedData)
 
     self.sv.updateDataToClients = souldUpdateToClients
@@ -92,6 +93,10 @@ function HDDClass:server_onCreate()
         savedData = self.storage:load(),
         updateDataToClients = true
     }
+
+    if type(self.sv.savedData) == "string" then
+        self.sv.savedData = sm.json.parseJsonString(self.sv.savedData)
+    end
 
     if not self.sv.savedData then
         self.sv.savedData = {}
@@ -241,7 +246,7 @@ function HDDClass:cl_onExportExampleBtn()
 
     local contents = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples)
     local newInput = self.cl.inputText:gsub("⁄", "\\")
-    local newData = sm.scrapcomputers.json.toTable(newInput, false)
+    local newData = sm.json.parseJsonString(newInput)
 
     if self.cl.selectedExample then
         for index, example in pairs(contents) do
@@ -269,7 +274,7 @@ end
 
 function HDDClass:cl_onSaveBtn()
     local newInput = self.cl.inputText:gsub("⁄", "\\")
-    local success, result = pcall(sm.scrapcomputers.json.toTable, newInput) ---@type boolean, string|table
+    local success, result = pcall(sm.json.parseJsonString, newInput) ---@type boolean, string|table
 
     if success then
         local dataSize = sm.scrapcomputers.json.toString(result, false)
@@ -322,6 +327,11 @@ function HDDClass:cl_updateHDDContents(widget, text)
 end
 
 function HDDClass:cl_updateDriveData(newData)
+    -- BUGFIX: Do NoT reMove
+    if type(newData) == "string" then
+        newData =  sm.json.parseJsonString(newData)
+    end
+
     if not next(newData) then
         self.cl.driveContents = {}
     else

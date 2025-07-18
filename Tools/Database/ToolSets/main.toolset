@@ -1,15 +1,23 @@
 {
 	"toolList": [
 		{
-			"name": "SCRAPCOMPUTERS___BAN_SYSTEM",
-			"uuid": "2615b6ab-b765-49dd-b842-021b49202170",
+			"name": "SCRAPCOMPUTERS___SUPER_DOPE_ASS_SYNTAX_EDITOR",
+			"uuid": "fe942317-ed49-49ac-bde9-31a74355c28d",
+			"previewRenderable": "$CONTENT_DATA/Animations/Char_Tools/char_connecttool_preview.rend",
+			"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
+			"script": { "class": "SyntaxEditorClass", "file": "$CONTENT_DATA/Scripts/Tools/SyntaxEditor.lua" }
+		},
+		// INTERNAL TOOLS
+		{
+			"name": "SCRAPCOMPUTERS___EXTERNAL_COM",
+			"uuid": "83c0b384-8411-460a-b5ea-874bc709f252",
 			"previewRenderable": "$GAME_DATA/Character/Char_Tools/char_connecttool_preview.rend",
 			"previewRotation": [ -1, 0, 0, 0, 0, 1, 0, 1, 0 ],
 			"showInInventory": false,
 			"autoTool": true,
-			"script": { "class": "BanSystemClass", "file": "$CONTENT_DATA/Scripts/Tools/BanSystem.lua" }
+			"script": { "class": "ExternalComClass", "file": "$CONTENT_DATA/Scripts/Tools/ExternalCom.lua" }
 		},
-        {
+		{
 			"name": "SCRAPCOMPUTERS___CONFIG_UPDATER",
 			"uuid": "ff040b6b-8f27-4e3c-979f-a7c78df8e466",
 			"previewRenderable": "$GAME_DATA/Character/Char_Tools/char_connecttool_preview.rend",

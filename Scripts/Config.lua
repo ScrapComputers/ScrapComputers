@@ -58,7 +58,7 @@ sm.scrapcomputers.isDeveloperEnvironment()
 sm.scrapcomputers.backend = {}
 
 -- Do not fucking put any modules behind ErrorHandler, so that you atleast can have proper error handling.
-local modules = {"Logger", "ErrorHandler", "String", "Audio", "Base64", "LZ4", "Color", "JSON", "MD5", "SHA256", "Table", "Util", "Vector2", "Vector3", "BitStream", "NBS", "MIDI", "VirtualDisplay", "Multidisplay"}
+local modules = {"Logger", "ErrorHandler", "String", "Audio", "Base64", "LZ4", "Color", "JSON", "MD5", "SHA256", "Table", "Util", "Vector2", "Vector3", "BitStream", "KWC", "NBS", "PIDHandler", "MIDI", "VirtualDisplay", "Multidisplay"}
 
 for _, module in pairs(modules) do
     local modulePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Modules/" .. module .. ".lua"
@@ -104,7 +104,6 @@ sm.scrapcomputers.layoutFiles = {
     Configurator = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Configurator.layout",
     Harddrive = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Harddrive.layout",
     Keyboard = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Keyboard.layout",
-    Banned = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Banned.layout",
     ComputerESNSConfig = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/ComputerESNSConfig.layout"
 }
 
@@ -198,7 +197,7 @@ function sm.scrapcomputers.config.initConfig()
         local configIndex = nil
         
         for index, config in pairs(sm.scrapcomputers.config.configurations) do
-            if config.id:lower() == id:lower() then
+            if config.id and config.id:lower() == id:lower() then
                 configIndex = index
                 break
             end
@@ -297,7 +296,7 @@ function sm.scrapcomputers.config.getConfig(id)
     sm.scrapcomputers.errorHandler.assertArgument(id, nil, {"string"})
 
     for _, config in pairs(sm.scrapcomputers.config.configurations) do
-        if config.id:lower() == id:lower() then
+        if config.id and config.id:lower() == id:lower() then
             return config
         end
     end
@@ -312,7 +311,7 @@ function sm.scrapcomputers.config.configExists(id)
     sm.scrapcomputers.errorHandler.assertArgument(id, nil, {"string"})
 
     for _, config in pairs(sm.scrapcomputers.config.configurations) do
-        if config.id:lower() == id:lower() then
+        if config.id and config.id:lower() == id:lower() then
             return true
         end
     end

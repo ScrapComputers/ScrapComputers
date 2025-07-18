@@ -84,25 +84,24 @@ end
 ---@return string data The encoded string
 function sm.scrapcomputers.lz4.encode(input)
     local inputLength = #input
+    local inputBytes = {input:byte(1, -1)}
     local i = 1
     local output = {}
     local literalStart = 1
+    local outputLen = 1
 
     while i <= inputLength do
-        local bestLength = 0
-        local bestOffset = 0
-        local searchStart = math.max(1, i - 65535)
+        local bestLength, bestOffset = 0, 0
+        local searchStart = (i > 65535) and (i - 65535) or 1
 
         for j = searchStart, i - 1 do
             local length = 0
-
-            while (i + length <= inputLength) and (input:byte(j + length) == input:byte(i + length)) do
+            while (i + length <= inputLength) and (inputBytes[j + length] == inputBytes[i + length]) do
                 length = length + 1
             end
 
             if length > bestLength and length >= 4 then
                 local compressedSize = 2 + length
-                
                 if compressedSize >= 15 then
                     bestLength = length
                     bestOffset = i - j
@@ -115,37 +114,39 @@ function sm.scrapcomputers.lz4.encode(input)
             local literalLength = i - literalStart
             local tokenLiteral = (literalLength < 15) and literalLength or 15
             local tokenMatch = ((bestLength - 4) < 15) and (bestLength - 4) or 15
-            local token = bit.bor(bit.lshift(tokenLiteral, 4), tokenMatch)
-
-            table.insert(output, string.char(token))
+            output[outputLen] = string.char(bit.bor(bit.lshift(tokenLiteral, 4), tokenMatch))
+            outputLen = outputLen + 1
 
             if literalLength >= 15 then
                 local len = literalLength - 15
-
                 while len >= 255 do
-                    table.insert(output, string.char(255))
+                    output[outputLen] = string.char(255)
+                    outputLen = outputLen + 1
                     len = len - 255
                 end
-
-                table.insert(output, string.char(len))
+                output[outputLen] = string.char(len)
+                outputLen = outputLen + 1
             end
 
             if literalLength > 0 then
-                table.insert(output, input:sub(literalStart, i - 1))
+                output[outputLen] = input:sub(literalStart, i - 1)
+                outputLen = outputLen + 1
             end
 
-            table.insert(output, string.char(bit.band(bestOffset, 0xFF)))
-            table.insert(output, string.char(bit.rshift(bestOffset, 8)))
+            output[outputLen] = string.char(bit.band(bestOffset, 0xFF))
+            outputLen = outputLen + 1
+            output[outputLen] = string.char(bit.rshift(bestOffset, 8))
+            outputLen = outputLen + 1
 
             if bestLength - 4 >= 15 then
                 local len = bestLength - 4 - 15
-
                 while len >= 255 do
-                    table.insert(output, string.char(255))
+                    output[outputLen] = string.char(255)
+                    outputLen = outputLen + 1
                     len = len - 255
                 end
-
-                table.insert(output, string.char(len))
+                output[outputLen] = string.char(len)
+                outputLen = outputLen + 1
             end
 
             i = i + bestLength
@@ -158,22 +159,18 @@ function sm.scrapcomputers.lz4.encode(input)
     if literalStart <= inputLength then
         local literalLength = inputLength - literalStart + 1
         local tokenLiteral = (literalLength < 15) and literalLength or 15
-        local token = bit.lshift(tokenLiteral, 4)
-
-        table.insert(output, string.char(token))
+        output[#output + 1] = string.char(bit.lshift(tokenLiteral, 4))
 
         if literalLength >= 15 then
             local len = literalLength - 15
-
             while len >= 255 do
-                table.insert(output, string.char(255))
+                output[#output + 1] = string.char(255)
                 len = len - 255
             end
-
-            table.insert(output, string.char(len))
+            output[#output + 1] = string.char(len)
         end
 
-        table.insert(output, input:sub(literalStart, inputLength))
+        output[#output + 1] = input:sub(literalStart, inputLength)
     end
 
     return table.concat(output)

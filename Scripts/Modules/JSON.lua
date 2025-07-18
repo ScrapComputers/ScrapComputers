@@ -99,15 +99,6 @@ function sm.scrapcomputers.json.toString(root, safeMode, prettifyOutput, indentC
     return jsonString
 end
 
----Converts it to a table
----@param root string The json string to convert to a table
----@return table tbl The table from json string
-function sm.scrapcomputers.json.toTable(root)
-    sm.scrapcomputers.errorHandler.assertArgument(root, 1, {"string"})
-    
-    return sm.json.parseJsonString(root)
-end
-
 local operatorColor = "#D4D4D4"
 local textColor = "#9CDCFE"
 local stringColor = "#CE9178"
@@ -187,5 +178,5 @@ end
 function sm.scrapcomputers.json.prettifyString(root)
     sm.scrapcomputers.errorHandler.assertArgument(root, nil, {"string"})
 
-    return sm.scrapcomputers.json.prettifyTable(sm.scrapcomputers.json.toTable(root))
+    return sm.scrapcomputers.json.prettifyTable(sm.json.parseJsonString(root))
 end

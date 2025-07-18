@@ -35,6 +35,12 @@
 ---@field y number The y-coordinate (floored)
 ---@field color Color The color of the pixel
 
+---@alias PointTable table<x, y>
+
+---@class PointTableField An instruction for a pixel table.
+---@field x number The x-coordinate
+---@field y number The y-coordinate
+
 ---@alias PixelTable PixelTableField[] Pixel tables contain pixel information used to draw on the display, similar to instructions.
 ---@alias MultiColorType Color|string? A Color, string, or nil.
 ---@alias MultiColorTypeNonNil Color|string A Color or string (cannot be nil).
@@ -397,12 +403,6 @@ function sc.json.isSafe(root) end
 ---@return string jsonString The converted JSON string
 function sc.json.toString(root, prettifyOutput, indentCharacter) end
 
--- Converts a JSON string to a table
----@param root string The JSON string to convert
----@param safeMode boolean Whether to check for corrupt data in the JSON string
----@return table The converted table
-function sc.json.toTable(root, safeMode) end
-
 -- Lets you get information about SM's built in audio's! (Does not include custom ones from SM-CustomAudioExcension DLL mod)
 sc.audio = {}
 
@@ -497,6 +497,22 @@ function BitStream:writeFloat(value) end
 ---Reads a floating-point number in Big Endian format (32-bit IEEE 754).
 ---@return number The extracted float value.
 function BitStream:readFloat() end
+
+---Writes an unsigned variable-length integer to the bit stream.
+---@param value number The unsigned integer to write. Must be >= 0.
+function BitStream:writeUIntV(value) end
+
+---Reads an unsigned variable-length integer from the bit stream.
+---@return number num The unsigned integer that was read.
+function BitStream:readUIntV() end
+
+---Writes a signed variable-length integer to the bit stream.
+---@param value number The signed integer to write.
+function BitStream:writeIntV(value) end
+
+---Reads a signed variable-length integer from the bit stream.
+---@return number num The signed integer that was read.
+function BitStream:readIntV() end
 
 ---Resets the bit stream, clearing all data.
 function BitStream:reset() end
@@ -901,7 +917,7 @@ sc.midi = {}
 ---@return MIDIPlayer midiPlayer A Midiplayer instance
 function sc.midi.createPlayer(data, speaker) end
 
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
 ---                                                                                              --- 
 ---   ██████╗ ██████╗ ███╗   ███╗██████╗  ██████╗ ███╗   ██╗███████╗███╗   ██╗████████╗███████╗  ---
 ---  ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██╔═══██╗████╗  ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝  ---
@@ -1079,6 +1095,11 @@ function Display.drawFilledTriangle(x1, y1, x2, y2, x3, y3, color) end
 ---@param maxWidth integer? The max width before it wraps around
 ---@param wordWrappingEnabled boolean? If it should do word wrapping or not.
 function Display.drawText(x, y, text, color, fontName, maxWidth, wordWrappingEnabled) end
+
+---Draws a shape based on coordinates given
+---@param tbl PointTable The table of points
+---@param color color The color of the created shape
+function Display.drawWithPoints(points, color) end
 
 ---Draws a image on the screen.  Images are loaded from the DisplayImages folder in the mods directory, you can generate your own images with the use of our PNG to pixel data python conveter in the mod.
 ---@param width integer The width of the image
