@@ -78,7 +78,7 @@ local function parseErrorMessage(errorMessage, code)
     local shouldWarn = false
     for file, line in tracebackString:gmatch("%[string \"([^\"]+)\"%]:(%d+):") do
         if line ~= "0" then
-            if not firstLuaVM and file ~= "[LuaVM]" then
+            if not firstLuaVM and file == "[LuaVM]" then
                 firstLuaVM = {file = file, line = line}
             end
             table.insert(traceback, {file = file, line = line})

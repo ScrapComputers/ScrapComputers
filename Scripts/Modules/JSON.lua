@@ -83,14 +83,76 @@ function sm.scrapcomputers.json.toString(root, safeMode, prettifyOutput, indentC
     safeMode = safeMode or true
     prettifyOutput = prettifyOutput or false
 
-    sm.scrapcomputers.errorHandler.assertArgument(root, 1, {"table"})
+    sm.scrapcomputers.errorHandler.assertArgument(root, 1, {"nil", "number", "boolean", "string", "table"})
     sm.scrapcomputers.errorHandler.assertArgument(safeMode, 2, {"boolean", "nil"})
     sm.scrapcomputers.errorHandler.assertArgument(prettifyOutput, 3, {"boolean", "nil"})
     sm.scrapcomputers.errorHandler.assertArgument(indentCharacter, 4, {"string", "nil"})
     
-    if safeMode and not sm.scrapcomputers.json.isSafe(root) then error("Game crash prevented!") end
+    if type(root) == "table" and safeMode and not sm.scrapcomputers.json.isSafe(root) then error("Game crash prevented!") end
 
-    local jsonString = sm.json.writeJsonString(root)
+    -- sm.json.writeJsonString is dogshit, infact this reimplementation is actually better!
+
+    local function escapeString(str)
+        local replacements = {
+            ['"'] = '\\"',
+            [string.char(8)] = '\\b',
+            [string.char(12)] = '\\f',
+            ['\n'] = '\\n',
+            ['\r'] = '\\r',
+            ['\t'] = '\\t'
+        }
+        local outputStr = str
+
+        for key, value in pairs(replacements) do
+            outputStr = outputStr:gsub(key, value)
+        end
+
+        return outputStr
+    end
+
+    local function encode(value)
+        local t = type(value)
+        if t == "nil" then
+            return "null"
+        elseif t == "number" then
+            return tostring(value)
+        elseif t == "boolean" then
+            return value and "true" or "false"
+        elseif t == "string" then
+            return '"' .. escapeString(value) .. '"'
+        elseif t == "table" then
+            local isArray = true
+            local count = 0
+            for k, v in pairs(value) do
+                count = count + 1
+                if type(k) ~= "number" or k ~= count then
+                    isArray = false
+                    break
+                end
+            end
+            if isArray then
+                local items = {}
+                for i = 1, count do
+                    table.insert(items, encode(value[i]))
+                end
+                return "[" .. table.concat(items, ",") .. "]"
+            else
+                local items = {}
+                for k, v in pairs(value) do
+                    if type(k) ~= "string" then
+                        error("JSON object keys must be strings")
+                    end
+                    local encodedValue = encode(v)
+                    if encodedValue then
+                        table.insert(items, '"' .. escapeString(k) .. '":' .. encode(v))
+                    end
+                end
+                return "{" .. table.concat(items, ",") .. "}"
+            end
+        end
+    end
+
+    local jsonString = encode(root)
 
     if prettifyOutput then
         return prettifyJsonString(jsonString, indentCharacter)
@@ -111,6 +173,8 @@ local operator2Colors = {
 }
 
 ---Adds syntax highlighting to the json tab. Note that it will be automaticly prettified.
+---@param rootContents table The root contents
+---@return string prettifiedStr The prettified string
 function sm.scrapcomputers.json.prettifyTable(rootContents)
     sm.scrapcomputers.errorHandler.assertArgument(rootContents, 1, {"table"})
 
@@ -141,8 +205,8 @@ function sm.scrapcomputers.json.prettifyTable(rootContents)
                     prettifyTable(value, level + 1, numberIndex ~= dataSize)
                 elseif valueType == "string" then
                     local safeText = value:gsub("\\", "⁄")
-                    local safeEscapeCodes = {"⁄b", "⁄f", "⁄n", "⁄r", "⁄t"}
-                    for key, value in pairs({"\b", "\f", "\n", "\r", "\t"}) do
+                    local safeEscapeCodes = {"⁄b", "⁄f", "⁄n", "⁄r", "⁄t", "\\\""}
+                    for key, value in pairs({"\b", "\f", "\n", "\r", "\t", "\""}) do
                         safeText = safeText:gsub(value, safeEscapeCodes[key])
                     end
                     output = output .. stringColor .. "\"" .. safeText .. "\""
@@ -175,6 +239,9 @@ function sm.scrapcomputers.json.prettifyTable(rootContents)
     return output
 end
 
+---Prettifies a string, note that it just converts it to a table and calls prettifyTable
+---@param root string The string to pretified
+---@return string str The pretified string
 function sm.scrapcomputers.json.prettifyString(root)
     sm.scrapcomputers.errorHandler.assertArgument(root, nil, {"string"})
 

@@ -888,6 +888,8 @@ function DisplayClass:server_onFixedUpdate()
             local dataChunks = splitTable(dataBuffer, tableLimit)
             local len = #dataChunks
 
+            --print(dataChunks, tostring(self.shape.id))
+
             for i, chunk in pairs(dataChunks) do
                 sendToClients(self_network, "cl_buildData", {chunk, i == len})
             end
@@ -995,8 +997,7 @@ function DisplayClass:client_onCreate()
         newBuffer = {},
         updatedPoints = {},
         stoppedIndex = 0,
-        totalEffects = 0,
-        lastLen = 1
+        totalEffects = 0
     }
 
     local width = self.data.width
@@ -1055,7 +1056,9 @@ function DisplayClass:cl_takeSnapshot()
         colorTbl[i] = effectData[6]
     end
 
-    if self.cl.lastLen > 1 then
+    local lastPlayerLen = self.cl.lastLen
+
+    if lastPlayerLen and lastPlayerLen > 1 then
         local chunks = splitTable(colorTbl, tableLimit)
 
         for i, chunk in pairs(chunks) do
@@ -1133,8 +1136,8 @@ function DisplayClass:client_onFixedUpdate()
         local len = #players
 
         if len ~= self_cl.lastLen then
-            if (not self_cl.lastLen or len > self_cl.lastLen) and #players > 1 then
-                local dataTbl = {3, self_cl_backPanel.currentColor} -- Display clear
+            if self_cl.lastLen and len > self_cl.lastLen and #players > 1 then
+                local dataTbl = {3, self_cl_backPanel.currentColor}
                 local dataIndex = 2
 
                 for index, data in pairs(self_cl.pixels) do

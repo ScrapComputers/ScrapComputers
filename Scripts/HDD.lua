@@ -111,6 +111,10 @@ function HDDClass:server_onFixedUpdate()
     end
 end
 
+function HDDClass:sv_updateClient(_, player)
+    self.network:sendToClient(player, "cl_updateDriveData", self.sv.savedData)
+end
+
 -- CLIENT --
 
 function HDDClass:client_onCreate()
@@ -123,6 +127,8 @@ function HDDClass:client_onCreate()
         selectedExample = nil,
         character = nil
     }
+
+    self.network:sendToServer("sv_updateClient")
 end
 
 function HDDClass:client_onInteract(character, state)
@@ -277,7 +283,7 @@ function HDDClass:cl_onSaveBtn()
     local success, result = pcall(sm.json.parseJsonString, newInput) ---@type boolean, string|table
 
     if success then
-        local dataSize = sm.scrapcomputers.json.toString(result, false)
+        local dataSize = sm.scrapcomputers.json.toString(result, true)
 
         if #dataSize > byteLimit then
             self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.data_overload", byteLimit, #dataSize))
@@ -332,7 +338,7 @@ function HDDClass:cl_updateDriveData(newData)
         newData =  sm.json.parseJsonString(newData)
     end
 
-    if not next(newData) then
+    if type(newData) == "nil" or not next(newData) then
         self.cl.driveContents = {}
     else
         self.cl.driveContents = newData
