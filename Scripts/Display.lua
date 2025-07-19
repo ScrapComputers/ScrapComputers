@@ -1134,7 +1134,7 @@ function DisplayClass:client_onFixedUpdate()
 
         if len ~= self_cl.lastLen then
             if (not self_cl.lastLen or len > self_cl.lastLen) and #players > 1 then
-                local dataTbl = {3, self_cl_backPanel.currentColor}
+                local dataTbl = {3, self_cl_backPanel.currentColor} -- Display clear
                 local dataIndex = 2
 
                 for index, data in pairs(self_cl.pixels) do
@@ -1150,15 +1150,8 @@ function DisplayClass:client_onFixedUpdate()
                     dataTbl[dataIndex] = data[6]
                 end
 
-                local chunks = splitTable(dataTbl, tableLimit)
                 local self_network = self.network
                 local sendToServer = self_network.sendToServer
-
-                local len = #chunks
-
-                for i, chunk in pairs(chunks) do
-                    sendToServer(self_network, "sv_mpScreenSync", {chunk, i == len})
-                end
 
                 local tertiaryData = {
                     threshold = self_cl_display.threshold,
@@ -1168,6 +1161,13 @@ function DisplayClass:client_onFixedUpdate()
                 }
 
                 sendToServer(self_network, "sv_setTertiaryData", tertiaryData)
+
+                local chunks = splitTable(dataTbl, tableLimit)
+                local len = #chunks
+
+                for i, chunk in pairs(chunks) do
+                    sendToServer(self_network, "sv_mpScreenSync", {chunk, i == len})
+                end
             end
 
             self_cl.lastLen = len
@@ -1249,7 +1249,8 @@ function DisplayClass:client_onUpdate(dt)
 
     local pos = camera.getPosition()
     local dir = camera.getDirection()
-    local projectedOffset = localPlayer.getPlayer().character.velocity * dt
+    local character = localPlayer.getPlayer().character
+    local projectedOffset = character and character.velocity * dt or sm.vec3.zero()
     local hit, res = sm_physics_raycast(pos + projectedOffset, (pos + dir * 7.5) + projectedOffset , nil, sm.physics.filter.dynamicBody + sm.physics.filter.staticBody)
 
     if hit and res:getShape() == self_shape then
@@ -1335,6 +1336,8 @@ function DisplayClass:cl_pushData()
     local function scaledAdd(x, y, sx, sy, color)
         local x1, y1 = x, y
         local mx = sx + x - 1
+
+        knownRects[coordinateToIndex(x, y, width)] = {sx, sy}
     
         for _ = 1, sx * sy do
             addPixel(x1, y1, color)
@@ -1511,7 +1514,6 @@ function DisplayClass:cl_pushData()
         local isFilled = params[6]
     
         if isFilled then
-            knownRects[coordinateToIndex(x, y, width)] = {rWidth, rHeight}
             scaledAdd(x, y, rWidth, rHeight, color)
             return
         end

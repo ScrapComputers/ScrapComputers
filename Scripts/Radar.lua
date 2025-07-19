@@ -133,6 +133,8 @@ function RadarClass:sv_calculateTargets()
 
     local function unitCheck(unit)
         local character = unit.character
+        if not character then return end
+        
         local characterPos = character.worldPosition
         local dir = characterPos - radarPos
 
