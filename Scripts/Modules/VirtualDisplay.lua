@@ -10,12 +10,29 @@ local math_abs                                      = math.abs
 local table_sort                                    = table.sort
 local type                                          = type
 local math_huge                                     = math.huge
+local string_sub                                    = string.sub
+local string_byte                                   = string.byte
 local sm_util_clamp                                 = sm.util.clamp
 
 local sm_scrapcomputers_backend_cameraColorCache = sm.scrapcomputers.backend.cameraColorCache
 
 ---Virtual displays enable the emulation of additional screens, allowing you to create fake displays in any resolution.
 sm.scrapcomputers.virtualdisplay = {}
+
+local function getUTF8Character(str, index)
+    local byte = string_byte(str, index)
+    local byteCount = 1
+
+    if byte >= 0xC0 and byte <= 0xDF then
+        byteCount = 2
+    elseif byte >= 0xE0 and byte <= 0xEF then
+        byteCount = 3
+    elseif byte >= 0xF0 and byte <= 0xF7 then
+        byteCount = 4
+    end
+
+    return string_sub(str, index, index + byteCount - 1)
+end
 
 local function scaledAdd(params, drawBuffer)
     for x = params.x, params.x + params.scale.x - 1, 1 do
@@ -310,9 +327,9 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
         sm_scrapcomputers_errorHandler_assertArgument(maxWidth, 5, {"boolean", "nil"})
         sm_scrapcomputers_errorHandler_assertArgument(wordWrappingEnabled, 5, {"boolean", "nil"})
         
-        fontName = fontName or sm_scrapcomputers.fontManager_getDefaultFontName()
+        fontName = fontName or sm.scrapcomputers.fontManager.getDefaultFontName()
 
-        local font, errMsg = sm_scrapcomputers.fontManager_getFont(fontName)
+        local font, errMsg = sm.scrapcomputers.fontManager.getFont(fontName)
         sm_scrapcomputers_errorHandler_assert(font, 5, errMsg)
 
         local xSpacing = 0
