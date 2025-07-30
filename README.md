@@ -8,13 +8,13 @@ ScrapComptuers is a Lua Computer mod for the game **Scrap Mechanic**. Unlike oth
 # FAQ
 <details><summary><strong>Does ScrapComputers use dependencies?</strong></summary>
 
-Awnser: Only ModDatabase!
+Answer: Only ModDatabase!
 
 </details>
 
 <details><summary><strong>Does ScrapComputers use any stolen code?</strong></summary>
 
-Awnser: No. Not even anything from other scrap mechanic computer mods.
+Answer: No. Not even anything from other scrap mechanic computer mods.
 
 ![ScrapComputers](.github/README/dean-norris.png)
 
@@ -22,7 +22,7 @@ Awnser: No. Not even anything from other scrap mechanic computer mods.
 
 <details><summary><strong>How many thing's that were fucked up in the mod?</strong></summary>
 
-Awnser: **A lot**, Do NOT look into audio.json, Python\AudioHellGenerator, Effects\Database\AllTheSMAudio.json, Audio.json or Pixels.json.
+Answer: **A lot**, Do NOT look into audio.json, Python\AudioHellGenerator, Effects\Database\AllTheSMAudio.json, Audio.json or Pixels.json.
 
 You will die if you look into there or see what it is doing.
 
