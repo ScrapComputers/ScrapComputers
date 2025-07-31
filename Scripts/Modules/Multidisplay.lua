@@ -1,7 +1,7 @@
 -- Lets you group up displays into 1 massive display
 sm.scrapcomputers.multidisplay = {}
 
-local math_sqrt = math.sqrt
+local math_abs = math.abs
 local math_min = math.min
 local math_floor = math.floor
 local pairs = pairs
@@ -40,49 +40,53 @@ function sm.scrapcomputers.multidisplay.new(displays, columns, rows)
 
     mainDisplay.update = function()
         local output = renderFunc()
-        local maxBorderFactor = 0.08
-    
-        for _, pixel in pairs(output) do
-            local selectedColumn = math_min(math_floor((pixel.x - 1) / firstDisplayWidth) + 1, columns)
-            local selectedRow = math_min(math_floor((pixel.y - 1) / firstDisplayHeight) + 1, rows)
-            
-            local selectedIndex = (selectedRow - 1) * columns + selectedColumn
-            if displays[selectedIndex] then
-                local localX = (pixel.x - 1) % firstDisplayWidth + 1
-                local localY = (pixel.y - 1) % firstDisplayHeight + 1
-    
-                local centerRow = (rows + 1) / 2
-                local centerColumn = (columns + 1) / 2
-                local distanceToCenter = math_sqrt((selectedRow - centerRow) ^ 2 + (selectedColumn - centerColumn) ^ 2)
-                local maxDistance = math_sqrt((centerRow - 1) ^ 2 + (centerColumn - 1) ^ 2)
-                local offsetFactor = maxBorderFactor * (1 - (distanceToCenter / maxDistance))
-    
-                local offsetX, offsetY = 0, 0
-    
-                if selectedColumn == 1 then
-                    offsetX = offsetFactor * firstDisplayWidth
-                elseif selectedColumn == columns then
-                    offsetX = -offsetFactor * firstDisplayWidth
-                end
-    
-                if selectedRow == 1 then
-                    offsetY = offsetFactor * firstDisplayHeight
-                elseif selectedRow == rows then
-                    offsetY = -offsetFactor * firstDisplayHeight
-                end
-    
-                if (selectedColumn == 1 or selectedColumn == columns) and (selectedRow == 1 or selectedRow == rows) then
-                    offsetX = offsetX * 2
-                    offsetY = offsetY * 2
-                end
-    
-                localX = localX + offsetX
-                localY = localY + offsetY
-    
-                displays[selectedIndex].drawPixel(localX, localY, pixel.color)
+        local maxBorderFactor = 0.05
+
+        local centerRow = (rows + 1) / 2
+        local centerCol = (columns + 1) / 2
+        local maxRowDist = centerRow - 1
+        local maxColDist = centerCol - 1
+
+        local function computeOffset(row, col)
+            local offsetX, offsetY = 0, 0
+
+            if col == 1 or col == columns then
+                local colDist = math_abs(col - centerCol)
+                local factorX = maxBorderFactor * (1 - colDist / maxColDist)
+                offsetX = (col == 1 and 1 or -1) * factorX * firstDisplayWidth
+            end
+
+            if row == 1 or row == rows then
+                local rowDist = math_abs(row - centerRow)
+                local factorY = maxBorderFactor * (1 - rowDist / maxRowDist)
+                offsetY = (row == 1 and 1 or -1) * factorY * firstDisplayHeight
+            end
+
+            -- Double the offset if it's a corner
+            if (col == 1 or col == columns) and (row == 1 or row == rows) then
+                offsetX = offsetX * 2
+                offsetY = offsetY * 2
+            end
+
+            return offsetX, offsetY
+        end
+
+        for _, pixel in ipairs(output) do
+            local x, y = pixel.x, pixel.y
+            local col = math_min(math_floor((x - 1) / firstDisplayWidth) + 1, columns)
+            local row = math_min(math_floor((y - 1) / firstDisplayHeight) + 1, rows)
+            local index = (row - 1) * columns + col
+
+            local display = displays[index]
+            if display then
+                local localX = ((x - 1) % firstDisplayWidth) + 1
+                local localY = ((y - 1) % firstDisplayHeight) + 1
+                local offsetX, offsetY = computeOffset(row, col)
+
+                display.drawPixel(localX + offsetX, localY + offsetY, pixel.color)
             end
         end
-    
+
         runForAll("update")()
     end
 

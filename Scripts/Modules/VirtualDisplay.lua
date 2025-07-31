@@ -10,12 +10,29 @@ local math_abs                                      = math.abs
 local table_sort                                    = table.sort
 local type                                          = type
 local math_huge                                     = math.huge
+local string_sub                                    = string.sub
+local string_byte                                   = string.byte
 local sm_util_clamp                                 = sm.util.clamp
 
 local sm_scrapcomputers_backend_cameraColorCache = sm.scrapcomputers.backend.cameraColorCache
 
 ---Virtual displays enable the emulation of additional screens, allowing you to create fake displays in any resolution.
 sm.scrapcomputers.virtualdisplay = {}
+
+local function getUTF8Character(str, index)
+    local byte = string_byte(str, index)
+    local byteCount = 1
+
+    if byte >= 0xC0 and byte <= 0xDF then
+        byteCount = 2
+    elseif byte >= 0xE0 and byte <= 0xEF then
+        byteCount = 3
+    elseif byte >= 0xF0 and byte <= 0xF7 then
+        byteCount = 4
+    end
+
+    return string_sub(str, index, index + byteCount - 1)
+end
 
 local function scaledAdd(params, drawBuffer)
     for x = params.x, params.x + params.scale.x - 1, 1 do
@@ -258,15 +275,11 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
             local yType = type(pixel_y)
             local colorType = type(pixel_color)
 
-            sm_scrapcomputers_errorHandler_assert(pixel_x and pixel_y and pixel_color, "missing data at index " .. i ..
-            ".")
+            sm_scrapcomputers_errorHandler_assert(pixel_x and pixel_y and pixel_color, "missing data at index " .. i .. ".")
 
-            sm_scrapcomputers_errorHandler_assert(xType == "number", nil,
-                "bad x value at index " .. i .. ". Expected number. Got " .. xType .. " instead!")
-            sm_scrapcomputers_errorHandler_assert(yType == "number", nil,
-                "bad y value at index " .. i .. ". Expected number. Got " .. yType .. " instead!")
-            sm_scrapcomputers_errorHandler_assert(colorType == "Color" or colorType == "string", nil,
-                "bad color at index " .. i .. ". Expected Color or string. Got " .. colorType .. " instead!")
+            sm_scrapcomputers_errorHandler_assert(xType == "number", nil, "bad x value at index " .. i .. ". Expected number. Got " .. xType .. " instead!")
+            sm_scrapcomputers_errorHandler_assert(yType == "number", nil, "bad y value at index " .. i .. ". Expected number. Got " .. yType .. " instead!")
+            sm_scrapcomputers_errorHandler_assert(colorType == "Color" or colorType == "string", nil, "bad color at index " .. i .. ". Expected Color or string. Got " .. colorType .. " instead!")
 
             drawBuffer[#drawBuffer + 1] = {
                 x     = pixel_x,
@@ -310,52 +323,56 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
         sm_scrapcomputers_errorHandler_assertArgument(maxWidth, 5, {"boolean", "nil"})
         sm_scrapcomputers_errorHandler_assertArgument(wordWrappingEnabled, 5, {"boolean", "nil"})
         
-        fontName = fontName or sm_scrapcomputers.fontManager_getDefaultFontName()
-
-        local font, errMsg = sm_scrapcomputers.fontManager_getFont(fontName)
+        fontName = fontName or sm_scrapcomputers_fontManager_getDefaultFontName()
+    
+        local font, errMsg = sm_scrapcomputers_fontManager_getFont(fontName)
         sm_scrapcomputers_errorHandler_assert(font, 5, errMsg)
+        
+        local font_width = font.fontWidth
+        local font_height = font.fontHeight
+        local font_charset = font.charset
+        local font_errorchar = font.errorChar
 
         local xSpacing = 0
         local ySpacing = 0
-        
+    
         local i = 1
-        
+    
         local width = maxWidth or displayWidth
-        
         if not wordWrappingEnabled then
-            width = math_huge
+            width = math.huge
         end
     
         while i <= #text do
             local char = getUTF8Character(text, i)
-        
+    
             if char == "\n" then
                 xSpacing = 0
-                ySpacing = ySpacing + font.fontHeight
+                ySpacing = ySpacing + font_height
             else
-                local fontLetter = font.charset[char] or font.errorChar
-            
-                if (x + xSpacing) + font.fontWidth > width then
-                    x = 0
-                    ySpacing = ySpacing + font.fontHeight
+                local fontLetter = font_charset[char] or font_errorchar
+    
+                if (x + xSpacing) + font_width > width then
+                    xSpacing = 0
+                    ySpacing = ySpacing + font_height
                 end
-            
+    
                 for yPosition, row in pairs(fontLetter) do
                     for xPosition = 1, #row, 1 do
-                        if row:sub(xPosition, xPosition) == "#" then
+                        if string_sub(row, xPosition, xPosition) == "#" then
+                            local aX, aY = x + xSpacing + (xPosition - 1), y + ySpacing + (yPosition - 1)
+    
                             drawBuffer[#drawBuffer+1] = {
-                                x = x + xSpacing + (xPosition - 1),
-                                y = x + ySpacing + (yPosition - 1),
-                                color = color
+                                x = aX, y = aY, color = color
                             }
                         end
                     end
-                
+    
                 end
-            
-                xSpacing = xSpacing + font.fontWidth
+    
+                xSpacing = xSpacing + font_width
             end
-        
+    
             i = i + #char
         end
     end
