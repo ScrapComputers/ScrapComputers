@@ -1,3 +1,30 @@
+-- This file was using such a old version of the bitstream library that i have to do some stupid fucking hacks
+-- so it would work
+
+function swap_endian32(num)
+    local b1 = bit.band(bit.rshift(num, 24), 0xFF)
+    local b2 = bit.band(bit.rshift(num, 16), 0xFF)
+    local b3 = bit.band(bit.rshift(num, 8),  0xFF)
+    local b4 = bit.band(num, 0xFF)
+
+    return bit.bor(
+        bit.lshift(b4, 24),
+        bit.lshift(b3, 16),
+        bit.lshift(b2, 8),
+        b1
+    )
+end
+
+function swap_endian16(num)
+    local b1 = bit.band(bit.rshift(num, 8), 0xFF)
+    local b2 = bit.band(num, 0xFF)
+
+    return bit.bor(
+        bit.lshift(b2, 8),
+        b1
+    )
+end
+
 sm.scrapcomputers.nbs = {}
 
 function sm.scrapcomputers.nbs.loadOpenNBS(str)
@@ -7,45 +34,45 @@ function sm.scrapcomputers.nbs.loadOpenNBS(str)
 
     local data = sm.scrapcomputers.bitstream.new(str)
 
-    if data:readStringEx(2) ~= "\x00\x00" then
+    if data:readBytes(2) ~= "\x00\x00" then
         error("Invalid (Open)NBS format!")
     end
 
     local header = {
         nbsVersion              = data:readByte(),
         vanilaInstrumentCount   = data:readByte(),
-        songLength              = data:readNumberLE(2),
-        layerCount              = data:readNumberLE(2),
-        songName                = data:readString(true),
-        songAuthor              = data:readString(true),
-        songOriginalAuthor      = data:readString(true),
-        songDescription         = data:readString(true),
-        songTempo               = data:readNumberLE(2),
+        songLength              = swap_endian16(data:readUInt(16)),
+        layerCount              = swap_endian16(data:readUInt(16)),
+        songName                = data:readBytes(swap_endian32(data:readUInt(32))),
+        songAuthor              = data:readBytes(swap_endian32(data:readUInt(32))),
+        songOriginalAuthor      = data:readBytes(swap_endian32(data:readUInt(32))),
+        songDescription         = data:readBytes(swap_endian32(data:readUInt(32))),
+        songTempo               = swap_endian16(data:readUInt(16)),
         autoSaving              = data:readByte() ~= 0,
         autoSavingDuration      = data:readByte(),
         timeSignature           = data:readByte(),
-        minutesSpent            = data:readNumberLE(4),
-        totalLeftClicks         = data:readNumberLE(4),
-        totalRightClicks        = data:readNumberLE(4),
-        totalNoteBlocksAdded    = data:readNumberLE(4),
-        totalNoteBlocksRemoved  = data:readNumberLE(4),
-        midiOrSchematicFilename = data:readString(true),
+        minutesSpent            = swap_endian32(data:readUInt(32)),
+        totalLeftClicks         = swap_endian32(data:readUInt(32)),
+        totalRightClicks        = swap_endian32(data:readUInt(32)),
+        totalNoteBlocksAdded    = swap_endian32(data:readUInt(32)),
+        totalNoteBlocksRemoved  = swap_endian32(data:readUInt(32)),
+        midiOrSchematicFilename = data:readBytes(swap_endian32(data:readUInt(32))),
         loopToggle              = data:readByte(),
         maxLoopCount            = data:readByte(),
-        loopStartTick           = data:readNumberLE(2)
+        loopStartTick           = swap_endian16(data:readUInt(16))
     }
     
     local noteBlocks = {}
     local tick = -1
 
     while true do
-        local tickJump = data:readNumberLE(2)
+        local tickJump = data:readUInt(16)
         if tickJump == 0 then break end
         
         tick = tick + tickJump
         
         while true do
-            local layerJump = data:readNumberLE(2)
+            local layerJump = data:readUInt(16)
             if layerJump == 0 then break end
             
             local note = {
@@ -55,7 +82,7 @@ function sm.scrapcomputers.nbs.loadOpenNBS(str)
                 key              = data:readByte(),
                 velocity         = data:readByte(),
                 noteBlockPanning = data:readByte(),
-                noteBlockPitch   = data:readNumberLE(2)
+                noteBlockPitch   = swap_endian16(data:readUInt(16))
             }
             
             table.insert(noteBlocks, note)
@@ -77,29 +104,30 @@ function sm.scrapcomputers.nbs.loadNBS(str)
     local data = sm.scrapcomputers.bitstream.new(str)
     
     -- Check for OpenNBS format
-    if data:readStringEx(2) == "\x00\x00" then
+    if data:readBytes(2) == "\x00\x00" then
         return sm.scrapcomputers.nbs.loadOpenNBS(str)
     end
-    data:seek(1)
+    
+    data = sm.scrapcomputers.bitstream.new(str)
 
     ---@class NBS.Header
     local header = {
-        songLength              = data:readNumberLE(2),
-        layerCount              = data:readNumberLE(2),
-        songName                = data:readString(true),
-        songAuthor              = data:readString(true),
-        songOriginalAuthor      = data:readString(true),
-        songDescription         = data:readString(true),
-        songTempo               = data:readNumberLE(2),
+        songLength              = swap_endian16(data:readUInt(16)),
+        layerCount              = swap_endian16(data:readUInt(16)),
+        songName                = data:readBytes(swap_endian32(data:readUInt(32))),
+        songAuthor              = data:readBytes(swap_endian32(data:readUInt(32))),
+        songOriginalAuthor      = data:readBytes(swap_endian32(data:readUInt(32))),
+        songDescription         = data:readBytes(swap_endian32(data:readUInt(32))),
+        songTempo               = swap_endian16(data:readUInt(16)),
         autoSaving              = data:readByte() ~= 0,
         autoSavingDuration      = data:readByte(),
         timeSignature           = data:readByte(),
-        minutesSpent            = data:readNumberLE(4),
-        totalLeftClicks         = data:readNumberLE(4),
-        totalRightClicks        = data:readNumberLE(4),
-        totalNoteBlocksAdded    = data:readNumberLE(4),
-        totalNoteBlocksRemoved  = data:readNumberLE(4),
-        midiOrSchematicFilename = data:readString(true)
+        minutesSpent            = swap_endian32(data:readUInt(32)),
+        totalLeftClicks         = swap_endian32(data:readUInt(32)),
+        totalRightClicks        = swap_endian32(data:readUInt(32)),
+        totalNoteBlocksAdded    = swap_endian32(data:readUInt(32)),
+        totalNoteBlocksRemoved  = swap_endian32(data:readUInt(32)),
+        midiOrSchematicFilename = data:readBytes(swap_endian32(data:readUInt(32)))
     }
     
     ---@alias NBS.Blocks NBS.Note[]
@@ -109,13 +137,13 @@ function sm.scrapcomputers.nbs.loadNBS(str)
     local tick = -1
 
     while true do
-        local tickJump = data:readNumberLE(2)
+        local tickJump = swap_endian16(data:readUInt(16))
         if tickJump == 0 then break end
         
         tick = tick + tickJump
         
         while true do
-            local layerJump = data:readNumberLE(2)
+            local layerJump = swap_endian16(data:readUInt(16))
             if layerJump == 0 then break end
             
             ---@class NBS.Note
@@ -177,7 +205,7 @@ function sm.scrapcomputers.nbs.createPlayer(nbsData, speaker)
         table.insert(player.noteBlockOrder[block.tick], block)
     end
 
-    player.noteBlockOrderSize = #player.noteBlockOrderSize
+    player.noteBlockOrderSize = #player.noteBlockOrder
 
     function player:update()
         if not self.playing then

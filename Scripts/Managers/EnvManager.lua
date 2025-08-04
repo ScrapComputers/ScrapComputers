@@ -304,7 +304,8 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             multidisplay   = sm.scrapcomputers.table.clone(sm.scrapcomputers.multidisplay),
             midi           = sm.scrapcomputers.table.clone(sm.scrapcomputers.midi),
             nbs = {
-                loadNBS = sm.scrapcomputers.nbs.loadNBS
+                loadNBS = sm.scrapcomputers.nbs.loadNBS,
+                createPlayer = sm.scrapcomputers.nbs.createPlayer
             },
             
             config = {
@@ -355,10 +356,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             json = {
                 open = sm.json.open,
                 
-                parseJsonString = function(root) 
-                    return sm.json.parseJsonString(root, true) 
-                end,
-
+                parseJsonString = sm.json.parseJsonString,
                 writeJsonString = function(root) 
                     return sm.scrapcomputers.json.toString(root, true, false)
                 end
