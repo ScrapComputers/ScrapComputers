@@ -312,7 +312,7 @@ function HologramClass:cl_deleteObject(index)
         self.cl.effects[index]:destroy()
     end
     
-    table.remove(self.cl.effects, index)
+    self.cl.effects[index] = nil
 end
 
 -- Convert the class to a component
