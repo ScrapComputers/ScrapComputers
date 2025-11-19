@@ -242,7 +242,7 @@ function sm.scrapcomputers.config.initConfig()
             sm.scrapcomputers.errorHandler.assert(type(index) == "number", nil, "bad argument #5 on index #" .. indexCounterStr .. " (real index: " .. indexTypeStr .. "). Expected number on index, got " .. type(index).." instead!")
             sm.scrapcomputers.errorHandler.assert(index == indexCounter, nil, "bad argument #5 on index #" .. indexCounterStr .. " (real index: " .. indexTypeStr .. "). Expected index to be " .. indexCounterStr .. ", got " .. indexTypeStr .. " instead!")
             
-            asm.scrapcomputers.errorHandler.assert(type(value) == "string", nil, "bad argument #5 on index #" .. indexCounterStr ..". Expected string on value, got ".. type(value) .. " instead!")
+            sm.scrapcomputers.errorHandler.assert(type(value) == "string", nil, "bad argument #5 on index #" .. indexCounterStr ..". Expected string on value, got ".. type(value) .. " instead!")
 
             indexCounter = indexCounter + 1
         end
