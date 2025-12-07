@@ -1,9 +1,6 @@
--- This is the most simple component out of all others.. The line count * 501,0912 = SComputer's Owner Height.
--- Am i joking? yes. Am i keeping it in? yes.
-
 ---@class LightClass : ShapeClass
 LightClass = class()
-LightClass.maxParentCount = 1
+LightClass.maxParentCount = -1
 LightClass.maxChildCount = 0
 LightClass.connectionInput = sm.interactable.connectionType.compositeIO
 LightClass.connectionOutput = sm.interactable.connectionType.none
@@ -11,6 +8,10 @@ LightClass.colorNormal = sm.color.new(0x872740ff)
 LightClass.colorHighlight = sm.color.new(0xc4365cff)
 
 -- SERVER --
+
+function LightClass:server_onCreate()
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 0.1)
+end
 
 function LightClass:sv_createData()
     return {
@@ -22,4 +23,8 @@ function LightClass:sv_createData()
     }
 end
 
-sm.scrapcomputers.componentManager.toComponent(LightClass, "Lights", true)
+function LightClass:sv_onPowerLoss()
+    self.shape.color = sm.color.new(0, 0, 0)
+end
+
+sm.scrapcomputers.componentManager.toComponent(LightClass, "Lights", true, nil, true)

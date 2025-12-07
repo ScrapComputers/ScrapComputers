@@ -1,0 +1,110 @@
+{
+    "partList": [
+        {
+            "box": {
+                "x": 3,
+                "y": 2,
+                "z": 2
+            },
+            "color": "222222",
+            "physicsMaterial": "Mechanical",
+            "ratings": {
+                "buoyancy": 1,
+                "density": 8,
+                "durability": 6,
+                "friction": 7
+            },
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Power/Generator.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "GeneratorClass",
+                "filename": "$CONTENT_DATA/Scripts/Power/Generator.lua",
+                "data": {
+                    "efficiency": 0.75,
+                    "maxResistance": 10000
+                }
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "60e8e257-f1fa-4c71-8cdb-4e89dbcdff55"
+        },
+        {
+            "box": {
+				"x": 2,
+				"y": 2,
+				"z": 2
+			},
+            "color": "222222",
+            "physicsMaterial": "Mechanical",
+            "ratings": {
+                "buoyancy": 1,
+                "density": 7,
+                "durability": 4,
+                "friction": 5
+            },
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Power/Power.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "BatteryClass",
+                "filename": "$CONTENT_DATA/Scripts/Power/Battery.lua",
+                "data": {
+                    "chargeRate": 30,
+                    "dischargeRate": 100,
+                    "maxCapacity": 10
+                }
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "834cc2a0-b5a9-4b33-a18b-d9d5f05757d9"
+        },
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "222222",
+            "physicsMaterial": "Mechanical",
+            "ratings": {
+                "buoyancy": 4,
+                "density": 3,
+                "durability": 4,
+                "friction": 5
+            },
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Power/Breaker.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "BreakerClass",
+                "filename": "$CONTENT_DATA/Scripts/Power/Breaker.lua",
+                "data": {}
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "802bcd73-1a56-4694-bfb6-bbf5a8b6aa24"
+        },
+        {
+            "hull": {
+                "col": "$CONTENT_DATA/Objects/Collision/Power/SolarPanel.obj",
+                "x": 3,
+                "y": 1,
+                "z": 3
+            },
+            "color": "3d3d3d",
+            "physicsMaterial": "Mechanical",
+            "ratings": {
+                "buoyancy": 4,
+                "density": 3,
+                "durability": 4,
+                "friction": 5
+            },
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Power/SolarPanel.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "SolarPanelClass",
+                "filename": "$CONTENT_DATA/Scripts/Power/SolarPanel.lua",
+                "data": {
+                    "maxOutput": 50
+                }
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "3213f286-ecce-4f5e-b48a-d96893a14987"
+        }
+    ]
+}

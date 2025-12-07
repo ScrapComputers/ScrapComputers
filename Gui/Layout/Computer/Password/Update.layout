@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.29427083333333331 0.43981481481481483" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.20421052631578948" align="HStretch Top" name="MainHeader">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="MainHeaderText">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                <Property key="Caption" value="TITLE GOES HERE"/>
+                <Widget type="TextBox" skin="TextBox" position_real="0 0.72164948453608246 1 0.24742268041237114" name="MainHeaderTextLogText">
+                    <Property key="FontName" value="SM_Label"/>
+                    <Property key="Caption" value="Test"/>
+                    <Property key="TextAlign" value="Center"/>
+                </Widget>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.20421052631578948 1 0.79368421052631577" align="Stretch" name="MainMain">
+            <Widget type="TextBox" skin="TextBox" position_real="0.035398230088495575 0.037135278514588858 0.93805309734513276 0.063660477453580902" name="MainMainText1">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Old Password:"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.035398230088495575 0.29177718832891247 0.93805309734513276 0.063660477453580902" name="MainMainText2">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="New Password:"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.035398230088495575 0.11936339522546419 0.93805309734513276 0.14588859416445624" name="MainMainInput1">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Password" value="true"/>
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Test"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.035398230088495575 0.3713527851458886 0.93805309734513276 0.14588859416445624" name="MainMainInput2">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Password" value="true"/>
+                <Property key="FontName" value="SM_Label"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.035398230088495575 0.54376657824933683 0.93805309734513276 0.063660477453580902" name="MainMainText3">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Comfirm New Password:"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.035398230088495575 0.62334217506631295 0.93805309734513276 0.14588859416445624" name="MainMainInput3">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Password" value="true"/>
+                <Property key="FontName" value="SM_Label"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.026548672566371681 0.7824933687002652 0.95575221238938057 0.17241379310344829" name="MainMainSetBtn">
+                <Property key="Caption" value="Set Password"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

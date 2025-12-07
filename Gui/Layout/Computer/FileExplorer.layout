@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.89322916666666663 0.86111111111111116" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.10752688172043011" align="HStretch Top" name="MainHeader">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 0.96999999999999997" align="Stretch" name="MainHeaderText">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                <Property key="Caption" value="FILE EXPLORER"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0 0.65000000000000002 1 0.31" name="MainHeaderTextCurrentDirectoryText">
+                <Property key="Caption" value="Current Directory: #ffa000/"/>
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.10752688172043011 1 0.89032258064516134" align="Stretch" name="MainMain">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.83090379008746351 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainOpenFileDirBtn">
+                <Property key="Caption" value="Open File/Directory"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.67638483965014573 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainRenFileDirBtn">
+                <Property key="Caption" value="Rename File/Directory"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.52186588921282795 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainDelFileDirBtn">
+                <Property key="Caption" value="Delete File/Directory"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.36734693877551022 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainNewFileDirBtn">
+                <Property key="Caption" value="New File/Directory"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.21282798833819241 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainGoBackBtn">
+                <Property key="Caption" value="Go back a Directory"/>
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.82729468599033817 0.9708454810495627 0.060386473429951688" name="13">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.22946859903381642 0.9708454810495627 0.060386473429951688" name="4">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.030193236714975844 0.9708454810495627 0.060386473429951688" name="1">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.096618357487922704 0.9708454810495627 0.060386473429951688" name="2">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.16304347826086957 0.9708454810495627 0.060386473429951688" name="3">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.29347826086956524 0.9708454810495627 0.060386473429951688" name="5">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.36231884057971014 0.9708454810495627 0.060386473429951688" name="6">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.42874396135265702 0.9708454810495627 0.060386473429951688" name="7">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.49516908212560384 0.9708454810495627 0.060386473429951688" name="8">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.56159420289855078 0.9708454810495627 0.060386473429951688" name="9">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.6280193236714976 0.9708454810495627 0.060386473429951688" name="10">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.69444444444444442 0.9708454810495627 0.060386473429951688" name="11">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.76086956521739135 0.9708454810495627 0.060386473429951688" name="12">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value="Some Fucking FIle"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="DressbotArrowLeft" position_real="0.014577259475218658 0.91183574879227058 0.032069970845481049 0.066425120772946863" name="MainMainNavigationLeftBtn"/>
+            <Widget type="Button" skin="DressbotArrowRight" position_real="0.18367346938775511 0.91183574879227058 0.032069970845481049 0.066425120772946863" name="MainMainNavigationRightBtn"/>
+            <Widget type="TextBox" skin="TextBox" position_real="0.046647230320699708 0.91183574879227058 0.13702623906705538 0.066425120772946863" name="MainMainNavigationText">
+                <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="6969/6969"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.014577259475218658 0.030193236714975844 0.9708454810495627 0.85748792270531404" name="MainMainEmptyDirectoryText">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_HeaderLarge_Medium"/>
+                <Property key="Caption" value="THIS DIRECTORY IS EMPTY!"/>
+            </Widget>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

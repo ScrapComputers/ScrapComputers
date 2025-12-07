@@ -1,66 +1,43 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 0.8671875 0.78148148148148144" name="BackPanel">
-        <Widget type="TextBox" skin="TextBox" position_real="0 0.023696682464454975 1 0.062796208530805683" align="Center Top" name="title">
-            <Property key="TextAlign" value="Center"/>
-            <Property key="FontName" value="SM_Button"/>
-            <Property key="TextShadow" value="true"/>
-            <Property key="Caption" value="DATA CONTENTS"/>
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.86197916666666663 0.80555555555555558" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.11149425287356322" name="MainHeader">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="MainHeaderText">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                <Property key="Caption" value="HARDDRIVE"/>
+                <Widget type="TextBox" skin="TextBox" position_real="0 0.65979381443298968 1 0.32989690721649484" name="MainHeaderTextInfoText">
+                    <Property key="FontName" value="SM_Label"/>
+                    <Property key="Caption" value=""/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="MultiLine" value="false"/>
+                </Widget>
+            </Widget>
         </Widget>
-        <Widget type="TextBox" skin="TextBox" position_real="0.51951951951951947 0.90639810426540279 0.30990990990990991 0.071090047393364927" name="log">
-            <Property key="FontName" value="SM_Button"/>
-            <Property key="TextAlign" value="Center"/>
-        </Widget>
-        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.015015015015015015 0.11848341232227488 0.20960960960960962 0.77606635071090047" align="Right Top" name="list">
-            <Property key="TextAlign" value="Left Top"/>
-            <Property key="MultiLine" value="true"/>
-            <Property key="TabPrinting" value="true"/>
-            <Property key="ReadOnly" value="true"/>
-            <Property key="MaxTextLength" value="999999999"/>
-            <Property key="Caption" value="Why can u see this? The script defendly broke."/>
-            <Property key="WordWrap" value="true"/>
-        </Widget>
-        <Widget type="Button" skin="PrimaryButton" position_real="0.82582582582582587 0.89454976303317535 0.16216216216216217 0.094786729857819899" align="HStretch Top" name="saveBtn">
-            <Property key="Caption" value="Save Data to Drive"/>
-            <Property key="FontName" value="SM_Button"/>
-            <Property key="TextAlign" value="Center"/>
-        </Widget>
-        <Widget type="Button" skin="PrimaryButton" position_real="0.37537537537537535 0.89454976303317535 0.14654654654654656 0.094786729857819899" align="HStretch Top" name="deleteBtn">
-            <Property key="Caption" value="Remove Example"/>
-            <Property key="FontName" value="SM_Button"/>
-            <Property key="TextAlign" value="Center"/>
-        </Widget>
-        <Widget type="Button" skin="PrimaryButton" position_real="0.22822822822822822 0.94194312796208535 0.14654654654654656 0.041469194312796206" align="HStretch Top" name="exportDataBtn">
-            <Property key="FontName" value="SM_Button"/>
-            <Property key="TextAlign" value="Center"/>
-            <Property key="Caption" value="Export Example"/>
-        </Widget>
-        <Widget type="Button" skin="PrimaryButton" position_real="0.22822822822822822 0.90047393364928907 0.14654654654654656 0.041469194312796206" align="HStretch Top" name="importDataBtn">
-            <Property key="FontName" value="SM_Button"/>
-            <Property key="TextAlign" value="Center"/>
-            <Property key="Caption" value="Import Example"/>
-        </Widget>
-        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.015015015015015015 0.90639810426540279 0.21021021021021022 0.071090047393364927" name="selectedOption">
-            <Property key="TextAlign" value="Center"/>
-        </Widget>
-        <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.23123123123123124 0.11848341232227488 0.75375375375375375 0.77606635071090047" name="driveContents">
-            <Property key="TextAlign" value="Left Top"/>
-            <Property key="MultiLine" value="true"/>
-            <Property key="TabPrinting" value="true"/>
-            <Property key="MaxTextLength" value="999999999"/>
-            <Property key="Caption" value=""/>
-            <Property key="WordWrap" value="true"/>
-        </Widget>
-        <Widget type="Button" skin="SecondaryButton" position_real="0.8288288288288288 0.023696682464454975 0.15615615615615616 0.065165876777251192" name="formatDataBtn">
-            <Property key="TextAlign" value="Center"/>
-            <Property key="FontName" value="SM_Button"/>
-            <Property key="Caption" value="Format Data"/>
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.11149425287356322 1 0.88735632183908042" name="MainMain">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.81268882175226587 0.88082901554404147 0.17522658610271905 0.10362694300518134" name="MainMainSaveBtn">
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="Save Contents"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.63746223564954685 0.88082901554404147 0.17522658610271905 0.10362694300518134" name="MainMainReloadContentsBtn">
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="Reload Contents"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.46223564954682778 0.88082901554404147 0.17522658610271905 0.10362694300518134" name="MainMainReformatContentsBtn">
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="Reformat Contents"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.01812688821752266 0.031088082901554404 0.96374622356495465 0.84196891191709844" name="MainMainData">
+                <Property key="Caption" value="VERADEV YOU PEICE OF SHIT, YOU CANT FUCKING CODE FOR FUCKS SAKES"/>
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="MaxTextLength" value="999999999"/>
+                <Property key="TabPrinting" value="true"/>
+                <Property key="MultiLine" value="true"/>
+            </Widget>
         </Widget>
     </Widget>
-    <CodeGeneratorSettings>
-        <Property key="IncludeDirectory" value=""/>
-        <Property key="PanelName" value=""/>
-        <Property key="PanelNamespace" value=""/>
-        <Property key="SourceDirectory" value=""/>
-    </CodeGeneratorSettings>
+    <CodeGeneratorSettings/>
 </MyGUI>

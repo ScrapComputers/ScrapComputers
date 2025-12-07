@@ -1,27 +1,17 @@
 {
     "lodList": [
-       {
-          "includes": [
-             "POSITION",
-             "UV0",
-             "UV1",
-             "NORMAL",
-             "TANGENTS",
-             "BLEND_INDICES",
-             "BLEND_WEIGHTS"
-          ],
-          "mesh": "$CONTENT_DATA/Objects/Mesh/Speakers/Speaker.obj",
-          "minViewSize": 20,
-          "subMeshList": [
-             {
-                "material": "DifNor",
-                "textureList": [
-                   "$CONTENT_DATA/Objects/Textures/Speaker/Speaker_dif.png",
-                   "$CONTENT_DATA/Objects/Textures/transparent.png",
-                   "$CONTENT_DATA/Objects/Textures/Speaker/Speaker_nor.png"
-                ]
-             }
-          ]
-       }
+        {
+            "mesh": "$CONTENT_DATA/Objects/Mesh/Speakers/Speaker.obj",
+            "subMeshList": [
+                {
+                    "material": "DifNor",
+                    "textureList": [
+                        "$CONTENT_DATA/Objects/Textures/Speaker/Speaker_DIF.png",
+                        "$CONTENT_DATA/Objects/Textures/transparent.png",
+                        "$CONTENT_DATA/Objects/Textures/NOR.ppm"
+                    ]
+                }
+            ]
+        }
     ]
- }
+}

@@ -1,7 +1,14 @@
 sm.scrapcomputers.errorHandler = {}
 
 local sm_scrapcomputers_config = sm.scrapcomputers.config
-local tostring, type, pairs, unpack, error, string_format = tostring, type, pairs, unpack, error, string.format
+
+local tostring = tostring
+local type = type
+local pairs = pairs
+local unpack = unpack
+local error = error
+local string_format = string.format
+local math_floor = math.floor
 
 --- Optimized assert function
 ---@param value any The value to check
@@ -44,14 +51,14 @@ function sm.scrapcomputers.errorHandler.assertArgument(value, argumentIndex, all
 
     -- Check allowed types
     if not (isNanValue and shouldCareAboutNanValues) then
+        -- TODO: Check if this shit is faster
         for _, allowedType in pairs(allowedTypes) do
-            local allowedTypeName = (allowedType == "integer") and "number" or allowedType
-            --                                           Iliegal math.floor version. Dont call the police on us!
-            --                                                                    |
-            --                                                                    V
-            if valueType == allowedTypeName and (allowedType ~= "integer" or value % 1 == 0) then
-                valueHasCorrectType = true
-                break
+            local allowedTypeIsInteger = allowedType == "integer"
+            if valueType == (allowedTypeIsInteger and "number" or allowedType) then
+                if not allowedTypeIsInteger or math_floor(value) == value then
+                    valueHasCorrectType = true
+                    break
+                end
             end
         end
     end
@@ -69,6 +76,17 @@ function sm.scrapcomputers.errorHandler.assertArgument(value, argumentIndex, all
     -- Construct and raise the error
     local badArgument = argumentIndex and ("Bad argument #" .. tostring(argumentIndex) .. "! ") or ""
     error(string_format("%sExpected %s, got %s instead!", badArgument, allowedTypesMessage, valueType))
-    -- I really should change this line above to say "Expected bitches, got none instead!"
-    -- Is this why i cant get any?
+end
+
+---Runs a sandbox assertion check
+---@param isServer boolean If it should check if its running as server or client
+function sm.scrapcomputers.errorHandler.sandboxAssert(isServer)
+    if sm.isServerMode() ~= isServer then
+        local tbl = {
+            [true] = "server",
+            [false] = "client"
+        }
+
+        error(string_format("Attempted to run a %s-side only function as %s!", tbl[isServer], tbl[not isServer]))
+    end
 end

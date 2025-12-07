@@ -1,5 +1,7 @@
 {
    "particleSystemList" : [
-      "Particles/p_sc_configurator.json"
+      "Particles/p_sc_configurator.json",
+      "Particles/p_sc_gravityorb_small.json",
+      "Particles/p_sc_gravityorb_large.json"
    ]
 }

@@ -1,6 +1,6 @@
 ---@class LaserClass : ShapeClass
 LaserClass = class()
-LaserClass.maxParentCount = 1
+LaserClass.maxParentCount = -1
 LaserClass.maxChildCount = 0
 LaserClass.connectionInput = sm.interactable.connectionType.compositeIO
 LaserClass.connectionOutput = sm.interactable.connectionType.none
@@ -52,6 +52,10 @@ function LaserClass:sv_createData()
     }
 end
 
+function LaserClass:sv_onPowerLoss()
+    self.sv.laserVisibility = false
+end
+
 function LaserClass:server_onCreate()
     -- Server side variables
     self.sv = {
@@ -91,6 +95,8 @@ function LaserClass:server_onFixedUpdate()
 
         self.network:sendToClients("cl_setVis", self.sv.laserVisibility)
     end
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 0.2 + (self.sv.laserVisibility and 0.1 or 0))
 end
 
 ---@return boolean hit If it has hit something
@@ -143,4 +149,4 @@ function LaserClass:cl_setVis(bool)
     self.cl.effect:stop()
 end
 
-sm.scrapcomputers.componentManager.toComponent(LaserClass, "Lasers", true)
+sm.scrapcomputers.componentManager.toComponent(LaserClass, "Lasers", true, nil, true)

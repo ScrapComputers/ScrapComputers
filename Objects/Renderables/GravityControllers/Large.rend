@@ -1,27 +1,17 @@
 {
-    "lodList": [
-       {
-          "includes": [
-             "POSITION",
-             "UV0",
-             "UV1",
-             "NORMAL",
-             "TANGENTS",
-             "BLEND_INDICES",
-             "BLEND_WEIGHTS"
-          ],
-          "mesh": "$CONTENT_DATA/Objects/Mesh/GravityControllers/Large.obj",
-          "minViewSize": 20,
-          "subMeshList": [
-             {
-                "material": "DifAsgNor",
-                "textureList": [
-                   "$CONTENT_DATA/Objects/Textures/GravityControllers/GravityController_dif.png",
-                   "$CONTENT_DATA/Objects/Textures/GravityControllers/GravityController_asg.png",
-                   "$CONTENT_DATA/Objects/Textures/GravityControllers/GravityController_nor.png"
-                ]
-             }
-          ]
-       }
-    ]
- }
+	"lodList": [
+		{
+			"mesh": "$CONTENT_DATA/Objects/Mesh/GravityControllers/Large.obj",
+			"subMeshList": [
+				{
+					"material": "DifNor",
+					"textureList": [
+						"$CONTENT_DATA/Objects/Textures/GravityControllers/GravityController_DIF.png",
+						"$CONTENT_DATA/Objects/Textures/transparent.png",
+						"$CONTENT_DATA/Objects/Textures/NOR.ppm"
+					]
+				}
+			]
+		}
+	]
+}

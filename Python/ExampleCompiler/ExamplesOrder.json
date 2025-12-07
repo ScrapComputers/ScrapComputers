@@ -1,0 +1,55 @@
+[
+    "Computer Script Template",
+
+    "Base64 Encoding & Decoding",
+    "MD5 Hashing",
+    "SHA256 Hashing",
+
+    "Terminal - Echo",
+
+    "Drive - Writing",
+    "Drive - Reading",
+
+    "Hologram - Cube",
+    "Hologram - Custom",
+    "Hologram - Atom",
+    
+    "Radar - Object Range Detection",
+
+    "NetworkPort - Sending Packets",
+    "NetworkPort - Receiving Packets",
+    
+    "Display - Black & White Video",
+    "Display - Color Video",
+    "Display - Image Rendering",
+    "Display - Mandelbrot Fractal",
+    "Display - Noise Generator",
+    "Display - Optimization Tester",
+    "Display - Rotating Cube",
+    "Display - Touchscreen",
+    "Display - ASCF Text Rendering",
+    
+    "Camera - Custom Picture Drawer",
+    "Camera - Picture",
+    "Camera - Video",
+
+    "Speaker - Play Sound",
+    "Speaker - NBS Player",
+    "Speaker - MIDI Player",
+
+    "Keyboard - Typing Example",
+
+    "Motor - Random Torque & Speed",
+    "Laser - Object Detection",
+    "GPS - Print Speed",
+    "Gravity Controller - Zero Gravity",
+    
+    "Light - Rainbow Light",
+
+    "Registers - Addition",
+    "Registers - Clock",
+
+    "MultiDisplays - Whiteboard",
+
+    "Games - PONG"
+]

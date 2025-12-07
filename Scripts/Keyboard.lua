@@ -7,27 +7,6 @@ KeyboardClass.connectionOutput = sm.interactable.connectionType.none
 KeyboardClass.colorNormal = sm.color.new(0xaa00aaff)
 KeyboardClass.colorHighlight = sm.color.new(0xff00ffff)
 
--- CLIENT / SERVER --
-
---- Copy & Pasted from the dictonary, We have this fucking function everywhere, yet we still dont have a UTF8 Module for it.
----@param str string The character
----@param index integer The index to get it at
----@return string character The UTF8 character
-function getUTF8Character(str, index)
-    local byte = string.byte(str, index)
-    local byteCount = 1 -- The byte count
-
-    if byte >= 0xC0 and byte <= 0xDF then
-        byteCount = 2
-    elseif byte >= 0xE0 and byte <= 0xEF then
-        byteCount = 3
-    elseif byte >= 0xF0 and byte <= 0xF7 then
-        byteCount = 4
-    end
-
-    return string.sub(str, index, index + byteCount - 1)
-end
-
 -- SERVER --
 
 function KeyboardClass:sv_createData()
@@ -72,11 +51,12 @@ function KeyboardClass:client_onCreate()
         gui = nil
     }
 
-    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Keyboard)
+    self.cl.gui = sm.scrapcomputers.gui:createGuiFromLayout("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Keyboard.layout")
     self.cl.gui:setTextChangedCallback("TextBox", "cl_onKeystroke")
-    self.cl.gui:setText("TextBox", "0")
-    self.cl.gui:setText("Exit", sm.scrapcomputers.languageManager.translatable("scrapcomputers.keyboard.exit"))
+    self.cl.gui:setTextRaw("TextBox", "0")
     self.cl.gui:setButtonCallback("Exit", "cl_onExit")
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 0.1)
 end
 
 function KeyboardClass:client_onUpdate()
@@ -106,6 +86,7 @@ end
 function KeyboardClass:client_onInteract(char, state)
     if not state then return end
 
+    self.cl.gui:setText("Exit", "scrapcomputers.keyboard.exit")
     self.cl.gui:open()
 end
 
@@ -115,10 +96,10 @@ end
 
 function KeyboardClass:cl_onKeystroke(_, text)
     if #text == 1 then return end
-    local keystroke = (#text == 0 and "backSpace" or getUTF8Character(text, 2))
+    local keystroke = (#text == 0 and "backSpace" or sm.scrapcomputers.utf8.getCharacterAt(text, 2))
     self.cl.pressTimer = sm.game.getCurrentTick()
 
-    self.cl.gui:setText("TextBox", "0")
+    self.cl.gui:setTextRaw("TextBox", "0")
 
     self.network:sendToServer("sv_setLatestKeystroke", keystroke)
     self.network:sendToServer("sv_setPressed", true)
@@ -128,4 +109,4 @@ function KeyboardClass:cl_onExit()
     self.cl.gui:close()
 end
 
-sm.scrapcomputers.componentManager.toComponent(KeyboardClass, "Keyboards", true)
+sm.scrapcomputers.componentManager.toComponent(KeyboardClass, "Keyboards", true, nil, true)

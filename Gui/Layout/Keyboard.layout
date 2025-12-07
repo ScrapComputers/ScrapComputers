@@ -8,11 +8,12 @@
         <Property key="MultiLine" value="true"/>
         <Property key="Visible" value="false"/>
     </Widget>
-    <Widget type="Button" skin="StyledButtonSmall" position_real="0.44791666666666669 0.86111111111111116 0.11979166666666667 0.06851851851851852" name="Exit">
-        <Property key="FontName" value="Default"/>
-        <Property key="TextAlign" value="Center"/>
-        <Property key="FontHeight" value="20"/>
-        <Property key="Caption" value="Press to stop typing"/>
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" name="BackPanel">
+        <Widget type="Button" skin="PrimaryButton" position_real="0.359375 0.85648148148148151 0.28125 0.082407407407407401" name="Exit">
+            <Property key="FontName" value="SM_Button"/>
+            <Property key="TextAlign" value="Center"/>
+            <Property key="Caption" value="Press to stop typing"/>
+        </Widget>
     </Widget>
     <CodeGeneratorSettings/>
 </MyGUI>

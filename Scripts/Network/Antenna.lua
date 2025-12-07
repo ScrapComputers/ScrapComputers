@@ -7,6 +7,13 @@ AntennaClass.connectionOutput = sm.interactable.connectionType.none
 AntennaClass.colorNormal = sm.color.new(0x1dded1ff)
 AntennaClass.colorHighlight = sm.color.new(0x0cdff2ff)
 
+local isSurvival = sm.scrapcomputers.gamemodeManager.isSurvival() or sm.scrapcomputers.config.getConfig("scrapcomputers.global.survivalBehavior").selectedOption == 2
+local maxRange = 2000
+
+local function isWithinRange(shapeA, shapeB)
+    return (shapeA.worldPosition - shapeB.worldPosition):length() < maxRange
+end
+
 -- SERVER --
 
 function AntennaClass:sv_createData()
@@ -50,7 +57,7 @@ function AntennaClass:sv_createData()
             
             ---@param antenna ShapeClass
             for _, antenna in pairs(sm.scrapcomputers.dataList["NetworkInterfaces"]) do
-                if antenna.sv.isAntenna and antenna.shape.id ~= self.shape.id then
+                if antenna.sv.isAntenna and antenna.shape.id ~= self.shape.id and (not isSurvival or (isSurvival and isWithinRange(self.shape, antenna.shape))) then
                     table.insert(names, antenna.sv.saved.name)
                 end
             end
@@ -100,7 +107,6 @@ end
 
 function AntennaClass:server_sendActualPacket(data)
     local networkPort = sm.scrapcomputers.table.getItemAt(sm.scrapcomputers.componentManager.getComponents("NetworkInterfaces", self.interactable, false, sm.interactable.connectionType.networkingIO, true), 1)
-    
     if networkPort then
         networkPort:server_sendPacket(data)
     end
@@ -110,7 +116,7 @@ function AntennaClass:server_sendPacket(data)
     ---@param antenna ShapeClass
     for _, antenna in pairs(sm.scrapcomputers.dataList["NetworkInterfaces"]) do
         if antenna.sv.isAntenna == true and antenna.shape.id ~= self.shape.id then
-            if antenna.sv.saved.name == self.sv.saved.name then
+            if antenna.sv.saved.name == self.sv.saved.name and (not isSurvival or (isSurvival and isWithinRange(self.shape, antenna.shape))) then
                 antenna:server_sendActualPacket(data)
             end
         end
@@ -131,37 +137,29 @@ end
 
 function AntennaClass:client_onInteract(character, state)
     if not state then return end
-
+    
     self.network:sendToServer("server_updateClientName")
-
-    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, true, {backgroundAlpha = 0.5})
-    self.cl.gui:setText("Title", sm.scrapcomputers.languageManager.translatable("scrapcomputers.antenna.title"))
+    
+    self.cl.gui = sm.scrapcomputers.gui:createGuiFromLayout("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Antenna.layout", true)
+    self.cl.gui:setText("MainHeaderText", sm.scrapcomputers.languageManager.translatable("scrapcomputers.antenna.title"))
     self.cl.gui:setText("Button", sm.scrapcomputers.languageManager.translatable("scrapcomputers.other.save_and_closebtn"))
     
-    self.cl.gui:setText("Input", self.cl.name)
-
+    self.cl.gui:setTextRaw("Input", self.cl.name)
+    
     self.cl.gui:setTextChangedCallback("Input", "client_onTextChanged")
     self.cl.gui:setButtonCallback("Button", "client_onAccepted")
-
+    
     self.cl.gui:setOnCloseCallback("cl_onGuiClose")
-
+    
     self.cl.gui:open()
-    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
-    self.cl.character = character
-end
-
-function AntennaClass:cl_onGuiClose()
-    if self.cl.character then
-        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
-    end
 end
 
 function AntennaClass:client_onFixedUpdate()
     if self.cl.name ~= self.cl.oldName then
         self.cl.oldName = self.cl.name
-
+        
         if sm.exists(self.cl.gui) then
-            self.cl.gui:setText("Input", self.cl.name)
+            self.cl.gui:setTextRaw("Input", self.cl.name)
         end
     end
 end
@@ -174,7 +172,7 @@ function AntennaClass:client_onAccepted()
     if sm.exists(self.cl.gui) then
         self.cl.gui:close()
     end
-
+    
     self.network:sendToServer("server_setName", self.cl.newName)
     self.cl.newName = ""
 end

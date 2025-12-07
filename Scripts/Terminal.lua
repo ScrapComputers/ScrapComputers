@@ -1,6 +1,6 @@
 ---@class TerminalClass : ShapeClass
 TerminalClass = class()
-TerminalClass.maxParentCount = 1
+TerminalClass.maxParentCount = -1
 TerminalClass.maxChildCount = 0
 TerminalClass.connectionInput = sm.interactable.connectionType.compositeIO + sm.interactable.connectionType.seated
 TerminalClass.connectionOutput = sm.interactable.connectionType.none
@@ -15,21 +15,22 @@ function TerminalClass:sv_createData()
         ---@param msg string The message to send
         send = function (msg)
             local newMsg = sm.scrapcomputers.toString(msg):gsub("##", "#")
-            table.insert(self.sv.text, newMsg)
+            table.insert(self.sv.sharedData.logs, newMsg)
+            
+            sm.scrapcomputers.sharedTable:forceSyncProperty(self.sv.sharedData, "logs")
 
             self.sv.updateInput = true
         end,
 
         ---Clears the console
         clear = function ()
-            self.sv.text = {}
+            self.sv.sharedData.logs = {}
             self.sv.updateInput = true
         end,
 
         ---Clears the input history
         clearInputHistory = function ()
-            self.sv.inputHistory = {}
-            self.sv.updateInputHistory = true
+            -- DEPRECATED
         end,
 
         ---Returns true if there are awaiting inputs
@@ -54,30 +55,33 @@ function TerminalClass:sv_createData()
 end
 
 function TerminalClass:server_onCreate()
+    sm.scrapcomputers.sharedTable:init(self)
+
     self.sv = {
-        inputHistory = {},
         text = {},
         awaitingInputs = {},
 
-        updateInputHistory = false,
         updateInput = false,
     }
+
+    self.sv.sharedData = sm.scrapcomputers.sharedTable:new(self, "self.cl.sharedData")
+    self.sv.sharedData.logs = {}
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 3)
+end
+
+function TerminalClass:sv_onPowerLoss()
+    self.sv.sharedData.logs = {}
+    self.sv.updateInput = true
 end
 
 function TerminalClass:server_onFixedUpdate()
-    if self.sv.updateInputHistory then
-        self.sv.updateInputHistory = false
-        self.network:sendToClients("cl_setInputHistory", self.sv.inputHistory)
-    end
+    sm.scrapcomputers.sharedTable:runTick(self)
 
     if self.sv.updateInput then
         self.sv.updateInput = false
-        self.network:sendToClients("cl_setText", self.sv.text)
+        sm.scrapcomputers.sharedTable:forceSyncProperty(self.sv.sharedData, "logs")
     end
-end
-
-function TerminalClass:sv_setInputHistory(inputHistory)
-    self.sv.inputHistory = inputHistory
 end
 
 function TerminalClass:sv_receiveInput(text)
@@ -87,13 +91,17 @@ end
 -- CLIENT --
 
 function TerminalClass:client_onCreate()
+    sm.scrapcomputers.sharedTable:init(self)
+    
     self.cl = {
-        inputHistory = {},
-        text = {},
         gui = nil,
         inputtedString = "",
         character = nil
     }
+end
+
+function TerminalClass:client_onFixedUpdate()
+    sm.scrapcomputers.sharedTable:runTick(self)
 end
 
 function TerminalClass:client_onInteract(character, state)
@@ -101,29 +109,24 @@ function TerminalClass:client_onInteract(character, state)
 
     self.cl.inputtedString = ""
 
-    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Terminal, true, {backgroundAlpha = 0.5})
+    self.cl.gui = sm.scrapcomputers.gui:createGuiFromLayout("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Terminal.layout", false)
 
-    self.cl.gui:setText("termData", self:cl_formatText())
-    self.cl.gui:setText("historyList", self:cl_formatInputHistory())
+    self.cl.gui:setTextRaw("MainMainConsole", self:cl_formatText())
 
-    self.cl.gui:setTextChangedCallback ("inputBox", "cl_setInputTextFromGUI")
-    self.cl.gui:setTextAcceptedCallback("inputBox", "cl_summitInput")
+    self.cl.gui:setTextChangedCallback ("MainMainInput", "cl_setInputTextFromGUI")
+    self.cl.gui:setTextAcceptedCallback("MainMainInput", "cl_onSubmitInput")
 
-    self.cl.gui:setButtonCallback("historyClearBtn", "cl_clearHistory")
-    self.cl.gui:setButtonCallback("submitBtn", "cl_summitInput")
-
-    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
+    self.cl.gui:setButtonCallback("MainMainSendBtn", "cl_onSubmitInput")
 
     self:cl_runTranslations()
     self.cl.gui:open()
-
-    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
-    self.cl.character = character
 end
 
-function TerminalClass:cl_onGuiClose()
-    if self.cl.character then
-        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
+function TerminalClass:client_onSharedTableChange(id, key, value, comesFromSelf)
+    -- Theres only 1 shared table with 1 key. so
+
+    if self.cl.gui then
+        self.cl.gui:setTextRaw("MainMainConsole", self:cl_formatText())
     end
 end
 
@@ -131,77 +134,29 @@ function TerminalClass:cl_setInputTextFromGUI(widget, text)
     self.cl.inputtedString = text
 end
 
-function TerminalClass:cl_summitInput(widget, name)
-    table.insert(self.cl.text, self.cl.inputtedString)
-    table.insert(self.cl.inputHistory, self.cl.inputtedString)
-
+function TerminalClass:cl_onSubmitInput(widget, name)
     self.network:sendToServer("sv_receiveInput", self.cl.inputtedString)
-    self.network:sendToServer("sv_setInputHistory", self.cl.inputHistory)
-
-    self.cl.gui:setText("inputBox", "")
-    self.cl.gui:setText("historyList", self:cl_formatInputHistory())
+    self.cl.gui:setTextRaw("MainMainInput", "")
 
     self.cl.inputtedString = ""
 end
 
-function TerminalClass:cl_clearHistory(widget, name)
-    self.cl.inputHistory = {}
-    self.cl.gui:setText("historyList", "")
-
-    self.network:sendToServer("sv_setInputHistory", self.cl.inputHistory)
-end
-
 ---@return string str The formatted string
 function TerminalClass:cl_formatText()
-    if #self.cl.text == 0 then return "" end
+    if #self.cl.sharedData.logs == 0 then return "" end
 
     local text = ""
 
-    for _, line in pairs(self.cl.text) do
+    for _, line in pairs(self.cl.sharedData.logs) do
         text = text .. line .. "#eeeeee\n"
     end
 
     return text:sub(1, #text - 1)
 end
 
----@return string str The formatted string
-function TerminalClass:cl_formatInputHistory()
-    if #self.cl.inputHistory == 0 then return "" end
-
-    local text = ""
-
-    for _, line in pairs(self.cl.inputHistory) do
-        text = text .. line .. "\n"
-    end
-
-    return text:sub(1, #text - 1)
-end
-
----@param text string The text to set
-function TerminalClass:cl_setText(text)
-    -- Set it
-    self.cl.text = text
-
-    -- Set it on the gui if it exists
-    if sm.exists(self.cl.gui) then
-        self.cl.gui:setText("termData", self:cl_formatText())
-    end
-end
-
----@param inputHistory string The text to set
-function TerminalClass:cl_setInputHistory(inputHistory)
-    self.cl.inputHistory = inputHistory
-
-    if sm.exists(self.cl.gui) then
-        self.cl.gui:setText("historyList", self:cl_formatInputHistory())
-    end
-end
-
 function TerminalClass:cl_runTranslations()
-    self.cl.gui:setText("title"          , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.title"           ))
-    self.cl.gui:setText("historyTitle"   , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.title_history"   ))
-    self.cl.gui:setText("submitBtn"      , sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.summit_inputbtn" ))
-    self.cl.gui:setText("historyClearBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.terminal.clear_historybtn"))
+    self.cl.gui:setText("MainHeaderText" , "scrapcomputers.terminal.title")
+    self.cl.gui:setText("MainMainSendBtn", "scrapcomputers.terminal.send_input_button")
 end
 
-sm.scrapcomputers.componentManager.toComponent(TerminalClass, "Terminals", true)
+sm.scrapcomputers.componentManager.toComponent(TerminalClass, "Terminals", true, nil, true)

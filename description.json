@@ -1,6 +1,6 @@
 {
    "allow_add_mods" : true,
-   "custom_icons" : false,
+   "custom_icons" : true,
    "dependencies" : [
       {
          "fileId" : 2504530003,

@@ -1,4 +1,3 @@
----@alias SharedTable.Internal.StoredSharedTableContent {proxy: table, proxyData: SharedTable.Internal.ProxyData, metatable: SharedTable.Internal.Metatable}}
 ---@alias SharedTable table
 
 sm.scrapcomputers.sharedTable = {}
@@ -18,8 +17,8 @@ local PACKET_SIZE_LIMIT = 65000 -- Used for splitting, actual packet limit is 65
 if false then
     ---@class SharedTable.ShapeClass : ShapeClass
     local SharedTableShapeClass = {}
-    SharedTableShapeClass.sv_sc_st_storedSharedTables = {} ---@type SharedTable.Internal.StoredSharedTableContent[]
-    SharedTableShapeClass.cl_sc_st_storedSharedTables = {} ---@type SharedTable.Internal.StoredSharedTableContent[]
+    SharedTableShapeClass.sv_sc_st_storedSharedTables = {} ---@type SharedTable.Internal.ProxyData[]
+    SharedTableShapeClass.cl_sc_st_storedSharedTables = {} ---@type SharedTable.Internal.ProxyData[]
 end
 
 local function getNewId(classInstance)
@@ -40,22 +39,24 @@ function sm.scrapcomputers.sharedTable:new(classInstance, clientPath)
 
     ---@class SharedTable.Internal.ProxyData
     local proxyData = {
+        classInstance = classInstance,
+
         clientPath = clientPath,
         data = {},
         syncingEnabled = true,
         id = getNewId(classInstance),
 
         replicationTable = {},
-        tblHash = {}
+        tblHash = {},
     }
-
+    
     proxyData.idText = tostring(proxyData.id)
 
     ---@class SharedTable.Internal.Metatable
     local metatable = {
         __sc_st_proxyData = proxyData,
  
-        __index = function (_, key)
+        __index = function (tbl, key)
             if key == SYNCING_ENABLED_KEY then
                 return proxyData.syncingEnabled
             end
@@ -63,7 +64,7 @@ function sm.scrapcomputers.sharedTable:new(classInstance, clientPath)
             return proxyData.data[key]
         end,
 
-        __newindex = function (_, key, value)
+        __newindex = function (_, key, value)            
             if key == SYNCING_ENABLED_KEY then
                 proxyData.syncingEnabled = value
                 return
@@ -96,7 +97,7 @@ function sm.scrapcomputers.sharedTable:new(classInstance, clientPath)
     }
 
     local proxy = sm.scrapcomputers.util.setmetatable(proxyData.data, metatable)
-    table.insert(classInstance.sv_sc_st_storedSharedTables, {proxy = proxy, proxyData = proxyData, metatable = metatable})
+    table.insert(classInstance.sv_sc_st_storedSharedTables, proxyData)
 
     return proxy
 end
@@ -112,22 +113,22 @@ function sm.scrapcomputers.sharedTable:runTick(classInstance)
     local networkSendToEventName  = isServerMode and "sendToClients"              or "sendToServer"
     local networkEventName        = isServerMode and CLIENT_ON_PACKET_DATA        or SERVER_ON_PACKET_DATA
 
-    for _, sharedTable in pairs(storedSharedTables) do
-        local replicationTable = sharedTable.proxyData.replicationTable
-        if sm.scrapcomputers.table.getTableSize(replicationTable) ~= 0 then
-            local jsonStr = sm.scrapcomputers.json.toString(replicationTable, true, false)
+    for _, proxyData in pairs(storedSharedTables) do
+        if sm.scrapcomputers.table.getTableSize(proxyData.replicationTable) ~= 0 then
+            local jsonStr = sm.scrapcomputers.json.toString(proxyData.replicationTable, true, false)
             local packets = splitStringForNetworking(jsonStr)
+            
             for i, packet in pairs(packets) do
-                classInstance.network[networkSendToEventName](classInstance.network, networkEventName, {id = sharedTable.proxyData.id, data = packet, isEnd = i == #packets})
+                classInstance.network[networkSendToEventName](classInstance.network, networkEventName, {id = proxyData.id, data = packet, isEnd = i == #packets})
             end
 
             if classInstance[onSharedTableChangeName] then
-                for key, value in pairs(replicationTable) do
-                    classInstance[onSharedTableChangeName](classInstance, sharedTable.proxyData.id, key, value, true)
+                for key, value in pairs(proxyData.replicationTable) do
+                    classInstance[onSharedTableChangeName](classInstance, proxyData.id, key, value, true, nil)
                 end
             end
 
-            sharedTable.proxyData.replicationTable = {}
+            proxyData.replicationTable = {}
         end
     end
 end
@@ -150,7 +151,7 @@ function sm.scrapcomputers.sharedTable:initClient(classInstance)
     classInstance.network:sendToServer(SERVER_ASK_FOR_FULL_SYNC)
 
     ---@param data {id: integer, clientPath: string}
-    classInstance[CLIENT_CREATE_SHAREDTABLE] = function (_, data)        
+    classInstance[CLIENT_CREATE_SHAREDTABLE] = function (_, data)
         local pathParts = {}
         for part in data.clientPath:gmatch("[^%.]+") do
             table.insert(pathParts, part)
@@ -173,6 +174,8 @@ function sm.scrapcomputers.sharedTable:initClient(classInstance)
         
         ---@type SharedTable.Internal.ProxyData
         local proxyData = {
+            classInstance = classInstance,
+
             clientPath = data.clientPath,
             data = {},
             syncingEnabled = true,
@@ -224,7 +227,7 @@ function sm.scrapcomputers.sharedTable:initClient(classInstance)
         local proxy = sm.scrapcomputers.util.setmetatable(proxyData.data, metatable)
         currentTbl[variableName] = proxy
 
-        table.insert(classInstance.cl_sc_st_storedSharedTables, {proxy = proxy, proxyData = proxyData, metatable = metatable})
+        table.insert(classInstance.cl_sc_st_storedSharedTables, proxyData)
     end
 
     classInstance.cl_sc_st_buffers = {}
@@ -241,25 +244,27 @@ function sm.scrapcomputers.sharedTable:initClient(classInstance)
 
         classInstance.cl_sc_st_buffers[data.id] = nil
 
-        local sharedTable = nil ---@type SharedTable.Internal.StoredSharedTableContent?
+        local proxyData = nil ---@type SharedTable.Internal.ProxyData?
         for _, value in pairs(classInstance.cl_sc_st_storedSharedTables) do
-            if value.proxyData.id == data.id then
-                sharedTable = value
+            if value.id == data.id then
+                proxyData = value
                 break
             end
         end
 
-        if not sharedTable then
+        if not proxyData then
             sm.scrapcomputers.logger.warn( "SharedTable.lua", "Desync warning on \"" .. CLIENT_ON_PACKET_DATA .. "\"! Failed to sync SharedTable(" .. tostring(data.id) .. ") as it wasen't found in the class.")
             return
         end
 
+        -- HACK: We should TRANSFER shit per server_onSharedTableChange call! This is makes more sense but means computer fixing but eh idfc stfu.
+
         local parsedBuffer = sm.json.parseJsonString(buffer)
-        sm.scrapcomputers.table.transferTable(sharedTable.proxyData.data, parsedBuffer)
+        sm.scrapcomputers.table.transferTable(proxyData.data, parsedBuffer)
 
         if classInstance.client_onSharedTableChange then
             for key, value in pairs(parsedBuffer) do
-                classInstance.client_onSharedTableChange(classInstance, sharedTable.proxyData.id, key, value, false)
+                classInstance.client_onSharedTableChange(classInstance, proxyData.id, key, value, false, sm.localPlayer.getPlayer())
             end
         end
     end
@@ -275,8 +280,7 @@ function sm.scrapcomputers.sharedTable:initServer(classInstance)
     classInstance[SERVER_ASK_FOR_FULL_SYNC] = function (_, _, player)
         local callbacks = {} ---@type function[]
 
-        for _, data in pairs(classInstance.sv_sc_st_storedSharedTables) do
-            local proxyData = data.proxyData
+        for _, proxyData in pairs(classInstance.sv_sc_st_storedSharedTables) do
             local rawData = sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data))
 
             classInstance.network:sendToClient(player, CLIENT_CREATE_SHAREDTABLE, {id = proxyData.id, clientPath = proxyData.clientPath})
@@ -303,20 +307,17 @@ function sm.scrapcomputers.sharedTable:initServer(classInstance)
     ---@param id integer
     ---@param player Player
     classInstance[SERVER_ASK_FOR_TABLE_SYNC] = function (_, id, player)
-        local data = nil ---@type SharedTable.Internal.StoredSharedTableContent?
-        for _, value in pairs(classInstance.sv_sc_st_storedSharedTables) do
-            if value.proxyData.id == id then
-                data = value
+        local proxyData = nil ---@type SharedTable.Internal.ProxyData?
+        for _, proxyData in pairs(classInstance.sv_sc_st_storedSharedTables) do
+            if proxyData.id == id then
+                proxyData = proxyData
                 break
             end
         end
 
-        if not data then
-            sm.scrapcomputers.logger.warn( "SharedTable.lua", "Desync warning on \"" .. SERVER_ASK_FOR_TABLE_SYNC .. "\"! Failed to sync SharedTable(" .. tostring(data.id) .. ") for player " .. tostring(player) .. " as it wasen't found in the class.")
+        if not proxyData then
             return
         end
-
-        local proxyData = data.proxyData
 
         local rawData = sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data))
         local jsonStr = sm.scrapcomputers.json.toString(rawData, true, false)
@@ -332,7 +333,14 @@ function sm.scrapcomputers.sharedTable:initServer(classInstance)
     classInstance.sv_sc_st_buffers = {}
 
     ---@param data {id: integer, isEnd: boolean, data: string}
-    classInstance[SERVER_ON_PACKET_DATA] = function (_, data)
+    classInstance[SERVER_ON_PACKET_DATA] = function (_, data, player)
+        if classInstance.server_onSharedTableEventReceived then
+            local allowed = classInstance:server_onSharedTableEventReceived(data, player)
+            if type(allowed) == "boolean" and allowed == false then
+                return
+            end
+        end
+
         local buffer = classInstance.sv_sc_st_buffers[data.id] or ""
         buffer = buffer .. data.data
 
@@ -343,25 +351,55 @@ function sm.scrapcomputers.sharedTable:initServer(classInstance)
 
         classInstance.sv_sc_st_buffers[data.id] = nil
 
-        local sharedTable = nil ---@type SharedTable.Internal.StoredSharedTableContent?
+        local proxyData = nil ---@type SharedTable.Internal.ProxyData?
         for _, value in pairs(classInstance.sv_sc_st_storedSharedTables) do
-            if value.proxyData.id == data.id then
-                sharedTable = value
+            if value.id == data.id then
+                proxyData = value
                 break
             end
         end
 
-        if not sharedTable then
-            sm.scrapcomputers.logger.warn( "SharedTable.lua", "Desync warning on \"" .. SERVER_ON_PACKET_DATA .. "\"! Failed to sync SharedTable(" .. tostring(data.id) .. ") as it wasen't found in the class.")
+        if not proxyData then
+            sm.scrapcomputers.logger.warn( "SharedTable.lua", "Desync warning on \"" .. SERVER_ON_PACKET_DATA .. "\"! Failed to sync SharedTable(" .. tostring(data.id) .. ") as it wasn't found in the class.")
             return
         end
 
-        local parsedBuffer = sm.json.parseJsonString(buffer)
-        sm.scrapcomputers.table.transferTable(sharedTable.proxyData.data, parsedBuffer)
+        -- We cant do the same as the client's on shared table change function.
+        -- We need to go through all modifiers in buffer and call server_onSharedTableChange first, then we check if it:
+        --      - returns a boolean, if so then check if it has returned true. If true, we allow the modification. if
+        --        not, the client can fuck off.
+        --      - returns nil, we will do a "trust me bro"
 
+        -- HACK: We should TRANSFER shit per server_onSharedTableChange call! This is makes more sense but means computer fixing but eh idfc stfu.
+
+        local parsedBuffer = sm.json.parseJsonString(buffer)
+        local oldValues = {}
+        for key, value in pairs(parsedBuffer) do
+            oldValues[key] = proxyData.data[value]
+        end
+
+        sm.scrapcomputers.table.transferTable(proxyData.data, parsedBuffer)
+
+        local revet
         if classInstance.server_onSharedTableChange then
             for key, value in pairs(parsedBuffer) do
-                classInstance:server_onSharedTableChange(sharedTable.proxyData.id, key, value, false)
+                local allowed = classInstance:server_onSharedTableChange(proxyData.id, key, value, false, player)
+                if type(allowed) == "boolean" and allowed == false then
+                    proxyData.data[key] = oldValues[key]
+                end
+            end
+        end
+
+        for _, proxyData in pairs(classInstance.sv_sc_st_storedSharedTables) do
+            if sm.scrapcomputers.table.getTableSize(proxyData.replicationTable) ~= 0 then
+                local jsonStr = sm.scrapcomputers.json.toString(sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data)), true, false)
+                local packets = splitStringForNetworking(jsonStr)
+
+                for i, packet in pairs(packets) do
+                    classInstance.network:sendToClients(CLIENT_ON_PACKET_DATA, {id = proxyData.id, data = packet, isEnd = i == #packets})
+                end
+
+                proxyData.replicationTable = {}
             end
         end
     end
@@ -371,7 +409,7 @@ end
 ---Can be network expensive because it sends all values over the network!
 ---
 ---Use forceSyncProperty if you are just modifing 1 variable
----@param sharedTable SharedTable
+---@param sharedTable SharedTable The shared table to sync
 function sm.scrapcomputers.sharedTable:forceSync(sharedTable)
     local metatable = sm.scrapcomputers.util.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
     local proxyData = metatable.__sc_st_proxyData
@@ -382,6 +420,8 @@ function sm.scrapcomputers.sharedTable:forceSync(sharedTable)
 end
 
 ---Forecfully syncs a specific property at a SharedTable. This is needed if the SharedTable conatins inner-tables!
+---@param sharedTable SharedTable The shared table to sync
+---@param propertyIndex string The property to snyc
 function sm.scrapcomputers.sharedTable:forceSyncProperty(sharedTable, propertyIndex)
     local metatable = sm.scrapcomputers.util.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
     local proxyData = metatable.__sc_st_proxyData
@@ -390,7 +430,7 @@ function sm.scrapcomputers.sharedTable:forceSyncProperty(sharedTable, propertyIn
 end
 
 ---Gets the id of the SharedTable
----@param sharedTable SharedTable
+---@param sharedTable SharedTable The shared table to sync
 ---@return integer id The id of the table
 function sm.scrapcomputers.sharedTable:getSharedTableId(sharedTable)
     local metatable = sm.scrapcomputers.util.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
@@ -398,14 +438,13 @@ function sm.scrapcomputers.sharedTable:getSharedTableId(sharedTable)
 end
 
 ---Gets the raw contents of a SharedTable. (Without metamethods)
----Only exists cause modifing __index for SOME reaosn causues any iteration (including the C api's one) to break.
 ---
 ---Any modifications applied to the output will NOT be applied to the main shared table!
 ---@param sharedTable SharedTable The shared table
 ---@return table rawContents The raw contents of the shared table.
 function sm.scrapcomputers.sharedTable:getRawContents(sharedTable)
     local metatable = sm.scrapcomputers.util.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
-    return metatable.__sc_st_proxyData.data
+    return unpack({metatable.__sc_st_proxyData.data})
 end
 
 ---Disables syncing for a SharedTable.

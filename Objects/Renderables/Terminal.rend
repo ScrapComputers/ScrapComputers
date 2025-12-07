@@ -1,0 +1,17 @@
+{
+    "lodList": [
+        {
+            "mesh": "$CONTENT_DATA/Objects/Mesh/Terminal.obj",
+            "subMeshList": [
+                {
+                    "material": "DifAsgNor",
+                    "textureList": [
+                        "$CONTENT_DATA/Objects/Textures/Terminal/Terminal_DIF.png",
+                        "$CONTENT_DATA/Objects/Textures/Terminal/Terminal_ASG.png",
+                        "$CONTENT_DATA/Objects/Textures/NOR.ppm"
+                    ]
+                }
+            ]
+        }
+    ]
+}

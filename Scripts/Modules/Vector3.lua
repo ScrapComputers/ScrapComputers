@@ -29,3 +29,13 @@ function sm.scrapcomputers.vector3.toDegrees(vec3)
 
     return sm.vec3.new(math.deg(vec3.x), math.deg(vec3.y), math.deg(vec3.z))
 end
+
+---Creates random noise in a vec3 format
+---@param magnitude number The magnitude of the noise, a magnitude of 1 means the length of the output vector will be 1.
+---@return Vec3 vec3 The created vector3
+function sm.scrapcomputers.vector3.randomNoise(magnitude)
+    sm.scrapcomputers.errorHandler.assertArgument(magnitude, nil, {"number"})
+
+    local randVec = sm.vec3.new(math.random(), math.random(), math.random())
+    return randVec:safeNormalize(sm.vec3.zero()) * magnitude
+end

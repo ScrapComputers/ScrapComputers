@@ -1,6 +1,6 @@
 ---@class RadarClass : ShapeClass
 RadarClass = class()
-RadarClass.maxParentCount = 1
+RadarClass.maxParentCount = -1
 RadarClass.maxChildCount = 0
 RadarClass.connectionInput = sm.interactable.connectionType.compositeIO
 RadarClass.connectionOutput = sm.interactable.connectionType.none
@@ -8,6 +8,8 @@ RadarClass.colorNormal = sm.color.new(0xa8604cff)
 RadarClass.colorHighlight = sm.color.new(0xe06d2bff)
 
 -- CLIENT / SERVER --
+
+local isSurvival = sm.scrapcomputers.gamemodeManager.isSurvival() or sm.scrapcomputers.config.getConfig("scrapcomputers.global.survivalBehavior").selectedOption == 2
 
 -- Returns true of a body is in a creation
 ---@param body Body The body to find
@@ -58,6 +60,16 @@ function RadarClass:server_onCreate()
         hAngle = 30,
         targets = {},
     }
+end
+
+function RadarClass:server_onFixedUpdate()
+    if not self.sv.lastCheck or self.sv.lastCheck + 2 < os.clock() then
+        self.sv.lastCheck = os.clock()
+
+        sm.scrapcomputers.backend.radarTargets = {}
+    end
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 30)
 end
 
 function RadarClass:sv_calculateTargets()
@@ -210,6 +222,20 @@ function RadarClass:sv_calculateTargets()
                 local surfaceArea = ((bb.x * bb.z + bb.x * bb.y + bb.z * bb.y) / 2 / math.sqrt(distance)) * 8
 
                 if surfaceArea > surfaceAreaBound or distance < 200 then
+                    local creationId = creation[1]:getCreationId()
+
+                    if not sm.scrapcomputers.backend.radarTargets[creationId] then
+                        sm.scrapcomputers.backend.radarTargets[creationId] = {}
+                    end
+
+                    local position = self.shape.worldPosition
+
+                    if isSurvival then
+                        local noise = sm.scrapcomputers.vector3.randomNoise(20)
+                        position = position + (noise - noise / 2)
+                    end
+
+                    sm.scrapcomputers.backend.radarTargets[creationId][self.shape.id] = position
                     table.insert(validTargets, {creation, surfaceArea, "creation"})
                 end
             end
@@ -252,6 +278,11 @@ function RadarClass:sv_calculateTargets()
                 averagePos = averagePos / #creation
                 averageVelo = averageVelo / #creation
 
+                if isSurvival then
+                    local noise = sm.scrapcomputers.vector3.randomNoise(10)
+                    averagePos = averagePos + (noise - noise / 2)
+                end
+
                 table.insert(finalTargets, {
                     position = averagePos, 
                     velocity = averageVelo, 
@@ -264,9 +295,15 @@ function RadarClass:sv_calculateTargets()
             elseif type == "unit" then
                 local unit, surfaceArea = unpack(data)
                 local character = unit.character
+                local position = character.worldPosition
+
+                if isSurvival then
+                    local noise = sm.scrapcomputers.vector3.randomNoise(10)
+                    position = position + (noise - noise / 2)
+                end
 
                 table.insert(finalTargets, {
-                    position = character.worldPosition, 
+                    position = position, 
                     velocity = character.velocity,
                     isDynamic = true,
                     mass = character.mass, 
@@ -281,4 +318,4 @@ function RadarClass:sv_calculateTargets()
     return finalTargets
 end
 
-sm.scrapcomputers.componentManager.toComponent(RadarClass, "Radars", true)
+sm.scrapcomputers.componentManager.toComponent(RadarClass, "Radars", true, nil, true)

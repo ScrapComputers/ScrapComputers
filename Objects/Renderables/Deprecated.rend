@@ -1,0 +1,17 @@
+{
+    "lodList": [
+        {
+            "mesh": "$CONTENT_DATA/Objects/Mesh/Deprecated.obj",
+            "subMeshList": [
+                {
+                    "material": "DifNor",
+                    "textureList": [
+                        "$CONTENT_DATA/Objects/Textures/deprecated.png",
+                        "$CONTENT_DATA/Objects/Textures/transparent.png",
+                        "$CONTENT_DATA/Objects/Textures/NOR.ppm"
+                    ]
+                }
+            ]
+        }
+    ]
+}

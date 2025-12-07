@@ -2922,7 +2922,7 @@ Effect.id = {}
 ---```
 ---@param callback string The name of the callback to bind.
 ---@param params? any Parameter object passed to the callback. (Optional)
----@param reference? table Table to recieve the callback. (Optional)
+---@param reference? table Table to receive the callback. (Optional)
 function Effect:bindEventCallback(methodName, params, reference) end
 
 ---*Client only*  
@@ -3751,7 +3751,7 @@ function GuiInterface:setData(widgetName, data) end
 function GuiInterface:setFadeRange(range) end
 
 ---*Client only*  
----Sets a widget to recieve key focus  
+---Sets a widget to receive key focus  
 ---@param widgetName string The name of the widget that needs focus
 function GuiInterface:setFocus(widgetName) end
 

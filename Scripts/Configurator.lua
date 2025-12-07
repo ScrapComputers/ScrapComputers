@@ -4,10 +4,14 @@ ConfiguratorClass = class()
 -- SERVER --
 
 ---@param params {[1]: string, [2]: integer} The parameters
-function ConfiguratorClass:sv_setConfig(params)
-    local id, selectedOption = unpack(params)
-
-    sm.scrapcomputers.config.setConfig(id, selectedOption)
+function ConfiguratorClass:sv_setConfig(params, player)
+    local hostOnly = sm.scrapcomputers.config.getConfig("scrapcomputers.configurator.admin_only").selectedOption == 1
+    if (player == sm.scrapcomputers.backend.thisPlayer and hostOnly) or not hostOnly then
+        local id, selectedOption = unpack(params)
+        sm.scrapcomputers.config.setConfig(id, selectedOption)
+    else
+        sm.scrapcomputers.logger.warn("Player \"" .. player:getName() .. "\" (ID: " .. player:getId() .. ") has attempted to iliegally set a config (admin only enabled)")
+    end
 end
 
 function ConfiguratorClass:sv_resetConfig()
@@ -43,7 +47,7 @@ function ConfiguratorClass:cl_onChangeValue()
         valueText = currentConfig.options[value]
     end
 
-    self.cl.gui:setText("CurrentValue", valueText)
+    self.cl.gui:setTextRaw("ConfigMainCurrentTextBtn", valueText)
 
     -- A hacky solution comming up!
     -- We want to refresh the text in the gui when the language changes via this. But to make
@@ -56,17 +60,17 @@ function ConfiguratorClass:cl_onChangeValue()
         self:cl_updateGui(tostring(self.cl.currentIndex))
         self:cl_runTranslations()
         
-        self.cl.gui:setText("List", self:svcl_formatList())
+        self.cl.gui:setTextRaw("ConfigsMainList", self:svcl_formatList())
     end
 end
 
 function ConfiguratorClass:cl_onLoadDefualts()
     self.cl.gui:close()
 
-    self.cl.popupGui = sm.gui.createGuiFromLayout("$GAME_DATA/Gui/Layouts/PopUp/PopUp_YN.layout", true, {backgroundAlpha = 0.5})
+    self.cl.popupGui = sm.scrapcomputers.gui:createGuiFromLayout("$GAME_DATA/Gui/Layouts/PopUp/PopUp_YN.layout", true)
 
-    self.cl.popupGui:setText("Title", sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.resetpopup.title"))
-    self.cl.popupGui:setText("Message", sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.resetpopup.description"))
+    self.cl.popupGui:setText("Title", "scrapcomputers.configurator.resetpopup.title")
+    self.cl.popupGui:setText("Message", "scrapcomputers.configurator.resetpopup.description")
 
     self.cl.popupGui:setButtonCallback("Yes", "cl_onLoadDefualtsButton")
     self.cl.popupGui:setButtonCallback("No", "cl_onLoadDefualtsButton")
@@ -96,8 +100,8 @@ function ConfiguratorClass:cl_updateGui(text)
     if result == 0 then
         self.cl.currentIndex = tonumber(text)
 
-        self.cl.gui:setVisible("Description", true)
-        self.cl.gui:setVisible("ChangeValueButton", true)
+        self.cl.gui:setVisible("ConfigMainDescription", true)
+        self.cl.gui:setVisible("ConfigMainCurrentTextBtn", true)
 
         local config = sm.scrapcomputers.config.configurations[self.cl.currentIndex]
         local description = sm.scrapcomputers.languageManager.translatable("config." .. config.id .. "=description")
@@ -107,18 +111,24 @@ function ConfiguratorClass:cl_updateGui(text)
         local value = sm.scrapcomputers.languageManager.translatable(valueName)
         if value == valueName then value = config.options[config.selectedOption] end
 
-        self.cl.gui:setText("Description", description)
-        self.cl.gui:setText("CurrentValue", value)
+        local name = sm.scrapcomputers.languageManager.translatable("config." .. config.id .. "=name")
+        if name == ("config." .. config.id .. "=name") then
+            name = config.name
+        end
 
-        self.cl.gui:setVisible("ChangeValueButton", (sm.isHost or not config.hostOnly))
+        self.cl.gui:setTextRaw("ConfigMainDescription", description)
+        self.cl.gui:setText("InfoHeaderTextSelectedConfigText", "scrapcomputers.configurator.current_config", name)
+        self.cl.gui:setTextRaw("ConfigMainCurrentTextBtn", value)
+
+        self.cl.gui:setVisible("ConfigMainCurrentTextBtn", (sm.isHost or not config.hostOnly))
     elseif result == -1 then
-        self.cl.gui:setText ("CurrentValue", "#E74856Please put in a number!")
-        self.cl.gui:setVisible("Description", false)
-        self.cl.gui:setVisible("ChangeValueButton", false)
+        self.cl.gui:setText("InfoHeaderTextSelectedConfigText", "scrapcomputers.configurator.not_a_number")
+        self.cl.gui:setVisible("ConfigMainDescription", false)
+        self.cl.gui:setVisible("ConfigMainCurrentTextBtn", false)
     else
-        self.cl.gui:setText ("CurrentValue", "#E74856Out-of-Bounds (Must be 1-" .. sm.scrapcomputers.config.getTotalConfigurations() .. ")")
-        self.cl.gui:setVisible("Description", false)
-        self.cl.gui:setVisible("ChangeValueButton", false)
+        self.cl.gui:setText("InfoHeaderTextSelectedConfigText", "scrapcomputers.configurator.out_of_bounds", sm.scrapcomputers.config.getTotalConfigurations())
+        self.cl.gui:setVisible("ConfigMainDescription", false)
+        self.cl.gui:setVisible("ConfigMainCurrentTextBtn", false)
     end
 end
 
@@ -128,17 +138,19 @@ function ConfiguratorClass:cl_onNewInput(widget, text)
 end
 
 function ConfiguratorClass:cl_createGui()
-    if sm.exists(self.cl.gui) then self.cl.gui:close() end
+    if self.cl.gui and self.cl.gui:isActive() then
+        self.cl.gui:close()
+    end
 
-    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Configurator, true, {backgroundAlpha = 0.5})
+    self.cl.gui = sm.scrapcomputers.gui:createGuiFromLayout("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Configurator.layout", true)
 
-    self.cl.gui:setText("List", self:svcl_formatList())
-    self.cl.gui:setText("SelectedOption", sm.scrapcomputers.toString(self.cl.currentIndex))
+    self.cl.gui:setTextRaw("ConfigsMainList", self:svcl_formatList())
+    self.cl.gui:setTextRaw("ConfigMainInput", tostring(self.cl.currentIndex))
 
-    self.cl.gui:setTextChangedCallback("SelectedOption", "cl_onNewInput")
+    self.cl.gui:setTextChangedCallback("ConfigMainInput", "cl_onNewInput")
 
-    self.cl.gui:setButtonCallback("ChangeValueButton", "cl_onChangeValue")
-    self.cl.gui:setButtonCallback("LoadDefaultsButton", "cl_onLoadDefualts")
+    self.cl.gui:setButtonCallback("ConfigMainCurrentTextBtn", "cl_onChangeValue")
+    self.cl.gui:setButtonCallback("ConfigMainResetBtn", "cl_onLoadDefualts")
 
     self:cl_runTranslations()
     self:cl_updateGui(self.cl.currentIndex)
@@ -163,10 +175,9 @@ function ConfiguratorClass:client_onInteract(character, state)
 end
 
 function ConfiguratorClass:cl_runTranslations()
-    self.cl.gui:setText("Title"             , sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.title"        ))
-    self.cl.gui:setText("ChangeValueButton" , sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.change_value" ))
-    self.cl.gui:setText("LoadDefaultsButton", sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.load_defaults"))
-
+    self.cl.gui:setText("ConfigHeaderText"  , "scrapcomputers.configurator.configs_title")
+    self.cl.gui:setText("InfoHeaderText"    , "scrapcomputers.configurator.info_title")
+    self.cl.gui:setText("ConfigMainResetBtn", "scrapcomputers.configurator.load_defaults")
 end
 
 -- CLIENT / SERVER --

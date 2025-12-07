@@ -11,6 +11,9 @@ SeatControllerClass.connectionOutput = sm.interactable.connectionType.compositeI
 SeatControllerClass.colorNormal = sm.color.new(0x696969ff)
 SeatControllerClass.colorHighlight = sm.color.new(0x969696ff)
 
+local localPlayer = sm.localPlayer
+local camera = sm.camera
+
 -- SERVER --
 
 function SeatControllerClass:sv_createData()
@@ -22,6 +25,10 @@ function SeatControllerClass:sv_createData()
         ---Gets all connected joints and gets its data and returns it
         ---@return JointData[]? data The connected joints data
         getJointData = function() return self.sv.seat and self:sv_getJointData() or nil end,
+
+        ---Gets the seated characters camera data and returns it
+        ---@return CameraData data The camera data
+        getCameraData = function() return self.sv.seat and self.sv.camera or nil end,
 
         ---Presses a button
         ---@param index integer The button to press
@@ -48,8 +55,11 @@ end
 function SeatControllerClass:server_onCreate()
     self.sv = {
         data = {},
+        camera = {},
         seat = nil, ---@type Interactable
     }
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 1)
 end
 
 function SeatControllerClass:server_onFixedUpdate()
@@ -89,4 +99,30 @@ function SeatControllerClass:sv_getJointData()
     return jointData
 end
 
-sm.scrapcomputers.componentManager.toComponent(SeatControllerClass, "SeatControllers", true)
+function SeatControllerClass:sv_setCameraInfo(data)
+    self.sv.camera = {
+        position = data[1],
+        rotation = data[2],
+        direction = data[3],
+        fov = data[4]
+    }
+end
+
+function SeatControllerClass:client_onFixedUpdate()
+    local player = localPlayer.getPlayer()
+    local character = player.character
+
+    if character then
+        local singleParent = self.interactable:getSingleParent()
+
+        if singleParent and singleParent:hasSeat() then
+            local seatedCharacter = singleParent:getSeatCharacter()
+
+            if seatedCharacter and seatedCharacter == character then
+                self.network:sendToServer("sv_setCameraInfo", {camera.getPosition(), camera.getDefaultRotation(), localPlayer.getDirection(), camera.getDefaultFov()})
+            end
+        end
+    end
+end
+
+sm.scrapcomputers.componentManager.toComponent(SeatControllerClass, "SeatControllers", true, nil, true)

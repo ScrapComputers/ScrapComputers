@@ -17,7 +17,7 @@ function sm.scrapcomputers.table.merge(table1, table2, fullOverwrite)
     sm.scrapcomputers.errorHandler.assertArgument(table2, 2, {"table"})
     sm.scrapcomputers.errorHandler.assertArgument(fullOverwrite, 3, {"boolean", "nil"})
     
-    local mergedTable = unpack({table1})
+    local mergedTable = sm.scrapcomputers.table.clone(table1)
 
     local function mergeValues(value1, value2)
         if fullOverwrite then
@@ -50,30 +50,31 @@ end
 function sm.scrapcomputers.table.clone(tbl)
     sm.scrapcomputers.errorHandler.assertArgument(tbl, nil, {"table"})
 
+    local savedTables = {}
+--
     local function cloneRecursive(root)
+        if savedTables[root] then
+            return savedTables[root]
+        end
+--
         local output = {}
+        savedTables[root] = output
+
         for index, value in pairs(root) do
-            local valueType = type(value)
-            if valueType == "table" then
+            if type(value) == "table" then
                 output[index] = cloneRecursive(value)
-            
-            -- All elseif statements are here just so it doesnt reference root.
-            elseif valueType == "number" then
-                output[index] = 0 + value
-            elseif valueType == "string" then
-                output[index] = "" .. value
-            elseif valueType == "boolean" then
-                output[index] = value == true
             else
                 output[index] = value
             end
         end
 
+        -- Metatables are intentionally not copied
         return output
     end
 
     return cloneRecursive(tbl)
 end
+
 
 ---Converts a lua table to a string
 ---@param tbl table The lua table to convert to a string
@@ -122,7 +123,7 @@ end
 ---Gets a item at a index. Ingores the actual indexing of the table
 ---@param tbl table The table to read
 ---@param index integer The index to get it at
----@return any? value The recieved value
+---@return any? value The received value
 function sm.scrapcomputers.table.getItemAt(tbl, index)
     sm.scrapcomputers.errorHandler.assertArgument(tbl, 1, {"table"})
     sm.scrapcomputers.errorHandler.assertArgument(index, 2, {"integer"})
@@ -252,4 +253,58 @@ function sm.scrapcomputers.table.reverse(tbl)
     table.sort(newTbl, function(a,b) return a < b end)
 
     return newTbl
+end
+
+---Transfers data from source to destination
+---@param dest table The destination
+---@param source table The source
+function sm.scrapcomputers.table.transferTable(dest, source)
+    for key, value in pairs(source) do
+        dest[key] = value
+    end
+end
+
+---Hashes a table
+---@param tbl table The table to hash
+---@return string hashedTable The hashed table
+function sm.scrapcomputers.table.hashTable(tbl)
+    local function fnv1aHash(str)
+        local hash = 2166136261
+        for i = 1, #str do
+            hash = bit.bxor(hash, str:byte(i))
+            hash = (hash * 16777619) % 2^32
+        end
+        return string.format("%08x", hash)
+    end
+
+    local function serialize(tbl)
+        local function serializeValue(val)
+            if type(val) == "table" then
+                return serialize(val)
+            elseif type(val) == "string" then
+                return string.format("%q", val)
+            else
+                return tostring(val)
+            end
+        end
+
+        local str = "{"
+        local keys = {}
+
+        for k in pairs(tbl) do
+            table.insert(keys, k)
+        end
+        table.sort(keys, function(a, b)
+            return tostring(a) < tostring(b)
+        end)
+
+        for _, k in ipairs(keys) do
+            local v = tbl[k]
+            str = str .. "[" .. serializeValue(k) .. "]=" .. serializeValue(v) .. ","
+        end
+
+        return str .. "}"
+    end
+
+    return fnv1aHash(serialize(tbl))
 end

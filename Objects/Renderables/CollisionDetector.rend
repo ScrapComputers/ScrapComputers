@@ -1,0 +1,17 @@
+{
+    "lodList": [
+        {
+            "mesh": "$CONTENT_DATA/Objects/Mesh/CollisionDetector.obj",
+            "subMeshList": [
+                {
+                    "material": "DifNor",
+                    "textureList": [
+                        "$CONTENT_DATA/Objects/Textures/CollisionDetector/CollisionDetector_DIF.png",
+                        "$CONTENT_DATA/Objects/Textures/transparent.png",
+                        "$CONTENT_DATA/Objects/Textures/NOR.ppm"
+                    ]
+                }
+            ]
+        }
+    ]
+}

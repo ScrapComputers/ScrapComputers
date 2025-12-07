@@ -1,0 +1,30 @@
+// This file exists to prevent old creations from breaking! (Or if you want to abuse some ig)
+
+{
+    "partList": [
+        {
+            "box": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "color": "7F7F7F",
+            "physicsMaterial": "Metal",
+            "ratings": {
+                "buoyancy": 6,
+                "density": 4,
+                "durability": 6,
+                "friction": 4
+            },
+            "renderable": "$CONTENT_DATA/Objects/Renderables/Deprecated.rend",
+            "rotationSet": "PropYZ",
+            "scripted": {
+                "classname": "GravityControllerClass",
+                "filename": "$CONTENT_DATA/Scripts/GravityController.lua"
+            },
+            "sticky": "-X+X-Y+Y-Z+Z",
+            "uuid": "478f981e-73c2-447f-9ee9-0c6937cf9f5c",
+            "showInInventory": false
+        }
+    ]
+}

@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.98697916666666663 0.8657407407407407" align="Default" name="BackPanel">
+        <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.18997361477572558 1" name="OptionsTools">
+            <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.11229946524064172" name="OptionsToolsHeader">
+                <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="OptionsToolHeaderText">
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="FontName" value="SM_HeaderLarge_Narrow"/>
+                    <Property key="Caption" value="OPTIONS AND TOOLS"/>
+                </Widget>
+            </Widget>
+            <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.11229946524064172 1 0.88770053475935828" name="OptionsToolsMain">
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.45180722891566266 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainCurrentEnvBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="CURRENT ENV: DEFAULT"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.51807228915662651 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainStripDebugInfoBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="STRIP DEBUG INFO: #ee0000DISABLED"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.39156626506024095 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainAllowAlertsBtn">
+                    <Property key="Caption" value="ALLOW ALERTS: #ee0000DISALLOWED"/>
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.33132530120481929 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainAllowPrintingBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="ALLOW PRINTING: #ee0000DISALLOWED"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.27108433734939757 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainAlwaysOnBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="ALWAYS ON: #ee0000DISABLED"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.21084337349397592 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainSimpleSyntaxBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="SIMPLE SYNTAX: #ee0000DISABLED"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.57831325301204817 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainDeleteCachedBytecodeBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="DELETE CACHED BYTECODE"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.15060240963855423 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainRehighlightCodeBtn">
+                    <Property key="Caption" value="REHIGHLIGHT CODE"/>
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.078313253012048195 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainRenameCurrentFile">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="RENAME CURRENT FILE"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.018072289156626505 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainOpenFileExplorerBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="OPEN FILE EXPLORER"/>
+                </Widget>
+                <Widget type="EditBox" skin="EditBoxEmpty" position_real="0.055555555555555552 0.71084337349397586 0.88888888888888884 0.25301204819277107" name="OptionsToolsMainInfoText">
+                    <Property key="TabPrinting" value="true"/>
+                    <Property key="WordWrap" value="true"/>
+                    <Property key="MultiLine" value="true"/>
+                    <Property key="MaxTextLength" value="999999999"/>
+                    <Property key="ReadOnly" value="true"/>
+                    <Property key="Caption" value="Hehe, Funny Info"/>
+                    <Property key="FontName" value="SM_TextTiny"/>
+                    <Property key="TextAlign" value="Left Top"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.027777777777777776 0.64457831325301207 0.94444444444444442 0.060240963855421686" name="OptionsToolsMainManagePasswordBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="Caption" value="MANAGE PASSWORD"/>
+                </Widget>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="PanelEmpty" position_real="0.19788918205804748 0 0.60422163588390498 1" name="Main">
+            <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.11229946524064172" name="MainHeader">
+                <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="MainHeaderText">
+                    <Property key="Caption" value="COMPUTER"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                    <Widget type="TextBox" skin="TextBox" position_real="0 0.66666666666666663 1 0.33333333333333331" name="MainHeaderTextInfoText">
+                        <Property key="FontName" value="SM_Label"/>
+                        <Property key="Caption" value="Now Editing: #ffa000Main.lua"/>
+                        <Property key="TextAlign" value="Center"/>
+                        <Property key="MultiLine" value="false"/>
+                    </Widget>
+                </Widget>
+            </Widget>
+            <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.11229946524064172 1 0.88770053475935828" name="MainMain">
+                <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.017467248908296942 0.024096385542168676 0.96506550218340614 0.72891566265060237" name="MainMainCodeInput">
+                    <Property key="Caption" value="Hello World!"/>
+                    <Property key="FontName" value="SM_Label"/>
+                    <Property key="MaxTextLength" value="999999999"/>
+                    <Property key="TabPrinting" value="true"/>
+                    <Property key="MultiLine" value="true"/>
+                </Widget>
+                <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.017467248908296942 0.77108433734939763 0.96506550218340614 0.20481927710843373" name="MainMainLogsText">
+                    <Property key="Caption" value="ERROR: YOur fucking code sucks\nA\nB\nC\nD"/>
+                    <Property key="FontName" value="Default"/>
+                    <Property key="MultiLine" value="true"/>
+                    <Property key="MaxTextLength" value="999999999"/>
+                    <Property key="TabPrinting" value="true"/>
+                    <Property key="ReadOnly" value="true"/>
+                    <Property key="WordWrap" value="true"/>
+                    <Property key="TextAlign" value="Left Top"/>
+                </Widget>
+                <Widget type="TextBox" skin="TextBox" position_real="0.017467248908296942 0.024096385542168676 0.96506550218340614 0.95180722891566261" name="MainMainFileNotFound">
+                    <Property key="Caption" value="FILE NOT FOUND\nTHIS FILE WAS MOST LIKEY DELETED!"/>
+                    <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                    <Property key="TextAlign" value="Center"/>
+                </Widget>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="PanelEmpty" position_real="0.81002638522427439 0 0.18997361477572558 1" name="Examples">
+            <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.11229946524064172" name="ExamplesHeader">
+                <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="ExamplesHeaderText">
+                    <Property key="Caption" value="EXAMPLES"/>
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="FontName" value="SM_HeaderLarge_Medium"/>
+                </Widget>
+            </Widget>
+            <Widget type="Widget" skin="BackgroundLightSquared" position_real="0 0.11229946524064172 1 0.77005347593582885" name="ExamplesMain">
+                <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.055555555555555552 0.027777777777777776 0.90277777777777779 0.76388888888888884" name="ExamplesMainList">
+                    <Property key="MultiLine" value="true"/>
+                    <Property key="ReadOnly" value="true"/>
+                    <Property key="TabPrinting" value="true"/>
+                    <Property key="WordWrap" value="true"/>
+                    <Property key="MaxTextLength" value="999999999"/>
+                </Widget>
+                <Widget type="Button" skin="PrimaryButton" position_real="0.041666666666666664 0.79861111111111116 0.93055555555555558 0.083333333333333329" name="ExamplesMainLoadExampleBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="Caption" value="LOAD EXAMPLE"/>
+                    <Property key="TextAlign" value="Center"/>
+                </Widget>
+                <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.055555555555555552 0.88888888888888884 0.90277777777777779 0.083333333333333329" name="ExamplesMainSelectExampleInput">
+                    <Property key="TextAlign" value="Center"/>
+                    <Property key="FontName" value="SM_Button"/>
+                </Widget>
+            </Widget>
+            <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.89839572192513373 1 0.10160427807486631" name="SaveMain">
+                <Widget type="Button" skin="PrimaryButton" position_real="0.041666666666666664 0.10526315789473684 0.90277777777777779 0.78947368421052633" name="SaveMainBtn">
+                    <Property key="FontName" value="SM_Button"/>
+                    <Property key="Caption" value="SAVE FILE"/>
+                    <Property key="TextAlign" value="Center"/>
+                </Widget>
+            </Widget>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

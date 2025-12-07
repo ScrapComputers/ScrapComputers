@@ -1,152 +1,291 @@
 {
     // Computer
-    "scrapcomputers.computer.main_title"                               : "COMPUTER",
-    "scrapcomputers.computer.examples_title"                           : "EXAMPLES",
+    "scrapcomputers.computer.title.optionstools"                            : "#ed6d5eOPTIONS AND TOOLS",
+    "scrapcomputers.computer.title.main"                                    : "#5eed6dCOMPUTER",
+    "scrapcomputers.computer.title.examples"                                : "#6d5eedEXAMPLES",
+    
+    "scrapcomputers.computer.buttons.delete_cached_bytecode"                : "DELETE CACHED BYTECODE",
+    "scrapcomputers.computer.buttons.rehighlight_code"                      : "REHIGHLIGHT CODE",
+    "scrapcomputers.computer.buttons.rename_current_file"                   : "RENAME CURRENT FILE",
+    "scrapcomputers.computer.buttons.open_file_explorer"                    : "OPEN FILE EXPLORER",
 
-    "scrapcomputers.computer.automaticly_saved"                        : "Automaticly saved your code!",
-    "scrapcomputers.computer.syntax_highlighting_disabled"             : "Syntax highlighting is disabled (Reached the character limit!)",
-    "scrapcomputers.computer.selected_example.not_a_number"            : "Not a integer!",
-    "scrapcomputers.computer.selected_example.out_of_bounds"           : "Example doesn't exist! (Choose from 1-%d)",                                                     // Has a integer argument containing the total examples
-    "scrapcomputers.computer.selected_example.cannot_be_decimal"       : "Not a decimal!",
-    "scrapcomputers.computer.selected_example.valid_example_selected"  : "Selected \"%s\" Example!",                                                                      // Has a integer argument containing the selected example's name.
-    "scrapcomputers.computer.syntax_character_limit_reached"           : "Syntax highlighting is disabled (Too many characters! Max is: %d, Total script characters %d)", // Has 2 integer arguments, 1st argument is the max characters and the 2nd is the total characters in the script.
-    "scrapcomputers.computer.example_loaded"                           : "Loaded example \"%s\"",                                                                         // Has a string argument which contains the loaded example's name
+    "scrapcomputers.computer.buttons.load_example"                          : "LOAD EXAMPLE",
+    "scrapcomputers.computer.buttons.save"                                  : "SAVE FILE",
+    
+    "scrapcomputers.computer.failed_to_load_default_example"                : "#ffa000WARNING: Failed to get the Script Template! Recommended to reinstall ScrapComputers!",
+    "scrapcomputers.computer.gui_already_opened"                            : "Someone is already editing the computer! Please wait until they are done!",
+    "scrapcomputers.computer.failed_to_find"                                : "Failed to find the file or directory!",
+    "scrapcomputers.computer.already_exists"                                : "A file or directory with that name already exists!",
 
-    "scrapcomputers.computer.save_button"                              : "Save Changes",
-    "scrapcomputers.computer.revert_changes_button"                    : "Revert Changes",
-    "scrapcomputers.computer.format_text_button"                       : "Format Text",
-    "scrapcomputers.computer.load_example_button"                      : "Load Example",
-    "scrapcomputers.computer.open_esncfg_button"                       : "Open ESNS Config",
+    "scrapcomputers.computer.file_not_found"                                : "FILE NOT FOUND\nTHIS FILE WAS MOST LIKELY DELETED!",
 
-    "scrapcomputers.computer.always_on_toggable_button"                : "Always On: %s",
+    "scrapcomputers.computer.currently_editing"                             : "Currently Editing: #ffa000%s",
 
-    "scrapcomputers.computer.savedcode"                                : "Saved code!",
-    "scrapcomputers.computer.code_reverted"                            : "Reverted your code changes!",
+    "scrapcomputers.computer.interationtext.press_use"                      : "#{Use} to edit computer",
+    "scrapcomputers.computer.interationtext.computer_id"                    : "ID: #(WARN)##%d",
+    "scrapcomputers.computer.interationtext.is_running.true"                : "#[CHECKMARK]#(SUCCESS)Running",
+    "scrapcomputers.computer.interationtext.is_running.false"               : "#[MINUS]#(ERROR)Not running",
+    "scrapcomputers.computer.interationtext.exception.true"                 : "#[BUG]#(ERROR)Got exception",
+    "scrapcomputers.computer.interationtext.exception.false"                : "#[CHECKMARK]#(SUCCESS)No Exception",
+    "scrapcomputers.computer.interationtext.power.true"                     : "#[CHECKMARK]#(SUCCESS)Consuming %s kW",
+    "scrapcomputers.computer.interationtext.power.false"                    : "#[MINUS]#(ERROR)Consuming %s kW",
+    "scrapcomputers.computer.interationtext.no_exception"                   : "No Exception",
 
-    // HDD (Harddrive or Drive)
-    "scrapcomputers.drive.title"                                       : "DATA CONTENTS",
-    "scrapcomputers.drive.savebtn"                                     : "Save Data to Drive",
-    "scrapcomputers.drive.deletebtn"                                   : "Remove Example",
-    "scrapcomputers.drive.exportbtn"                                   : "Export Example",
-    "scrapcomputers.drive.overwritebtn"                                : "Overwrite Example",
-    "scrapcomputers.drive.importbtn"                                   : "Import Example",
-    "scrapcomputers.drive.format_text_button"                          : "Format Text",
+    "scrapcomputers.computer.unsaved_changes.title"                         : "Are you sure?",
+    "scrapcomputers.computer.unsaved_changes.text"                          : "You have unsaved changes in this file. Pressing Yes will discard them!",
 
-    "scrapcomputers.drive.examples.example_deleted"                    : "Deleted \"%s\" Example",                   // Has 1 argument, which is the name of the example that was deletd.
-    "scrapcomputers.drive.examples.imported_example"                   : "Imported \"%s\" Example",                  // Has 1 argument, which is the name of the imported example
-    "scrapcomputers.drive.examples.example_not_found"                  : "Example not found!",
-    "scrapcomputers.drive.examples.invalid_name"                       : "Invalid Name for a example!",
-    "scrapcomputers.drive.examples.overwrited_example"                 : "Overwrote example \"%s\"",                 // Has a argument which is a string that contains the selected example's name being overwritten.
-    "scrapcomputers.drive.examples.created_example"                    : "Created example \"%s\"",                   // Has a argument which is a string that contains the selected example's name being created.
+    "scrapcomputers.computer.info.memory.title"                             : "----- Memory (Frame: %d) -----",
+    "scrapcomputers.computer.info.memory.average_positive"                  : "Average Positive: %.3f",
+    "scrapcomputers.computer.info.memory.average_negative"                  : "Average Negative: %.3f",
+    "scrapcomputers.computer.info.memory.average_difference"                : "Average Difference: %.3f",
+    "scrapcomputers.computer.info.memory.trend.increase"                    : "Trend: %.2f (Usage Increasing)",
+    "scrapcomputers.computer.info.memory.trend.decrease"                    : "Trend: %.2f (Usage Decreasing)",
+    "scrapcomputers.computer.info.memory.growth_streak"                     : "Growth Streak: %d",
+    "scrapcomputers.computer.info.memory.garbage_collector.active"          : "Garbage Collector: Active",
+    "scrapcomputers.computer.info.memory.garbage_collector.inactive"        : "Garbage Collector: Inactive",
+    "scrapcomputers.computer.info.memory.warnings.title"                    : "----- WARNING -----",
+    "scrapcomputers.computer.info.memory.warnings.high_memory_usage"        : "High usage of memory detected!",
+    
+    "scrapcomputers.computer.toggles.simple_syntax"                         : "SIMPLE SYNTAX: %s",
+    "scrapcomputers.computer.toggles.always_on"                             : "ALWAYS ON: %s",
+    "scrapcomputers.computer.toggles.allow_printing"                        : "ALLOW PRINTING: %s",
+    "scrapcomputers.computer.toggles.allow_alerts"                          : "ALLOW ALERTS: %s",
+    "scrapcomputers.computer.toggles.current_env"                           : "CURRENT ENV: %s",
+    "scrapcomputers.computer.toggles.strip_debug_info"                      : "STRIP DEBUG INFO: %s",
 
-    "scrapcomputers.drive.data_overload"                               : "Too much data! (Max: %d, Size: %d Bytes)", // Has 2 arguments, first one is the max size and 2nd is the overloaded data's size.
-    "scrapcomputers.drive.saved_data"                                  : "Saved brand new data!",
+    "scrapcomputers.computer.toggles.current_env#0"                         : "DEFAULT",
+    "scrapcomputers.computer.toggles.current_env#1"                         : "SAFE ENV",
+    "scrapcomputers.computer.toggles.current_env#2"                         : "UNSAFE ENV",
 
-    "scrapcomputers.drive.unknown_error"                               : "Unknown error!",
-    "scrapcomputers.drive.json_error"                                  : "JSON Error: Line %d, Column: %d\n%s",      // Has 3 arguments, first 2 are the line and column where the error happend and the last one is the error message itself
+    "scrapcomputers.computer.logs.no_byte_code"                             : "No bytecode was generated for this file!",
+    "scrapcomputers.computer.logs.successfully_deleted_byte_code"           : "Successfully deleted cached bytecode!",
+    "scrapcomputers.computer.logs.examples.not_a_number"                    : "Cannot load example! Please enter a valid integer!",
+    "scrapcomputers.computer.logs.examples.out_of_bounds"                   : "Cannot load example! The example does not exist. (Please load an example between 1 and %d)",
+    "scrapcomputers.computer.logs.examples.loaded_example"                  : "Successfully loaded example \"%s\"! (ID: %d)",
+    "scrapcomputers.computer.logs.saved_changes"                            : "Changes saved to file!",
+    "scrapcomputers.computer.logs.no_saved_changes"                         : "No changes were saved (The file content was not modified.)",
+    "scrapcomputers.computer.logs.error_during_runtime_has_changes"         : "An error occurred while the computer was running. (Cannot display exception lines due to unsaved changes.)",
+    "scrapcomputers.computer.logs.error_during_runtime_diff_file"           : "An error occurred while the computer was running. (The error occurred in a different file.)",
+    "scrapcomputers.computer.logs.error_during_runtime"                     : "An error occurred while the computer was running!",
+    "scrapcomputers.computer.logs.cannot_rename_main_file"                  : "Cannot rename Main.lua! This file is required for the computer to run properly.",
+    
+    "scrapcomputers.computer.rename.title"                                  : "RENAME CURRENT FILE",
+    "scrapcomputers.computer.rename.apply"                                  : "APPLY NEW NAME",
+
+    "scrapcomputers.computer.passwordmgr.general.mismatch"                  : "#f14c4cIncorrect password!",
+    
+    "scrapcomputers.computer.passwordmgr.general.new_too_short"             : "Password is too short!",
+    "scrapcomputers.computer.passwordmgr.general.new_mismatch"              : "Passwords do not match!",
+
+    "scrapcomputers.computer.passwordmgr.general.invalid_old_password"      : "Old password is invalid!",
+    "scrapcomputers.computer.passwordmgr.general.updated_too_short"         : "Updated password is too short!",
+    "scrapcomputers.computer.passwordmgr.general.updated_mismatch"          : "Updated password does not match the confirmed password!",
+
+    "scrapcomputers.computer.passwordmgr.new.title"                         : "SET NEW PASSWORD",
+    "scrapcomputers.computer.passwordmgr.new.enter_text"                    : "Enter Password:",
+    "scrapcomputers.computer.passwordmgr.new.comfirm_text"                  : "Comfirm Password:",
+    "scrapcomputers.computer.passwordmgr.new.warn_text"                     : "#f14c4cWARNING: You will NOT be able to recover your data if you set and forget the password!",
+    "scrapcomputers.computer.passwordmgr.new.set_button"                    : "Set New Password",
+
+    "scrapcomputers.computer.passwordmgr.enter.title"                       : "PLEASE ENTER PASSWORD",
+    "scrapcomputers.computer.passwordmgr.enter.enter_button"                : "Enter Password",
+
+    "scrapcomputers.computer.passwordmgr.main.title"                        : "PASSWORD MANAGER",
+    "scrapcomputers.computer.passwordmgr.main.buttons.lock"                 : "Lock Computer",
+    "scrapcomputers.computer.passwordmgr.main.buttons.lock_no_execute"      : "Lock Computer & Disable Execution",
+    "scrapcomputers.computer.passwordmgr.main.buttons.update"               : "Update Password",
+    "scrapcomputers.computer.passwordmgr.main.buttons.clear"                : "Clear Password",
+
+    "scrapcomputers.computer.passwordmgr.update.title"                      : "UPDATE PASSWORD",
+    "scrapcomputers.computer.passwordmgr.update.update_button"              : "Update Password",
+
+    "scrapcomputers.computer.passwordmgr.update.old_password"               : "Enter Old Password",
+    "scrapcomputers.computer.passwordmgr.update.new_password"               : "Enter New Password",
+    "scrapcomputers.computer.passwordmgr.update.comfirm_new_password"       : "Comfirm New Password",
+
+    "scrapcomputers.computer.passwordmgr.clear.title"                       : "CLEAR PASSWORD",
+    "scrapcomputers.computer.passwordmgr.clear.button"                      : "Clear Password",
+    
+    "scrapcomputers.computer.fs.invalid_name"                               : "Invalid name for a file or directory!",
+
+    "scrapcomputers.computer.fs.deletion.title"                             : "Are you sure?",
+    "scrapcomputers.computer.fs.deletion.message"                           : "You will NOT be able to recover this file once it is deleted!",
+
+    "scrapcomputers.computer.fs.current_directory"                          : "Current Directory: #ffa000%s",
+    
+    "scrapcomputers.computer.fileexplorer.main.title"                       : "FILE EXPLORER",
+    "scrapcomputers.computer.fileexplorer.main.empty_directory"             : "THIS DIRECTORY IS EMPTY!",
+
+    "scrapcomputers.computer.fileexplorer.main.buttons.open"                : "OPEN FILE/DIRECTORY",
+    "scrapcomputers.computer.fileexplorer.main.buttons.rename"              : "RENAME FILE/DIRECTORY",
+    "scrapcomputers.computer.fileexplorer.main.buttons.delete"              : "DELETE FILE/DIRECTORY",
+    "scrapcomputers.computer.fileexplorer.main.buttons.new"                 : "NEW FILE/DIRECTORY",
+    "scrapcomputers.computer.fileexplorer.main.buttons.go_back"             : "GO BACK A DIRECTORY",
+
+    "scrapcomputers.computer.fileexplorer.new.title"                        : "NEW FILE OR DIRECTORY",
+    "scrapcomputers.computer.fileexplorer.new.create_directory"             : "CREATE DIRECTORY",
+    "scrapcomputers.computer.fileexplorer.new.create_file"                  : "CREATE FILE",
+
+    "scrapcomputers.computer.fileexplorer.rename.title"                     : "RENAME FILE OR DIRECTORY",
+    "scrapcomputers.computer.fileexplorer.rename.apply"                     : "APPLY NEW NAME",
+
+    // HDD (Hard Drive or Drive)
+    "scrapcomputers.drive.gui_already_opened"                               : "Someone is already editing the harddrive! Please wait until they are done!",
+    "scrapcomputers.drive.title"                                            : "HARDDRIVE",
+    
+    "scrapcomputers.drive.save"                                             : "SAVE CONTENTS",
+    "scrapcomputers.drive.reload_contents"                                  : "RELOAD CONTENTS",
+    "scrapcomputers.drive.reformat_contents"                                : "REFORMAT CONTENTS",
+
+    "scrapcomputers.drive.interactiontext.main"                             : "#{Use} to modify the data of the drive",
+
+    "scrapcomputers.drive.logs.no_events"                                   : "No current events",
+    "scrapcomputers.drive.logs.saved_data"                                  : "Saved the new contents",
+    "scrapcomputers.drive.logs.no_contents_modified"                        : "No changes were saved (The drive's content was not modified!)",
+    "scrapcomputers.drive.logs.contents_modified_by_computer"                : "The contents were just modified by the computer. Press \"RELOAD CONTENTS\" to see it!",
+    "scrapcomputers.drive.logs.contents_modified_by_user"                   : "The contents were just modified by a user. Press \"RELOAD CONTENTS\" to see it!",
+    "scrapcomputers.drive.logs.json_error"                                  : "Invalid json data! On line %d, column %d: %s",
+    "scrapcomputers.drive.logs.reformatted"                                 : "Reformatted the contents!",
+    
+    "scrapcomputers.drive.unsaved_changes.title"                            : "Are you sure?",
+    "scrapcomputers.drive.unsaved_changes.text"                             : "You have unsaved changes in this drive. Pressing Yes will discard them!",
+
 
     // Terminal
-    "scrapcomputers.terminal.title"                                    : "TERMINAL",
-    "scrapcomputers.terminal.title_history"                            : "INPUT HISTORY",
-    "scrapcomputers.terminal.summit_inputbtn"                          : "Submit Input",
-    "scrapcomputers.terminal.clear_historybtn"                         : "Clear History",
+    "scrapcomputers.terminal.title"                                         : "TERMINAL / CONSOLE",
+    "scrapcomputers.terminal.send_input_button"                             : "Send Input",
 
     // Input & Output registers
-    "scrapcomputers.registers.input_title"                             : "Input Register's name",
-    "scrapcomputers.registers.output_title"                            : "Output Register's name",
-    
+    "scrapcomputers.registers.input_title"                                  : "#5eed6dINPUT #ffffffREGISTER NAME",
+    "scrapcomputers.registers.output_title"                                 : "#ed6d5eOUTPUT #ffffffREIGSTER NAME",
+
     // Keyboard
-    "scrapcomputers.keyboard.exit"                                     : "Exit keyboard",
-    "scrapcomputers.keyboard.press_to_type_text"                       : "Press %s to start typing", // Has 1 argument, which is a hypertext of the Use keybind
+    "scrapcomputers.keyboard.exit"                                          : "Exit Keyboard",
+    "scrapcomputers.keyboard.press_to_type_text"                            : "%s Type",
 
     // Antenna
-    "scrapcomputers.antenna.title"                                     : "Antenna",
+    "scrapcomputers.antenna.title"                                          : "ANTENNA",
 
     // Configurator
-    "scrapcomputers.configurator.title"                                : "CONFIGURATOR",
-    "scrapcomputers.configurator.change_value"                         : "Change Value",
-    "scrapcomputers.configurator.load_defaults"                        : "Reset Configs",
-    "scrapcomputers.configurator.cannot_access_object"                 : "You do not have the required permission to access the configurator!",
-
-    "scrapcomputers.configurator.resetpopup.title"                     : "Reset Configurations?",
-    "scrapcomputers.configurator.resetpopup.description"               : "You will not be able to undo this change!",
+    "scrapcomputers.configurator.info_title"                                : "CONFIG INFO",
+    "scrapcomputers.configurator.configs_title"                             : "CONFIGS",
     
+    "scrapcomputers.configurator.current_config"                            : "Selected Config: #ffa000%s",
+    "scrapcomputers.configurator.not_a_number"                              : "#e74856Invalid integer value!",
+    "scrapcomputers.configurator.out_of_bounds"                             : "#e74856Please select a config in the range between 1 to %d!",
+    
+    "scrapcomputers.configurator.load_defaults"                             : "Reset All Configs",
+    "scrapcomputers.configurator.cannot_access_object"                      : "You do not have the required permission to access the configurator!",
+
+    "scrapcomputers.configurator.resetpopup.title"                          : "ARE YOU SURE?",
+    "scrapcomputers.configurator.resetpopup.description"                    : "Pressing yes will reset #ff0000ALL#909090 configurations and cannot be undone!",
+
     // Display
-    "scrapcomputers.display.failed_to_find_font"                       : "Failed to find the font! Something might have broken! Contact the ScrapComputers Team ASAP!",
-    "scrapcomputers.display.touchscreen_multi"                         : "Press %s or %s for touchscreen", // 2 Arguments. which is the keybind text (with style)
-    "scrapcomputers.display.touchscreen"                               : "Press %s for touchscreen", // 1 Argument. which is the keybind text (with style)
+    "scrapcomputers.display.failed_to_find_font"                            : "Failed to find the font! Something may be broken! Contact the ScrapComputers Team ASAP!",
+    "scrapcomputers.display.touchscreen_multi"                              : "%s %s Touch",
+    "scrapcomputers.display.touchscreen"                                    : "%s Touch",
+
+    // GENERATOR
+    "scrapcomputers.generator.resistance"                                   : "Resistance: #(WARN)%s Nm",
+
+    // BATTERY
+    "scrapcomputers.battery.charge.1"                                       : "Charge: #(SUCCESS)%s / %s kWh",
+    "scrapcomputers.battery.charge.2"                                       : "Charge: #(WARN)%s / %s kWh",
+    "scrapcomputers.battery.charge.3"                                       : "Charge: #(ERROR)%s / %s kWh",
+    "scrapcomputers.battery.charge_delta.true"                              : "Charge Delta: #(SUCCESS)%s / %s kW",
+    "scrapcomputers.battery.charge_delta.false"                             : "Charge Delta: #(ERROR)%s / %s kW",
+    
+    //BREAKER
+    "scrapcomputers.breaker.power_transfer.true"                            : "Transferring: #(SUCCESS)%s kW",
+    "scrapcomputers.breaker.power_transfer.false"                           : "Transferring: #(ERROR)%s kW",
+
+    // SOLAR PANEL
+    "scrapcomputers.solarpanel.efficiency"                                  : "Efficiency: #(SUCCESS)%s%s",
+
+    // POWER COMPONENTS
+    "scrapcomputers.power.power_display"                                    : "Producing: #(SUCCESS)%s kW",
+    "scrapcomputers.power.unused_power"                                     : "Unused: #(SUCCESS)%s kW",
 
     // Other
-    "scrapcomputers.other.save_and_closebtn"                           : "Save & Close",
-    "scrapcomputers.other.mod_disabled_message"                        : "ScrapComputers is disabled! Please remove the banned addon/mod(s) and rejoin!",
+    "scrapcomputers.other.save_and_closebtn"                                : "Save & Close",
 
-    // Banned GUI
-    "scrapcomputers.banned.title"                                      : "ScrapComputers has detected a banned mod/addon!",
-    "scrapcomputers.banned.gui_text"                                   : "ScrapComputers has detected that a Addon/Mod has been loaded but disallowed by ScrapComputers, Incase your wondering why you got this popup: We have a ban system in our mod to prevent bad actors from using our mod for creating addons or mods. You receiving this means that you have a banned mod or addon loaded in your world from ScrapComputers.\n\nTo remove this popup, You can remove the listed mods below.",
-    "scrapcomputers.banned.chat_text"                                  : "ScrapComputers has detected a banned mod/addon loaded in your world!\n\nBanned Mods: ",
+    "scrapcomputers.other.enabled"                                          : "ENABLED",
+    "scrapcomputers.other.disabled"                                         : "DISABLED",
+    "scrapcomputers.other.generic_use"                                      : "#{Use} Use",
     
-    "scrapcomputers.banned.banlevel1"                                  : "Nothing happens!",
-    "scrapcomputers.banned.banlevel2"                                  : "Show this Popup every 30 seconds",
-    "scrapcomputers.banned.banlevel3"                                  : "ScrapComputers is disabled entirely!",
-    
-    // Configs
-    // These are optional, they already have all the information in there configs. but if you want to modify them, you can change it here.
+        // Configs
+    // These are optional. They already have all the information in their configs, but if you want to modify them, you can change it here.
     // 
     // How to create translations for configs:
-    // All configs start with "config.", They are reserved and you should NOT use them for any other purpose.
-    // Afther the config's id. it has a leading = and then a field. These fields are:
+    // All configs start with "config.". They are reserved and you should NOT use them for any other purpose.
+    // After the config's ID, it has a leading = and then a field. These fields are:
     //  - name: The name of the config
     //  - description: The description of the config
-    //  - option=?: Option names. the ? mean the index of the option.
+    //  - option=?: Option names. The ? means the index of the option.
     //
-    // If you find this confusing, please look at the translatable text's below and if that doesn't help you, ask help in our discord server.
+    // If you find this confusing, please look at the translatable texts below. If that doesn't help, ask for help in our Discord server.
     //
-    // TIP: You could actually use this where the actual config option data (not from translation files) are used internally and this for the end-user. because this
-    //      file is only used on GUI's and nowhere else!
+    // TIP: You can actually use this where the actual config option data (not from translation files) is used internally, this is for the end-user. This
+    //      file is only used in GUIs and nowhere else!
 
-    "config.scrapcomputers.computer.safe_or_unsafe_env=name"           : "Safe/Unsafe Env Mode",
-    "config.scrapcomputers.computer.safe_or_unsafe_env=description"    : "This option allows you to access unsafe functions within the environment. When enabled, you gain access to powerful features like _G, self, the entire sm table, and more. Additionally, some tables may be altered to permit modifications by Lua DLL mods, giving you greater control and flexibility but also increasing the risk of unintended changes or security vulnerabilities.",
-    "config.scrapcomputers.computer.safe_or_unsafe_env=option=1"       : "Safe Env",
-    "config.scrapcomputers.computer.safe_or_unsafe_env=option=2"       : "Unsafe Env",
+    "config.scrapcomputers.computer.safe_or_unsafe_env=name"                : "Safe/Unsafe Env Mode",
+    "config.scrapcomputers.computer.safe_or_unsafe_env=description"         : "This option allows you to access unsafe functions within the environment. When enabled, you gain access to powerful features like _G, self, the entire sm table, and more. Additionally, some tables may be modified to permit Lua DLL mods, giving you greater control and flexibility, but also increasing the risk of unintended changes or security vulnerabilities.",
+    "config.scrapcomputers.computer.safe_or_unsafe_env=option=1"            : "Safe Env",
+    "config.scrapcomputers.computer.safe_or_unsafe_env=option=2"            : "Unsafe Env",
 
-    "config.scrapcomputers.configurator.admin_only=name"               : "Admin-only accessable Configurator",
-    "config.scrapcomputers.configurator.admin_only=description"        : "If the setting is configured to Everyone, then anyone can access the configurator. Otherwise, access is restricted to the host only.",
-    "config.scrapcomputers.configurator.admin_only=option=1"           : "Only Host",
-    "config.scrapcomputers.configurator.admin_only=option=2"           : "Everyone",
+    "config.scrapcomputers.configurator.admin_only=name"                    : "Admin-only Configurator Access",
+    "config.scrapcomputers.configurator.admin_only=description"             : "If the setting is configured to 'Everyone', anyone can access the configurator. Otherwise, access is restricted to the host only.",
+    "config.scrapcomputers.configurator.admin_only=option=1"                : "Only Host",
+    "config.scrapcomputers.configurator.admin_only=option=2"                : "Everyone",
 
-    "config.scrapcomputers.hologram.max_objects=name"                  : "Max Hologram objects",
-    "config.scrapcomputers.hologram.max_objects=description"           : "This option allows you to set the maximum number of objects that a hologram can render.\n\nYou can choose from the following options: Unlimited, 16, 32, 64, 128, 256, 512, 1024, 2048, and 4096",
-    "config.scrapcomputers.hologram.max_objects=option=1"              : "Unlimited",
-    "config.scrapcomputers.hologram.max_objects=option=2"              : "16 Max",
-    "config.scrapcomputers.hologram.max_objects=option=3"              : "32 Max",
-    "config.scrapcomputers.hologram.max_objects=option=4"              : "64 Max",
-    "config.scrapcomputers.hologram.max_objects=option=5"              : "128 Max",
-    "config.scrapcomputers.hologram.max_objects=option=6"              : "256 Max",
-    "config.scrapcomputers.hologram.max_objects=option=7"              : "512 Max",
-    "config.scrapcomputers.hologram.max_objects=option=8"              : "1024 Max",
-    "config.scrapcomputers.hologram.max_objects=option=9"              : "2048 Max",
-    "config.scrapcomputers.hologram.max_objects=option=10"             : "4096 Max",
+    "config.scrapcomputers.hologram.max_objects=name"                       : "Max Hologram Objects",
+    "config.scrapcomputers.hologram.max_objects=description"                : "This option allows you to set the maximum number of objects a hologram can render.\n\nYou can choose from the following options: Unlimited, 16, 32, 64, 128, 256, 512, 1024, 2048, and 4096.",
+    "config.scrapcomputers.hologram.max_objects=option=1"                   : "Unlimited",
+    "config.scrapcomputers.hologram.max_objects=option=2"                   : "16 Max",
+    "config.scrapcomputers.hologram.max_objects=option=3"                   : "32 Max",
+    "config.scrapcomputers.hologram.max_objects=option=4"                   : "64 Max",
+    "config.scrapcomputers.hologram.max_objects=option=5"                   : "128 Max",
+    "config.scrapcomputers.hologram.max_objects=option=6"                   : "256 Max",
+    "config.scrapcomputers.hologram.max_objects=option=7"                   : "512 Max",
+    "config.scrapcomputers.hologram.max_objects=option=8"                   : "1024 Max",
+    "config.scrapcomputers.hologram.max_objects=option=9"                   : "2048 Max",
+    "config.scrapcomputers.hologram.max_objects=option=10"                  : "4096 Max",
 
-    "config.scrapcomputers.computer.autosave=name"                     : "Automaticly Save code (Auto-Save)",
-    "config.scrapcomputers.computer.autosave=description"              : "This feature will automatically save your code whenever you exit the GUI, ensuring that no changes or updates are lost and providing a seamless and worry-free experience as you code.",
-    "config.scrapcomputers.computer.autosave=option=1"                 : "Disabled",
-    "config.scrapcomputers.computer.autosave=option=2"                 : "Enabled",
+    "config.scrapcomputers.computer.autosave=name"                          : "Automatically Save Code (Auto-Save)",
+    "config.scrapcomputers.computer.autosave=description"                   : "This feature will automatically save your code whenever you exit the GUI, ensuring that no changes or updates are lost and providing a seamless, worry-free experience.",
+    "config.scrapcomputers.computer.autosave=option=1"                      : "Disabled",
+    "config.scrapcomputers.computer.autosave=option=2"                      : "Enabled",
 
-    "config.scrapcomputers.computer.reset_error_on_restart=name"       : "Clear error on restart",
-    "config.scrapcomputers.computer.reset_error_on_restart=description": "When you get a error message, it stops the computer and you will have to press Done to clear the error and the computer would start. If you enable this, afther you get a error, restarting the computer (turning it off and on) will clear the error and start up again.",
-    "config.scrapcomputers.computer.reset_error_on_restart=option=1"   : "Disabled",
-    "config.scrapcomputers.computer.reset_error_on_restart=option=2"   : "Enabled",
+    "config.scrapcomputers.computer.reset_error_on_restart=name"            : "Clear Errors on Restart",
+    "config.scrapcomputers.computer.reset_error_on_restart=description"     : "When an error occurs, it stops the computer and requires pressing 'Done' to clear the error and restart. If this option is enabled, restarting the computer (turning it off and on) will automatically clear the error and boot it again.",
+    "config.scrapcomputers.computer.reset_error_on_restart=option=1"        : "Disabled",
+    "config.scrapcomputers.computer.reset_error_on_restart=option=2"        : "Enabled",
 
-    "config.scrapcomputers.global.selectedLanguage=name"               : "Current Mod Language",
-    "config.scrapcomputers.global.selectedLanguage=description"        : "ScrapComputers's Language Manager allows you to use game-supported and non game-supported Languages. This means that addon's can add such as Dutch Translations.\n\nUse this config to modify which language the mod should use. Set it to Automatic so it selects a game-supported language for you.\n\n\nNOTE: This only applies to Graphical User Interfaces! Some addon's might add specialized behaviour based on what language your on!" ,
+    "config.scrapcomputers.computer.show_info_on_computer_hover=name"       : "Show information while hovering computer",
+    "config.scrapcomputers.computer.show_info_on_computer_hover=description": "This option allows you to access unsafe functions within the environment. When enabled, you gain access to powerful features like _G, self, the entire sm table, and more. Additionally, some tables may be modified to permit Lua DLL mods, giving you greater control and flexibility, but also increasing the risk of unintended changes or security vulnerabilities.",
+    "config.scrapcomputers.computer.show_info_on_computer_hover=option=1"   : "Show information",
+    "config.scrapcomputers.computer.show_info_on_computer_hover=option=2"   : "Hide information",
 
-    "config.scrapcomputers.computer.nanvalues=name"                    : "NaN Value Management",
-    "config.scrapcomputers.computer.nanvalues=description"             : "Lua sometimes produces NaN values, which stand for \"Not a Number\", often resulting from operations like dividing 0 by 0 or taking the square root of negative numbers. These NaN values makes it possible to break ScrapComputers, leading to components nolonger working up to a point where you would have to reload your world\n\nThis config option lets you change the behaviour of NaN values.\n\nOptions:\n\tNo change in behaviour (Not Recommended): Lets you use NaN values in anything, Note that you would be able to brick components!\n\tScrapComputers Related functions disallowed (Short: SRFD): You wouldn't be able to send NaN values to any function from ScrapComputers.\n\nTIP: NaN values can never be itself, so to check if its a NaN value, you could just check by itself.\n\tTrue means not a NaN value\n\tFalse means a NaN value.",
-    "config.scrapcomputers.computer.nanvalues=option=1"                : "No change in behaviour",
-    "config.scrapcomputers.computer.nanvalues=option=2"                : "ScrapComputers related functions disallowed",
+    "config.scrapcomputers.global.selectedLanguage=name"                    : "Current Mod Language",
+    "config.scrapcomputers.global.selectedLanguage=description"             : "ScrapComputers Language Manager allows you to use both game-supported and custom languages. This means add-ons can include, for example, Dutch translations.\n\nUse this setting to choose which language the mod should use. Set it to 'Automatic' to let it select a game-supported language for you.\n\n\nNOTE: This only applies to Graphical User Interfaces! Some add-ons may behave differently depending on your selected language!",
 
-    "config.scrapcomputers.global.developerenvironment=name"           : "Development Environment Mode",
-    "config.scrapcomputers.global.developerenvironment=description"    : "Developer Environment is a option which is designed to provide debug information. For now this lets you toggle log messages from the Debug Console.\n\nIn the future, it would let you be able to comminucate with external software without the usage of dll mods, it would be useful for like a VSCode extension that updates the computer's code based around a lua file. It would also have additional API for thing's that aren't really easy to make in the game itself.\n\n#f9f1a5WARNING: Please rejoin the world if you change this setting!",
-    "config.scrapcomputers.global.developerenvironment=option=1"       : "Normal environment",
-    "config.scrapcomputers.global.developerenvironment=option=2"       : "Development environment"
+    "config.scrapcomputers.computer.nanvalues=name"                         : "NaN Value Management",
+    "config.scrapcomputers.computer.nanvalues=description"                  : "Lua can sometimes produce NaN (Not a Number) values, for example, by dividing 0 by 0 or taking the square root of a negative number. These values can break ScrapComputers, potentially rendering components unusable until you reload your world.\n\nThis option lets you configure how NaN values are handled:\n\tNo change in behavior (Not Recommended): Allows NaN values in all functions, which may cause mod instability.\n\tScrapComputers-related functions disallowed (SRFD): Prevents NaN values from being passed into any ScrapComputers functions.\n\nTIP: NaN values are never equal to themselves, so you can detect them like this:\n\tTrue → not a NaN value\n\tFalse → is a NaN value.",
+    "config.scrapcomputers.computer.nanvalues=option=1"                     : "No change in behavior",
+    "config.scrapcomputers.computer.nanvalues=option=2"                     : "ScrapComputers-related functions disallowed",
+
+    "config.scrapcomputers.global.power=name"                               : "Power Consumtion",
+    "config.scrapcomputers.global.power=description"                        : "In ScrapComputers (especially in survival-based game modes), a power system is required to operate the computers. You can toggle this setting here if you'd like to enable or disable the power requirement, for example, in Creative mode.",
+    "config.scrapcomputers.global.power=option=1"                           : "Disabled",
+    "config.scrapcomputers.global.power=option=2"                           : "Enabled",
+
+    "config.scrapcomputers.global.survivalBehavior=name"                    : "Survival Behaviors",
+    "config.scrapcomputers.global.survivalBehavior=description"             : "This setting toggles survival behaviour for survival effected components. Some components when in survival act slightly differently, for example, a GPS's world position has a noise of 5 meters when in survival, this config setting when enabled would allow the GPS to exibit that 5 meter noise quirk in creative instead of being perfect.",
+    "config.scrapcomputers.global.survivalBehavior=option=1"                : "Disabled",
+    "config.scrapcomputers.global.survivalBehavior=option=2"                : "Enabled",
+
+    "config.scrapcomputers.global.networkTableReferences=name"               : "Network Table References",
+    "config.scrapcomputers.global.networkTableReferences=description"        : "When this config setting is enabled, network packets that are tables will send the raw LUA table, thus resulting in the receiving network port getting the LUA table reference instead its clone. This means that if a table reference is sent, any modifications to the table on either side of the network will sync without any more networking, do note however that tables that were previously sent before this option was enabled will still be clones and will not sync, also vice versa.",
+    "config.scrapcomputers.global.networkTableReferences=option=1"           : "Disabled",
+    "config.scrapcomputers.global.networkTableReferences=option=2"           : "Enabled"
 }

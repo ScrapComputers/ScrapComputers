@@ -54,21 +54,6 @@ local delimiters = {
     ":",          -- Method call
 }
 
-local function getUTF8Character(str, index)
-    local byte = string_byte(str, index)
-    local byteCount = 1
-
-    if byte >= 0xC0 and byte <= 0xDF then
-        byteCount = 2
-    elseif byte >= 0xE0 and byte <= 0xEF then
-        byteCount = 3
-    elseif byte >= 0xF0 and byte <= 0xF7 then
-        byteCount = 4
-    end
-
-    return string_sub(str, index, index + byteCount - 1)
-end
-
 function sm.scrapcomputers.keywordCompression.compress(text)
     local keywords = {}
     local keywordCache = {}
@@ -93,7 +78,7 @@ function sm.scrapcomputers.keywordCompression.compress(text)
             end
         end
 
-        local character = getUTF8Character(text, i)
+        local character = sm.scrapcomputers.utf8.getCharacterAt(text, i)
         if isDelimitor then
             if #currentToken > 0 then
                 local keywordIndex = keywordCache[currentToken]
@@ -131,16 +116,16 @@ function sm.scrapcomputers.keywordCompression.compress(text)
     local stream = sm.scrapcomputers.bitstream.new()
     stream:writeBytes("\x1bKWC")
 
-    stream:writeUIntV(keywordsLen)
+    stream:writeUIntVLE(keywordsLen)
     for i = 1, keywordsLen do
         local keyword = keywords[i]
-        stream:writeUIntV(#keyword)
+        stream:writeUIntVLE(#keyword)
         stream:writeBytes(keyword)
     end
 
-    stream:writeUIntV(dataLen)
+    stream:writeUIntVLE(dataLen)
     for i = 1, dataLen do
-        stream:writeIntV(data[i])
+        stream:writeIntVLE(data[i])
     end
 
     return stream:tostring()
@@ -151,17 +136,17 @@ function sm.scrapcomputers.keywordCompression.decompress(data)
     local identifier = stream:readBytes(4)
     sm.scrapcomputers.errorHandler.assert(identifier == "\x1bKWC", nil, "Not KWC Compressed data!")
 
-    local keywordsSize = stream:readUIntV()
+    local keywordsSize = stream:readUIntVLE()
     local keywords = {}
     for i = 1, keywordsSize do
-        local keywordTextSize = stream:readUIntV()
+        local keywordTextSize = stream:readUIntVLE()
         keywords[i] = stream:readBytes(keywordTextSize)
     end
 
-    local dataSize = stream:readUIntV()
+    local dataSize = stream:readUIntVLE()
     local outputParts = {}
     for i = 1, dataSize do
-        local number = stream:readIntV()
+        local number = stream:readIntVLE()
         outputParts[i] = number < 0 and delimiters[-number] or keywords[number]
     end
 

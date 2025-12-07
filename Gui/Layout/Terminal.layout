@@ -1,53 +1,33 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.8984375 0.84999999999999998" name="BackPanel">
-        <Widget type="Widget" skin="BackgroundPopup" position_real="0 0 0.73565217391304349 1">
-            <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 1 0.045751633986928102" align="Center Top" name="title">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.70572916666666663 0.80555555555555558" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.11149425287356322" align="HStretch Top" name="MainHeader">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="MainHeaderText">
                 <Property key="TextAlign" value="Center"/>
-                <Property key="FontName" value="SM_Header"/>
-                <Property key="TextShadow" value="true"/>
-                <Property key="Caption" value="TERMINAL"/>
-            </Widget>
-            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.023640661938534278 0.092592592592592587 0.94956658786446024 0.8224400871459695" align="Right Top" name="termData">
-                <Property key="TextAlign" value="Default"/>
-                <Property key="MultiLine" value="true"/>
-                <Property key="TabPrinting" value="true"/>
-                <Property key="ReadOnly" value="true"/>
-                <Property key="MaxTextLength" value="999999999"/>
-            </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.81166272655634353 0.920479302832244 0.16548463356973994 0.070806100217864917" align="HStretch Top" name="submitBtn">
-                <Property key="Caption" value="Send"/>
-                <Property key="FontName" value="SM_Button"/>
-                <Property key="TextAlign" value="Center"/>
-            </Widget>
-            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.027580772261623327 0.92592592592592593 0.78014184397163122 0.059912854030501089" name="inputBox">
-                <Property key="TextAlign" value="Default"/>
+                <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                <Property key="Caption" value="TITLE GOES HERE"/>
             </Widget>
         </Widget>
-        <Widget type="Widget" skin="BackgroundPopup" position_real="0.74550724637681154 0 0.25449275362318841 1">
-            <Widget type="TextBox" skin="TextBox" position_real="0 0.02178649237472767 1.0022779043280183 0.045751633986928102" align="Center Top" name="historyTitle">
-                <Property key="TextAlign" value="Center"/>
-                <Property key="FontName" value="SM_Header"/>
-                <Property key="TextShadow" value="true"/>
-                <Property key="Caption" value="INPUTS"/>
-            </Widget>
-            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.045558086560364468 0.092592592592592587 0.91116173120728927 0.8224400871459695" name="historyList">
-                <Property key="ReadOnly" value="true"/>
-                <Property key="WordWrap" value="true"/>
-                <Property key="TextAlign" value="Default"/>
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.11149425287356322 1 0.88735632183908042" align="Stretch" name="MainMain">
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.018450184501845018 0.031088082901554404 0.96309963099630991 0.84326424870466321" name="MainMainConsole">
                 <Property key="MaxTextLength" value="999999999"/>
+                <Property key="ReadOnly" value="true"/>
+                <Property key="TabPrinting" value="true"/>
+                <Property key="WordWrap" value="true"/>
+                <Property key="FontName" value="SM_Text"/>
+                <Property key="MultiLine" value="true"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.034168564920273349 0.920479302832244 0.93394077448747148 0.070806100217864917" name="historyClearBtn">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.74169741697416969 0.88082901554404147 0.24354243542435425 0.10362694300518134" name="MainMainSendBtn">
                 <Property key="FontName" value="SM_Button"/>
+                <Property key="Caption" value="Stupid Submit button haha yes"/>
                 <Property key="TextAlign" value="Center"/>
-                <Property key="Caption" value="Clear History"/>
+            </Widget>
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.018450184501845018 0.89378238341968907 0.71955719557195574 0.077720207253886009" name="MainMainInput">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+                <Property key="MaxTextLength" value="999999999"/>
             </Widget>
         </Widget>
     </Widget>
-    <CodeGeneratorSettings>
-        <Property key="IncludeDirectory" value=""/>
-        <Property key="PanelName" value=""/>
-        <Property key="PanelNamespace" value=""/>
-        <Property key="SourceDirectory" value=""/>
-    </CodeGeneratorSettings>
+    <CodeGeneratorSettings/>
 </MyGUI>

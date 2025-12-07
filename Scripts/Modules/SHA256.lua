@@ -8,8 +8,6 @@
 --  Adapted into a single function by GravityScore
 --
 
--- VeraDev aint fucking documenting everything here.
-
 ---Convert a string to SHA256 Encrypted string
 ---@param str string The string to encode
 ---@return string The
@@ -23,7 +21,6 @@ local function sha256(str)
 		return (shifted - fraction) + fraction * (2 ^ 32)
 	end
 
-	-- Random numbers. what the fuck are they?
 	local k = {
 		0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
 		0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,

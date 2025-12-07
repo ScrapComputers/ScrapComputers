@@ -1,0 +1,17 @@
+{
+    "lodList": [
+        {
+            "mesh": "$CONTENT_DATA/Objects/Mesh/GPSNotAWheel.obj",
+            "subMeshList": [
+                {
+                    "material": "DifNor",
+                    "textureList": [
+                        "$CONTENT_DATA/Objects/Textures/GPSNotAWheel/GPSNotAWheel_DIF.png",
+                        "$CONTENT_DATA/Objects/Textures/transparent.png",
+                        "$CONTENT_DATA/Objects/Textures/NOR.ppm"
+                    ]
+                }
+            ]
+        }
+    ]
+}

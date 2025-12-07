@@ -77,7 +77,7 @@ end
 ---@param root table The table to convert
 ---@param safeMode boolean? If it should care about saftey or not
 ---@param prettifyOutput boolean? If it should be prettified or not
----@param indentCharacter string The indentation character
+---@param indentCharacter string? The indentation character
 ---@return string jsonString The converted string
 function sm.scrapcomputers.json.toString(root, safeMode, prettifyOutput, indentCharacter)
     safeMode = safeMode or true
@@ -166,6 +166,7 @@ local textColor = "#9CDCFE"
 local stringColor = "#CE9178"
 local numberColor = "#B5CEA8"
 local booleanColor = "#569CCB"
+local nilColor = "#569CCB"
 local operator2Colors = {
     "#FFD700",
     "#DA70D6",
@@ -173,10 +174,29 @@ local operator2Colors = {
 }
 
 ---Adds syntax highlighting to the json tab. Note that it will be automaticly prettified.
----@param rootContents table The root contents
+---@param rootContents table|string|number|boolean|nil The root contents
 ---@return string prettifiedStr The prettified string
 function sm.scrapcomputers.json.prettifyTable(rootContents)
-    sm.scrapcomputers.errorHandler.assertArgument(rootContents, 1, {"table"})
+    sm.scrapcomputers.errorHandler.assertArgument(rootContents, 1, {"table", "string", "number", "boolean", "nil"})
+
+    local rootType = type(rootContents)
+    if rootType ~= "table" then
+        if rootType == "string" then
+            local safeText = rootContents:gsub("\\", "⁄")
+            local safeEscapeCodes = {"⁄b", "⁄f", "⁄n", "⁄r", "⁄t", "\\\""}
+            for key, value in pairs({"\b", "\f", "\n", "\r", "\t", "\""}) do
+                safeText = safeText:gsub(value, safeEscapeCodes[key])
+            end
+
+            return stringColor .. "\"" .. safeText .. "\""
+        elseif rootType == "number" then
+            return numberColor .. tostring(rootContents)
+        elseif rootType == "boolean" then
+            return booleanColor .. (rootContents and "true" or "false")
+        else
+            return nilColor .. "null"
+        end
+    end
 
     local output = ""
     
@@ -187,19 +207,19 @@ function sm.scrapcomputers.json.prettifyTable(rootContents)
     local function prettifyTable(data, level, hasMoreData)
         local isDict = sm.scrapcomputers.table.isDictonary(data)
         output = output .. selectOperatorColorBasedOnLevel(level) .. (isDict and "{" or "[")
-
+        
         local dataSize = sm.scrapcomputers.table.getTableSize(data)
         if dataSize ~= 0 then
             output = output  .. "\n"
-
+            
             local numberIndex = 1
             for index, value in pairs(data) do
+                output = output .. ("\t"):rep(level)
+                
                 if isDict then
-                    output = output .. ("\t"):rep(level) .. textColor .. "\"" .. index .. "\"" .. operatorColor .. ": "
-                else
-                    output = output .. ("\t"):rep(level)
+                    output = output .. textColor .. "\"" .. index .. "\"" .. operatorColor .. ": "
                 end
-    
+                
                 local valueType = type(value)
                 if valueType == "table" then
                     prettifyTable(value, level + 1, numberIndex ~= dataSize)
@@ -212,8 +232,10 @@ function sm.scrapcomputers.json.prettifyTable(rootContents)
                     output = output .. stringColor .. "\"" .. safeText .. "\""
                 elseif valueType == "number" then
                     output = output .. numberColor .. tostring(value)
-                else
+                elseif valueType == "boolean" then
                     output = output .. booleanColor .. (value and "true" or "false")
+                else
+                    output = output .. nilColor .. "null"
                 end
 
                 if valueType ~= "table" then
@@ -227,8 +249,12 @@ function sm.scrapcomputers.json.prettifyTable(rootContents)
                 numberIndex = numberIndex + 1
             end
         end
+
+        if dataSize ~= 0 then
+            output = output .. ("\t"):rep(level - 1)
+        end
         
-        output = output .. ("\t"):rep(level - 1) .. selectOperatorColorBasedOnLevel(level) .. (isDict and "}" or "]")
+        output = output .. selectOperatorColorBasedOnLevel(level) .. (isDict and "}" or "]")
         if hasMoreData then
             output = output .. operatorColor .. ","
         end
@@ -246,4 +272,28 @@ function sm.scrapcomputers.json.prettifyString(root)
     sm.scrapcomputers.errorHandler.assertArgument(root, nil, {"string"})
 
     return sm.scrapcomputers.json.prettifyTable(sm.json.parseJsonString(root))
+end
+
+---Clears out all invalid json types in a table
+---@param tbl table The table to clear out. Note that this table will get modified!
+function sm.scrapcomputers.json.toJsonCompatibleTable(tbl)
+    sm.scrapcomputers.errorHandler.assertArgument(tbl, 1, {"table"})
+
+    local validJsonTypes = {
+        ["string"] = true,
+        ["number"] = true,
+        ["boolean"] = true,
+        ["nil"] = true
+    }
+
+    for key, value in pairs(tbl) do
+        local valueType = type(value)
+        if valueType == "table" then
+            sm.scrapcomputers.json.toJsonCompatibleTable(value) -- No need to set as it does that already
+        elseif not validJsonTypes[valueType] then
+            tbl[key] = nil
+        end
+    end
+
+    return tbl
 end

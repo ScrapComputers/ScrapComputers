@@ -3,12 +3,19 @@
       "$CONTENT_DATA/Objects/Database/ShapeSets/components.shapeset",
       "$CONTENT_DATA/Objects/Database/ShapeSets/network.shapeset",
       "$CONTENT_DATA/Objects/Database/ShapeSets/other.shapeset",
+      "$CONTENT_DATA/Objects/Database/ShapeSets/power.shapeset",
 
       "$CONTENT_DATA/Objects/Database/ShapeSets/Displays/1x1.shapeset",
       "$CONTENT_DATA/Objects/Database/ShapeSets/Displays/2x2.shapeset",
       "$CONTENT_DATA/Objects/Database/ShapeSets/Displays/3x3.shapeset",
       "$CONTENT_DATA/Objects/Database/ShapeSets/Displays/4x4.shapeset",
+
+      "$CONTENT_DATA/Objects/Database/ShapeSets/Displays/1x1Aircraft.shapeset",
+      "$CONTENT_DATA/Objects/Database/ShapeSets/Displays/2x2Aircraft.shapeset",
+      "$CONTENT_DATA/Objects/Database/ShapeSets/Displays/3x3Aircraft.shapeset",
+      "$CONTENT_DATA/Objects/Database/ShapeSets/Displays/4x4Aircraft.shapeset",
       
-      "$CONTENT_DATA/Objects/Database/ShapeSets/utilites.shapeset"
+      "$CONTENT_DATA/Objects/Database/ShapeSets/utilites.shapeset",
+      "$CONTENT_DATA/Objects/Database/ShapeSets/deprecated.shapeset"
    ]
 }

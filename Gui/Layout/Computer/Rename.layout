@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.40625 0.25462962962962965" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.36363636363636365" align="HStretch Top" name="MainHeader">
+            <Property key="Caption" value="TITLE HERE"/>
+            <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 0.96999999999999997" align="Stretch" name="MainHeaderText">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_HeaderLarge_Medium"/>
+                <Property key="Caption" value="RENAME FILE OR DIRECTORY"/>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.36363636363636365 1 0.62909090909090915" align="Stretch" name="MainMain">
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.030769230769230771 0.11560693641618497 0.94230769230769229 0.31791907514450868" name="MainMainInput">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Caption" value=""/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.02564102564102564 0.5780346820809249 0.95512820512820518 0.28901734104046245" name="MainMainApplyBtn">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="Rename"/>
+                <Property key="FontName" value="SM_Button"/>
+            </Widget>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

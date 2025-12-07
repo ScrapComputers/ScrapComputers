@@ -84,9 +84,3 @@ function sm.scrapcomputers.color.mixColorsTransparency(colorA, colorB)
         sm.util.lerp(colorA.b, colorB.b, colorB.a)
     )
 end
-
----Clones a color, although we aren't sure if this is needed
----@param color Color The color to clone
-function sm.scrapcomputers.color.clone(color)
-    return sm.color.new(color.r, color.g, color.b, color.a)
-end

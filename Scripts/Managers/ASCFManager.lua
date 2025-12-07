@@ -4,7 +4,7 @@ local sm_scrapcomputers_string_toCharacters = sm.scrapcomputers.string.toCharact
 local sm_scrapcomputers_table_clone = sm.scrapcomputers.table.clone
 local sm_scrapcomputers_errorHandler_assertArgument = sm.scrapcomputers.errorHandler.assertArgument
 local sm_scrapcomputers_errorHandler_assert = sm.scrapcomputers.errorHandler.assert
-
+local sm_scrapcomputers_utf8_getCharacterAt = sm.scrapcomputers.utf8.getCharacterAt
 local math_huge = math.huge
 local math_pi = math.pi
 local math_max = math.max
@@ -44,21 +44,6 @@ local function spaceGylphIfNotThere(font, character)
         metrics = font.metadata.boundingBox,
         triangles = {}
     }
-end
-
-local function getUTF8Character(str, index)
-    local byte = string_byte(str, index)
-    local byteCount = 1
-
-    if byte >= 0xC0 and byte <= 0xDF then
-        byteCount = 2
-    elseif byte >= 0xE0 and byte <= 0xEF then
-        byteCount = 3
-    elseif byte >= 0xF0 and byte <= 0xF7 then
-        byteCount = 4
-    end
-
-    return string_sub(str, index, index + byteCount - 1)
 end
 
 ---@param fontName string
@@ -107,7 +92,7 @@ local function parseText(text)
 
     local index = 1
     while index <= #text do
-        local character = getUTF8Character(text, index)
+        local character = sm_scrapcomputers_utf8_getCharacterAt(text, index)
 
         if colorMode then
             colorText = colorText .. character
@@ -121,7 +106,7 @@ local function parseText(text)
             end
         else
             if character == "#" then
-                if getUTF8Character(text, index + #character) == "#" then
+                if sm_scrapcomputers_utf8_getCharacterAt(text, index + #character) == "#" then
                     outputText = outputText .. "#"
                     index = index + 1
                     reducedOffset = reducedOffset + 1
@@ -195,9 +180,18 @@ end
 ---@param text string The text
 ---@param fontSize number The size of the font
 ---@param rotation number? The rotation
+---@param maxWidth number? Max width before it automaticly word wraps. Defaults to nothing (disabled)
+---@param coloredMode boolean? Whether to parse color codes in the text (e.g., "Hello #ff0000World!").
 ---@return number width The width the font consumes
 ---@return number hegiht The height the font consumes
 function ascfManager.calcTextSize(fontName, text, fontSize, rotation, maxWidth, coloredMode)
+    sm_scrapcomputers_errorHandler_assertArgument(fontName   , 1, {"string"})
+    sm_scrapcomputers_errorHandler_assertArgument(text       , 2, {"string"})
+    sm_scrapcomputers_errorHandler_assertArgument(fontSize   , 3, {"number"})
+    sm_scrapcomputers_errorHandler_assertArgument(rotation   , 4, {"number", "nil"})
+    sm_scrapcomputers_errorHandler_assertArgument(maxWidth   , 5, {"number", "nil"})
+    sm_scrapcomputers_errorHandler_assertArgument(coloredMode, 6, {"boolean", "nil"})
+    
     rotation = rotation or 0
     local radians = rotation * math_pi / 180
 
@@ -288,7 +282,7 @@ function ascfManager.drawText(display, xOffset, yOffset, text, fontName, color, 
 
     local characterIndex1 = 1
     while characterIndex1 <= textSize do
-        local char = getUTF8Character(text, characterIndex1)
+        local char = sm_scrapcomputers_utf8_getCharacterAt(text, characterIndex1)
         local gylph = spaceGylphIfNotThere(font, char, fontSize)
         if char == "\t" then
             gylph = sm_scrapcomputers_table_clone(spaceGylphIfNotThere(font, " ", fontSize))
@@ -320,7 +314,7 @@ function ascfManager.drawText(display, xOffset, yOffset, text, fontName, color, 
 
     local characterIndex2 = 1
     while characterIndex2 <= textSize do
-        local char = getUTF8Character(text, characterIndex2)
+        local char = sm_scrapcomputers_utf8_getCharacterAt(text, characterIndex2)
 
         local newColor = colorIndexes[characterIndex2]
         if newColor then

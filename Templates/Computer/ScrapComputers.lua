@@ -72,6 +72,11 @@
 ---@field position Vec3 The position of the target
 ---@field surfaceArea number The total surface area that the radar can detect
 
+-- RADARWARNINGRECEIVER --
+
+---@class RadarPosition A discovered radar position.
+---@field position Vec3 The position of the target.
+
 -- SEATCONTROLLER --
 
 ---@class JointData Contains data about joints.
@@ -86,6 +91,12 @@
 ---@field adPower integer Power for left or right movement.
 ---@field characterName string The name of the seated player.
 
+---@class CameraData Contains data about a connected seat.
+---@field position vec3 The camera world position.
+---@field rotation quat The camera world rotation.
+---@field direction vec3 The camera direction.
+---@field fov number The fov of the camera in degrees.
+
 -- LASER --
 
 ---@class LaserData Data received from a laser
@@ -99,6 +110,23 @@
 ---@field type           string Type of object it has hitted
 ---@field valid          boolean If the raycast was valid or not
 ---@field color          Color The color it has hitted.
+
+-- COLLISIONDETECTOR --
+
+---@class CollisionEvent A collision event.
+---@field other string The other objects type that collided with the component.
+---@field posiiton Vec3 The position at witch the collision occured.
+---@field selfPointVelocity Vec3 The velocity of the component when the collision occured.
+---@field otherPointVelocity Vec3 The velocity of the other object when the collision occured.
+---@field normal Vec3 The normal between the component and the collision object.
+
+---@class MeleeEvent A melee event.
+---@field position Vec3 The position in world space where the shape was hit.
+---@field attacker string The type of object that meleed the component.
+---@field damage int The damage value of the melee attack.
+---@field power number The physical impact of the hit.
+---@field direction Vec3 The direction of the melee attack.
+---@field normal Vec3 The normal at the point of impact.
 
 -- AUDIO --
 
@@ -181,6 +209,19 @@
 ---@class Language Represents a language from the language manager
 ---Each element inside it is a translation, where the index and value are strings.
 ---@field [string] string A table of translations where each element is a string translation
+
+-- AES256 Module --
+
+---@class AES256Modes
+---@field ECBMODE integer The ECB mode lookup.
+---@field CBCMODE integer The CBC mode lookup.
+---@field OFBMODE integer The OFB mode lookup.
+---@field CFBMODE integer The CFB mode lookup.
+
+---@class AES256KeyLengths
+---@field AES128 integer The 128 length key lookup.
+---@field AES192 integer The 192 length key lookup.
+---@field AES256 integer The 256 length key lookup.
 
 -- OTHER --
 
@@ -290,6 +331,22 @@ function sc.getSeatControllers() end
 ---@return Light[] Lights All connected Lights
 function sc.getLights() end
 
+-- Gets all connected Gravity Controllers and returns them
+---@return GravityController[] GravityControllers All connected Gravity Controllers
+function sc.getGravityControllers() end
+
+-- Gets all connected Radar Warning Receivers and returns them
+---@return RadarWarningReceiver[] RadarWarningReceivers All connected Radar Warning Receivers
+function sc.getRadarWarningReceivers() end
+
+-- Gets all connected Collision Detectors and returns them
+---@return CollisionDetector[] CollisionDetectors All connected Collision Detectors
+function sc.getCollisionDetectors() end
+
+-- Gets all connected Power Sources and returns them
+---@return PowerSource[] PowerSoruces All connected Power Sources
+function sc.getPowerSources() end
+
 -- Gets the power value of a register
 ---@param registerName string The name of the register to get the power value from
 ---@return number power The power value of the register
@@ -297,7 +354,7 @@ function sc.getReg(registerName) end
 
 -- Sets the power value of a register
 ---@param registerName string The name of the register to set the power value for
----@param power number The power value to set
+---@param power number|boolean The power value to set
 function sc.setReg(registerName, power) end
 
 -- Returns true if unsafe env is enabled, else false for safe env.
@@ -453,25 +510,45 @@ function BitStream:writeBits(value, numBits) end
 ---@return integer The extracted value.
 function BitStream:readBits(numBits) end
 
+---Writes an unsigned integer in Little Endian format.
+---@param value integer The unsigned integer value to write.
+---@param numBits integer The number of bits to use for the value.
+function BitStream:writeUIntLE(value, numBits) end
+
+---Reads an unsigned integer in Little Endian format.
+---@param numBits integer The number of bits to read.
+---@return integer The extracted unsigned integer.
+function BitStream:readUIntLE(numBits) end
+
 ---Writes an unsigned integer in Big Endian format.
 ---@param value integer The unsigned integer value to write.
 ---@param numBits integer The number of bits to use for the value.
-function BitStream:writeUInt(value, numBits) end
+function BitStream:writeUIntBE(value, numBits) end
 
 ---Reads an unsigned integer in Big Endian format.
 ---@param numBits integer The number of bits to read.
 ---@return integer The extracted unsigned integer.
-function BitStream:readUInt(numBits) end
+function BitStream:readUIntBE(numBits) end
+
+---Writes a signed integer in Little Endian format.
+---@param value integer The signed integer value to write.
+---@param numBits integer The number of bits to use for the value.
+function BitStream:writeIntLE(value, numBits) end
+
+---Reads a signed integer in Little Endian format.
+---@param numBits integer The number of bits to read.
+---@return integer The extracted signed integer.
+function BitStream:readIntLE(numBits) end
 
 ---Writes a signed integer in Big Endian format.
 ---@param value integer The signed integer value to write.
 ---@param numBits integer The number of bits to use for the value.
-function BitStream:writeInt(value, numBits) end
+function BitStream:writeIntBE(value, numBits) end
 
 ---Reads a signed integer in Big Endian format.
 ---@param numBits integer The number of bits to read.
 ---@return integer The extracted signed integer.
-function BitStream:readInt(numBits) end
+function BitStream:readIntBE(numBits) end
 
 ---Writes a single byte (8 bits) to the stream.
 ---@param value integer The byte value to write (0-255).
@@ -490,35 +567,79 @@ function BitStream:writeBytes(bytes) end
 ---@return string The extracted byte sequence.
 function BitStream:readBytes(numBytes) end
 
----Writes a floating-point number in Big Endian format (32-bit IEEE 754).
+---Writes a 32-bit float in Little Endian format (IEEE 754).
 ---@param value number The float value to write.
-function BitStream:writeFloat(value) end
+function BitStream:writeFloatLE(value) end
 
----Reads a floating-point number in Big Endian format (32-bit IEEE 754).
+---Reads a 32-bit float in Little Endian format (IEEE 754).
 ---@return number The extracted float value.
-function BitStream:readFloat() end
+function BitStream:readFloatLE() end
 
----Writes an unsigned variable-length integer to the bit stream.
+---Writes a 32-bit float in Big Endian format (IEEE 754).
+---@param value number The float value to write.
+function BitStream:writeFloatBE(value) end
+
+---Reads a 32-bit float in Big Endian format (IEEE 754).
+---@return number The extracted float value.
+function BitStream:readFloatBE() end
+
+---Writes a 64-bit double in Big Endian format (IEEE 754).
+---@param value number The double value to write.
+function BitStream:writeDoubleBE(value) end
+
+---Reads a 64-bit double in Big Endian format (IEEE 754).
+---@return number The extracted double value.
+function BitStream:readDoubleBE() end
+
+---Writes a 64-bit double in Little Endian format (IEEE 754).
+---@param value number The double value to write.
+function BitStream:writeDoubleLE(value) end
+
+---Reads a 64-bit double in Little Endian format (IEEE 754).
+---@return number The extracted double value.
+function BitStream:readDoubleLE() end
+
+---Writes an unsigned variable-length integer (Big Endian encoded).
 ---@param value number The unsigned integer to write. Must be >= 0.
-function BitStream:writeUIntV(value) end
+function BitStream:writeUIntVBE(value) end
 
----Reads an unsigned variable-length integer from the bit stream.
----@return number num The unsigned integer that was read.
-function BitStream:readUIntV() end
+---Reads an unsigned variable-length integer (Big Endian encoded).
+---@return number The unsigned integer that was read.
+function BitStream:readUIntVBE() end
 
----Writes a signed variable-length integer to the bit stream.
+---Writes an unsigned variable-length integer (Little Endian encoded).
+---@param value number The unsigned integer to write. Must be >= 0.
+function BitStream:writeUIntVLE(value) end
+
+---Reads an unsigned variable-length integer (Little Endian encoded).
+---@return number The unsigned integer that was read.
+function BitStream:readUIntVLE() end
+
+---Writes a signed variable-length integer (Big Endian encoded with ZigZag).
 ---@param value number The signed integer to write.
-function BitStream:writeIntV(value) end
+function BitStream:writeIntVBE(value) end
 
----Reads a signed variable-length integer from the bit stream.
----@return number num The signed integer that was read.
-function BitStream:readIntV() end
+---Reads a signed variable-length integer (Big Endian encoded with ZigZag).
+---@return number The signed integer that was read.
+function BitStream:readIntVBE() end
+
+---Writes a signed variable-length integer (Little Endian encoded with ZigZag).
+---@param value number The signed integer to write.
+function BitStream:writeIntVLE(value) end
+
+---Reads a signed variable-length integer (Little Endian encoded with ZigZag).
+---@return number The signed integer that was read.
+function BitStream:readIntVLE() end
 
 ---Resets the bit stream, clearing all data.
 function BitStream:reset() end
 
 ---Aligns the bit stream to the next byte boundary.
 function BitStream:align() end
+
+---Skips bits
+---@param value number The amount of bits to skip
+function BitStream:skipBits(bits) end
 
 ---Converts the bit stream to a string representation.
 ---@return string The string representation of the bit stream.
@@ -614,69 +735,107 @@ sc.string = {}
 ---@return string[] chunks The chunks of the input string
 function sc.string.splitString(inputString, chunkSize) end
 
--- Additional functionality for tables
+-- Additional functionality towards tables
 sc.table = {}
 
----Merges two tables.
----(If fullOverwrite is false) It merges the tables:
----    - If both value1 and value2 are tables, it recursively merges them.
----    - If value1 is a table but value2 is not, value1 will not be overwritten.
----    - If neither of the above checks apply, value2 will be used.
----@param table1 table The first table
----@param table2 table The second table
----@param fullOverwrite boolean? If true, table2 will overwrite any values in table1.
+---Merges 2 tables
+---(If FullOverwrite is false) It merges the tables:
+---    - If value1 and value2 value are both tables. it recursively calls it.
+---    - If value1 is a table but not value2, it wont be overwritten
+---    - If both of those checks above fail. It will be value2
+---@param table1 table The 1st table
+---@param table2 table The 2nd table
+---@param fullOverwrite boolean? If true, table2 would overwrite anything in table 1 no matter what.
 ---@return table mergedTable The merged table
 function sc.table.merge(table1, table2, fullOverwrite) end
 
----Clones a table.
+---Clones a table
 ---@param tbl table The table to clone
 ---@return table clonedTable The cloned table
 function sc.table.clone(tbl) end
 
----Converts a Lua table to a string.
----@param tbl table The Lua table to convert
----@return string str The table as a string
+---Converts a lua table to a string
+---@param tbl table The lua table to convert to a string
+---@return string str The lua table as a string
 function sc.table.toString(tbl) end
 
----Gets an item at a specific index, ignoring the table's actual indexing.
----@param tbl table The table to read from
----@param index integer The index to retrieve
----@return any? value The retrieved value
+---Gets a item at a index. Ingores the actual indexing of the table
+---@param tbl table The table to read
+---@param index integer The index to get it at
+---@return any? value The received value
 function sc.table.getItemAt(tbl, index) end
 
----Gets the size of a table. Compatible with dictionaries. (Note: Using `#dict` will always return 0!)
+---Gets the size of the table, Compattable with dictionaries. (doing #dict will always return 0!)
 ---@param tbl table The table
----@return integer size The total number of values in the table
+---@return integer size  The total amount of values in it
 function sc.table.getTableSize(tbl) end
 
----Shifts a table's indexes by a specified amount.
+---Shifts a table's index by shiftAmount
 ---@param tbl table The table to shift
 ---@param shiftAmount integer The amount to shift
----@return table shiftedTable The table with shifted indexes
+---@return table shiftedTable The shifted table
 function sc.table.shiftTableIndexes(tbl, shiftAmount) end
 
----Returns true if the table is a dictionary.
----@param tbl table The table to check
----@return boolean isDict True if the table is a dictionary, false otherwise
-function sc.table.isDictionary(tbl) end
+---Returns true if your table is a dictonary
+---@param tbl table  The table to check
+---@return boolean isDict If its a dictionary or not
+function sc.table.isDictonary(tbl) end
 
----Creates a new table ordered by numbers (linear).
----@param tbl table The table to order
----@return table orderedTable The table ordered by number
+---Gives you a new table ordered by numbers. (linear)
+---@param tbl table The table
+---@return table tbl The table linearly orded by number
 function sc.table.numberlyOrderTable(tbl) end
 
----Returns true if a value exists in the table.
----@param tbl table The table to search
+---Returns true if a value exists in the table
+---@param tbl table The table
 ---@param item any The value to find
----@return boolean valueExists True if the value exists, false otherwise
----@return any? valueIndex The index where the value was found, if applicable
+---@return boolean valueExists If it exists or not
+---@return any? valueIndex  Where it has been found.
 function sc.table.valueExistsInList(tbl, item) end
 
----Merges two lists into one. `tbl2` is appended to `tbl1`. (Indexes will be reordered to be numerically ordered!)
----@param tbl1 table The first list
----@param tbl2 table The second list
----@return table mergedList The merged list
+---Merges 2 lists into 1, tb2 is appended on tbl1. (Indexes will be changed to be numberly ordered!)
+---@param  tbl1  table      The 1st table
+---@param  tbl2  table      The 2nd table
+---@return table mergedList The merged table
 function sc.table.mergeLists(tbl1, tbl2) end
+
+---Reverses a table
+---@param tbl table The input
+---@return table tbl The reversed table
+function sc.table.reverse(tbl) end
+
+---Transfers data from source to destination
+---@param dest table The destination
+---@param source table The source
+function sc.table.transferTable(dest, source) end
+
+---Hashes a table
+---@param tbl table The table to hash
+---@return string hashedTable The hashed table
+function sc.table.hashTable(tbl) end
+
+-- Time formatting features
+sc.time = {}
+
+---Formats an EPOCH to SS, MM, HH, DD, MM, YYYY
+---@param epoch number The epoch time
+---@return number seconds, number minutes, number hours, number days, number months, number years
+function sc.time.formatEpoch(epoch) end
+
+---Formats hours to SS, MM, HH
+---@param hours number The minutes to format
+---@return number seconds, number minutes, number hours
+function sc.time.formatHours(hours) end
+
+---Formats minutes to SS, MM, HH
+---@param minutes number The minutes to format
+---@return number seconds, number minutes, number hours
+function sc.time.formatMinutes(minutes) end
+
+---Formats seconds to SS, MM, HH
+---@param seconds number The minutes to format
+---@return number seconds, number minutes, number hours
+function sc.time.formatSeconds(seconds) end
 
 -- Utility functions
 sc.util = {}
@@ -692,6 +851,37 @@ function sc.util.positiveModulo(x, n) end
 ---@param numNumbers integer The ammount of blending each number gets in the gradient table.
 ---@return number[] numberGradient The generated gradient table.
 function sc.util.generateNumberGradient(numbers, numNumbers) end
+
+---Maps a value from rangeA (fromMin & fromMax) to rangeB (toMin & toMax)
+---@param value number The number to map
+---@param fromMin number The old mininum range.
+---@param fromMax number The old max range.
+---@param toMin number The new mininum range.
+---@param toMax number The new max range.
+---@return number
+function sm.scrapcomputers.util.mapValue(value, fromMin, fromMax, toMin, toMax) end
+
+---Reimplementation of LUA's set metatable function.
+---@param tbl table The table to modify.
+---@param metatable table The metatable data to set to the given table.
+---@return table
+function sm.scrapcomputers.util.setmetatable(tbl, metatable) end
+
+---Returns the metatable data of a table.
+---@param tbl table The table to retreive the data from.
+---@return table
+function sm.scrapcomputers.util.getmetatable(tbl) end
+
+---Applies the rpairs algorithm to a table.
+---@param tbl table the table to modify.
+---@return function
+function sm.scrapcomputers.util.rpairs(tbl) end
+
+---Rounds a value with a given decimal point.
+---@param number number The number to round.
+---@param dp number The decimal point to round to (1 is 0.1, 2 is 0.01 etc).
+---@reutrn number
+function sm.scrapcomputers.util.round(number, dp) end
 
 -- Additional features that `sm.vec3` does not have
 sc.vec3 = {}
@@ -712,26 +902,31 @@ function smc.vec3.toRadians(vec3) end
 ---@return Vec3 vec3 The created vector3
 function sc.vec3.toDegrees(vec3) end
 
+---Creates random noise in a vec3 format
+---@param magnitude number The magnitude of the noise, a magnitude of 1 means the length of the output vector will be 1.
+---@return Vec3 vec3 The created vector3
+function sc.vec3.randomNoise(magnitude) end
+
 -- Manages fonts and lets you get the fonts
-sc.fontamanger = {}
+sc.fontmanager = {}
 
 ---Gets a font
 ---@param fontName string The font name to get
 ---@return ScrapComputersFont? font The font
 ---@return string? errorMessage The error message (if it failed to get the font)
-function sc.fontamanger.getFont(fontName) end
+function sc.fontmanager.getFont(fontName) end
 
 ---Gets all font names
 ---@return string[] All font names
-function sc.fontamanger.getFontNames() end
+function sc.fontmanager.getFontNames() end
 
 ---Returns the default font name
 ---@return string defualtFontName The font name
-function sc.fontamanger.getDefaultFontName() end
+function sc.fontmanager.getDefaultFontName() end
 
 ---Returns the default font
 ---@return ScrapComputersFont font The default font
-function sc.fontamanger.getDefaultFont() end
+function sc.fontmanager.getDefaultFont() end
 
 ---@class VirtualDisplay : Display A emulated display
 local VirtualDisplay = {}
@@ -803,17 +998,14 @@ sc.multidisplay = {}
 function sc.multidisplay.new(displays, columns, rows) end
 
 ---The font manager module for handling TrueType fonts
----@deprecated Avoid using ASCFManager! A planned reimplementation of it is coming!
 sc.ascfont = {}
 
----@deprecated Avoid using ASCFManager! A planned reimplementation of it is coming!
 ---Gets information about the font
 ---@param fontName string The name of the font
 ---@return ASCFont fontData The font data
 ---@return string? error The error message, if any
 function sc.ascfont.getFontInfo(fontName) end
 
----@deprecated Avoid using ASCFManager! A planned reimplementation of it is coming!
 ---Calculates the size of a given text using a specified font
 ---@param fontName string The name of the font
 ---@param text string The text to measure
@@ -823,7 +1015,6 @@ function sc.ascfont.getFontInfo(fontName) end
 ---@return number height The height of the text
 function sc.ascfont.calcTextSize(fontName, text, fontSize, rotation) end
 
----@deprecated Avoid using ASCFManager! A planned reimplementation of it is coming!
 ---Draws text to a display
 ---@param display Display The display to draw on
 ---@param xOffset number The x-coordinate offset
@@ -835,6 +1026,15 @@ function sc.ascfont.calcTextSize(fontName, text, fontSize, rotation) end
 ---@param fontSize number The size of the font to use
 ---@param colorToggled boolean? Whether the text color can change dynamically (optional)
 function sc.ascfont.drawText(display, xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled) end
+
+-- Allows you to generate qr codes
+sc.qrcode = {}
+
+---Generates a qr code from the input data.
+---@param string string The string to convert to a qr code.
+---@param errorCorrection integer The error correction level that the generated qr code has (integers through 1 - 4, each corresponding to L, M, Q, H).
+---@return PixelTable pixelTable The qr code as a PixelTable.
+function sc.qrcode.generate(string, errorCorrection) end
 
 ---@class NBSPlayer A player for the NBS format.
 local NBSPlayer = {}
@@ -917,7 +1117,37 @@ sc.midi = {}
 ---@return MIDIPlayer midiPlayer A Midiplayer instance
 function sc.midi.createPlayer(data, speaker) end
 
----------------------------------------------------------------------------------------------
+-- AES256 Encryption library
+sc.aes256 = {}
+
+---Encrypts data with AES256 encryption.
+---@param password string The password to use for encryption.
+---@param data string The data to encrypt.
+---@param keyLength AES256KeyLengths | nil The length of the key created from the password (default is 128 bytes).
+---@param mode AES256Modes | nil The mode that AES256 is applied (default is CBC).
+---@return string encryptedData The encrypted data. 
+function sc.aes256.encrypt(password, data, keyLength, mode) end
+
+---Decrypts AES256 encrypted data (mode and keyLength must be the same for when it was encrypted).
+---@param password string The password to use for decryption.
+---@param data string The data to decrypt.
+---@param keyLength AES256KeyLengths | nil The length of the key created from the password (default is 128 bytes).
+---@param mode AES256Modes | nil The mode that AES256 is applied (default is CBC).
+---@return string decryptedData The decrypted data. 
+function sc.aes256.decrypt(password, data, keyLength, mode) end
+
+-- Power Module
+sc.power = {}
+
+---Gets the total power the computer is consuming
+---@return number consumtion Total power consumed
+function sc.power.getConsumtion() end
+
+---Gets the total power the computer is receiving
+---@return number receivingPower Total receiving power
+function sc.power.getReceivingPower() end
+
+----------------------------------------------------------------------------------------------------
 ---                                                                                              --- 
 ---   ██████╗ ██████╗ ███╗   ███╗██████╗  ██████╗ ███╗   ██╗███████╗███╗   ██╗████████╗███████╗  ---
 ---  ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██╔═══██╗████╗  ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝  ---
@@ -995,7 +1225,7 @@ function Camera.customVideo(display, drawer, sliceWidth, width, height) end
 ---@param range integer The range to set
 function Camera.setRange(range) end
 
----Sets the shadow range of the camera. The larger the range, the larger the shadows can be.
+-- Sets the shadow range. The bigger the range, the further away that shadows are able to be recognised from things blocking the sun at a cost of performance.
 ---@param range integer The range to set
 function Camera.setShadowRange(range) end
 
@@ -1010,6 +1240,10 @@ function Camera.setOffsetX(xOffset) end
 ---Sets the y position offset for rendering.
 ---@param yOffset integer The y offset
 function Camera.setOffsetY(yOffset) end
+
+--Sets the raycast filter used by the camera.
+---@param raycastFilter integer
+function Camera.setFilter(raycastFilter) end
 
 ---@class Display The display functions like a monitor in Scrap Mechanic, allowing you to draw anything on it using a computer.
 local Display = {}
@@ -1101,6 +1335,13 @@ function Display.drawText(x, y, text, color, fontName, maxWidth, wordWrappingEna
 ---@param color color The color of the created shape
 function Display.drawWithPoints(points, color) end
 
+-- Translates a world position to a 2D screen position
+---@param cameraPosition Vec3 The cameras position in world space
+---@param worldPosition Vec3 The target position in world space
+---@return number x The x coordinate
+---@return number y The y coordinate
+function Display.screenCoordinateFromWorldPosition(cameraPosition, worldPosition) end
+
 ---Draws a image on the screen.  Images are loaded from the DisplayImages folder in the mods directory, you can generate your own images with the use of our PNG to pixel data python conveter in the mod.
 ---@param width integer The width of the image
 ---@param height integer The height of the image
@@ -1108,10 +1349,15 @@ function Display.drawWithPoints(points, color) end
 ---@param customSearch boolean If the path is a custom path or not
 function Display.loadImage( width, height, path, customSearch ) end
 
----Returns the dimensions of the display.
----@return number width The width of the display
----@return number height The height of the display
+---Returns the pixel dimensions of the display.
+---@return number width The width of the display.
+---@return number height The height of the display.
 function Display.getDimensions() end
+
+---Returns the size of the display in meters.
+---@return number width The width of the display.
+---@return number height The height of the display.
+function Display.getSize() end
 
 ---Hides the display, making it invisible to all players.
 function Display.hide() end
@@ -1167,7 +1413,6 @@ function Display.getOptimizationThreshold() end
 ---@return number height The height of the text
 function Display.calcTextSize(text, font, maxWidth, wordWrappingEnabled, dynamicHeight) end
 
----@deprecated
 ---Draws ASCF text to a display
 ---@param xOffset number The x-coordinate
 ---@param yOffset number The y-coordinate
@@ -1179,7 +1424,6 @@ function Display.calcTextSize(text, font, maxWidth, wordWrappingEnabled, dynamic
 ---@param colorToggled boolean? If it should support colors or not in text.
 function Display.drawASCFText( xOffset, yOffset, text, fontName, color, rotation, fontSize, colorToggled ) end
 
----@deprecated
 ---Calculates text size.
 ---@param fontName string THe name of the font
 ---@param text string The text
@@ -1298,6 +1542,14 @@ function Hologram.createSphere(position, rotation, scale, color) end
 ---@return integer id The ID of the object
 function Hologram.createCustomObject(uuid, position, rotation, scale, color) end
 
+---Creates a hologram of the given blueprint JSON.
+---@param blueprintJson table | string The blueprint json.
+---@param scale number The scale of the blueprint relative to the real size, 1 is 1:1.
+---@param offsetPosition Vec3 The offset position from the hologram to place the hologram.
+---@param offsetRotation Quat The offset rotation from the hologram to place the hologram.
+---@return table ids ids of the effects of the created blueprint.
+function Hologram.createBlueprint(blueprintJson, scale, offsetPosition, offsetRotation) end
+
 ---Gets the object by object ID and returns a table containing the data of that object, or nil if it doesn't exist.
 ---@param index number The object you want to retrieve
 ---@return HologramObject? object Returns a table (if the object exists) or nil (if the object does not exist)
@@ -1385,12 +1637,23 @@ function Radar.setVerticalScanAngle(angle) end
 ---@param angle number The horizontal scan angle (range: 10 to 90 degrees)
 function Radar.setHorizontalScanAngle(angle) end
 
+---@class RadarWarningReceiver Allows you to detect actively targeting radars
+local RadarWarningReceiver = {}
+
+---Gets the radar positions that are actively targeting the creation
+---@return RadarPosition[] radarPositions The positions of the targeting radars
+function RadarWarningReceiver.getTargets() end
+
 ---@class SeatController Allows you to control seats.
 local SeatController = {}
 
 ---Gets the seat data and returns it.
 ---@return SeatData? data The seat data. Nil if no seat has been connected
 function SeatController.getSeatData() end
+
+---Gets the seated characters camera data.
+---@return CameraData? data The seated characters camera data. Nil if no seat has been connected
+function SeatController.getCameraData() end
 
 ---Gets data for all connected joints and returns it.
 ---@return JointData[]? data The connected joints' data. Nil if no seat has been connected
@@ -1539,3 +1802,61 @@ function GravityController.getBodyMass() end
 ---Gets the mass of the creation the gravity controller is placed on.
 ---@return number mass The creation mass.
 function GravityController.getCreationMass() end
+
+
+---@class CollisionDetector Allows you to see collision and melee event that include the component.
+local CollisionDetector = {}
+
+---Returns the last collision event that occured.
+---@return CollisionEvent collisionEvent The latest collision event.
+function CollisionDetector.getLastCollisionEvent() end
+
+---Returns the last melee event that occured.
+---@return MeleeEvent meleeEvent The latest melee event.
+function CollisionDetector.getLastMeleeEvent() end
+
+---Returns true if the shape is actively colliding with something.
+---@return boolean bool Wether the shape is colliding or not.
+function CollisionDetector.isColliding() end
+
+---Returns true if the shape is actively being meleed.
+---@return boolean bool Wether the shape is being meleed or not.
+function CollisionDetector.isMeleeing() end
+
+-----------------------------------------------------------------------------------------------------------------
+---                                                                                                           ---
+--- ██████╗  ██████╗ ██╗    ██╗███████╗██████╗     ███████╗ ██████╗ ██████╗ ██╗   ██╗ ██████╗███████╗███████╗ ---
+--- ██╔══██╗██╔═══██╗██║    ██║██╔════╝██╔══██╗    ██╔════╝██╔═══██╗██╔══██╗██║   ██║██╔════╝██╔════╝██╔════╝ ---
+--- ██████╔╝██║   ██║██║ █╗ ██║█████╗  ██████╔╝    ███████╗██║   ██║██████╔╝██║   ██║██║     █████╗  ███████╗ ---
+--- ██╔═══╝ ██║   ██║██║███╗██║██╔══╝  ██╔══██╗    ╚════██║██║   ██║██╔══██╗██║   ██║██║     ██╔══╝  ╚════██║ ---
+--- ██║     ╚██████╔╝╚███╔███╔╝███████╗██║  ██║    ███████║╚██████╔╝██║  ██║╚██████╔╝╚██████╗███████╗███████║ ---
+--- ╚═╝      ╚═════╝  ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚═════╝╚══════╝╚══════╝ ---
+---                                                                                                           ---
+-----------------------------------------------------------------------------------------------------------------
+
+
+--- A PowerSource class that serves as the base for all power source types.
+---@class PowerSource
+PowerSource = {}
+
+--- Retrieves the name of the power source.
+---@return string name The name of the power source
+function PowerSource.getName() end
+
+--- Returns the current power output being produced and supplied to all connected computers.
+---@return number power The total power output in kilowatts (kW)
+function PowerSource.getPower() end
+
+
+---A PowerSource component that generates power based on how much RPM a bearing is spinning.
+---@class Generator : PowerSource
+local Generator = {}
+
+---Sets the handle position. This adjusts how much power the generator produces.
+---Note: Higher values require more torque to maintain RPM.
+---@param handlePosition number A value between 0 (minimum power output) and 1 (maximum power output).
+function Generator.setHandlePosition(handlePosition) end
+
+---Retrieves the current handle position of the generator.
+---@return number handlePosition A value between 0 and 1 representing the current handle position.
+function Generator.getHandlePosition() end

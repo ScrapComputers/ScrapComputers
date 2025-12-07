@@ -40,9 +40,15 @@ function NetworkPortClass:sv_createData()
             sm.scrapcomputers.errorHandler.assertArgument(name, 1, {"string"})
             sm.scrapcomputers.errorHandler.assert(not (#sm.scrapcomputers.componentManager.getComponents("Antennas", self.interactable, true, sm.interactable.connectionType.networkingIO) == 0), nil, "No antenna connected!")
 
+            local parentInterfaces = sm.scrapcomputers.componentManager.getComponents("NetworkInterfaces", self.interactable, false, sm.interactable.connectionType.networkingIO, true)
+            local childInterfaces = sm.scrapcomputers.componentManager.getComponents ("NetworkInterfaces", self.interactable, true, sm.interactable.connectionType.networkingIO, true)
+            
+            ---@type ShapeClass
+            local obj = sm.scrapcomputers.table.getItemAt(parentInterfaces, 1) or sm.scrapcomputers.table.getItemAt(childInterfaces, 1)
+            
             ---@param antenna ShapeClass
             for _, antenna in pairs(sm.scrapcomputers.dataList["NetworkInterfaces"]) do
-                if antenna.sv.isAntenna and antenna.shape.id ~= self.shape.id then
+                if antenna.sv.isAntenna and antenna.shape.id ~= obj.shape.id then
                     if antenna.sv.saved.name == name then
                         antenna:server_sendActualPacket(data)
                         return
@@ -90,7 +96,13 @@ function NetworkPortClass:server_readPacket()
 end
 
 function NetworkPortClass:server_sendPacket(data)
-    table.insert(self.sv.packets, type(data) == "table" and sm.scrapcomputers.table.clone(data) or data)
+    local doClone = sm.scrapcomputers.config.getConfig("scrapcomputers.global.networkTableReferences").selectedOption == 1
+
+    if type(data) == "table" then
+        data = doClone and sm.scrapcomputers.table.clone(data) or data
+    end
+
+    table.insert(self.sv.packets, data)
 end
 
 -- CLIENT --

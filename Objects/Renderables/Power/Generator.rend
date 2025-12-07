@@ -1,0 +1,31 @@
+{
+	"lodList": [
+		{
+			"animationList": [
+				{
+					"file": "$CONTENT_DATA/Objects/Mesh/Power/Generator.dae",
+					"name": "HandleBone"
+				}
+			],
+			"mesh": "$CONTENT_DATA/Objects/Mesh/Power/Generator.dae",
+			"subMeshList": [
+				{
+					"material": "DifAsgNor",
+					"textureList": [
+						"$CONTENT_DATA/Objects/Textures/Generator/Generator_DIF.png",
+						"$CONTENT_DATA/Objects/Textures/Generator/Generator_ASG.png",
+						"$CONTENT_DATA/Objects/Textures/NOR.ppm"
+					]
+				},
+				{
+					"material": "SkelAnimDifAsgNor",
+					"textureList": [
+						"$CONTENT_DATA/Objects/Textures/Generator/Generator_DIF.png",
+						"$CONTENT_DATA/Objects/Textures/Generator/Generator_ASG.png",
+						"$CONTENT_DATA/Objects/Textures/NOR.ppm"
+					]
+				}
+			]
+		}
+	]
+}

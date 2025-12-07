@@ -6,7 +6,7 @@ sm.scrapcomputers.exampleManager.addonExamples = sm.scrapcomputers.exampleManage
 
 ---Reloads all the examples.
 function sm.scrapcomputers.exampleManager.reloadExamples()
-    local bultInExamples = sm.json.open(sm.scrapcomputers.jsonFiles.ExamplesList)
+    local bultInExamples = sm.json.open("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/examples.json")
     local mergedList = sm.scrapcomputers.table.mergeLists(bultInExamples, sm.scrapcomputers.exampleManager.addonExamples)
 
     sm.scrapcomputers.exampleManager.examples = mergedList
@@ -40,6 +40,21 @@ function sm.scrapcomputers.exampleManager.addExample(name, script)
 
     table.insert(sm.scrapcomputers.exampleManager.addonExamples, exampleData)
     sm.scrapcomputers.exampleManager.reloadExamples()
+end
+
+---Gets a example from name
+---@param name string The example name
+---@return Example? example The discovered example, nil if not found
+function sm.scrapcomputers.exampleManager.loadExample(name)
+    sm.scrapcomputers.errorHandler.assertArgument(name, nil, {"string"})
+
+    local lowerName = name:lower()
+    local examples = sm.scrapcomputers.exampleManager.getExamples()
+    for _, example in pairs(examples) do
+        if example.name:lower() == lowerName then
+            return example
+        end
+    end
 end
 
 sm.scrapcomputers.exampleManager.reloadExamples()

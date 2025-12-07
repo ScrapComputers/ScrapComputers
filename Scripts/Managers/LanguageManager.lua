@@ -110,18 +110,20 @@ end
 --- @return string translatedText The translated and formatted text if available, otherwise returns the input text.
 function sm.scrapcomputers.languageManager.translatable(text, ...)
     sm.scrapcomputers.errorHandler.assertArgument(text, 1, {"string"})
-    sm.scrapcomputers.languageManager.reloadLanguages()
 
     local data = sm.scrapcomputers.languageManager.languages[sm.scrapcomputers.languageManager.getSelectedLanguage()]
-    if not data or not data[text] then
-        sm.scrapcomputers.logger.error("LanguageManager.lua", "Cannot find translatable string: \"" .. text .. "\"")
+    local value = data[text]
+    if not data or not value then
         return text
     end
     
-    return string.format(data[text], ...)
+    if select("#", ...) > 0 then
+        return string.format(value, ...)
+    end
+
+    return value
 end
 
 sm.scrapcomputers.languageManager.addLanguage("632be32f-6ebd-414e-a061-d45906ae4dc6", "English")
-sm.scrapcomputers.languageManager.addLanguage("632be32f-6ebd-414e-a061-d45906ae4dc6", "Dutch")
 
 sm.scrapcomputers.languageManager.autoDetectLanguage()

@@ -16,7 +16,11 @@
         "inject-field",
         "missing-parameter",
         "assign-type-mismatch",
-        "redefined-local"
+        "redefined-local",
+        "cast-local-type",
+        "redundant-return-value",
+        "missing-return",
+        "return-type-mismatch"
     ],
     "files.associations": {
         "*.layout": "xml",

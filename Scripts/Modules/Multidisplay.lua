@@ -16,75 +16,55 @@ function sm.scrapcomputers.multidisplay.new(displays, columns, rows)
     sm.scrapcomputers.errorHandler.assertArgument(columns , 2, {"integer"})
     sm.scrapcomputers.errorHandler.assertArgument(rows    , 3, {"integer"})
 
-    sm.scrapcomputers.errorHandler.assert(columns * rows == #displays, nil, "Iliegal MultiDisplay creation (Rows * Columns does NOT match with the amount of displays)")
-    sm.scrapcomputers.errorHandler.assert(#displays > 0, 1, "Atleast 1 or more displays are required.")
+    sm.scrapcomputers.errorHandler.assert(columns * rows == #displays, 1, "Iliegal MultiDisplay creation (Rows * Columns does NOT match with the amount of displays)")
+    sm.scrapcomputers.errorHandler.assert(#displays > 0, 1, "At least 1 or more displays are required.")
 
     local firstDisplayWidth, firstDisplayHeight = displays[1].getDimensions()
+    local firstDispalySizeX, firstDispalySizeY = displays[1].getSize()
+
+    for i, display in pairs(displays) do
+        local displayWidth, displayHeight = display.getDimensions()
+        local displaySizeX, dispalySizeY = display.getSize()
+
+        sm.scrapcomputers.errorHandler.assert(displayWidth == firstDisplayWidth, 1, "Iliegal MultiDisplay creation (Display index " .. i .. " has a different resolution than the first specified)")
+        sm.scrapcomputers.errorHandler.assert(displayHeight == firstDisplayHeight, 1, "Iliegal MultiDisplay creation (Display index " .. i .. " has a different resolution than the first specified)")
+        sm.scrapcomputers.errorHandler.assert(displaySizeX == firstDispalySizeX, 1, "Iliegal MultiDisplay creation (Display index " .. i .. " has a different size than the first specified)")
+        sm.scrapcomputers.errorHandler.assert(dispalySizeY == firstDispalySizeY, 1, "Iliegal MultiDisplay creation (Display index " .. i .. " has a different size than the first specified)")
+    end
+
     local mainDisplay = sm.scrapcomputers.virtualdisplay.new(firstDisplayWidth * columns, firstDisplayHeight * rows)
 
     local renderFunc = mainDisplay.render
     mainDisplay.render = function () end
 
     local function runForAll(funcName)
-        return function (param) for _, display in pairs(displays) do display[funcName](param) end end
+        return function (...) for _, display in pairs(displays) do display[funcName](...) end end
     end
 
 
     local clearFunc = mainDisplay.clear
     mainDisplay.clear = function (color)
-        sm.scrapcomputers.errorHandler.assertArgument(color, nil, {"Color", "string", "nil"})
+        sm.scrapcomputers.errorHandler.assertArgument(color, nil, {"Color", "string", "integer", "nil"})
 
         clearFunc(color)
         runForAll("clear")()
     end
 
     mainDisplay.update = function()
-        local output = renderFunc()
-        local maxBorderFactor = 0.05
+        local output = renderFunc(0, 0, true)
+        local len = #output
 
-        local centerRow = (rows + 1) / 2
-        local centerCol = (columns + 1) / 2
-        local maxRowDist = centerRow - 1
-        local maxColDist = centerCol - 1
+        for i = 1, len do
+            local pixel = output[i]
+            local pixel_x, pixel_y = pixel.x, pixel.y
+            local column = math_floor((firstDisplayWidth + pixel_x - 1) / firstDisplayWidth)
+            local row = math_floor((firstDisplayHeight + pixel_y - 1) / firstDisplayHeight)
 
-        local function computeOffset(row, col)
-            local offsetX, offsetY = 0, 0
-
-            if col == 1 or col == columns then
-                local colDist = math_abs(col - centerCol)
-                local factorX = maxBorderFactor * (1 - colDist / maxColDist)
-                offsetX = (col == 1 and 1 or -1) * factorX * firstDisplayWidth
-            end
-
-            if row == 1 or row == rows then
-                local rowDist = math_abs(row - centerRow)
-                local factorY = maxBorderFactor * (1 - rowDist / maxRowDist)
-                offsetY = (row == 1 and 1 or -1) * factorY * firstDisplayHeight
-            end
-
-            -- Double the offset if it's a corner
-            if (col == 1 or col == columns) and (row == 1 or row == rows) then
-                offsetX = offsetX * 2
-                offsetY = offsetY * 2
-            end
-
-            return offsetX, offsetY
-        end
-
-        for _, pixel in ipairs(output) do
-            local x, y = pixel.x, pixel.y
-            local col = math_min(math_floor((x - 1) / firstDisplayWidth) + 1, columns)
-            local row = math_min(math_floor((y - 1) / firstDisplayHeight) + 1, rows)
-            local index = (row - 1) * columns + col
-
-            local display = displays[index]
-            if display then
-                local localX = ((x - 1) % firstDisplayWidth) + 1
-                local localY = ((y - 1) % firstDisplayHeight) + 1
-                local offsetX, offsetY = computeOffset(row, col)
-
-                display.drawPixel(localX + offsetX, localY + offsetY, pixel.color)
-            end
+            displays[(row - 1) * columns + column].drawPixel(
+                pixel_x - (column - 1) * firstDisplayWidth, 
+                pixel_y - (row - 1) * firstDisplayHeight, 
+                pixel.color
+            )
         end
 
         runForAll("update")()
@@ -103,8 +83,6 @@ function sm.scrapcomputers.multidisplay.new(displays, columns, rows)
         runForAll("setRenderDistance")(distance)
     end
 
-    mainDisplay.optimize = runForAll("optimize")
-
     mainDisplay.setOptimizationThreshold = function (threshold)
         sm.scrapcomputers.errorHandler.assertArgument(threshold, nil, {"number"})
         runForAll("setOptimizationThreshold")(threshold)
@@ -112,11 +90,6 @@ function sm.scrapcomputers.multidisplay.new(displays, columns, rows)
 
     mainDisplay.getOptimizationThreshold = function ()
         return displays[1].getOptimizationThreshold()
-    end
-
-    mainDisplay.autoUpdate = function (bool)
-        sm.scrapcomputers.errorHandler.assertArgument(bool, nil, {"boolean"})
-        runForAll("autoUpdate")(bool)
     end
 
     mainDisplay.getTouchData = function ()

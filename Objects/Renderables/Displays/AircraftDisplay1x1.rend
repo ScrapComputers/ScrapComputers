@@ -1,0 +1,13 @@
+{
+	"lodList": [
+		{
+			"mesh": "$CONTENT_DATA/Objects/Mesh/Displays/AircraftDisplay1x1.obj",
+			"subMeshList": [
+				{
+					"material": "Dif",
+					"textureList": []
+				}
+			]
+		}
+	]
+}

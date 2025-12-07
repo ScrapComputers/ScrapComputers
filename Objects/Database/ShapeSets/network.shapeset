@@ -6,7 +6,7 @@
                 "y": 1,
                 "z": 1
             },
-            "color": "eeeeee",
+            "color": "2222222",
             "physicsMaterial": "Mechanical",
             "ratings" : {
                 "buoyancy" : 4,
@@ -29,7 +29,7 @@
                 "y": 1,
                 "z": 1
             },
-            "color": "eeeeee",
+            "color": "222222",
             "physicsMaterial": "Mechanical",
             "ratings" : {
                 "buoyancy" : 6,

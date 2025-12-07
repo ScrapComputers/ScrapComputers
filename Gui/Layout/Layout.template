@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.86197916666666663 0.80555555555555558" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.11149425287356322" align="HStretch Top" name="MainHeader">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="MainHeaderText">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                <Property key="Caption" value="TITLE GOES HERE"/>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.11149425287356322 1 0.88735632183908042" align="Stretch" name="MainMain"/>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

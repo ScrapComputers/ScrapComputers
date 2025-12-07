@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.328125 0.24537037037037038" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.36603773584905658" align="HStretch Top" name="MainHeader">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="MainHeaderText">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_HeaderLarge_Wide"/>
+                <Property key="Caption" value="TITLE GOES HERE"/>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.36603773584905658 1 0.63018867924528299" align="Stretch" name="MainMain">
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.031746031746031744 0.11976047904191617 0.93650793650793651 0.32934131736526945" name="MainMainInput">
+                <Property key="FontName" value="SM_Label"/>
+                <Property key="Password" value="true"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="PrimaryButton" position_real="0.023809523809523808 0.50898203592814373 0.95238095238095233 0.38922155688622756" name="MainMainEnterBtn">
+                <Property key="FontName" value="SM_Button"/>
+                <Property key="Caption" value="Enter This Shit"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

@@ -4,7 +4,7 @@ sm.scrapcomputers.fontManager = sm.scrapcomputers.fontManager or {
 }
 
 if not next(sm.scrapcomputers.fontManager.fonts) then
-    local builtInFonts = sm.json.open(sm.scrapcomputers.jsonFiles.BuiltInFonts)
+    local builtInFonts = sm.json.open("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/fonts.json")
     for _, fontName in pairs(builtInFonts) do
         dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Fonts/" .. fontName .. ".lua")
     end

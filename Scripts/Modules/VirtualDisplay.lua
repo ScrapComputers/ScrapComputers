@@ -1,126 +1,80 @@
 -- Hopefully i can reimplement this in a less shittier way. This is absolutely discusting and must die.
 --      - VeraDev
 
+-- Had to fix this code because Vera is a noob
+--      - Ben Bingo
 
-local sm_scrapcomputers_errorHandler_assertArgument = sm.scrapcomputers.errorHandler.assertArgument
-local sm_scrapcomputers_errorHandler_assert         = sm.scrapcomputers.errorHandler.assert
-local sm_color_new                                  = sm.color.new
-local math_floor                                    = math.floor
-local math_abs                                      = math.abs
-local table_sort                                    = table.sort
-local type                                          = type
-local math_huge                                     = math.huge
-local string_sub                                    = string.sub
-local string_byte                                   = string.byte
-local sm_util_clamp                                 = sm.util.clamp
 
-local sm_scrapcomputers_backend_cameraColorCache = sm.scrapcomputers.backend.cameraColorCache
+local sm_scrapcomputers_errorHandler_assertArgument  = sm.scrapcomputers.errorHandler.assertArgument
+local sm_scrapcomputers_errorHandler_assert          = sm.scrapcomputers.errorHandler.assert
+local sm_scrapcomputers_languageManager_translatable = nil
+local sm_scrapcomputers_utf8_getCharacterAt          = sm.scrapcomputers.utf8.getCharacterAt
+local sm_color_new                                   = sm.color.new
+local math_floor                                     = math.floor
+local math_abs                                       = math.abs
+local table_sort                                     = table.sort
+local type                                           = type
+local math_huge                                      = math.huge
+local string_sub                                     = string.sub
+local string_byte                                    = string.byte
+local sm_util_clamp                                  = sm.util.clamp
+local bit_bor                                        = bit.bor
+local bit_band                                       = bit.band
+local bit_lshift                                     = bit.lshift
+local bit_rshift                                     = bit.rshift
 
 ---Virtual displays enable the emulation of additional screens, allowing you to create fake displays in any resolution.
 sm.scrapcomputers.virtualdisplay = {}
+sm.scrapcomputers.backend.virtualDisplayCache = {}
 
-local function getUTF8Character(str, index)
-    local byte = string_byte(str, index)
-    local byteCount = 1
-
-    if byte >= 0xC0 and byte <= 0xDF then
-        byteCount = 2
-    elseif byte >= 0xE0 and byte <= 0xEF then
-        byteCount = 3
-    elseif byte >= 0xF0 and byte <= 0xF7 then
-        byteCount = 4
+local function colorToID(color)
+    if not color then
+        color = sm_color_new(0, 0, 0)
+    elseif type(color) == "string" then
+        color = sm_color_new(color)
+    elseif type(color) == "number" then
+        return color
     end
 
-    return string_sub(str, index, index + byteCount - 1)
+    local scale = 255
+    return bit_bor(bit_lshift(math_floor(color.r * scale), 16), bit_lshift(math_floor(color.g * scale), 8), math_floor(color.b * scale))
 end
 
-local function scaledAdd(params, drawBuffer)
-    for x = params.x, params.x + params.scale.x - 1, 1 do
-        for y = params.y, params.y + params.scale.y - 1, 1 do
-            drawBuffer[#drawBuffer+1] = {
-                x     = x,
-                y     = y,
-                color = params.color
-            }
-        end
-    end
+local function idToColor(colorID)
+    local scale = 1 / 255
+
+    return sm_color_new(
+        bit_band(bit_rshift(colorID, 16), 0xFF) * scale,
+        bit_band(bit_rshift(colorID, 8), 0xFF) * scale,
+        bit_band(colorID, 0xFF) * scale
+    )
 end
 
-local function drawCircle(x, y, radius, color, isFilled, drawBuffer, displayWidth, displayHeight)
-    sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(radius, 3, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(color, 4, {"Color", "string"})
+local function coordinateToIndex(x, y, width)
+    return (y - 1) * width + x
+end
 
-    sm_scrapcomputers_errorHandler_assert(radius, 3, "Radius is too small!")
+local function round(numb)
+    return math_floor(numb + 0.5)
+end
 
-    color = type(color) == "string" and sm_color_new(color) or color
+local function scaledAdd(x, y, sx, sy, color, drawBuffer, width)
+    local x1, y1 = x, y
+    local mx = sx + x - 1
 
-    local f = 1 - radius
-    local ddF_x = 1
-    local ddF_y = -2 * radius
-    local cx = 0
-    local cy = radius
+    for _ = 1, sx * sy do
+        drawBuffer[coordinateToIndex(x1, y1, width)] = color
 
-    local function plot(xp, yp)
-        if xp >= 1 and xp <= displayWidth and yp >= 1 and yp <= displayHeight then
-            drawBuffer[#drawBuffer+1] = {
-                x     = xp,
-                y     = yp,
-                color = color
-            }
-        end
-    end
-
-    if isFilled then
-        scaledAdd({x = x - radius, y = y, scale = {x = radius * 2 + 1, y = 1}, color = color}, drawBuffer)
-    else
-        plot(x, y + radius)
-        plot(x, y - radius)
-        plot(x + radius, y)
-        plot(x - radius, y)
-    end
-
-    while cx < cy do
-        if f >= 0 then
-            cy = cy - 1
-            ddF_y = ddF_y + 2
-            f = f + ddF_y
-        end
-        cx = cx + 1
-        ddF_x = ddF_x + 2
-        f = f + ddF_x
-
-        if isFilled then
-            scaledAdd({x = x - cx, y = y + cy, scale = {x = cx * 2 + 1, y = 1}, color = color}, drawBuffer)
-            scaledAdd({x = x - cy, y = y + cx, scale = {x = cy * 2 + 1, y = 1}, color = color}, drawBuffer)
-
-            scaledAdd({x = x - cx, y = y - cy, scale = {x = cx * 2 + 1, y = 1}, color = color}, drawBuffer)
-            scaledAdd({x = x - cy, y = y - cx, scale = {x = cy * 2 + 1, y = 1}, color = color}, drawBuffer)
-        else
-            plot(x + cx, y + cy)
-            plot(x - cx, y + cy)
-            plot(x + cx, y - cy)
-            plot(x - cx, y - cy)
-            plot(x + cy, y + cx)
-            plot(x - cy, y + cx)
-            plot(x + cy, y - cx)
-            plot(x - cy, y - cx)
+        x1 = x1 + 1
+    
+        if x1 > mx then
+            x1 = x
+            y1 = y1 + 1
         end
     end
 end
 
-local function drawLine(x0, y0, x1, y1, color, drawBuffer, displayWidth, displayHeight)
-    sm_scrapcomputers_errorHandler_assertArgument(x0, 1, { "number" })
-    sm_scrapcomputers_errorHandler_assertArgument(y0, 2, { "number" })
-
-    sm_scrapcomputers_errorHandler_assertArgument(x1, 3, { "number" })
-    sm_scrapcomputers_errorHandler_assertArgument(y1, 4, { "number" })
-
-    sm_scrapcomputers_errorHandler_assertArgument(color, 5, { "Color", "string" })
-
-    color = type(color) == "string" and sm_color_new(color) or color
-
+local function drawLine(x0, y0, x1, y1, color, drawBuffer, width, height)
     local dx = math_abs(x1 - x0)
     local dy = math_abs(y1 - y0)
     local sx = (x0 < x1) and 1 or -1
@@ -128,13 +82,7 @@ local function drawLine(x0, y0, x1, y1, color, drawBuffer, displayWidth, display
     local err = dx - dy
 
     while true do
-        if x0 > 0 and y0 > 0 and x0 <= displayWidth and y0 <= displayHeight then
-            drawBuffer[#drawBuffer+1] = {
-                x     = x0,
-                y     = y0,
-                color = color
-            }
-        end
+        drawBuffer[coordinateToIndex(x0, y0, width)] = color
 
         if x0 == x1 and y0 == y1 then break end
 
@@ -151,76 +99,199 @@ local function drawLine(x0, y0, x1, y1, color, drawBuffer, displayWidth, display
     end
 end
 
-local function drawTriangle(x1, y1, x2, y2, x3, y3, color, isFilled, drawBuffer, displayWidth, displayHeight)
-    sm_scrapcomputers_errorHandler_assertArgument(x1, 1, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(y1, 2, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(x2, 3, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(y2, 4, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(x3, 5, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(y3, 6, {"number"})
-
-    sm_scrapcomputers_errorHandler_assertArgument(color, 7, {"Color", "string"})
-
-    color = type(color) == "string" and sm_color_new(color) or color
-
-    drawLine(x1, y1, x2, y2, color, drawBuffer, displayWidth, displayHeight)
-    drawLine(x2, y2, x3, y3, color, drawBuffer, displayWidth, displayHeight)
-    drawLine(x3, y3, x1, y1, color, drawBuffer, displayWidth, displayHeight)
+local function drawCircle(x, y, radius, color, isFilled , drawBuffer, width, height)
+    local f = 1 - radius
+    local ddF_x = 1
+    local ddF_y = -2 * radius
+    local cx = 0
+    local cy = radius
 
     if isFilled then
-        local sortedPoints = {
-            {x = x1, y = y1},
-            {x = x2, y = y2},
-            {x = x3, y = y3}
-        }
+        scaledAdd(x - radius, y, radius * 2 + 1, 1, color, width)
+    else
+        drawBuffer[coordinateToIndex(x, y + radius, width)] = color
+        drawBuffer[coordinateToIndex(x, y - radius, width)] = color
+        drawBuffer[coordinateToIndex(x + radius, y, width)] = color
+        drawBuffer[coordinateToIndex(x - radius, y, width)] = color
+    end
 
-        table_sort(sortedPoints, function(a, b) return a.y < b.y end)
-
-        local x0, y0 = sortedPoints[1].x, sortedPoints[1].y
-        local x1, y1 = sortedPoints[2].x, sortedPoints[2].y
-        local x2, y2 = sortedPoints[3].x, sortedPoints[3].y
-
-        local function interpolate(x0, y0, x1, y1, x)
-            return x0 + (x - y0) * (x1 - x0) / (y1 - y0)
+    while cx < cy do
+        if f >= 0 then
+            cy = cy - 1
+            ddF_y = ddF_y + 2
+            f = f + ddF_y
         end
 
-        for y = y0, y2 do
-            local xa = y < y1 and interpolate(x0, y0, x1, y1, y) or interpolate(x1, y1, x2, y2, y)
-            local xb = y < y1 and interpolate(x0, y0, x2, y2, y) or interpolate(x0, y0, x2, y2, y)
+        cx = cx + 1
+        ddF_x = ddF_x + 2
+        f = f + ddF_x
 
-            if xa > xb then xa, xb = xb, xa end
+        if isFilled then
+            scaledAdd(x - cx, y + cy, cx * 2 + 1, 1, color, drawBuffer, width)
+            scaledAdd(x - cy, y + cx, cy * 2 + 1, 1, color, drawBuffer, width)
 
-            for x = math_floor(xa + 0.5), math_floor(xb + 0.5) do
-                if x >= 1 and x <= displayWidth and y >= 1 and y <= displayHeight then
-                    drawBuffer[#drawBuffer+1] = {
-                        x     = x,
-                        y     = y,
-                        color = type(color) == "string" and sm_color_new(color) or color
-                    }
-                end
-            end
+            scaledAdd(x - cx, y - cy, cx * 2 + 1, 1, color, drawBuffer, width)
+            scaledAdd(x - cy, y - cx, cy * 2 + 1, 1, color, drawBuffer, width)
+        else
+            drawBuffer[coordinateToIndex(x + cx, y + cy, width)] = color
+            drawBuffer[coordinateToIndex(x - cx, y + cy, width)] = color
+            drawBuffer[coordinateToIndex(x + cx, y - cy, width)] = color
+            drawBuffer[coordinateToIndex(x - cx, y - cy, width)] = color
+            drawBuffer[coordinateToIndex(x + cy, y + cx, width)] = color
+            drawBuffer[coordinateToIndex(x - cy, y + cx, width)] = color
+            drawBuffer[coordinateToIndex(x + cy, y - cx, width)] = color
+            drawBuffer[coordinateToIndex(x - cy, y - cx, width)] = color
         end
     end
 end
 
-local function drawRect(x, y, width, height, color, isFilled, drawBuffer)
-    sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"number"})
-    sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"number"})
-    
-    sm_scrapcomputers_errorHandler_assertArgument(color, 5, {"Color", "string"})
-
-    color = type(color) == "string" and sm_color_new(color) or color
+local function drawTriangle(x1, y1, x2, y2, x3, y3, color, isFilled, drawBuffer, width, height)
+    drawLine(x1, y1, x2, y2, color, drawBuffer, width, height)
+    drawLine(x2, y2, x3, y3, color, drawBuffer, width, height)
+    drawLine(x3, y3, x1, y1, color, drawBuffer, width, height)
 
     if isFilled then
-        scaledAdd({x = x, y = y, color = color, scale = {x = width, y = height}}, drawBuffer)
+        local points = {{x = x1, y = y1}, {x = x2, y = y2}, {x = x3, y = y3}}
+        table_sort(points, function(a, b) return a.y < b.y end)
+
+        local x0, y0 = points[1].x, points[1].y
+        local x1, y1 = points[2].x, points[2].y
+        local x2, y2 = points[3].x, points[3].y
+
+        local function drawScanlineSection(yStart, yEnd, xA, yA, xB, yB)
+            local dy = yB - yA
+            if dy == 0 then return end
+            local invSlopeA = (xB - xA) / dy
+
+            dy = yEnd - yStart
+            for i = 0, dy - 1 do
+                local y = yStart + i
+                local xa = xA + invSlopeA * (y - yA)
+                local xb = x0 + ((x2 - x0) / (y2 - y0)) * (y - y0)
+
+                local sx, ex = xa, xb
+                if sx > ex then sx, ex = ex, sx end
+                sx = math_floor(sx + 0.5)
+                ex = math_floor(ex + 0.5)
+
+                for x = sx, ex do
+                    drawBuffer[coordinateToIndex(x, y, width)] = color
+                end
+            end
+        end
+
+        if y1 ~= y0 then
+            drawScanlineSection(y0, y1, x0, y0, x1, y1)
+        end
+        if y2 ~= y1 then
+            drawScanlineSection(y1, y2 + 1, x1, y1, x2, y2)
+        end
+    end
+end
+    
+
+local function drawRect(x, y, rWidth, rHeight, color, isFilled, drawBuffer, width, height)
+    if rWidth == 1 and rHeight == 1 then
+        drawBuffer[coordinateToIndex(x, y, width)] = color
+        return
     end
 
-    scaledAdd({x = x, y = y, scale = {x = width, y = 1}, color = color}, drawBuffer)
-    scaledAdd({x = x + width - 1, y = y + 1, scale = {x = 1, y = height - 2}, color = color}, drawBuffer)
-    scaledAdd({x = x, y = y + 1, scale = {x = 1, y = height - 2}, color = color}, drawBuffer)
-    scaledAdd({x = x, y = y + height - 1, scale = {x = width, y = 1}, color = color}, drawBuffer)
+    if isFilled then
+        scaledAdd(x, y, rWidth, rHeight, color, drawBuffer, width)
+        return
+    end
+
+    scaledAdd(x, y, rWidth, 1, color, drawBuffer, width)
+    scaledAdd(x + rWidth - 1, y + 1, 1, rHeight - 2, color, drawBuffer, width)
+    scaledAdd(x, y + 1, 1, rHeight - 2, color, drawBuffer, width)
+    scaledAdd(x, y + rHeight - 1, rWidth, 1,  color, drawBuffer, width)
+end
+
+local function drawWithPoints(flatPoints, color)
+    local function area(points)
+        local sum = 0
+        local count = math_floor(#points / 2)
+
+        for i = 1, count do
+            local xi, yi = points[i * 2 - 1], points[i * 2]
+            local j = (i % count) + 1
+            local xj, yj = points[j * 2 - 1], points[j * 2]
+            sum = sum + (xi * yj - xj * yi)
+        end
+
+        return sum * 0.5
+    end
+
+    local function isConvex(px, py, cx, cy, nx, ny, isCCW)
+        local dx1, dy1 = cx - px, cy - py
+        local dx2, dy2 = nx - cx, ny - cy
+
+        return (dx1 * dy2 - dy1 * dx2) > 0 == isCCW
+    end
+
+    local function pointInTriangle(px, py, ax, ay, bx, by, cx, cy)
+        local function sign(x1, y1, x2, y2, x3, y3)
+            return (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3)
+        end
+
+        local b1 = sign(px, py, ax, ay, bx, by) < 0
+        local b2 = sign(px, py, bx, by, cx, cy) < 0
+        local b3 = sign(px, py, cx, cy, ax, ay) < 0
+
+        return b1 == b2 and b2 == b3
+    end
+
+    local count = math_floor(#flatPoints / 2)
+    local indices = {}
+
+    for i = 1, count do indices[i] = i end
+
+    local isCCW = area(flatPoints) > 0
+    local safety = 0
+
+    while #indices >= 3 and safety < 1000 do
+        safety = safety + 1
+
+        local earFound = false
+
+        for i = 1, #indices do
+            local iPrev = indices[(i - 2) % #indices + 1]
+            local iCurr = indices[i]
+            local iNext = indices[i % #indices + 1]
+
+            local px, py = flatPoints[iPrev * 2 - 1], flatPoints[iPrev * 2]
+            local cx, cy = flatPoints[iCurr * 2 - 1], flatPoints[iCurr * 2]
+            local nx, ny = flatPoints[iNext * 2 - 1], flatPoints[iNext * 2]
+
+            if isConvex(px, py, cx, cy, nx, ny, isCCW) then
+                local ear = true
+
+                for j = 1, #indices do
+                    local test = indices[j]
+
+                    if test ~= iPrev and test ~= iCurr and test ~= iNext then
+                        local tx, ty = flatPoints[test * 2 - 1], flatPoints[test * 2]
+
+                        if pointInTriangle(tx, ty, px, py, cx, cy, nx, ny) then
+                            ear = false
+                            break
+                        end
+                    end
+                end
+
+                if ear then
+                    drawTriangle({px, py, cx, cy, nx, ny, color, true})
+
+                    table.remove(indices, i)
+                    earFound = true
+
+                    break
+                end
+            end
+        end
+
+        if not earFound then break end
+    end
 end
 
 -- Yes, this is negative and will only go into negatives, so it's seperated with actual displays.
@@ -232,6 +303,8 @@ local idDisplayCounter = -1
 ---@param displayHeight integer The height of the virtual display
 ---@return VirtualDisplay virtualDisplay The created virtual display
 function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
+    sm_scrapcomputers_languageManager_translatable = sm.scrapcomputers.languageManager.translatable
+    
     sm_scrapcomputers_errorHandler_assertArgument(displayWidth, 1, { "integer" })
     sm_scrapcomputers_errorHandler_assertArgument(displayHeight, 2, { "integer" })
 
@@ -244,74 +317,142 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
     local displayID = idDisplayCounter
     idDisplayCounter = idDisplayCounter - 1
 
-    local clearColor = nil
+    local clearColor = 0
+    local clearCache
 
     output.drawPixel = function(x, y, color)
         sm_scrapcomputers_errorHandler_assertArgument(x, 1, { "number" })
         sm_scrapcomputers_errorHandler_assertArgument(y, 2, { "number" })
 
-        if x < 1 or x > displayWidth or y < 1 or y > displayHeight then return end
-
-        sm_scrapcomputers_errorHandler_assertArgument(color, 3, { "Color", "string" })
-
-        color = type(color) == "string" and sm_color_new(color) or color
-
-        drawBuffer[#drawBuffer + 1] = {
-            x     = x,
-            y     = y,
-            color = color
-        }
+        drawBuffer[coordinateToIndex(round(x), round(y), displayWidth)] = colorToID(color)
+        clearCache = true
     end
 
     output.drawFromTable = function(tbl)
-        sm_scrapcomputers_errorHandler_assertArgument(tbl, nil, { "table" }, { "PixelTable" })
+        sm_scrapcomputers_errorHandler_assertArgument(tbl, nil, {"table"}, {"PixelTable"})
 
-        for i, pixel in pairs(tbl) do
+        for i = 1, #tbl do
+            local pixel = tbl[i]
             local pixel_x = pixel.x
             local pixel_y = pixel.y
             local pixel_color = pixel.color
 
             local xType = type(pixel_x)
             local yType = type(pixel_y)
-            local colorType = type(pixel_color)
 
-            sm_scrapcomputers_errorHandler_assert(pixel_x and pixel_y and pixel_color, "missing data at index " .. i .. ".")
+            sm_scrapcomputers_errorHandler_assert(pixel_x and pixel_y and pixel_color, "missing data at index "..i)
 
-            sm_scrapcomputers_errorHandler_assert(xType == "number", nil, "bad x value at index " .. i .. ". Expected number. Got " .. xType .. " instead!")
-            sm_scrapcomputers_errorHandler_assert(yType == "number", nil, "bad y value at index " .. i .. ". Expected number. Got " .. yType .. " instead!")
-            sm_scrapcomputers_errorHandler_assert(colorType == "Color" or colorType == "string", nil, "bad color at index " .. i .. ". Expected Color or string. Got " .. colorType .. " instead!")
-
-            drawBuffer[#drawBuffer + 1] = {
-                x     = pixel_x,
-                y     = pixel_y,
-                color = type(pixel_color) == "string" and sm_color_new(pixel_color) or pixel_color
-            }
+            sm_scrapcomputers_errorHandler_assert(xType == "number", nil, "bad x value at index "..i..". Expected number. Got "..xType.." instead!")
+            sm_scrapcomputers_errorHandler_assert(yType == "number", nil, "bad y value at index "..i..". Expected number. Got "..yType.." instead!")
+        
+            drawBuffer[coordinateToIndex(round(pixel_x), round(pixel_y), displayWidth)] = colorToID(pixel_color)
         end
     end
 
     output.clear = function(color)
-        sm_scrapcomputers_errorHandler_assertArgument(color, nil, { "Color", "string", "nil" })
-
-        if sm_scrapcomputers_backend_cameraColorCache then
-            sm_scrapcomputers_backend_cameraColorCache[displayID] = nil
-        end
-
         drawBuffer = {}
-        clearColor = color and (type(color) == "string" and sm_color_new(color) or color) or nil
+        clearColor = colorToID(color)
+        clearCache = true
+
+        sm.scrapcomputers.backend.virtualDisplayCache[displayID] = {}
     end
 
-    output.drawLine = function(x, y, x1, y1, color) drawLine(x, y, x1, y1, color, drawBuffer, displayWidth, displayHeight) end
+    output.drawLine = function(x, y, x1, y1, color)
+        sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
 
-    output.drawFilledCircle = function (x, y, radius, color) drawCircle(x, y, radius, color, true , drawBuffer, displayWidth, displayHeight) end
-    output.drawCircle       = function (x, y, radius, color) drawCircle(x, y, radius, color, false, drawBuffer, displayWidth, displayHeight) end
+        sm_scrapcomputers_errorHandler_assertArgument(x1, 3, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y1, 4, {"number"})
 
-    output.drawFilledTriangle = function (x1, y1, x2, y2, x3, y3, color) drawTriangle(x1, y1, x2, y2, x3, y3, color, true , drawBuffer, displayWidth, displayHeight) end
-    output.drawTriangle       = function (x1, y1, x2, y2, x3, y3, color) drawTriangle(x1, y1, x2, y2, x3, y3, color, false, drawBuffer, displayWidth, displayHeight) end
+        drawLine(round(x), round(y), round(x1), round(y1), colorToID(color), drawBuffer, displayWidth, displayHeight) 
+        clearCache = true
+    end
 
-    output.drawFilledRect = function(x, y, width, height, color) drawRect(x, y, width, height, color, true , drawBuffer) end
-    output.drawRect       = function(x, y, width, height, color) drawRect(x, y, width, height, color, false, drawBuffer) end
+    output.drawFilledCircle = function (x, y, radius, color)
+        sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(radius, 3, {"number"})
 
-    output.drawText = function (x, y, text, color, fontName, maxWidth, wordWrappingEnabled)
+        drawCircle(round(x), round(y), round(radius), colorToID(color), true, drawBuffer, displayWidth, displayHeight) 
+        clearCache = true
+    end
+
+    output.drawCircle = function (x, y, radius, color)
+        sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(radius, 3, {"number"})
+        
+        drawCircle(round(x), round(y), round(radius), colorToID(color), false, drawBuffer, displayWidth, displayHeight) 
+        clearCache = true
+    end
+
+    output.drawFilledTriangle = function (x1, y1, x2, y2, x3, y3, color)
+        sm_scrapcomputers_errorHandler_assertArgument(x1, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y1, 2, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(x2, 3, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y2, 4, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(x3, 5, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y3, 6, {"number"})
+
+        drawTriangle(round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), colorToID(color), true, drawBuffer, displayWidth, displayHeight) 
+        clearCache = true  
+    end
+
+    output.drawTriangle = function (x1, y1, x2, y2, x3, y3, color)
+        sm_scrapcomputers_errorHandler_assertArgument(x1, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y1, 2, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(x2, 3, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y2, 4, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(x3, 5, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y3, 6, {"number"})
+
+        drawTriangle(round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), colorToID(color), false, drawBuffer, displayWidth, displayHeight) 
+        clearCache = true
+    end
+
+    output.drawFilledRect = function(x, y, rWidth, rHeight, color)
+        sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
+
+        sm_scrapcomputers_errorHandler_assertArgument(rWidth, 3, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(rHeight, 4, {"number"})
+
+        drawRect(round(x), round(y), round(rWidth), round(rHeight), colorToID(color), true, drawBuffer, displayWidth, displayHeight) 
+        clearCache = true
+    end
+
+    output.drawRect = function(x, y, rWidth, rHeight, color)
+        sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
+
+        sm_scrapcomputers_errorHandler_assertArgument(rWidth, 3, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(rHeight, 4, {"number"})
+
+        drawRect(round(x), round(y), round(rWidth), round(rHeight), colorToID(color), false, drawBuffer, displayWidth, displayHeight) 
+        clearCache = true
+    end
+
+    output.drawWithPoints = function (points, color)
+        sm_scrapcomputers_errorHandler_assertArgument(points, 1, {"table"}, {"PointTable"})
+
+        local pointLength = #points
+        sm_scrapcomputers_errorHandler_assert(pointLength <= 64, 1, "PointTable length larger than 64")
+        sm_scrapcomputers_errorHandler_assert(pointLength % 2 == 0, 1, "PointTable length should be divisible by 2")
+
+        for i = 1, pointLength do
+            local coordinate = points[i]
+            local coordinateType = type(coordinate)
+
+            assert(coordinateType == "number", "bad value at index "..i..". Expected number. Got "..coordinateType.." instead!")
+            points[i] = round(coordinate)
+        end
+
+        drawWithPoints(points, colorToID(color))
+
+        clearCache = true
+    end
+
+    output.drawText = function (params_x, params_y, params_text, params_color, params_font, params_maxWidth, params_wordWrappingEnabled)
         sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
         sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
 
@@ -327,71 +468,83 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
     
         local font, errMsg = sm_scrapcomputers_fontManager_getFont(fontName)
         sm_scrapcomputers_errorHandler_assert(font, 5, errMsg)
-        
+
+        params_x = round(params_x)
+        params_y = round(params_y)
+        params_maxWidth = round(params_maxWidth)
+
+        local font, err = sm_scrapcomputers_fontManager_getFont(params_font)
         local font_width = font.fontWidth
         local font_height = font.fontHeight
         local font_charset = font.charset
         local font_errorchar = font.errorChar
 
+        if not font then
+            sm.log.error("Fatal error! Failed to get the font! Error message: "..err)
+            sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm_scrapcomputers_languageManager_translatable("scrapcomputers.display.failed_to_find_font"))
+
+            return
+        end
+
         local xSpacing = 0
         local ySpacing = 0
-    
+
         local i = 1
-    
-        local width = maxWidth or displayWidth
-        if not wordWrappingEnabled then
+
+        local width = params_maxWidth or width
+
+        if not params_wordWrappingEnabled then
             width = math.huge
         end
-    
-        while i <= #text do
-            local char = getUTF8Character(text, i)
-    
+
+        while i <= #params_text do
+            local char = sm_scrapcomputers_utf8_getCharacterAt(params_text, i)
+
             if char == "\n" then
                 xSpacing = 0
                 ySpacing = ySpacing + font_height
             else
                 local fontLetter = font_charset[char] or font_errorchar
-    
-                if (x + xSpacing) + font_width > width then
+
+                if (params_x + xSpacing) + font_width > width then
                     xSpacing = 0
                     ySpacing = ySpacing + font_height
                 end
-    
+
                 for yPosition, row in pairs(fontLetter) do
                     for xPosition = 1, #row, 1 do
                         if string_sub(row, xPosition, xPosition) == "#" then
-                            local aX, aY = x + xSpacing + (xPosition - 1), y + ySpacing + (yPosition - 1)
-    
-                            drawBuffer[#drawBuffer+1] = {
-                                x = aX, y = aY, color = color
-                            }
+                            local x, y = params_x + xSpacing + (xPosition - 1), params_y + ySpacing + (yPosition - 1)
+
+                            drawBuffer[coordinateToIndex(x, y, displayWidth)] = colorToID(params_color)
                         end
                     end
-    
+
                 end
-    
+
                 xSpacing = xSpacing + font_width
             end
-    
+
             i = i + #char
         end
+
+        clearCache = true
     end
 
     output.loadImage = function (width, height, path)
         sm_scrapcomputers_errorHandler_assertArgument(width, 1, {"integer"})
         sm_scrapcomputers_errorHandler_assertArgument(height, 2, {"integer"})
-
         sm_scrapcomputers_errorHandler_assertArgument(path, 3, {"string"})
 
-        local fileLocation = imagePath..path
+        local fileLocation = customSearch and path or imagePath..path
         sm_scrapcomputers_errorHandler_assert(sm.json.fileExists(fileLocation), 3, "Image doesnt exist")
 
         local imageTbl = sm.json.open(fileLocation)
         local x, y = 1, 1
-
-        for i, color in pairs(imageTbl) do
-            local rgb = sm_color_new(color)
-            output.drawPixel(x, y, rgb)
+        
+        for i = 1, #imageTbl do
+            local color = imageTbl[i]
+            drawBuffer[coordinateToIndex(x, y, displayWidth)] = colorToID(color)
 
             y = y + 1
 
@@ -400,94 +553,113 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
                 x = x + 1
             end
         end
+
+        clearCache = true
     end
 
     output.getDimensions = function ()
         return displayWidth, displayHeight
     end
 
-    output.render = function (xOffset, yOffset)
-        -- Yes, this is complicated but this is to save table storage improving performace because this will be sended over
-        -- the network.
-        --
-        -- If your wondering, Ive tried 2D greedy meshing, was no fps diffierence back then but this fucking madlad (Ben Bingo)
-        -- made it not needed. So i don't even have to optimize this!
-
+    output.render = function (xOffset, yOffset, cacheBased)
         sm_scrapcomputers_errorHandler_assertArgument(xOffset, 1, {"number", "nil"})
         sm_scrapcomputers_errorHandler_assertArgument(yOffset, 2, {"number", "nil"})
+        sm_scrapcomputers_errorHandler_assertArgument(cacheBased, 3, {"boolean", "nil"})
 
         xOffset = xOffset or 0
         yOffset = yOffset or 0
-        
-        local matrixBuffer = {} -- Woohoo! 2D Matrixes!
-        for _, pixel in pairs(drawBuffer) do
-            matrixBuffer[pixel.x] = matrixBuffer[pixel.x] or {}
-            matrixBuffer[pixel.x][pixel.y] = pixel.color
-        end
 
-        drawBuffer = {}
+        local formatted = {}
+        local cache = cacheBased and sm.scrapcomputers.backend.virtualDisplayCache[displayID] or {}
+        local index = 1
 
-        local trueOutput = {}
-        for x = 1, displayWidth, 1 do
-            for y = 1, displayHeight, 1 do
-                -- Jank, but this entire script is already full of spaggeti, so do i care??
-                if not (not clearColor and not (matrixBuffer[x] and matrixBuffer[x][y])) then
-                    local isSafe = true
+        if cacheBased then
+            for dIndex, color in pairs(drawBuffer) do
+                local cachePoint = cache[dIndex]
 
-                    if x < 1 or x > displayWidth then
-                        isSafe = false
+                if not (cachePoint and cachePoint == color) then
+                    local x1, y1 = (dIndex - 1) % displayWidth + 1, math_floor((dIndex - 1) / displayWidth) + 1
+
+                    if color ~= clearColor then
+                        formatted[index] = {x = x1 + xOffset, y = y1 + yOffset, color = idToColor(color or clearColor)}
+                        index = index + 1
                     end
 
-                    if y < 1 or y > displayHeight then
-                        isSafe = false
-                    end
-                    
-                    if isSafe then
-                        trueOutput[#trueOutput+1] = {
-                            x     = x + xOffset,
-                            y     = y + yOffset,
-                            color = (matrixBuffer[x] and matrixBuffer[x][y]) and matrixBuffer[x][y] or clearColor
-                        }
-                    end
+                    cache[dIndex] = color
+                end
+            end
+        else
+            for dIndex, color in pairs(drawBuffer) do
+                local x1, y1 = (dIndex - 1) % displayWidth + 1, math_floor((dIndex - 1) / displayWidth) + 1
+
+                if color ~= clearColor then
+                    formatted[index] = {x = x1 + xOffset, y = y1 + yOffset, color = idToColor(color or clearColor)}
+                    index = index + 1
                 end
             end
         end
 
-        return trueOutput
+        sm.scrapcomputers.backend.virtualDisplayCache[displayID] = cache
+
+        if clearCache and sm.scrapcomputers.backend.cameraColorCache then
+            sm.scrapcomputers.backend.cameraColorCache[displayID] = nil
+
+            clearCache = nil
+        end
+
+        return formatted
     end
 
     output.getId = function ()
         return displayID
     end
 
-    output.calcTextSize = function (text, font, maxWidth, wordWrappingEnabled)
+    output.calcTextSize = function (text, font, maxWidth, wordWrappingEnabled, dynamicHeight)
         sm_scrapcomputers_errorHandler_assertArgument(text, 1, {"string"})
         sm_scrapcomputers_errorHandler_assertArgument(font, 2, {"string", "nil"})
         sm_scrapcomputers_errorHandler_assertArgument(maxWidth, 1, {"integer", "nil"})
         sm_scrapcomputers_errorHandler_assertArgument(wordWrappingEnabled, 2, {"boolean", "nil"})
 
-        font = font or sm_scrapcomputers_fontManager_getDefaultFontName()
+        font = font or sm.scrapcomputers.fontManager.getDefaultFontName()
 
-        local trueFont, err = sm_scrapcomputers_fontManager_getFont(font)
+        local trueFont, err = sm.scrapcomputers.fontManager.getFont(font)
         if not trueFont then
             error("Failed getting font! Error message: " .. err)
         end
 
         wordWrappingEnabled = type(wordWrappingEnabled) == "nil" and true or wordWrappingEnabled
-        maxWidth            = maxWidth or displayWidth
+        maxWidth            = maxWidth or self.data.width
+        dynamicHeight       = type(dynamicHeight) == "nil" and false or dynamicHeight
 
-        -- Optimization!!!!
+        local stringSize = sm.scrapcomputers.utf8.getStringSize(text)
+
         if not wordWrappingEnabled then
-            return #text * trueFont.fontWidth, trueFont.fontHeight
+            if dynamicHeight then
+                local height = 0
+                local index = 1
+                while index <= #text do
+                    local char = sm_scrapcomputers_utf8_getCharacterAt(text, index)
+                    local charset = trueFont.charset[char]
+
+                    if charset and #charset > height then
+                        height = #charset
+                    end
+
+                    index = index + #char
+                end
+
+                return stringSize * trueFont.fontWidth, height
+            end
+
+            return stringSize * trueFont.fontWidth, trueFont.fontHeight
         end
 
-        local usedWidth = sm_util_clamp(#text * trueFont.fontWidth, 0, maxWidth)
-        local usedHeight = (1 + math_floor((#text * trueFont.fontWidth) / maxWidth)) * trueFont.fontHeight
+        local usedWidth = sm.util.clamp(stringSize * trueFont.fontWidth, 0, maxWidth)
+        local usedHeight = (1 + math_floor((stringSize * trueFont.fontWidth) / maxWidth)) * trueFont.fontHeight
 
         return usedWidth, usedHeight
     end
 
-    -- VirtualDisplay specific functions
     output.setDimensions = function (newWidth, newHeight)
         sm_scrapcomputers_errorHandler_assertArgument(newWidth, 1, { "integer" })
         sm_scrapcomputers_errorHandler_assertArgument(newHeight, 2, { "integer" })

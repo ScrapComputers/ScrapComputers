@@ -1,6 +1,6 @@
 ---@class MotorClass : ShapeClass
 MotorClass = class()
-MotorClass.maxParentCount = 1
+MotorClass.maxParentCount = -1
 MotorClass.maxChildCount = -1
 MotorClass.connectionInput = sm.interactable.connectionType.compositeIO
 MotorClass.connectionOutput = sm.interactable.connectionType.bearing + sm.interactable.connectionType.piston
@@ -75,6 +75,18 @@ function MotorClass:sv_createData()
     }
 end
 
+function MotorClass:sv_onPowerLoss()
+    self.sv.bearingSpeed = 0
+    self.sv.torque = 0
+
+    self.sv.pistonSpeed = 0
+    self.sv.length = 0
+    self.sv.force = 0
+
+    self.sv.updateBearingValues = true
+    self.sv.updatePistonValues = true
+end
+
 function MotorClass:server_onFixedUpdate()
     self.sv.bearings = self.interactable:getBearings()
     self.sv.pistons = self.interactable:getPistons()
@@ -111,6 +123,12 @@ function MotorClass:server_onFixedUpdate()
 
         self.sv.updatePistonValues = false
     end
+
+    local bearingSpeed = self.sv.bearingSpeed > 0 and self.sv.bearingSpeed or 1
+    local bearingPower = (bearingSpeed * self.sv.torque / 9550) * (1 / 0.85) -- 85% efficient
+    local pistonPower = (self.sv.pistonSpeed * self.sv.force / 50000)
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, bearingPower * bearingLen + pistonPower * pistonLen)
 end
 
 function MotorClass:server_onCreate()
@@ -132,4 +150,4 @@ function MotorClass:server_onCreate()
     }
 end
 
-sm.scrapcomputers.componentManager.toComponent(MotorClass, "Motors", true)
+sm.scrapcomputers.componentManager.toComponent(MotorClass, "Motors", true, nil, true)

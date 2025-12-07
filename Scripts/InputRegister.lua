@@ -24,6 +24,8 @@ function InputRegisterClass:server_onCreate()
 
     local name = sm.scrapcomputers.dataList["InputRegisters"][self.shape.id].name
     self.network:sendToClients("cl_setName", name)
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 0.1)
 end
 
 function InputRegisterClass:server_onFixedUpdate()
@@ -54,6 +56,13 @@ function InputRegisterClass:server_onFixedUpdate()
     end
 end
 
+function InputRegisterClass:sv_onPowerLoss()
+    self.sv.lastPower = 0
+
+    self.interactable.power = 0
+    self.interactable.active = false
+end
+
 function InputRegisterClass:sv_setName(name, player)
     sm.scrapcomputers.dataList["InputRegisters"][self.shape.id].name = name
     self.storage:save(name)
@@ -77,37 +86,28 @@ function InputRegisterClass:client_onCreate()
         character = nil
     }
 
-    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Register, false, {backgroundAlpha = 0.5})
-    self.cl.gui:setText("Title", sm.scrapcomputers.languageManager.translatable("scrapcomputers.registers.input_title"))
-    self.cl.gui:setText("Button", sm.scrapcomputers.languageManager.translatable("scrapcomputers.other.save_and_closebtn"))
-
+    self.cl.gui = sm.scrapcomputers.gui:createGuiFromLayout("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Register.layout", false)
+    
     self.cl.gui:setTextChangedCallback("Input", "cl_onTextChanged")
-    self.cl.gui:setButtonCallback ("Button", "cl_onSave")
+    self.cl.gui:setButtonCallback("Button", "cl_onSave")
 
     self.cl.gui:setOnCloseCallback("cl_onGuiClose")
 end
 
-function InputRegisterClass:cl_onGuiClose()
-    if self.cl.character then
-        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
-    end
-end
-
 function InputRegisterClass:cl_setName(name)
     self.cl.registerName = name
-	self.cl.gui:setText("Input", self.cl.registerName)
+	self.cl.gui:setTextRaw("Input", self.cl.registerName)
 end
 
 function InputRegisterClass:client_onInteract(character, state)
     if not state then return end
 
-    self.cl.gui:setText("Input", self.cl.registerName)
+    self:cl_reloadTranslations()
+
+    self.cl.gui:setTextRaw("Input", self.cl.registerName)
     self.cl.text = self.cl.registerName
 
     self.cl.gui:open()
-
-    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
-    self.cl.character = character
 end
 
 function InputRegisterClass:cl_onTextChanged(widget, text)
@@ -123,5 +123,9 @@ function InputRegisterClass:cl_onSave()
     self.cl.gui:close()
 end
 
--- Convert the class to a component
-sm.scrapcomputers.componentManager.toComponent(InputRegisterClass, "InputRegisters", true)
+function InputRegisterClass:cl_reloadTranslations()
+    self.cl.gui:setText("MainHeaderText", "scrapcomputers.registers.input_title")
+    self.cl.gui:setText("Button", "scrapcomputers.other.save_and_closebtn")
+end
+
+sm.scrapcomputers.componentManager.toComponent(InputRegisterClass, "InputRegisters", true, nil, true)

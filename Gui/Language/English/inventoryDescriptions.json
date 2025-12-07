@@ -2,17 +2,20 @@
     // Computer
     "c44f6e8e-b0b8-4821-83a5-7928c1446df0": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Lua Computer",
-        "description": "The main part of the ScrapComputers mod! You can write your own programs, and the computer will excecute whatever has been written inside of it!"
+        "description": "The core component of ScrapComputers! Program your own scripts using Lua, and watch as the computer executes your code in real time.\n\nPerfect for automation, experimentation, and creating interactive systems within the game.",
+        "keywords": ["scrapcomputers", "computer", "lua", "programming", "automation"]
     },
 
     // Registers
     "cac86f35-50dd-47b1-8a26-76cc86195555": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Input register",
-        "description": "This component allows you to read any number input value from an interactable and convert it into something the computer can understand."
+        "description": "Reads and interprets signals from any interactable source that provides power or an on/off state.",
+        "keywords": ["scrapcomputers", "register", "input"]
     },
     "045b633f-77c9-41d7-bd82-dae29383c167": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Output register",
-        "description": "This component allows you to output any number from the computer to a physical interactable."
+        "description": "Sends numeric data from the computer to control a interactable.",
+        "keywords": ["scrapcomputers", "register", "output"]
     },
 
     // Configurator
@@ -23,113 +26,180 @@
 
     // Storage
     "d89e6c4e-7455-4ccf-8fc8-4f4ef4acb598": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] HDD",
-        "description": "A harddrive where you can store in data!\n\n#646464Note: This is basicly a reimplementation of sm.storage or self.storage!"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Harddrive",
+        "description": "A Harddrive is capable of saving information a connected computer for later access or processing.",
+        "keywords": ["scrapcomputers", "harddrive", "drive", "ssd", "nvme", "hdd", "solid state drive", "storage"]
     },
 
     // Radar
     "37a1945a-0b31-4e64-8556-a5fe92b387be": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Radar",
-        "description": "Want to detect objects? With the radar you can! It can find objects around itself with customisable vertical and horizonal FOV's!"
+        "description": "A Radar is capable of detecting objects in its surroundings, featuring adjustable horizontal and vertical fields of view for precise scanning.",
+        "keywords": ["scrapcomputers", "object", "detection", "detect", "scan", "scanner", "scanning", "discover", "discoverer"]
     },
 
     // Terminals
     "5e4bfb11-c378-4a08-b310-565ee3a379f2": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Terminal (White)",
-        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!\n\n#f9f1a5Terminal Color: #eeeeeeWhite"
+        "description": "A terminal lets you do text-based communication between the user and computer, allowing programs to output messages or request user input in a easy way.",
+        "keywords": ["scrapcomputers", "text", "terminal", "console", "tui", "input"]
     },
     "6ad29c0e-8209-4dca-9133-20d7a2fc2d63": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Terminal (Black)",
-        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!\n\n#f9f1a5Terminal Color: #eeeeeeBlack"
+        "description": "A terminal lets you do text-based communication between the user and computer, allowing programs to output messages or request user input in a easy way.",
+        "keywords": ["scrapcomputers", "text", "terminal", "console", "tui", "input"]
     },
     "71663a3e-e6d0-49b9-a42b-33c758813fec": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Terminal (Yellow)",
-        "description": "Like a display but text-only. You can write mesages to the terminal, or get user inputs from the terminal for a more streamlined interface with your custom programs!\n\n#f9f1a5Terminal Color: #eeeeeeYellow"
+        "description": "A terminal lets you do text-based communication between the user and computer, allowing programs to output messages or request user input in a easy way.",
+        "keywords": ["scrapcomputers", "text", "terminal", "console", "tui", "input"]
     },
 
     // Hologram
     "94a220da-97c2-4b08-bfd2-24a5802c422e": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Hologram",
-        "description": "Want to render 3d objects? With the hologram you can! Choose whatever shape you want and it will render it!"
+        "description": "A holographic display that can generate and render 3D shapes of your choice, allowing for fully customizable visual output.",
+        "keywords": ["scrapcomputers", "3d", "visual", "visualization"]
     },
 
     // Networking
     "afd0a82c-3d88-46fb-acad-7ab902acf6e1": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Network Port",
-        "description": "Allows you to transfer packets between network ports! You can connect a computer to a network port and connect that network port to another, this will allow you to send packets of information through those ports and they can get recieved by a computer on the other end!"
+        "description": "Allows you to transfer packets between network ports! You can connect a computer to a network port and connect that network port to another, this will allow you to send packets of information through those ports and they can get received by a computer on the other end!",
+        "keywords": ["scrapcomputers", "network", "networking", "internet", "comminucation"]
     },
     "ed6875f0-a29d-4849-b496-1a7a441fd98f": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Antenna",
-        "description": "This component connects to a Network Port and has the ability to wirelessly transmit the network ports data to another antenna similarly to WiFi!"
+        "description": "Antenna's are a way to comminucate without a connection required, as-long as they're loaded, they can comminucate together!",
+        "keywords": ["scrapcomputers", "network", "networking", "internet", "comminucation"]
     },
 
     // Camera
     "c438b4f8-9c65-4341-b407-b68106a59f12": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] Raycast Camera",
-        "description": "The camera allows you to take screen shots and capture video. Other functions include a depth map and advanced functions with shadows!"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Camera",
+        "description": "The camera allows you to take pictures or video! Other functions include a depth map and advanced functions with shadows and lighting!",
+        "keywords": ["scrapcomputers", "camera", "raycasts", "raycasting", "capture", "world capture", "image", "video"]
     },
 
     // Keyboards
     "be791e80-ee66-4284-83f1-d91faf15bb4b": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Keyboard (Black)",
-        "description": "Allows you to type! Keystrokes and press state can be accessed which allows you to make some really cool stuff!\n\n#e6d927Keyboard Color: #eeeeeeBlack"
+        "description": "Keyboards allow you to captures keystrokes from the player, allowing you to read almost everything from a player's keyboard! (when the player is interacting with it).",
+        "keywords": ["scrapcomputers", "type", "input"]
     },
 
     "86b84f8d-0a62-4ffc-aafd-17e29b781484": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Keyboard (White)",
-        "description": "Allows you to type! Keystrokes and press state can be accessed which allows you to make some really cool stuff!\n\n#e6d927Keyboard Color: #eeeeeeWhite"
+        "description": "Keyboards allow you to captures keystrokes from the player, allowing you to read almost everything from a player's keyboard! (when the player is interacting with it).",
+        "keywords": ["scrapcomputers", "type", "input"]
     },
 
     // Speaker
     "c9259b11-9100-421e-871a-f00ed56484d8": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Speaker",
-        "description": "Plays ANY kind of audio. Like want to play a character drowning sound? Sure! Note: Playing music may be frustrating to write!"
+        "description": "Allows you to play audio or music, any audio supported by the game will work!\n\n#666666(SM-CustomAudioExtension is NOT supported!). More power efficient than the smaller version.",
+        "keywords": ["scrapcomputers", "sound", "audio", "music", "nbs", "midi"]
     },
     "310c1d41-420c-48a0-a631-f16c52d1bf06": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Mini-Speaker",
-        "description": "Plays ANY kind of audio. Like want to play a character drowning sound? Sure! Note: Playing music may be frustrating to write!"
+        "description": "Allows you to play audio or music, any audio supported by the game will work!\n\n#666666(SM-CustomAudioExtension is NOT supported!).",
+        "keywords": ["scrapcomputers", "sound", "audio", "music", "nbs", "midi"]
     },
 
     // Motor
     "a9e443ab-f33b-408c-ae08-981249b2dfc3": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Motor",
-        "description": "Let's you control bearings and pistons however you want! Very similar to The Modpack's smart engine but can be fully edited via the computer"
+        "description": "Let's you control bearings and pistons however you want! Very similar to The Modpack Continuation's Smart Engine but can be fully controlled via the computer.",
+        "keywords": ["scrapcomputers", "piston", "bearing", "rotation"]
     },
 
     // Laser
     "875b7675-2365-49c2-a7b0-9b6a09a0a001": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Laser",
-        "description": "The Laser allows you to perform a raycast and get the data from it such as the hit type, pointWorld, normalWorld, you name it!\n\n#f9f1a5Model by Bruno Alexa"
+        "description": "The Laser is like a Vanilia Sensor but more advanced and the Computer can read a lot more data like the hit type, point world and normal world.",
+        "keywords": ["scrapcomputers", "pew pew pew", "detection", "detect", "sensor"]
     },
 
     // GPS
     "dd4967a9-dfd1-42eb-b48c-414a123bffe2": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] GPS",
-        "description": "The GPS allows you to get important telemetry about itself like a real GPS! This includes things like position, acceleration, velocity and rotation!\n\n#444444The community forced VeraDev to remodel the GPS so VeraDev doesn't get harrased"
+        "description": "The GPS allows you to get important telemetry about location-related data! This includes things like position, acceleration, velocity and rotation!",
+        "keywords": ["scrapcomputers", "gps", "location", "tracker", "spying"]
+    },
+
+    "aab546f4-2112-41f4-9dfc-203099fb8b26": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] GPS Wheel",
+        "description": "The GPS allows you to get important telemetry about location-related data! This includes things like position, acceleration, velocity and rotation!",
+        "keywords": ["scrapcomputers", "gps", "location", "tracker", "spying", "why"]
     },
 
     // Seat Controller
     "e0f54d87-49e1-43e0-b5fc-c9f562840a76": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] Seat Controller",
-        "description": "This component allows you to connect a seat and interact with it. You can access information like the WS & AD powers, you can also interact with the seats connected buttons and switches"
+        "description": "This component allows you to connect a seat and interact with it. You can access information like the WASD powers, you can also interact with the seats connected buttons and switches.",
+        "keywords": ["scrapcomputers", "seat", "sit", "chair", "control"]
     },
     
     // Light
     "f824937c-7638-4b2a-93aa-e89eb1d9c753": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] Light (LED)",
-        "description": "The light component lets you change its color and get its color! Basicly a RGB LED in Scrap Mechanic!"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Controllable Light",
+        "description": "A configurable light that lets you adjust its color and retrieve its current state.",
+        "keywords": ["scrapcomputers", "rainbow", "color", "lighting", "light", "rgb"]
     },
 
-    
-    // Gravity Controlers
-    "478f981e-73c2-447f-9ee9-0c6937cf9f5c": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] Small Gravity Controller",
-        "description": "Lets you toggle gravity of your creation!"
-    },
-
+    // Gravity Controllers
     "150fbf90-b9b9-40d7-9ff2-040fa0db0b92": {
-        "title": "[#3A96DDS#3b78ffC#eeeeee] Gravity Controller",
-        "description": "Lets you toggle gravity of your creation!"
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Small Gravity Controller",
+        "description": "The Gravity Controller allows you to control the gravity of the creation its placed on!",
+        "keywords": ["scrapcomputers", "world", "physics", "control"]
+    },
+
+    "3e3e0c14-1f4b-4077-a740-f8cdb328c6d0": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Large Gravity Controller",
+        "description": "The Gravity Controller allows you to control the gravity of the creation its placed on! More power efficient than the smaller version.",
+        "keywords": ["scrapcomputers", "world", "physics", "control"]
+    },
+
+    // Radar Warning Detector
+    "bf8c40c7-9657-46c9-8635-31edfcd93964": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Radar Warning Detector",
+        "description": "The Radar Warning Detector is like the normal radar but instead of detecting its suroundings, it lets you detect other radars!",
+        "keywords": ["scrapcomputers", "radar", "detection", "detect", "scan", "scanner", "scanning", "discover", "discoverer"]
+    },
+
+    // Power - Generator
+    "60e8e257-f1fa-4c71-8cdb-4e89dbcdff55": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Generator",
+        "description": "Converts rotational power to electrical power with a 75% efficiency. Connect a bearing and spin it to generate power and interact with the lever to change the generators resistance. The higher the resistance, the more power you are able to generate.",
+        "keywords": ["scrapcomputers", "gen", "power", "electricity", "volts", "watts", "kilowatts"]
+    },
+
+    // Power - Battery
+    "834cc2a0-b5a9-4b33-a18b-d9d5f05757d9": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Battery",
+        "description": "The battery stores power with a restricted discharge rate and charge rate, simply connect another power source to it to charge.",
+        "keywords": ["scrapcomputers", "holder", "storage", "power", "electricity", "volts", "watts", "kilowatts"]
+    },
+
+    // Power - Breaker
+    "802bcd73-1a56-4694-bfb6-bbf5a8b6aa24": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Breaker",
+        "description": "A component that allows you to control the flow of power, simply activate or deactivate the component to allow or restrict the flow of power.",
+        "keywords": ["scrapcomputers", "break", "gen", "power", "electricity", "volts", "watts", "kilowatts"]
+    },
+
+    // Power - Solar Panel
+    "3213f286-ecce-4f5e-b48a-d96893a14987": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Solar Panel",
+        "description": "The solar panel generates energy from sunlight! Simply point the solar panel at the sun for maximum power efficiency.",
+        "keywords": ["scrapcomputers", "solar", "panel", "sun", "power", "electricity", "volts", "watts", "kilowatts"]
+    },
+
+    // Collision Detector
+    "6b49f636-9049-4871-a2ef-43f94a21c64a": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] Collision Detector",
+        "description": "Allows you to detect any collision and melee that happens involving the component.",
+        "keywords": ["scrapcomputers", "collision", "detect", "detection"]
     },
 
     // 1x1 Displays
@@ -226,5 +296,103 @@
     "13a8d04f-f5d6-4285-9874-ee6f3f283bd4": {
         "title": "[#3A96DDS#3b78ffC#eeeeee] 1024x1024 Display (4x4)",
         "description": "A display where you can show anything on it! Text, Circles, Rectangles and etc!\n\n#f9f1a5Resolution: #eeeeee1024x1024\n#f9f1a5Object Size: #eeeeee4x4"
+    },
+
+    // Aircraft Displays \\
+    
+    // 1x1 Aircraft Displays
+    "6ec93d0a-d0af-44e7-a797-a7b2c8e5c070": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Aircraft Display (1x1)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee16x16\n#f9f1a5Object Size: #eeeeee1x1"
+    },
+    "5f030374-6cb1-4628-8fa8-64db7e1034fa": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Aircraft Display (1x1)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee32x32\n#f9f1a5Object Size: #eeeeee1x1"
+    },
+    "3b231066-4003-4ddd-b8d1-fd45fb550e37": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Aircraft Display (1x1)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee64x64\n#f9f1a5Object Size: #eeeeee1x1"
+    },
+    "e2e6e830-fcea-4b9f-85f8-5a67cb6163cd": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Aircraft Display (1x1)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee128x128\n#f9f1a5Object Size: #eeeeee1x1"
+    },
+    "bf2c884a-b88e-4f17-beb2-9d4ba2a447d5": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Aircraft Display (1x1)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee256x256\n#f9f1a5Object Size: #eeeeee1x1"
+    },
+
+    // 2x2 Aircraft Displays
+    "46576d52-9cf6-4d04-9d1c-3304aad7495e": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Aircraft Display (2x2)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee16x16\n#f9f1a5Object Size: #eeeeee2x2"
+    },
+    "06987d0a-da13-439e-9ca0-a730af409bc5": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Aircraft Display (2x2)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee32x32\n#f9f1a5Object Size: #eeeeee2x2"
+    },
+    "05209b1f-bc17-4d9e-87f6-8b9862ab3ab0": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Aircraft Display (2x2)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee64x64\n#f9f1a5Object Size: #eeeeee2x2"
+    },
+    "1aee6b0f-3c86-4c60-93e8-0b49e5094cb7": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Aircraft Display (2x2)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee128x128\n#f9f1a5Object Size: #eeeeee2x2"
+    },
+    "7a1a19f2-06dd-4bd1-b6ea-c8bc0e3ebef6": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Aircraft Display (2x2)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee256x256\n#f9f1a5Object Size: #eeeeee2x2"
+    },
+
+    // 3x3 Aircraft Displays
+    "b535b2a1-8144-4301-bf0f-477bf83b0c3a": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Aircraft Display (3x3)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee16x16\n#f9f1a5Object Size: #eeeeee3x3"
+    },
+    "bca6e542-3377-466e-8237-6d3bee18efae": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Aircraft Display (3x3)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee32x32\n#f9f1a5Object Size: #eeeeee3x3"
+    },
+    "b7a9a225-b801-4145-9f3b-537881b62169": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Aircraft Display (3x3)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee64x64\n#f9f1a5Object Size: #eeeeee3x3"
+    },
+    "4bc0d088-30b9-4704-a0ba-890268928977": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Aircraft Display (3x3)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee128x128\n#f9f1a5Object Size: #eeeeee3x3"
+    },
+    "bbcc9ca4-465f-4ea5-b0b9-b5d60a061a26": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Aircraft Display (3x3)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee256x256\n#f9f1a5Object Size: #eeeeee3x3"
+    },
+
+    // 4x4 Aircraft Displays
+    "48c66be3-db95-48ea-889a-2bc3d202d9f6": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 16x16 Aircraft Display (4x4)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee16x16\n#f9f1a5Object Size: #eeeeee4x4"
+    },
+    "a269d00c-3df2-4b51-899f-19edbbb13cde": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 32x32 Aircraft Display (4x4)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee32x32\n#f9f1a5Object Size: #eeeeee4x4"
+    },
+    "b0d18e27-7069-4aaf-86f2-be055a51d4ee": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 64x64 Aircraft Display (4x4)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee64x64\n#f9f1a5Object Size: #eeeeee4x4"
+    },
+    "e7f069b2-a105-41cf-90a2-6999cac36932": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 128x128 Aircraft Display (4x4)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee128x128\n#f9f1a5Object Size: #eeeeee4x4"
+    },
+    "7b6c3bf3-6c66-40ff-9a6c-c892990bec5c": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 256x256 Aircraft Display (4x4)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee256x256\n#f9f1a5Object Size: #eeeeee4x4"
+    },
+    "40fd9657-c71c-4a51-b44b-13265615119a": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 512x512 Aircraft Display (4x4)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee512x512\n#f9f1a5Object Size: #eeeeee4x4"
+    },
+    "14314830-2156-450e-82b5-cbb8aa3d1005": {
+        "title": "[#3A96DDS#3b78ffC#eeeeee] 1024x1024 Aircraft Display (4x4)",
+        "description": "A aircraft display where you can show anything on it! Text, Circles, Rectangles and etc!\n\nYou can use this for aircrafts as the display is see-through!\n\n#f9f1a5Resolution: #eeeeee1024x1024\n#f9f1a5Object Size: #eeeeee4x4"
     }
 }

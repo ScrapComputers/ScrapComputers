@@ -24,7 +24,7 @@ def get_rectangles(frame, resWidth, visited):
         
         visited[y:max_y + 1, x:max_x + 1] = True
         
-        return [(y * resWidth + x + 1), ((max_y - y) * resWidth + (max_x - x + 1)), (int(color[0]) << 16) | (int(color[1]) << 8) | int(color[2])]
+        return [(y * resWidth + x + 1), ((max_y - y) * resWidth + (max_x - x + 1)), (int(color[2]) << 16) | (int(color[1]) << 8) | int(color[0])]
 
     for y in range(h):
         for x in range(w):

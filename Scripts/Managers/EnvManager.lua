@@ -7,10 +7,12 @@ sm.scrapcomputers.environmentManager.environmentHooks = {}
 
 ---Creates a environment variables table and returns it
 ---@param self ShapeClass This should be the "self" keyword. A.K.A your class
+---@param luaVM Computer.LuaVM? The Lua virtual machine
 ---@return table environmentVariables The created environment variables.
-function sm.scrapcomputers.environmentManager.createEnv(self)
-    sm.scrapcomputers.errorHandler.assertArgument(self, nil, {"table"}, {"ShapeClass"})
-    
+function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
+    sm.scrapcomputers.errorHandler.assertArgument(self, 1, {"table"}, {"ShapeClass"})
+    sm.scrapcomputers.errorHandler.assertArgument(luaVM, 2, {"table", "nil"}, {"Computer.LuaVM"})
+
     if not sm.scrapcomputers.config.getConfig then
         sm.scrapcomputers.config.initConfig()
     end
@@ -27,20 +29,22 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 
     local function pid(processID, processValue, setValue, p, i, d, deltatime_i, deltatime_d)
         sm.scrapcomputers.PIDHandler.setProcess(processID, processValue, setValue, p, i, d, deltatime_i, deltatime_d)
-    
+
         local pidData = sm.scrapcomputers.PIDHandler.getProcess(processID)
         return pidData.PIDOut
     end
 
     local environmentVariables = {
         print = function (...)
-            local text = ""
-            
-            for _, value in ipairs({...}) do
-                text = text .. " " .. sm.scrapcomputers.toString(value)
+            local n = select("#", ...)
+            local parts = {}
+
+            for i = 1, n do
+                table.insert(parts, sm.scrapcomputers.toString(select(i, ...)))
             end
 
-            local message = text:gsub("⁄n", "\n"):gsub("⁄t", "\t"):sub(2)
+            local message = table.concat(parts, " ")
+            message = message:gsub("\\n", "\n"):gsub("\\t", "\t")
 
             self.network:sendToClients("cl_chatMessage", "[#3A96DDS#3b78ffC#eeeeee]: " .. message)
         end,
@@ -54,7 +58,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             sm.scrapcomputers.errorHandler.assertArgument(message, 1, {"string"})
             sm.scrapcomputers.errorHandler.assertArgument(duration, 2, {"number", "nil"})
             sm.scrapcomputers.errorHandler.assertArgument(player, 3, {"Player", "nil"})
-            
+
             if not isUnsafeENV and player then
                 error("Cannot use Player argument in safe-env!")
             end
@@ -65,9 +69,9 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                 self.network:sendToClients("cl_alert", {message, duration})
             end
         end,
-        
-        debug = function (...)
-            print("[SC]: ", unpack({...}))
+
+        debug = function(...)
+            print("[SC]:", ...)
         end,
 
         ---@param seconds number
@@ -183,15 +187,17 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             sm.scrapcomputers.errorHandler.assertArgument(code, 1, {"string"})
             sm.scrapcomputers.errorHandler.assertArgument(env, 2, {"table"})
             sm.scrapcomputers.errorHandler.assertArgument(bytecodeMode, 3, {"boolean", "nil"})
-            
+
+            sm.scrapcomputers.errorHandler.assert(luaVM, nil, "This enviroment has no assigned LuaVM, cannot execute code!")
+
             if bytecodeMode then
                 local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
                 sm.scrapcomputers.errorHandler.assert(isUnsafeENV, nil, "Cannot execute bytecode in safe env!")
 
-                return sm.scrapcomputers.luavm.bytecodeLoadstring(code, env)
+                return luaVM:loadstringBytecode(code, env)
             end
 
-            return sm.scrapcomputers.luavm.loadstring(code, env)
+            return luaVM:loadstring(code, env, "@input", true)
         end,
 
         sc = {
@@ -210,6 +216,9 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             getSeatControllers = function () return sm.scrapcomputers.componentManager.getComponents("SeatControllers", self.interactable, false) end,
             getLights = function () return sm.scrapcomputers.componentManager.getComponents("Lights", self.interactable, true) end,
             getGravityControllers = function () return sm.scrapcomputers.componentManager.getComponents("GravityControllers", self.interactable, true) end,
+            getRadarWarningReceivers = function () return sm.scrapcomputers.componentManager.getComponents("RadarWarningReceivers", self.interactable, true) end,
+            getCollisionDetectors = function () return sm.scrapcomputers.componentManager.getComponents("CollisionDetectors", self.interactable, true) end,
+            getPowerSources = function () return sm.scrapcomputers.componentManager.getComponents("PowerComponents", self.interactable, false, sm.interactable.connectionType.computerIO) end,
 
             getReg = function (registerName)
                 sm.scrapcomputers.errorHandler.assertArgument(registerName, nil, {"string"})
@@ -222,28 +231,33 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                     end
                 end
 
-                error("Reader Register not found!")
+                error("Input Register not found!")
             end,
+
             setReg = function (registerName, power)
                 sm.scrapcomputers.errorHandler.assertArgument(registerName, 1, {"string"})
-                sm.scrapcomputers.errorHandler.assertArgument(power, 2, {"number"})
+                sm.scrapcomputers.errorHandler.assertArgument(power, 2, {"number", "boolean"})
 
+                if type(power) == "boolean" then
+                    power = power and 1 or 0
+                end
+                
                 local writers = sm.scrapcomputers.componentManager.getComponents("OutputRegisters", self.interactable, true, nil, true)
 
                 for _, writer in pairs(writers) do
                     if writer.name == registerName then
-                        sm.event.sendToInteractable(writer.SC_PRIVATE_interactable, "sv_onRecievePowerUpdate", power)
+                        sm.event.sendToInteractable(writer.SC_PRIVATE_interactable, "sv_onReceivePowerUpdate", power)
                         return
                     end
                 end
 
-                error("Writer Register not found!")
+                error("Output Register not found!")
             end,
 
             json = {
                 isSafe = sm.scrapcomputers.json.isSafe,
-                toString = function(root, prettify, indent) 
-                    return sm.scrapcomputers.json.toString(root, true, prettify, indent) 
+                toString = function(root, prettify, indent)
+                    return sm.scrapcomputers.json.toString(root, true, prettify, indent)
                 end,
 
                 toTable = sm.json.parseJsonString, -- Backwards Compatability
@@ -273,27 +287,29 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                 getExamples = function ()
                     return sm.scrapcomputers.table.clone(sm.scrapcomputers.exampleManager.getExamples())
                 end,
-                
+
                 getTotalExamples = sm.scrapcomputers.exampleManager.getTotalExamples,
             },
             language = {
                 getLanguages = function ()
                     return sm.scrapcomputers.table.clone(sm.scrapcomputers.languageManager.getLanguages())
                 end,
-                
+
                 getSelectedLanguage = sm.scrapcomputers.languageManager.getSelectedLanguage,
                 getTotalLanguages = sm.scrapcomputers.languageManager.getTotalLanguages,
                 translatable = sm.scrapcomputers.languageManager.translatable
             },
-            syntax = sm.scrapcomputers.table.clone(sm.scrapcomputers.syntaxManager),
+            syntax = sm.scrapcomputers.table.clone(sm.scrapcomputers.syntax),
 
             -- DO NOT REMVOE CLONING! They prevent you from fucking up the mod from referenced tables!
 
             color          = sm.scrapcomputers.table.clone(sm.scrapcomputers.color),
             util           = sm.scrapcomputers.table.clone(sm.scrapcomputers.util),
+            utf8           = sm.scrapcomputers.table.clone(sm.scrapcomputers.utf8),
             vec3           = sm.scrapcomputers.table.clone(sm.scrapcomputers.vector3),
             audio          = sm.scrapcomputers.table.clone(sm.scrapcomputers.audio),
             base64         = sm.scrapcomputers.table.clone(sm.scrapcomputers.base64),
+            base91         = sm.scrapcomputers.table.clone(sm.scrapcomputers.base91),
             lz4            = sm.scrapcomputers.table.clone(sm.scrapcomputers.lz4),
             md5            = sm.scrapcomputers.table.clone(sm.scrapcomputers.md5),
             sha256         = sm.scrapcomputers.table.clone(sm.scrapcomputers.sha256),
@@ -303,11 +319,16 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             virtualdisplay = sm.scrapcomputers.table.clone(sm.scrapcomputers.virtualdisplay),
             multidisplay   = sm.scrapcomputers.table.clone(sm.scrapcomputers.multidisplay),
             midi           = sm.scrapcomputers.table.clone(sm.scrapcomputers.midi),
+            aes256         = sm.scrapcomputers.table.clone(sm.scrapcomputers.aes256),
+            time           = sm.scrapcomputers.table.clone(sm.scrapcomputers.time),
+            qrcode         = sm.scrapcomputers.table.clone(sm.scrapcomputers.qrcode),
+
+
             nbs = {
                 loadNBS = sm.scrapcomputers.nbs.loadNBS,
                 createPlayer = sm.scrapcomputers.nbs.createPlayer
             },
-            
+
             config = {
                 getConfigNames = function ()
                     local list = {}
@@ -321,13 +342,31 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
                 getTotalConfigurations = sm.scrapcomputers.config.getTotalConfigurations,
                 configExists = sm.scrapcomputers.config.configExists,
                 nameToId = sm.scrapcomputers.config.nameToId,
-                
+
                 getConfig = function (id)
                     return sm.scrapcomputers.table.clone(sm.scrapcomputers.config.getConfig(id))
                 end,
 
                 getConfigByIndex = function (index)
                     return sm.scrapcomputers.table.clone(sm.scrapcomputers.config.getConfigByIndex(index))
+                end
+            },
+
+            power = {
+                getConsumtion = function ()
+                    if not self.sv then
+                        return 0
+                    end
+
+                    return self.sv.totalPPTNeeded or 0
+                end,
+
+                getReceivingPower = function ()
+                    if not self.sv then
+                        return 0
+                    end
+
+                    return self.sv.receivingPower or 0
                 end
             },
 
@@ -355,14 +394,17 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
             uuid = sm.uuid,
             json = {
                 open = sm.json.open,
-                
+
                 parseJsonString = sm.json.parseJsonString,
-                writeJsonString = function(root) 
+                writeJsonString = function(root)
                     return sm.scrapcomputers.json.toString(root, true, false)
                 end
             },
             projectile = {
                 solveBallisticArc = sm.projectile.solveBallisticArc
+            },
+            physics = {
+                filter = sm.physics.filter
             }
         },
     }
@@ -386,13 +428,6 @@ function sm.scrapcomputers.environmentManager.createEnv(self)
 
         environmentVariables.bit = bit
         environmentVariables.os = os
-
-        environmentVariables.sc.json = sm.scrapcomputers.json
-        environmentVariables.sc.font = sm.scrapcomputers.fontManager
-        environmentVariables.sc.ascfont = sm.scrapcomputers.ascfManager
-        environmentVariables.sc.example = sm.scrapcomputers.exampleManager
-        environmentVariables.sc.language = sm.scrapcomputers.languageManager
-        environmentVariables.sc.config = sm.scrapcomputers.config
     end
 
     for _, environmentHook in pairs(sm.scrapcomputers.environmentManager.environmentHooks) do

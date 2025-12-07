@@ -3,7 +3,7 @@ ComponentTemplate = class()
 ComponentTemplate.maxParentCount = 1
 ComponentTemplate.maxChildCount = 0
 ComponentTemplate.connectionInput = sm.interactable.connectionType.compositeIO
-ComponentTemplate.connectionOutput = sm.interactable.connectionType.none
+ComponentTemplate.connectionOutput = sm.interactable.connectionType.compositeIO
 ComponentTemplate.colorNormal = sm.color.new(0x696969ff)
 ComponentTemplate.colorHighlight = sm.color.new(0x969696ff)
 

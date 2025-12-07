@@ -1,3 +1,5 @@
+local audioData = sm.json.open("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/audio.json")
+
 -- Lets you manage audio. (Names, not playing them)
 sm.scrapcomputers.audio = {}
 
@@ -5,9 +7,8 @@ sm.scrapcomputers.audio = {}
 ---@return string[] fontNames All font names
 function sm.scrapcomputers.audio.getAudioNames()
     local output = {}
-    local data = sm.json.open(sm.scrapcomputers.jsonFiles.AudioList)
 
-    for name, _ in pairs(data) do
+    for name, _ in pairs(audioData) do
         table.insert(output, name)
     end
 
@@ -21,9 +22,7 @@ end
 function sm.scrapcomputers.audio.audioExists(name)
     sm.scrapcomputers.errorHandler.assertArgument(name, nil, {"string"})
 
-    local data = sm.json.open(sm.scrapcomputers.jsonFiles.AudioList)
-
-    for audioName, _ in pairs(data) do
+    for audioName, _ in pairs(audioData) do
         if audioName == name then
             return true
         end
@@ -39,9 +38,7 @@ function sm.scrapcomputers.audio.getAvailableParams(name)
     sm.scrapcomputers.errorHandler.assertArgument(name, nil, {"string"})
     sm.scrapcomputers.errorHandler.assert(sm.scrapcomputers.audio.audioExists(name), "Audio Not Found!")
 
-    local data = sm.json.open(sm.scrapcomputers.jsonFiles.AudioList)
-
-    for audioName, audioContents in pairs(data) do
+    for audioName, audioContents in pairs(audioData) do
         if audioName == name then
             return audioContents["Parameters"]
         end

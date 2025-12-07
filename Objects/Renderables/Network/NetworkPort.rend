@@ -1,27 +1,17 @@
 {
-   "lodList": [
-      {
-         "includes": [
-            "POSITION",
-            "UV0",
-            "UV1",
-            "NORMAL",
-            "TANGENTS",
-            "BLEND_INDICES",
-            "BLEND_WEIGHTS"
-         ],
-         "mesh": "$CONTENT_DATA/Objects/Mesh/Network/NetworkPort.obj",
-         "minViewSize": 20,
-         "subMeshList": [
-            {
-               "material": "DifAsgNor",
-               "textureList": [
-                  "$CONTENT_DATA/Objects/Textures/NetworkPort/NetworkPort_dif.png",
-                  "$CONTENT_DATA/Objects/Textures/NetworkPort/NetworkPort_asg.png",
-                  "$CONTENT_DATA/Objects/Textures/NetworkPort/NetworkPort_nor.png"
-               ]
-            }
-         ]
-      }
-   ]
+	"lodList": [
+		{
+			"mesh": "$CONTENT_DATA/Objects/Mesh/Network/NetworkPort.obj",
+			"subMeshList": [
+				{
+					"material": "DifNor",
+					"textureList": [
+						"$CONTENT_DATA/Objects/Textures/NetworkPort/NetworkPort_DIF.png",
+						"$CONTENT_DATA/Objects/Textures/transparent.png",
+						"$CONTENT_DATA/Objects/Textures/NOR.ppm"
+					]
+				}
+			]
+		}
+	]
 }

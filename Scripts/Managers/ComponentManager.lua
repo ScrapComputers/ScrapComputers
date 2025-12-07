@@ -8,7 +8,8 @@ sm.scrapcomputers.componentManager = {}
 ---@param componentType string The type of component, Make sure this does not be a conflict with other addons or the mod itself!
 ---@param isAComponent boolean Set this to true if your interactable is a component!
 ---@param automaticRefreshGen boolean? If this is NIL or true, It will generate *_onRefersh functions. (Defaults to true)
-function sm.scrapcomputers.componentManager.toComponent(classData, componentType, isAComponent, automaticRefreshGen)
+---@param isPowered boolean? Wether the component requires power when the power setting is active.
+function sm.scrapcomputers.componentManager.toComponent(classData, componentType, isAComponent, automaticRefreshGen, isPowered)
     sm.scrapcomputers.errorHandler.assertArgument(classData, 1, {"table"}, {"ShapeClass"})
     sm.scrapcomputers.errorHandler.assertArgument(componentType, 2, {"string", "nil"})
     sm.scrapcomputers.errorHandler.assertArgument(isAComponent, 3, {"boolean"})
@@ -22,10 +23,6 @@ function sm.scrapcomputers.componentManager.toComponent(classData, componentType
 
     local createServerDataOriginal = classData.sv_createData
     classData.sv_createData = function(self)
-        if sm.scrapcomputers.modDisabled then
-            return {}
-        end
-
         local data = createServerDataOriginal(self)
 
         if not isAComponent then return data end
@@ -73,19 +70,16 @@ function sm.scrapcomputers.componentManager.toComponent(classData, componentType
         if isAComponent then
             sm.scrapcomputers.dataList[componentType][self.shape.id] = nil
         end
+
+        if isPowered then
+            sm.scrapcomputers.powerManager.removePowerInstance(self.shape.id)
+        end
     
         if serverOnDestroyOriginal then serverOnDestroyOriginal(self) end
     end
 
-    local clientSideDontUseModName = sm.uuid.generateNamed(sm.uuid.generateRandom(), "ScrapComputers")
-    local clientSideModVariableName = sm.uuid.generateNamed(sm.uuid.generateRandom(), "ScrapComputers")
-    
     local serverOnCreateOriginal = classData.server_onCreate
     classData.server_onCreate = function(self)
-        if sm.scrapcomputers.modDisabled then
-            self.network:sendToClients(clientSideDontUseModName)
-        end
-
         self._sc_dnm_allowExecution = true
 
         -- Keep this line here
@@ -94,31 +88,16 @@ function sm.scrapcomputers.componentManager.toComponent(classData, componentType
         if isAComponent then
             sm.scrapcomputers.dataList[componentType][self.shape.id] = classData.sv_createData(self)
         end
+
+        if isPowered then
+            sm.scrapcomputers.powerManager.createPowerInstance(self.shape.id)
+        end
     
         if serverOnCreateOriginal then serverOnCreateOriginal(self) end
     end
 
     if not classData.client_onCreate then
         classData.client_onCreate = function () end
-    end
-
-    if classData.client_onInteract then
-        local onInteractOriginal = classData.client_onInteract
-        classData.client_onInteract = function(self, character, state)
-            if self[clientSideModVariableName] then
-                if state then
-                    sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.other.mod_disabled_message"))
-                end
-
-                return
-            end
-
-            onInteractOriginal(self, character, state)
-        end
-    end
-
-    classData[clientSideDontUseModName] = function(self)
-        self[clientSideModVariableName] = true
     end
 
     if not automaticRefreshGen then return end

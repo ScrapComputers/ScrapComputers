@@ -13,5 +13,35 @@
                 "type": "particle"
             }
         ]
+    },
+    "ScrapComputers - GravityControllerOrb Small": {
+        "effectList": [
+            {
+                "offset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "particles": [
+                    "p_sc_gravityorb_small"
+                ],
+                "type": "particle"
+            }
+        ]
+    },
+    "ScrapComputers - GravityControllerOrb Large": {
+        "effectList": [
+            {
+                "offset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "particles": [
+                    "p_sc_gravityorb_large"
+                ],
+                "type": "particle"
+            }
+        ]
     }
 }

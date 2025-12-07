@@ -1,0 +1,18 @@
+{
+	"lodList": [
+		{
+			"mesh": "$CONTENT_DATA/Objects/Mesh/Power/Breaker_OFF.obj",
+			"pose0": "$CONTENT_DATA/Objects/Mesh/Power/Breaker_ON.obj",
+			"subMeshList": [
+				{
+					"material": "PoseAnimDifNor",
+					"textureList": [
+						"$CONTENT_DATA/Objects/Textures/Breaker/Breaker_DIF.png",
+						"$CONTENT_DATA/Objects/Textures/transparent.png",
+						"$CONTENT_DATA/Objects/Textures/NOR.ppm"
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,6 +1,6 @@
 ---@class SpeakerClass : ShapeClass
 SpeakerClass = class()
-SpeakerClass.maxParentCount = 1
+SpeakerClass.maxParentCount = -1
 SpeakerClass.maxChildCount = 0
 SpeakerClass.connectionInput = sm.interactable.connectionType.compositeIO
 SpeakerClass.connectionOutput = sm.interactable.connectionType.none
@@ -89,11 +89,17 @@ function SpeakerClass:sv_createData()
     }
 end
 
+function SpeakerClass:sv_onPowerLoss()
+    self.sv.killAll = true
+end
+
 function SpeakerClass:server_onCreate()
     self.sv = {
         buffer = {},
         killAll = false,
     }
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, self.data.isLarge and 0.6 or 1)
 end
 
 function SpeakerClass:server_onFixedUpdate()
@@ -165,4 +171,4 @@ function SpeakerClass:cl_playNotes(notes)
     end
 end
 
-sm.scrapcomputers.componentManager.toComponent(SpeakerClass, "Speakers", true)
+sm.scrapcomputers.componentManager.toComponent(SpeakerClass, "Speakers", true, nil, true)

@@ -1,6 +1,6 @@
 ---@class HologramClass : ShapeClass
 HologramClass = class()
-HologramClass.maxParentCount = 1
+HologramClass.maxParentCount = -1
 HologramClass.maxChildCount = 0
 HologramClass.connectionInput = sm.interactable.connectionType.compositeIO
 HologramClass.connectionOutput = sm.interactable.connectionType.none
@@ -11,6 +11,22 @@ HologramClass.colorHighlight = sm.color.new(0x4126f0ff)
 
 local SPHERE_UUID = sm.uuid.new("7e293356-7c15-4238-bb73-467cd80b7558")
 local CUBE_UUID = sm.uuid.new("0a331ed9-2bc8-4c5b-a523-20cefe1dd8e8")
+
+local function axisToVec3(axis)
+    if axis == -3 then
+        return sm.vec3.new(0, 0, -1)
+    elseif axis == -2 then
+        return sm.vec3.new(0, -1, 0)
+    elseif axis == -1 then
+        return sm.vec3.new(-1, 0, 0)
+    elseif axis == 1 then
+        return sm.vec3.new(1, 0, 0)
+    elseif axis == 2 then
+        return sm.vec3.new(0, 1, 0)
+    elseif axis == 3 then
+        return sm.vec3.new(0, 0, 1)
+    end
+end
 
 -- SERVER --
 
@@ -200,6 +216,133 @@ function HologramClass:sv_createData()
             return createObject(uuid, position, type(rotation) == "Quat" and rotation or sm.quat.fromEuler(rotation), scale, (type(color) == "Color" and color:getHexStr() or color))
         end,
 
+        ---Creates a hologram of the given blueprint JSON.
+        ---@param blueprintJson table | string The blueprint json.
+        ---@param scale number The scale of the blueprint relative to the real size, 1 is 1:1.
+        ---@param offsetPosition Vec3 The offset position from the hologram to place the hologram.
+        ---@param offsetRotation Quat The offset rotation from the hologram to place the hologram.
+        ---@return table ids ids of the effects of the created blueprint.
+        createBlueprint = function (blueprintJson, scale, offsetPosition, offsetRotation)
+            sm.scrapcomputers.errorHandler.assertArgument(blueprintJson, 1, {"table", "string"})
+            sm.scrapcomputers.errorHandler.assertArgument(scale, 2, {"nil", "number"})
+            sm.scrapcomputers.errorHandler.assertArgument(offsetPosition, 3, {"nil", "Vec3"})
+            sm.scrapcomputers.errorHandler.assertArgument(offsetRotation, 4, {"nil", "Vec3", "Quat"})
+
+            scale = scale or 0.25
+            offsetPosition = offsetPosition or sm.vec3.zero()
+            
+            offsetRotation = offsetRotation and (type(offsetRotation) == "Quat" and offsetRotation or sm.quat.fromEuler(offsetRotation)) or sm.quat.identity()
+            offsetRotation = offsetRotation * sm.quat.angleAxis(math.rad(90), sm.vec3.new(1, 0, 0)) * sm.quat.angleAxis(math.rad(180), sm.vec3.new(0, 1, 0))
+
+            local hologramEffects = {}
+            
+            local blueprintTable = type(blueprintJson) == "table" and blueprintJson or sm.json.parseJsonString(blueprintJson)
+            local smallestCorner, largestCorner
+
+            if type(blueprintTable) ~= "table" then
+                error("Blueprint could not be parsed into LUA table, possible malformed structure")
+            end
+
+            blueprintTable.bodies = blueprintTable.bodies or {}
+            blueprintTable.joints = blueprintTable.joints or {}
+
+            for _, body in pairs(blueprintTable.bodies) do
+                for _, child in pairs(body.childs) do
+                    local pos = child.pos
+                    local uuid = sm.uuid.new(child.shapeId)
+                    local isBlock = sm.item.isBlock(uuid)
+                    local worldPos
+
+                    if isBlock then
+                        local blockScale = sm.vec3.new(child.bounds.x, child.bounds.y, child.bounds.z)
+
+                        worldPos = offsetRotation * (sm.vec3.new(pos.x, pos.y, pos.z) + blockScale / 2) * scale 
+
+                        table.insert(hologramEffects, 
+                            createObject(
+                                uuid,
+                                worldPos,
+                                offsetRotation * sm.util.axesToQuat(axisToVec3(child.xaxis), axisToVec3(child.zaxis)),
+                                blockScale * scale,
+                                child.color
+                            )
+                        )
+                    else
+                        local xaxis = axisToVec3(child.xaxis)
+                        local zaxis = axisToVec3(child.zaxis)
+                        local rotation = sm.util.axesToQuat(xaxis, zaxis)
+                        local bounds = child.bounds and sm.vec3.new(child.bounds.x, child.bounds.y, child.bounds.z)
+                        local bb = rotation * (bounds or sm.item.getShapeSize(uuid))
+
+                        worldPos = offsetRotation * (sm.vec3.new(pos.x, pos.y, pos.z) + bb / 2) * scale
+        
+                        table.insert(hologramEffects, 
+                            createObject(
+                                uuid,
+                                worldPos,
+                                offsetRotation * rotation,
+                                (bounds or sm.vec3.one()) * scale,
+                                child.color
+                            )
+                        )
+                    end
+
+                    if not smallestCorner then
+                        smallestCorner = worldPos
+                        largestCorner = worldPos
+                    else
+                        smallestCorner = smallestCorner:min(worldPos)
+                        largestCorner = largestCorner:max(worldPos)
+                    end
+                end
+            end
+
+            for _, joint in pairs(blueprintTable.joints) do
+                local tablePos = joint.posA
+                local pos = sm.vec3.new(tablePos.x, tablePos.y, tablePos.z)
+                local uuid = sm.uuid.new(joint.shapeId)
+                local rotation = sm.util.axesToQuat(axisToVec3(joint.xaxisA), axisToVec3(joint.zaxisA))
+                local bb = rotation * sm.item.getShapeSize(uuid)
+
+                local halfVec = sm.vec3.one() / 2
+                pos = pos - rotation * halfVec + halfVec
+
+                local worldPos = offsetRotation * (pos + bb / 2) * scale
+
+                table.insert(hologramEffects,
+                    createObject(
+                        uuid,
+                        worldPos,
+                        offsetRotation * rotation,
+                        sm.vec3.one() * scale,
+                        joint.color
+                    )
+                )
+
+                if not smallestCorner then
+                    smallestCorner = worldPos
+                    largestCorner = worldPos
+                else
+                    smallestCorner = smallestCorner:min(worldPos)
+                    largestCorner = largestCorner:max(worldPos)
+                end
+            end
+
+            local bb = largestCorner - smallestCorner
+            local center = bb / 2 + smallestCorner
+            local modify = center - sm.vec3.new(0, bb.y / 2, 0)
+
+            for _, id in pairs(hologramEffects) do
+                local object = self.sv.rawObjects[id] and self:sv_createObjectData(id)
+
+                if object then
+                    object.setPosition(object.getPosition() - modify + offsetPosition)
+                end
+            end
+    
+            return hologramEffects
+        end,
+
         ---Gets the object via Object id and returns a table containing the data of that object or nil since it dosen't exist.
         ---@param index number The object u wanna get its data.
         ---@return HologramObject? object Ether u get a table (so the object exists) or nil (so the object dose NOT exist)
@@ -209,6 +352,14 @@ function HologramClass:sv_createData()
             return self:sv_createObjectData(index)
         end
 }
+end
+
+function HologramClass:sv_onPowerLoss()
+    for index, object in pairs(self.sv.rawObjects) do
+        if object then
+            self:sv_deleteObject(index)
+        end
+    end
 end
 
 function HologramClass:server_onCreate()
@@ -237,10 +388,20 @@ function HologramClass:server_onFixedUpdate()
         self.sv.pendingDeletingObjects = {}
     end
 
-    local parent = self.interactable:getSingleParent()
-    if parent and not parent.active then
+    local parents = self.interactable:getParents()
+    local resetIndex = #parents == 0
+    for _, parent in pairs(parents) do
+        if parent.active then
+            resetIndex = false
+            break
+        end
+    end
+
+    if resetIndex then
         self.sv.index = 0
     end
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 0.2 * sm.scrapcomputers.table.getTableSize(self.sv.rawObjects))
 end
 
 function HologramClass:sv_updateObj(data, index)
@@ -316,4 +477,4 @@ function HologramClass:cl_deleteObject(index)
 end
 
 -- Convert the class to a component
-sm.scrapcomputers.componentManager.toComponent(HologramClass, "Holograms", true)
+sm.scrapcomputers.componentManager.toComponent(HologramClass, "Holograms", true, nil, true)

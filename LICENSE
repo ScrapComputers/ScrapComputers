@@ -1,20 +1,47 @@
-ScrapComputers Open-Source / Source-Available License
+ScrapComputers Source-Available License (2025)
 
-Permissions and Conditions
-    - You must obtain permission to use the source code of our mod.
-    - No permission is required to create addons for the mod. You are free to develop addons without asking for approval.
+Copyright (c) 2025–present ScrapComputers Team
 
-Addon Development Terms
-    - Addon creators must adhere to all terms outlined in this license and on the official information page.
-    - Respect these terms seriously: If you are banned and caught creating addons, consequences will follow.
-        - In such cases, we reserve the right to use the source code from any unauthorized addons/mods created by you. No credit will be given to the developer of these illegal addons.
+This License governs the use, access, modification, and distribution of the source code of the ScrapComputers software (“the Software”). By using, viewing, or modifying the Software, you agree to the following terms:
 
-Fair Use of Content
-    - Addon developers must not:
-    - Steal or copy the work of others.
-    - Mislead or lie to other users or developers.
+1. Grant of Permission
 
-Ethical Considerations
-    - The purpose of addons should be to benefit the mod community.
-        - We do not tolerate malicious addons or those that cause harm or disrupt the experience for users.
-        - Addons that promote positive interaction and provide valuable enhancements to the mod are encouraged.
+1.1 Personal, Educational, and Non-Commercial Use
+Subject to the conditions below, the Team hereby grants you a limited, non-exclusive, non-transferable, and revocable license to:
+
+Use, view, and study the source code;
+
+Modify the Software for personal, educational, or other non-commercial purposes.
+
+1.2 Commercial Use Prohibited Without Permission
+Any use of the Software, in whole or in part, for commercial purposes is strictly prohibited without prior written permission from the ScrapComputers Team. Commercial licensing inquiries may be directed to the Team via Discord or other official channels.
+
+2. Conditions
+
+2.1 Attribution and License Inclusion
+
+Any modified versions of the Software must retain this License and include attribution to the original authors (ScrapComputers Team).
+
+Redistribution of modified versions for non-commercial purposes must also include this License.
+
+2.2 Non-Commercial Distribution
+
+Redistribution, sharing, or public posting of the Software or modified versions is allowed only for non-commercial purposes.
+
+3. No Warranty
+
+The Software is provided “as is,” without any warranties of any kind, whether express, implied, statutory, or otherwise.
+
+The Team disclaims all liability for damages arising from the use, modification, or distribution of the Software.
+
+4. Commercial Licensing
+
+Parties seeking to use the Software commercially must contact the ScrapComputers Team for a separate commercial license.
+
+Use of the Software in any commercial context without an approved license constitutes a violation of this License.
+
+5. Reservation of Rights
+
+All rights not expressly granted herein are reserved by the ScrapComputers Team.
+
+The Team may update or modify this License at any time; continued use of the Software constitutes acceptance of the current version of this License.

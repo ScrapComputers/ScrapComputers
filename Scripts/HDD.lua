@@ -1,369 +1,334 @@
 ---@class HDDClass : ShapeClass
 HDDClass = class()
-HDDClass.maxParentCount = 1
+HDDClass.maxParentCount = -1
 HDDClass.maxChildCount = 0
 HDDClass.connectionInput = sm.interactable.connectionType.compositeIO
 HDDClass.connectionOutput = sm.interactable.connectionType.none
 HDDClass.colorNormal = sm.color.new(0x0eeb8fff)
 HDDClass.colorHighlight = sm.color.new(0x58ed71ff)
 
--- This is against our prinicple. Fuck you Scrap Mechanic.
-local byteLimit = 65000
-
--- SERVER + CLIENT --
-
-local luaKeywords = {
-    ["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true, ["elseif"] = true,
-    ["end"] = true, ["false"] = true, ["for"] = true, ["function"] = true, ["if"] = true,
-    ["in"] = true, ["local"] = true, ["nil"] = true, ["not"] = true, ["or"] = true,
-    ["repeat"] = true, ["return"] = true, ["then"] = true, ["true"] = true, ["until"] = true,
-    ["while"] = true
-}
-
-local function isExampleNameCorrect(name)
-    return not (name == nil or name == "" or name:match("^%s") or luaKeywords[name] or not name:match("^[%a_]") or not name:match("^%w+$"))
-end
-
 -- SERVER --
+
+function HDDClass:server_onCreate()
+    sm.scrapcomputers.sharedTable:init(self)
+
+    self.sv = {}
+
+    local storage = self.storage:load()
+    if type(storage) == "nil" then
+        storage = {
+            __hddUpdateReceived = true,
+            version = 1,
+            data = {}
+        }
+        self.storage:save(storage)
+    end
+
+    -- This is DANGEROUS but for backwards compatability i have to do this
+    if not storage.__hddUpdateReceived then
+        storage = {
+            __hddUpdateReceived = true,
+            version = 1,
+            data = storage
+        }
+
+        self.storage:save(storage)
+    end
+
+    self.sv.storage = sm.scrapcomputers.sharedTable:new(self, "self.cl.storage")
+    self.sv.storageId = sm.scrapcomputers.sharedTable:getSharedTableId(self.sv.storage)
+    sm.scrapcomputers.table.transferTable(self.sv.storage, storage)
+
+    ---@class HDD.SharedData
+    self.sv.sharedData = sm.scrapcomputers.sharedTable:new(self, "self.cl.sharedData")
+    self.sv.sharedDataId = sm.scrapcomputers.sharedTable:getSharedTableId(self.sv.sharedData)
+
+    self.sv.sharedData.isInteracted = false
+    self.sv.sharedData.interactedByWhoId = -1
+
+    self.sv.sharedData.logger = sm.scrapcomputers.fancyInfoLogger:new()
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 0.5)
+end
 
 function HDDClass:sv_createData()
     return {
-        -- Returns the self.savedData variable
-        ---@return table data The data
         load = function ()
-            return type(self.sv.savedData) == "string" and sm.json.parseJsonString(self.sv.savedData) or self.sv.savedData 
+            return sm.scrapcomputers.table.clone(self.sv.storage.data)
         end,
 
-        -- Saves data to the shape itself
         save = function (data)
             sm.scrapcomputers.errorHandler.assertArgument(data, nil, {"table"})
+            sm.scrapcomputers.errorHandler.assert(sm.scrapcomputers.json.isSafe(data), nil, "Cannot save data! Data contains invalid value types!")
 
-            local function jsonCompattiblityChecker(root, rootPath)
-                local validValueTypes = {
-                    ["table"] = true,
-                    ["number"] = true,
-                    ["string"] = true,
-                    ["boolean"] = true,
-                    ["nil"] = true,
-                }
-                local validIndexTypes = {
-                    ["number"] = true,
-                    ["string"] = true,
-                }
+            self.storage:save(data)
 
-                for index, value in pairs(root) do
-                    local path = rootPath == "" and "ROOT" or rootPath:sub(1, #rootPath - 1)
-                    local indexName = sm.scrapcomputers.toString(index)
-
-                    local errorMessage = "Path=[\"" .. path .."\"] Name=[\"" .. indexName .. "\"] Type=[\""
-
-                    sm.scrapcomputers.errorHandler.assert(validIndexTypes[type(index)], nil, "Unsupported index type: " .. errorMessage .. type(index) .. "\"]")
-                    sm.scrapcomputers.errorHandler.assert(validValueTypes[type(value)], nil, "Unsupported value type: " .. errorMessage .. type(value) .. "\"]")
-
-                    if type(value) == "table" then
-                        jsonCompattiblityChecker(value, rootPath .. index .. ". ")
-                    end
-                end
-            end
-
-            jsonCompattiblityChecker(data, "")
-
-            local dataSize = #sm.scrapcomputers.json.toString(data, false)
-            if dataSize > byteLimit then
-                error("Data too big! (Max is "..byteLimit..", The data's size is "..dataSize..")")
-            end
-
-            self:sv_saveData({data, true})
+            self.sv.storage.data = sm.scrapcomputers.table.clone(data)
+            sm.scrapcomputers.sharedTable:forceSyncProperty(self.sv.storage, "data")
         end
-}
-end
-
----@param params {[1]: string, [2]: boolean} The data
-function HDDClass:sv_saveData(params)
-    local data, souldUpdateToClients = unpack(params)
-    
-    self.sv.savedData = sm.json.writeJsonString(data)
-    self.storage:save(self.sv.savedData)
-
-    self.sv.updateDataToClients = souldUpdateToClients
-end
-
-function HDDClass:server_onCreate()
-    self.sv = {
-        savedData = self.storage:load(),
-        updateDataToClients = true
     }
-
-    if type(self.sv.savedData) == "string" then
-        self.sv.savedData = sm.json.parseJsonString(self.sv.savedData)
-    end
-
-    if not self.sv.savedData then
-        self.sv.savedData = {}
-        self.storage:save(self.sv.savedData)
-    end
 end
 
 function HDDClass:server_onFixedUpdate()
-    if self.sv.updateDataToClients then
-        self.sv.updateDataToClients = false
-        self.network:sendToClients("cl_updateDriveData", self.sv.savedData)
-    end
+    sm.scrapcomputers.sharedTable:runTick(self)
 end
 
-function HDDClass:sv_updateClient(_, player)
-    self.network:sendToClient(player, "cl_updateDriveData", self.sv.savedData)
+function HDDClass:server_onSharedTableChange(id, key, value, comesFromSelf, player)
+    if not comesFromSelf and id == self.sv.storageId then
+        for _, plr in pairs(sm.player.getAllPlayers()) do
+            if plr ~= player then
+                self.network:sendToClient(plr, "cl_sendAlertOfUserModifingDataHahaYes")
+            end
+        end
+
+        self.storage:save(sm.scrapcomputers.sharedTable:getRawContents(self.sv.storage))
+    end
+
+    if id == self.sv.sharedDataId and key == "logger" then
+        sm.scrapcomputers.sharedTable:disableSync(self.sv.sharedData)
+        self.sv.sharedData.logger = sm.scrapcomputers.fancyInfoLogger:newFromSharedTable(self.sv.sharedData.logger)
+        sm.scrapcomputers.sharedTable:enableSync(self.sv.sharedData)
+    end
 end
 
 -- CLIENT --
 
 function HDDClass:client_onCreate()
-    self.cl = {
-        gui = nil,
-        driveContents = {},
-        inputText = "",
-        exampleInputText = "",
-        waitCount = 0,
-        selectedExample = nil,
-        character = nil
-    }
+    sm.scrapcomputers.sharedTable:init(self)
 
-    self.network:sendToServer("sv_updateClient")
+    self.cl = {}
+    self.cl.unsavedInput = ""
+    self.cl.hasChanges = false
+    self.cl.actionsPerforming = false
+
+    self.cl.gui = sm.scrapcomputers.gui:createGuiFromLayout("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Gui/Layout/Harddrive.layout")
+    self.cl.gui:setButtonCallback("MainMainSaveBtn", "cl_onSavedBtnPressed")
+    self.cl.gui:setButtonCallback("MainMainReformatContentsBtn", "cl_reformatContentsBtnPressed")
+    self.cl.gui:setButtonCallback("MainMainReloadContentsBtn", "cl_reloadContentsBtnPressed")
+
+    self.cl.gui:setTextChangedCallback("MainMainData", "cl_onDataTextChanged")
+    self.cl.gui:setOnCloseCallback("cl_onCloseGui")
+
+    self.cl.unsavedChanges = {}
+    self.cl.unsavedChanges.gui = sm.scrapcomputers.gui:createGuiFromLayout("$GAME_DATA/Gui/Layouts/PopUp/PopUp_YN.layout")
+
+    self.cl.unsavedChanges.gui:setButtonCallback("Yes", "cl_unsavedChanges_onButtonPressed")
+    self.cl.unsavedChanges.gui:setButtonCallback("No", "cl_unsavedChanges_onButtonPressed")
+
+    self.cl.unsavedChanges.gui:setOnCloseCallback("cl_unsavedChanges_onCloseCallback")
+
+    self.cl.unsavedChanges.onButtonPressedCallback = nil ---@type function?
+    self.cl.unsavedChanges.onCloseCallback         = nil ---@type function?
+
+    ---@type HDD.SharedData
+    self.cl.sharedData = nil
+end
+
+function HDDClass:client_onFixedUpdate()
+    sm.scrapcomputers.sharedTable:runTick(self)
+
+    if not self.cl.sharedData then return end
+
+    if not self.cl.sharedData.isInteracted or self.cl.sharedData.interactedByWhoId ~= sm.localPlayer.getId() then
+        return
+    end
+
+    if self.cl.sharedData.logger then
+        self.cl.gui:setText("MainHeaderTextInfoText", self.cl.sharedData.logger:getLog())
+    end
 end
 
 function HDDClass:client_onInteract(character, state)
     if not state then return end
 
-    self.cl.exampleInputText = ""
-    
-    self.cl.gui = sm.gui.createGuiFromLayout(sm.scrapcomputers.layoutFiles.Harddrive, true, {backgroundAlpha = 0.5})
-        
-    self.cl.gui:setText("driveContents", sm.scrapcomputers.json.prettifyTable(self.cl.driveContents))
-    self.cl.inputText = sm.scrapcomputers.json.toString(self.cl.driveContents)
+    if self.cl.sharedData.isInteracted then
+        sm.scrapcomputers.gui:alert("scrapcomputers.drive.gui_already_opened")
+        return
+    end
 
-    self.cl.gui:setButtonCallback("saveBtn", "cl_onSaveBtn")
-    self.cl.gui:setButtonCallback("importDataBtn", "cl_onImportExampleBtn")
-    self.cl.gui:setButtonCallback("exportDataBtn", "cl_onExportExampleBtn")
-    self.cl.gui:setButtonCallback("deleteBtn", "cl_onDeleteExampleBtn")
-    self.cl.gui:setButtonCallback("formatDataBtn", "cl_onFormatBtn")
+    self.cl.sharedData.logger:setDefaultText("scrapcomputers.drive.logs.no_events")
 
-    self.cl.gui:setTextChangedCallback("driveContents", "cl_updateHDDContents")
-    self.cl.gui:setTextChangedCallback("selectedOption", "cl_updateSelectedExample")
+    self.cl.sharedData.interactedByWhoId = sm.localPlayer.getId()
+    self.cl.sharedData.isInteracted = true
+    self:cl_openGui()
+end
 
-    self.cl.gui:setVisible("deleteBtn", false)
-    self.cl.gui:setVisible("exportDataBtn", true)
-    self.cl.gui:setVisible("importDataBtn", false)
+function HDDClass:cl_openGui()
+    self:cl_reloadTranslations()
 
-    self:cl_updateExamples()
-    self:cl_runTranslations()
-
-    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
-
+    self.cl.unsavedInput = sm.scrapcomputers.json.toString(self.cl.storage.data, false)
+    self.cl.gui:setTextRaw("MainMainData", sm.scrapcomputers.json.prettifyTable(self.cl.storage.data))
     self.cl.gui:open()
-    sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_open", character)
-    self.cl.character = character
 end
 
-function HDDClass:cl_onGuiClose()
-    if self.cl.character then
-        sm.effect.playHostedEffect("ScrapComputers - event:/ui/menu_close", self.cl.character)
-    end
-end
+function HDDClass:cl_onCloseGui()
+    if self.cl.actionsPerforming then return end
 
-function HDDClass:cl_onFormatBtn(widget, p)
-    local safeText = self.cl.inputText:gsub("\\", "⁄")
-    self.cl.gui:setText("driveContents", sm.scrapcomputers.json.prettifyString(safeText))
-end
-
----@param text string The text
-function HDDClass:cl_updateSelectedExample(widget, text)
-    local examples = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples)
-    local selectedExample = nil
-
-    for _, example in pairs(examples) do
-        if example.name:lower() == text:lower() then
-            selectedExample = example
-            break
-        end
-    end
-
-    if selectedExample then
-        self.cl.gui:setVisible("deleteBtn"    , not selectedExample.builtIn)
-        self.cl.gui:setVisible("exportDataBtn", not selectedExample.builtIn)
-
-        if not selectedExample.builtIn then
-            self.cl.gui:setText("exportDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.overwritebtn"))
-        end
-        self.cl.gui:setVisible("importDataBtn", true)
-
-        self.cl.selectedExample = selectedExample
-    else
-        self.cl.gui:setVisible("deleteBtn", false)
-        self.cl.gui:setVisible("exportDataBtn", true)
-        self.cl.gui:setVisible("importDataBtn", false)
-        self.cl.gui:setText("exportDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.exportbtn"))
-
-        self.cl.selectedExample = nil
-    end
-
-    self.cl.exampleInputText = text
-end
-
-function HDDClass:cl_onDeleteExampleBtn()
-    local contents = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples)
-
-    for index, example in pairs(contents) do
-        if example.name:lower() == self.cl.exampleInputText:lower() then
-            table.remove(contents, index)
-
-            sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples)
-
-            self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.example_deleted", self.cl.exampleInputText))
-            self.cl.waitCount = 3 * 40
-
-            self:cl_updateExamples()
-            self:cl_updateSelectedExample(nil, self.cl.exampleInputText)
-            return
-        end
-    end
-
-    self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.example_not_found"))
-    self.cl.waitCount = 3 * 40
-end
-
-function HDDClass:cl_onImportExampleBtn()
-    local data = self.cl.selectedExample.data
-    local newText = "{}"
-
-    self.cl.inputText = newText
-    self.cl.gui:setText("driveContents", sm.scrapcomputers.json.prettifyTable(data))
-
-    self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.imported_example", self.cl.selectedExample.name))
-    self.cl.waitCount = 3 * 40
-end
-
-function HDDClass:cl_onExportExampleBtn()
-    if not isExampleNameCorrect(self.cl.exampleInputText) then
-        self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.invalid_name"))
-        self.cl.waitCount = 3 * 40
+    if not self.cl.hasChanges then
+        self.cl.sharedData.isInteracted = false
+        self.cl.sharedData.interactedByWhoId = -1
 
         return
     end
 
-    local contents = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples)
-    local newInput = self.cl.inputText:gsub("⁄", "\\")
-    local newData = sm.json.parseJsonString(newInput)
-
-    if self.cl.selectedExample then
-        for index, example in pairs(contents) do
-            if example.name:lower() == self.cl.exampleInputText:lower() then
-                contents[index].data = newData
-                sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples)
-
-                self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.overwrited_example", self.cl.selectedExample.name))
-                self.cl.waitCount = 3 * 40
-
-                break
-            end
-        end
-    else
-        table.insert(contents, {builtIn = false, data = newData, name = self.cl.exampleInputText})
-        sm.json.save(contents, sm.scrapcomputers.jsonFiles.HarddriveExamples)
-
-        self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.examples.created_example", self.cl.exampleInputText))
-        self.cl.waitCount = 3 * 40
-    end
-
-    self:cl_updateExamples()
-    self:cl_updateSelectedExample(nil, self.cl.exampleInputText)
-end
-
-function HDDClass:cl_onSaveBtn()
-    local newInput = self.cl.inputText:gsub("⁄", "\\")
-    local success, result = pcall(sm.json.parseJsonString, newInput) ---@type boolean, string|table
-
-    if success then
-        local dataSize = sm.scrapcomputers.json.toString(result, true)
-
-        if #dataSize > byteLimit then
-            self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.data_overload", byteLimit, #dataSize))
-            self.cl.waitCount = 10 * 40
+    self.cl.unsavedChanges.onButtonPressedCallback = function (pressedYes)
+        if not pressedYes then
+            self:cl_reloadTranslations()
+            self.cl.gui:open()
         else
-            self.network:sendToServer("sv_saveData", {result, true})
-
-            self.cl.gui:setText("log", "#3A96DD" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.saved_data"))
-            self.cl.waitCount = 3 * 40
-        end
-    else
-        if result:find("\n") then
-            local line, column = string.match(result, "Line (%d+), Column (%d+)")
-            local errorLines = {}
-
-            for line in result:gmatch("[^\n]+") do
-                table.insert(errorLines, line)
-            end
-
-            local specificError = errorLines[3] or sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.unknown_error")
-
-            self.cl.gui:setText("log", "#E74856" .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.json_error", line, column, specificError))
-            self.cl.waitCount = 10 * 40
-        else
-            self.cl.gui:setText("log", "#E74856" .. result)
-            self.cl.waitCount = 10 * 40
-            
-            sm.scrapcomputers.logger.error("HDD.lua", result)
+            self.cl.hasChanges = false
+            self.cl.sharedData.isInteracted = false
+            self.cl.sharedData.interactedByWhoId = -1
         end
     end
+
+    self.cl.unsavedChanges.onCloseCallback = function ()
+        if self.cl.hasChanges then
+            self:cl_reloadTranslations()
+            self.cl.gui:open()
+        end
+    end
+
+    self:cl_reloadTranslations()
+    self.cl.unsavedChanges.gui:open()
 end
 
-function HDDClass:client_onFixedUpdate()
-    if self.cl.waitCount >= 0 then
-        if self.cl.waitCount == 0 and sm.exists(self.cl.gui) then
-            self.cl.gui:setText("log", "")
+function HDDClass:cl_onDataTextChanged(widgetName, text)
+    self.cl.hasChanges = true
+    self.cl.unsavedInput = text
+end
+
+function HDDClass:cl_unsavedChanges_onCloseCallback()
+    if self.cl.unsavedChanges.onCloseCallback then
+        self.cl.unsavedChanges.onCloseCallback()
+    end
+end
+
+function HDDClass:cl_unsavedChanges_onButtonPressed(widgetName)
+    self.cl.unsavedChanges.onButtonPressedCallback(widgetName == "Yes")
+    self.cl.unsavedChanges.gui:close()
+end
+
+function HDDClass:cl_onSavedBtnPressed()
+    if not self.cl.hasChanges then
+        self:cl_showLog("scrapcomputers.drive.logs.no_contents_modified", "#eeeeee")
+        return
+    end
+
+    local success, result = pcall(sm.json.parseJsonString, self.cl.unsavedInput)
+    if not success then
+        local line, column = result:match("Line (%d+), Column (%d+)")
+        line = tonumber(line)
+        column = tonumber(column)
+
+        local message = result:match("Column %d+\n%s*(.+)")
+        message = message:sub(1, #message - 1)
+
+        self:cl_showLog("scrapcomputers.drive.logs.json_error", "#f14c4c", line, column, message)
+        return
+    end
+
+    self.cl.hasChanges = false
+
+    self.cl.storage.data = result
+    sm.scrapcomputers.sharedTable:forceSyncProperty(self.cl.storage, "data")
+
+    self:cl_showLog("scrapcomputers.drive.logs.saved_data", "#23d18b")
+end
+
+function HDDClass:cl_reloadContentsBtnPressed()
+    if not self.cl.hasChanges then
+        self:cl_openGui()
+        return
+    end
+
+    self.cl.actionsPerforming = true
+    self.cl.gui:close()
+
+    self.cl.unsavedChanges.onButtonPressedCallback = function (pressedYes)
+        if pressedYes then
+            self:cl_openGui()
+        end
+    end
+
+    self.cl.unsavedChanges.onCloseCallback = function ()
+        if not self.cl.gui:isActive() then
+            self:cl_reloadTranslations()
+            self.cl.gui:open()
         end
 
-        self.cl.waitCount = self.cl.waitCount - 1
+        self.cl.actionsPerforming = false
+    end
+
+    self:cl_reloadTranslations()
+    self.cl.unsavedChanges.gui:open()
+end
+
+function HDDClass:cl_reformatContentsBtnPressed()
+    if not self.cl.hasChanges then return end
+
+    local success, result = pcall(sm.json.parseJsonString, self.cl.unsavedInput)
+    if not success then
+        local line, column = result:match("Line (%d+), Column (%d+)")
+        line = tonumber(line)
+        column = tonumber(column)
+
+        local message = result:match("Column %d+\n%s*(.+)")
+        message = message:sub(1, #message - 1)
+
+        self:cl_showLog("scrapcomputers.drive.logs.json_error", "#f14c4c", line, column, message)
+        return
+    end
+
+    self.cl.gui:setTextRaw("MainMainData", sm.scrapcomputers.json.prettifyTable(result))
+    self:cl_showLog("scrapcomputers.drive.logs.reformatted", "#23d18b")
+end
+
+function HDDClass:client_canInteract()
+    sm.scrapcomputers.gui:showCustomInteractiveText(
+        {
+            "scrapcomputers.drive.interactiontext.main"
+        }
+    )
+
+    return true
+end
+
+function HDDClass:cl_showLog(msg, color, ...)
+    if self.cl.sharedData.logger then
+        self.cl.sharedData.logger:showLog(msg, color, ...)
+        sm.scrapcomputers.sharedTable:forceSyncProperty(self.cl.sharedData, "logger")
     end
 end
 
----@param text string
-function HDDClass:cl_updateHDDContents(widget, text)
-    local unsafeText = text:gsub("⁄", "\\")
-    self.cl.inputText = unsafeText
+function HDDClass:cl_sendAlertOfUserModifingDataHahaYes()
+    self:cl_showLog("scrapcomputers.drive.logs.contents_modified_by_user", "#23d18b")
 end
 
-function HDDClass:cl_updateDriveData(newData)
-    -- BUGFIX: Do NoT reMove
-    if type(newData) == "string" then
-        newData =  sm.json.parseJsonString(newData)
+function HDDClass:client_onSharedTableChange(id, key, value, comesFromSelf)
+    self.cl.sharedDataId = self.cl.sharedData and sm.scrapcomputers.sharedTable:getSharedTableId(self.cl.sharedData) or nil
+    self.cl.storageId    = self.cl.storage    and sm.scrapcomputers.sharedTable:getSharedTableId(self.cl.storage   ) or nil
+
+    if id == self.cl.sharedDataId and key == "logger" then
+        sm.scrapcomputers.sharedTable:disableSync(self.cl.sharedData)
+        self.cl.sharedData.logger = sm.scrapcomputers.fancyInfoLogger:newFromSharedTable(self.cl.sharedData.logger)
+        sm.scrapcomputers.sharedTable:enableSync(self.cl.sharedData)
     end
 
-    if type(newData) == "nil" or not next(newData) then
-        self.cl.driveContents = {}
-    else
-        self.cl.driveContents = newData
+    if id == self.cl.storageId and not comesFromSelf then
+        self:cl_showLog("scrapcomputers.drive.logs.contents_modified_by_computer", "#23d18b")
     end
 end
 
--- Updates the example list
-function HDDClass:cl_updateExamples()
-    local examples = sm.json.open(sm.scrapcomputers.jsonFiles.HarddriveExamples)
-    local text = ""
+function HDDClass:cl_reloadTranslations()
+    self.cl.unsavedChanges.gui:setText("Title"  , "scrapcomputers.drive.unsaved_changes.title")
+    self.cl.unsavedChanges.gui:setText("Message", "scrapcomputers.drive.unsaved_changes.text")
 
-    for _, example in pairs(examples) do
-        text = text .. example.name .. "\n"
-    end
+    self.cl.gui:setText("MainHeader", "scrapcomputers.drive.title")
 
-    self.cl.gui:setText("list", text)
+    self.cl.gui:setText("MainMainSaveBtn"            , "scrapcomputers.drive.save")
+    self.cl.gui:setText("MainMainReloadContentsBtn"  , "scrapcomputers.drive.reload_contents")
+    self.cl.gui:setText("MainMainReformatContentsBtn", "scrapcomputers.drive.reformat_contents")
 end
 
-function HDDClass:cl_runTranslations()
-    self.cl.gui:setText("title"        , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.title"             ))
-    self.cl.gui:setText("saveBtn"      , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.savebtn"           ))
-    self.cl.gui:setText("deleteBtn"    , sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.deletebtn"         ))
-    self.cl.gui:setText("importDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.importbtn"         ))
-    self.cl.gui:setText("exportDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.exportbtn"         ))
-    self.cl.gui:setText("formatDataBtn", sm.scrapcomputers.languageManager.translatable("scrapcomputers.drive.format_text_button"))
-end
-
-sm.scrapcomputers.componentManager.toComponent(HDDClass, "Harddrives", true)
+sm.scrapcomputers.componentManager.toComponent(HDDClass, "Harddrives", true, nil, true)
