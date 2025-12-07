@@ -72,6 +72,7 @@ end
 
 function GeneratorClass:sv_saveHandlePos(handlePos)
     self.sv.handlePos = handlePos
+    self.network:sendToClients("cl_setHandlePos", handlePos)
     self.storage:save(handlePos)
 end
 

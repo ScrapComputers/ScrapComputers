@@ -34,6 +34,11 @@ function BatteryClass:server_onFixedUpdate()
         self.sv.dead = false
     end
 
+    if self.sv.dead ~= self.sv.lastDead then
+        self.sv.lastDead = self.sv.dead
+        self.network:sendToClients("cl_syncDeadState", self.sv.dead)
+    end
+
     if self.sv.currentCharge ~= self.sv.lastCharge then
         self.sv.lastCharge = self.sv.currentCharge
         self.storage:save(self.sv.currentCharge)
@@ -101,12 +106,13 @@ end
 function BatteryClass:client_onCreate()
     self.cl = {
         usedPower = 0,
-        chargePower = 0
+        chargePower = 0,
+        dead = false
     }
 end
 
 function BatteryClass:client_canInteract()
-    local totalPower = not self.sv.dead and self.data.dischargeRate or 0
+    local totalPower = not self.cl.dead and self.data.dischargeRate or 0
     local unusedPower = totalPower - sm.scrapcomputers.util.round(self.cl.usedPower, 1)
     local unusedClamped = unusedPower > 0 and unusedPower or 0
     local chargeIndex
@@ -121,7 +127,7 @@ function BatteryClass:client_canInteract()
 
     sm.scrapcomputers.gui:showCustomInteractiveText(
         {
-            {"scrapcomputers.power.power_display", not self.sv.dead and self.data.dischargeRate or 0},
+            {"scrapcomputers.power.power_display", not self.cl.dead and self.data.dischargeRate or 0},
             {"scrapcomputers.power.unused_power", unusedClamped},
             {"scrapcomputers.battery.charge."..chargeIndex, sm.scrapcomputers.util.round(self.cl.charge, 1), self.data.maxCapacity},
             {"scrapcomputers.battery.charge_delta."..tostring(chargeDelta > 0), chargeDelta, self.data.chargeRate}
@@ -129,6 +135,10 @@ function BatteryClass:client_canInteract()
     )
 
     return true
+end
+
+function BatteryClass:cl_syncDeadState(state)
+    self.cl.dead = state
 end
 
 function BatteryClass:cl_syncCharge(charge)
