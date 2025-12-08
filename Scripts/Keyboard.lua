@@ -74,13 +74,16 @@ function KeyboardClass:client_onFixedUpdate()
 end
 
 function KeyboardClass:client_canInteract()
-    -- sm.gui.setInteractionText sucks. They can suck my sweaty balls.
-    local translatableText = sm.scrapcomputers.languageManager.translatable("scrapcomputers.keyboard.press_to_type_text", "[TEXT_SPLIT]")
-    local firstPart, secondPart = translatableText:match("^(.-)%[TEXT_SPLIT%](.*)$")
+    if self.shape.usable then
+        -- sm.gui.setInteractionText sucks. They can suck my sweaty balls.
+        local translatableText = sm.scrapcomputers.languageManager.translatable("scrapcomputers.keyboard.press_to_type_text", "[TEXT_SPLIT]")
+        local firstPart, secondPart = translatableText:match("^(.-)%[TEXT_SPLIT%](.*)$")
 
-    sm.gui.setInteractionText(firstPart, sm.gui.getKeyBinding("Use", true), secondPart)
-    sm.gui.setInteractionText("")
-    return true
+        sm.gui.setInteractionText(firstPart, sm.gui.getKeyBinding("Use", true), secondPart)
+        sm.gui.setInteractionText("")
+    end
+    
+    return self.shape.usable
 end
 
 function KeyboardClass:client_onInteract(char, state)

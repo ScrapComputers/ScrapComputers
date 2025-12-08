@@ -14,10 +14,9 @@
                 <Property key="ReadOnly" value="true"/>
                 <Property key="TabPrinting" value="true"/>
                 <Property key="WordWrap" value="true"/>
-                <Property key="FontName" value="SM_Text"/>
                 <Property key="MultiLine" value="true"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.74169741697416969 0.88082901554404147 0.24354243542435425 0.10362694300518134" name="MainMainSendBtn">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.7409594095940959 0.88082901554404147 0.24354243542435425 0.10362694300518134" name="MainMainSendBtn">
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="Caption" value="Stupid Submit button haha yes"/>
                 <Property key="TextAlign" value="Center"/>

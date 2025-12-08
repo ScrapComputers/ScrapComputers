@@ -372,20 +372,14 @@ function HologramClass:server_onCreate()
 end
 
 function HologramClass:server_onFixedUpdate()
-    if self.sv.pendingObjects ~= {} then
-        for _, object in pairs(self.sv.pendingObjects) do
-            self.network:sendToClients("cl_setOrCreateObject", object)
-        end
-
-        self.sv.pendingObjects = {}
+    for i, object in pairs(self.sv.pendingObjects) do
+        self.network:sendToClients("cl_setOrCreateObject", object)
+        self.sv.pendingObjects[i] = nil
     end
 
-    if self.sv.pendingDeletingObjects ~= {} then
-        for _, index in pairs(self.sv.pendingDeletingObjects) do
-            self.network:sendToClients("cl_deleteObject", index)
-        end
-
-        self.sv.pendingDeletingObjects = {}
+    for i, index in pairs(self.sv.pendingDeletingObjects) do
+        self.network:sendToClients("cl_deleteObject", index)
+        self.sv.pendingDeletingObjects[i] = nil
     end
 
     local parents = self.interactable:getParents()
@@ -415,24 +409,13 @@ end
 -- CLIENT --
 
 function HologramClass:client_onCreate()
-    if self.cl then
-        self:cl_killEmAll()
-    end
-
-    self.cl = {  effects = {} }
+    self.cl = {
+        effects = {}
+    }
 end
 
-function HologramClass:client_onFixedUpdate()
-    local parents = self.interactable:getParents()
-
-    if #parents > 0 then
-        for _, parent in pairs(parents) do
-            if not parent.active then
-                self:cl_killEmAll()
-                break
-            end
-        end
-    end
+function HologramClass:client_onDestroy()
+    self:cl_killEmAll()
 end
 
 function HologramClass:cl_killEmAll()
@@ -441,8 +424,6 @@ function HologramClass:cl_killEmAll()
             effect:destroy()
         end
     end
-
-    self.cl.effects = {}
 end
 
 ---@param data {[1]: table, [2]: integer} The data
@@ -477,4 +458,4 @@ function HologramClass:cl_deleteObject(index)
 end
 
 -- Convert the class to a component
-sm.scrapcomputers.componentManager.toComponent(HologramClass, "Holograms", true, nil, true)
+sm.scrapcomputers.componentManager.toComponent(HologramClass, "Holograms", true, true, true)

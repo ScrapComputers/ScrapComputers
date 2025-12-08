@@ -6,7 +6,7 @@
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_HeaderLarge_Wide"/>
                 <Property key="Caption" value="TITLE GOES HERE"/>
-                <Widget type="TextBox" skin="TextBox" position_real="0 0.72164948453608246 1 0.25773195876288657" name="MainHeaderTextLogText">
+                <Widget type="TextBox" skin="TextBox" position_real="0 0.72164948453608246 1 0.24742268041237114" name="MainHeaderTextLogText">
                     <Property key="FontName" value="SM_Label"/>
                     <Property key="Caption" value="Test"/>
                     <Property key="TextAlign" value="Center"/>
@@ -45,6 +45,8 @@
                 <Property key="WordWrap" value="true"/>
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_TextSmall"/>
+                <Property key="NeedKey" value="false"/>
+                <Property key="NeedMouse" value="false"/>
             </Widget>
         </Widget>
     </Widget>

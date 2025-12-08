@@ -1338,7 +1338,7 @@ function DisplayClass:client_onInteract(character, state)
 end
 
 function DisplayClass:client_canInteract()
-    return true
+    return self.shape.usable
 end
 
 function DisplayClass:client_onTinker(character, state)

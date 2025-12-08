@@ -93,19 +93,21 @@ function SolarPanelClass:client_onCreate()
 end
 
 function SolarPanelClass:client_canInteract()
-    local totalPower = sm.scrapcomputers.util.round(self.cl.totalPower, 1)
-    local unusedPower = totalPower - sm.scrapcomputers.util.round(self.cl.usedPower, 1)
-    local unusedClamped = unusedPower > 0 and unusedPower or 0
+    if self.shape.usable then
+        local totalPower = sm.scrapcomputers.util.round(self.cl.totalPower, 1)
+        local unusedPower = totalPower - sm.scrapcomputers.util.round(self.cl.usedPower, 1)
+        local unusedClamped = unusedPower > 0 and unusedPower or 0
 
-    sm.scrapcomputers.gui:showCustomInteractiveText(
-        {
-            {"scrapcomputers.power.power_display", totalPower},
-            {"scrapcomputers.power.unused_power", unusedClamped},
-            {"scrapcomputers.solarpanel.efficiency", sm.scrapcomputers.util.round(sm.util.clamp(totalPower / self.data.maxOutput, 0, 1), 3) * 100, "%"}
-        }
-    )
+        sm.scrapcomputers.gui:showCustomInteractiveText(
+            {
+                {"scrapcomputers.power.power_display", totalPower},
+                {"scrapcomputers.power.unused_power", unusedClamped},
+                {"scrapcomputers.solarpanel.efficiency", sm.scrapcomputers.util.round(sm.util.clamp(totalPower / self.data.maxOutput, 0, 1), 3) * 100, "%"}
+            }
+        )
+    end
 
-    return true
+    return self.shape.usable
 end
 
 function SolarPanelClass:cl_receiveTotalPower(totalPower)

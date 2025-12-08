@@ -117,16 +117,18 @@ function BreakerClass:client_onInteract(char, state)
 end
 
 function BreakerClass:client_canInteract()
-    local canInteract = #self.interactable:getParents(sm.interactable.connectionType.logic) == 0
+    if self.shape.usable then
+        local canInteract = #self.interactable:getParents(sm.interactable.connectionType.logic) == 0
 
-    sm.scrapcomputers.gui:showCustomInteractiveText(
-        {
-            {"scrapcomputers.breaker.power_transfer." .. tostring(self.cl.transferredPower > 0), sm.scrapcomputers.util.round(self.cl.transferredPower, 1)},
-            canInteract and "scrapcomputers.other.generic_use" or nil
-        }
-    )
+        sm.scrapcomputers.gui:showCustomInteractiveText(
+            {
+                {"scrapcomputers.breaker.power_transfer." .. tostring(self.cl.transferredPower > 0), sm.scrapcomputers.util.round(self.cl.transferredPower, 1)},
+                canInteract and "scrapcomputers.other.generic_use" or nil
+            }
+        )
+    end
 
-    return canInteract
+    return canInteract and self.shape.usable
 end
 
 function BreakerClass:cl_syncTransferredPower(power)

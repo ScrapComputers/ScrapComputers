@@ -285,13 +285,15 @@ function HDDClass:cl_reformatContentsBtnPressed()
 end
 
 function HDDClass:client_canInteract()
-    sm.scrapcomputers.gui:showCustomInteractiveText(
-        {
-            "scrapcomputers.drive.interactiontext.main"
-        }
-    )
+    if self.shape.usable then
+        sm.scrapcomputers.gui:showCustomInteractiveText(
+            {
+                "scrapcomputers.drive.interactiontext.main"
+            }
+        )
+    end
 
-    return true
+    return self.shape.usable
 end
 
 function HDDClass:cl_showLog(msg, color, ...)

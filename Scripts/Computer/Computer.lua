@@ -923,34 +923,37 @@ function ComputerClass:client_onInteract(_, state)
 end
 
 function ComputerClass:client_canInteract(character)
-    if not self.cl.sharedData or not self.cl.canShowInfo then
+    if self.shape.usable then
+        if not self.cl.sharedData or not self.cl.canShowInfo then
+            sm.scrapcomputers.gui:showCustomInteractiveText(
+                {
+                    "scrapcomputers.computer.interationtext.press_use",
+                }
+            )
+            return true
+        end
+
         sm.scrapcomputers.gui:showCustomInteractiveText(
             {
                 "scrapcomputers.computer.interationtext.press_use",
+                {
+                    "scrapcomputers.computer.interationtext.computer_id",
+                    self.cl.sharedData.computerId
+                },
+                "scrapcomputers.computer.interationtext.is_running." .. tostring(self.cl.sharedData.isRunning),
+                "scrapcomputers.computer.interationtext.exception." .. tostring(self.cl.sharedData.hasException),
+                {
+                    "scrapcomputers.computer.interationtext.power." .. tostring(self.cl.powerInfo.hasPower),
+                    sm.scrapcomputers.util.round(self.cl.powerInfo.totalPPTNeeded, 1)
+                },
+            },
+            {
+                self.cl.sharedData.hasException and self.cl.sharedData.exceptionMessage or "scrapcomputers.computer.interationtext.no_exception"
             }
         )
-        return true
     end
-
-    sm.scrapcomputers.gui:showCustomInteractiveText(
-        {
-            "scrapcomputers.computer.interationtext.press_use",
-            {
-                "scrapcomputers.computer.interationtext.computer_id",
-                self.cl.sharedData.computerId
-            },
-            "scrapcomputers.computer.interationtext.is_running." .. tostring(self.cl.sharedData.isRunning),
-            "scrapcomputers.computer.interationtext.exception." .. tostring(self.cl.sharedData.hasException),
-            {
-                "scrapcomputers.computer.interationtext.power." .. tostring(self.cl.powerInfo.hasPower),
-                sm.scrapcomputers.util.round(self.cl.powerInfo.totalPPTNeeded, 1)
-            },
-        },
-        {
-            self.cl.sharedData.hasException and self.cl.sharedData.exceptionMessage or "scrapcomputers.computer.interationtext.no_exception"
-        }
-    )
-    return true
+    
+    return self.shape.usable
 end
 
 function ComputerClass:client_onFixedUpdate()

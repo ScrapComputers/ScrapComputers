@@ -112,29 +112,31 @@ function BatteryClass:client_onCreate()
 end
 
 function BatteryClass:client_canInteract()
-    local totalPower = not self.cl.dead and self.data.dischargeRate or 0
-    local unusedPower = totalPower - sm.scrapcomputers.util.round(self.cl.usedPower, 1)
-    local unusedClamped = unusedPower > 0 and unusedPower or 0
-    local chargeIndex
+    if self.shape.usable then
+        local totalPower = not self.cl.dead and self.data.dischargeRate or 0
+        local unusedPower = totalPower - sm.scrapcomputers.util.round(self.cl.usedPower, 1)
+        local unusedClamped = unusedPower > 0 and unusedPower or 0
+        local chargeIndex
 
-    if self.cl.charge == 0 then
-        chargeIndex = 3
-    else
-        chargeIndex = sm.util.clamp(math.floor(self.data.maxCapacity / self.cl.charge), 1, 3)
+        if self.cl.charge == 0 then
+            chargeIndex = 3
+        else
+            chargeIndex = sm.util.clamp(math.floor(self.data.maxCapacity / self.cl.charge), 1, 3)
+        end
+
+        local chargeDelta = sm.scrapcomputers.util.round(self.cl.chargePower - self.cl.usedPower, 1)
+
+        sm.scrapcomputers.gui:showCustomInteractiveText(
+            {
+                {"scrapcomputers.power.power_display", not self.cl.dead and self.data.dischargeRate or 0},
+                {"scrapcomputers.power.unused_power", unusedClamped},
+                {"scrapcomputers.battery.charge."..chargeIndex, sm.scrapcomputers.util.round(self.cl.charge, 1), self.data.maxCapacity},
+                {"scrapcomputers.battery.charge_delta."..tostring(chargeDelta > 0), chargeDelta, self.data.chargeRate}
+            }
+        )
     end
 
-    local chargeDelta = sm.scrapcomputers.util.round(self.cl.chargePower - self.cl.usedPower, 1)
-
-    sm.scrapcomputers.gui:showCustomInteractiveText(
-        {
-            {"scrapcomputers.power.power_display", not self.cl.dead and self.data.dischargeRate or 0},
-            {"scrapcomputers.power.unused_power", unusedClamped},
-            {"scrapcomputers.battery.charge."..chargeIndex, sm.scrapcomputers.util.round(self.cl.charge, 1), self.data.maxCapacity},
-            {"scrapcomputers.battery.charge_delta."..tostring(chargeDelta > 0), chargeDelta, self.data.chargeRate}
-        }
-    )
-
-    return true
+    return self.shape.usable
 end
 
 function BatteryClass:cl_syncDeadState(state)

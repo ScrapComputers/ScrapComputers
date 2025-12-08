@@ -105,34 +105,36 @@ function GeneratorClass:client_onCreate()
 end
 
 function GeneratorClass:client_canInteract()
-    local _, result = sm.localPlayer.getRaycast(7.5)
-    local interactPoint = self.shape:transformPoint(result.pointWorld)
+    if self.shape.usable then
+        local _, result = sm.localPlayer.getRaycast(7.5)
+        local interactPoint = self.shape:transformPoint(result.pointWorld)
 
-    if interactPoint.x > xMin and interactPoint.y > yMin and interactPoint.x < xMax and interactPoint.y < yMax then
-        self.cl.canInteract = true
-        self.cl.xIntersect = interactPoint.x
-    else
-        self.cl.canInteract = false
+        if interactPoint.x > xMin and interactPoint.y > yMin and interactPoint.x < xMax and interactPoint.y < yMax then
+            self.cl.canInteract = true
+            self.cl.xIntersect = interactPoint.x
+        else
+            self.cl.canInteract = false
+        end
+
+        local bottom = {
+            "scrapcomputers.other.generic_use",
+        }
+
+        local totalPower = sm.scrapcomputers.util.round(self.cl.totalPower, 1)
+        local unusedPower = totalPower - sm.scrapcomputers.util.round(self.cl.usedPower, 1)
+        local unusedClamped = unusedPower > 0 and unusedPower or 0
+
+        sm.scrapcomputers.gui:showCustomInteractiveText(
+            {
+                {"scrapcomputers.power.power_display", totalPower},
+                {"scrapcomputers.power.unused_power", unusedClamped},
+                {"scrapcomputers.generator.resistance", sm.scrapcomputers.util.round(self.cl.handlePos * self.data.maxResistance, 1)}
+            },
+            self.cl.canInteract and bottom or nil
+        )
     end
 
-    local bottom = {
-        "scrapcomputers.other.generic_use",
-    }
-
-    local totalPower = sm.scrapcomputers.util.round(self.cl.totalPower, 1)
-    local unusedPower = totalPower - sm.scrapcomputers.util.round(self.cl.usedPower, 1)
-    local unusedClamped = unusedPower > 0 and unusedPower or 0
-
-    sm.scrapcomputers.gui:showCustomInteractiveText(
-        {
-            {"scrapcomputers.power.power_display", totalPower},
-            {"scrapcomputers.power.unused_power", unusedClamped},
-            {"scrapcomputers.generator.resistance", sm.scrapcomputers.util.round(self.cl.handlePos * self.data.maxResistance, 1)}
-        },
-        self.cl.canInteract and bottom or nil
-    )
-
-    return true
+    return self.shape.usable
 end
 
 function GeneratorClass:client_onInteract(char, state)
