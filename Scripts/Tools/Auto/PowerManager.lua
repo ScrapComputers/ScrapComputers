@@ -40,7 +40,7 @@ function PowerManagerClass:server_onFixedUpdate()
         local function recursiveFind(interactable, flags)
             if sm.exists(interactable) then
                 for _, child in pairs(interactable:getChildren(flags)) do
-                    if not allChilds[child.shape.id] then
+                    if child.shape and child.shape.id and not allChilds[child.shape.id] then
                         allChilds[child.shape.id] = child
                         recursiveFind(child)
                     end
