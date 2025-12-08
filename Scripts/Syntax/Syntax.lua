@@ -906,9 +906,20 @@ function sm.scrapcomputers.syntax.highlightCode(source, exceptionLines, theme, s
     for index, token in ipairs(tokens) do
         if token.type == "NEWLINE" then
             lineCount = lineCount + 1
-        elseif token.type == "STRING" or token.type == "COMMENT" then
-            local _, count = string_gsub(token.value, "\n", "")
-            lineCount = lineCount + count
+        elseif token.type == "STRING" or token.type == "COMMENT" or token.type == "WHITESPACE" then
+            local newlineCount = 0
+            local startPos = 1
+
+            while startPos <= #token.value do
+                local byte = string.byte(token.value, startPos)
+                if byte == 10 then
+                    newlineCount = newlineCount + 1
+                end
+
+                startPos = startPos + 1
+            end
+
+            lineCount = lineCount + newlineCount
         end
 
         for i, errorLine in pairs(exceptionLines) do

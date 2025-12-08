@@ -699,6 +699,7 @@ function ComputerClass:client_onCreate()
     }
 
     self.cl.tempDisableLogs = false
+    self.cl.lastException = false
 
     -- Main --
 
@@ -1291,9 +1292,9 @@ function ComputerClass:cl_onSaveBtnPressed()
     self.cl.sharedData.logs = {}
     
     self.cl.tempDisableLogs = true
+    self.cl.lastException = false
     self.network:sendToServer("sv_clearError") -- The ONLY non-shared table network call ever
     self:cl_rehighlightCode(self.cl.main.currentCode, {})
-
     if not self.cl.main.hasUnsavedChanges then
         self:cl_showLog("scrapcomputers.computer.logs.no_saved_changes")
         return
@@ -1342,7 +1343,7 @@ end
 
 function ComputerClass:cl_rehighlightCode(code, exceptionLines)
     -- TODO: Add user theme support
-    
+
     local safeCode = code:gsub("\\", "⁄")
     local output = sm.scrapcomputers.syntax.highlightCode(safeCode, exceptionLines, nil, self.cl.storage.flags.simpleSyntax)
     self.cl.main.gui:setTextRaw("MainMainCodeInput", output)
@@ -1403,7 +1404,7 @@ function ComputerClass:cl_examplesLoadExample()
 
     self.cl.main.currentCode = selectedExample.script
     self.cl.main.hasUnsavedChanges = true
-    self:cl_rehighlightCodeBtnPressed()
+    self:cl_rehighlightCode(self.cl.main.currentCode, {})
 
     self:cl_showLog("scrapcomputers.computer.logs.examples.loaded_example", "#23d18b", selectedExample.name, input)
 end
@@ -2090,19 +2091,25 @@ function ComputerClass:client_onSharedTableChange(id, key, value, comesFromSelf)
         sm.scrapcomputers.sharedTable:enableSync(self.cl.sharedData)
 
         if self.cl.playerOwnership:isOwner() and key == "hasException" and value then
-            if self.cl.main.hasUnsavedChanges then
-                self:cl_showLog("scrapcomputers.computer.logs.error_during_runtime_has_changes", "#f14c4c")
-            else
-                local exceptionLines = self:cl_createExceptionLines()
-                if #exceptionLines == 0 then
-                    self:cl_showLog("scrapcomputers.computer.logs.error_during_runtime_diff_file", "#f14c4c")
-                else
-                    local file = self.cl.storage.filesystem:readFile(self.cl.main.currentlyEditingFile)
-                    self:cl_rehighlightCode(file, self:cl_createExceptionLines())
-                    self.cl.main.currentCode = file
-
-                    self:cl_showLog("scrapcomputers.computer.logs.error_during_runtime", "#f14c4c")
+            if self.cl.lastException ~= value then
+                if value then
+                    if self.cl.main.hasUnsavedChanges then
+                        self:cl_showLog("scrapcomputers.computer.logs.error_during_runtime_has_changes", "#f14c4c")
+                    else
+                        local exceptionLines = self:cl_createExceptionLines()
+                        if #exceptionLines == 0 then
+                            self:cl_showLog("scrapcomputers.computer.logs.error_during_runtime_diff_file", "#f14c4c")
+                        else
+                            local file = self.cl.storage.filesystem:readFile(self.cl.main.currentlyEditingFile)
+                            self:cl_rehighlightCode(file, self:cl_createExceptionLines())
+                            self.cl.main.currentCode = file
+                        
+                            self:cl_showLog("scrapcomputers.computer.logs.error_during_runtime", "#f14c4c")
+                        end
+                    end
                 end
+
+                self.cl.lastException = value
             end
         end
     end

@@ -538,15 +538,17 @@ local function unroll_for_loops(proto)
         end
 
         local instr = protoCode[i]
-
         if instr.op == FORPREP and i >= 4 then
             local startInstr = protoCode[i - 3]
             local limitInstr = protoCode[i - 2]
             local stepInstr  = protoCode[i - 1]
 
             local A = instr.A
-            if startInstr.op == LOADK and limitInstr.op == LOADK and stepInstr.op == LOADK and startInstr.A == A and limitInstr.A == A + 1 and stepInstr.A == A + 2 then
-                skippedInstructions[i + instr.sBx + 1] = true
+
+            local isConstLoop = startInstr.op == LOADK and startInstr.A == A and limitInstr.op == LOADK and limitInstr.A == A + 1 and stepInstr.op == LOADK and stepInstr.A == A + 2
+            if isConstLoop then
+                local forloopPos = i + instr.sBx + 1
+                skippedInstructions[forloopPos] = true
 
                 local forPrepLine = protoLines[i]
                 local start, limit, step = startInstr.const, limitInstr.const, stepInstr.const
@@ -559,22 +561,22 @@ local function unroll_for_loops(proto)
                 end
 
                 local loopStart = i + 1
-                local loopEnd = i + instr.sBx
-                local bodySize = loopEnd - loopStart + 1
+                local loopEnd   = i + instr.sBx
+                local bodySize  = loopEnd - loopStart + 1
 
-                local loopBody = {}
+                local loopBody  = {}
                 local loopLines = {}
+
                 for j = 1, bodySize do
                     loopBody[j] = protoCode[loopStart + j - 1]
                     loopLines[j] = protoLines[loopStart + j - 1]
                 end
 
                 local indexAPos = A + 3
-
                 local usesIndex = false
+
                 for k = 1, bodySize do
                     local inst = loopBody[k]
-
                     if inst.A == indexAPos or inst.B == indexAPos or inst.C == indexAPos then
                         usesIndex = true
                         break
@@ -582,39 +584,30 @@ local function unroll_for_loops(proto)
                 end
 
                 local iterator = start
-                if usesIndex then
-                    newCount = newCount + 1
-                    newCode[newCount] = { op = LOADK, A = indexAPos, const = iterator }
-                    newLines[newCount] = forPrepLine
-                end
-
                 for _ = 1, iterations do
+                    if usesIndex then
+                        newCount = newCount + 1
+                        newCode[newCount] = { op = LOADK, A = indexAPos, const = iterator }
+                        newLines[newCount] = forPrepLine
+                    end
+
                     for k = 1, bodySize do
                         newCount = newCount + 1
                         newCode[newCount] = loopBody[k]
                         newLines[newCount] = loopLines[k]
                     end
 
-                    if usesIndex then
-                        iterator = iterator + step
-                        newCount = newCount + 1
-                        newCode[newCount] = { op = LOADK, A = indexAPos, const = iterator }
-                        newLines[newCount] = forPrepLine 
-                    end
+                    iterator = iterator + step
                 end
 
                 i = loopEnd + 1
                 goto continue
-            else
-                newCount = newCount + 1
-                newCode[newCount] = instr
-                newLines[newCount] = protoLines[i]
             end
-        else
-            newCount = newCount + 1
-            newCode[newCount] = instr
-            newLines[newCount] = protoLines[i]
         end
+
+        newCount = newCount + 1
+        newCode[newCount] = instr
+        newLines[newCount] = protoLines[i]
 
         i = i + 1
         ::continue::
@@ -701,7 +694,8 @@ local function stm_lua_func(S, psrc)
         end
     end
 
-    proto.code, proto.lines = unroll_for_loops(proto)
+    -- This optimization is a bit broken, so its for now disabled.
+    --proto.code, proto.lines = unroll_for_loops(proto)
     codeSize = #proto.code
     protoCode = proto.code
 
