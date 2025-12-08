@@ -94,22 +94,30 @@ function sm.scrapcomputers.json.toString(root, safeMode, prettifyOutput, indentC
 
     local function escapeString(str)
         local replacements = {
-            ['"'] = '\\"',
-            [string.char(8)] = '\\b',
-            [string.char(12)] = '\\f',
-            ['\n'] = '\\n',
-            ['\r'] = '\\r',
-            ['\t'] = '\\t'
+            ["\""] = "\\\"",
+            ["\b"] = "\\b",
+            ["\f"] = "\\f",
+            ["\n"] = "\\n",
+            ["\r"] = "\\r",
+            ["\t"] = "\\t"
         }
-        local outputStr = str
 
-        for key, value in pairs(replacements) do
-            outputStr = outputStr:gsub(key, value)
+        local function escapePattern(char)
+            return char:gsub("(%W)", "%%%1")
         end
 
-        return outputStr
-    end
+        local output = str
+        output = output:gsub("\\", "\\\\")  
 
+        for key, value in pairs(replacements) do
+            if key ~= "\\" then
+                output = output:gsub(escapePattern(key), value)
+            end
+        end
+
+        return output
+    end
+    
     local function encode(value)
         local t = type(value)
         if t == "nil" then

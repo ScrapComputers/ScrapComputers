@@ -265,9 +265,8 @@ function CameraClass:sv_createData()
             end
 
             local rays, coordinateTbl = self:sv_computeFrameRays(width, height)
-            local pixels = self:sv_simpleDraw(rays, coordinateTbl, display.getOptimizationThreshold(), width, height, display.getId())
 
-            display.drawFromTable(pixels)
+            self:sv_simpleDraw(rays, coordinateTbl, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         ---Takes a frame and draws it. (Designed for video)
@@ -304,11 +303,7 @@ function CameraClass:sv_createData()
             local threshold = display.getOptimizationThreshold()
 
             local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
-            local pixels = self:sv_simpleDraw(rays, coordinateTbl, threshold, width, height, displayId)
-
-            if #pixels > 0 then
-                display.drawFromTable(pixels)
-            end
+            self:sv_simpleDraw(rays, coordinateTbl, threshold, width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         ---Takes a frame and draws it. (Has shadows)
@@ -333,9 +328,11 @@ function CameraClass:sv_createData()
             end
 
             local rays, coordinateTbl = self:sv_computeFrameRays (width, height)
-            local pixels = self:sv_advancedDraw(rays, coordinateTbl, display.getOptimizationThreshold(), width, height, display.getId())
+            local pixels = self:sv_advancedDraw(rays, coordinateTbl, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
 
-            display.drawFromTable(pixels)
+            if #pixels > 0 then
+                display.drawFromTable(pixels)
+            end
         end,
 
         ---Takes a frame and draws it. (Designed for video & Has shadows)
@@ -372,11 +369,7 @@ function CameraClass:sv_createData()
             local thershold = display.getOptimizationThreshold()
 
             local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
-            local pixels = self:sv_advancedDraw(rays, coordinateTbl, thershold, width, height, displayId)
-
-            if #pixels > 0 then
-                display.drawFromTable(pixels)
-            end
+            self:sv_advancedDraw(rays, coordinateTbl, thershold, width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         ---Takes a frame and draws it. This allows you to use a custom drawer if you want to modify how the result looks like
@@ -403,9 +396,7 @@ function CameraClass:sv_createData()
             end
 
             local rays, coordinateTbl = self:sv_computeFrameRays (width, height)
-            local pixels = self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId)
-
-            display.drawFromTable(pixels)
+            self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         ---Takes a frame and draws it. This allows you to use a custom drawer if you want to modify how the result looks like
@@ -442,11 +433,7 @@ function CameraClass:sv_createData()
             end
 
             local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
-            local pixels = self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId)
-
-            if #pixels > 0 then
-                display.drawFromTable(pixels)
-            end
+            self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         ---Takes a depth frame and draws it.
@@ -466,9 +453,7 @@ function CameraClass:sv_createData()
             height = height or height1
 
             local rays, coordinateTbl = self:sv_computeFrameRays(width, height)
-            local pixels = self:sv_drawDepthFrame(rays, coordinateTbl, focalLength, width, height)
-
-            display.drawFromTable(pixels)
+            self:sv_drawDepthFrame(rays, coordinateTbl, focalLength, width, height, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         ---Takes a masked frame and draws it.
@@ -496,9 +481,7 @@ function CameraClass:sv_createData()
             end
 
             local rays, coordinateTbl = self:sv_computeFrameRays(width, height)
-            local pixels = self:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height)
-
-            display.drawFromTable(pixels)
+            self:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         -- Sets the range, The bigger. the further you can see
@@ -722,7 +705,7 @@ end
 
 -- DRAWERS --
 
-function CameraClass:sv_simpleDraw(rays, coordinateTbl, threshold, width, height, displayId)
+function CameraClass:sv_simpleDraw(rays, coordinateTbl, threshold, width, height, displayId, drawPixel)
     local pixelCount = #rays
     local pixels = {}
     local timeModifier = darknessMap[math.floor(map(sm_game_getTimeOfDay(), 0, 1, 1, #darknessMap))]
@@ -731,7 +714,6 @@ function CameraClass:sv_simpleDraw(rays, coordinateTbl, threshold, width, height
 
     local xOffset = self.sv.xOffset
     local yOffset = self.sv.yOffset
-    local pixelIndex = 0
 
     self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
     local cachedColors = self.sv.cachedColors[displayId]
@@ -756,19 +738,15 @@ function CameraClass:sv_simpleDraw(rays, coordinateTbl, threshold, width, height
         local coordIndex = coordinateToIndex(x, y, width)
 
         if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
-            pixelIndex = pixelIndex + 1
-            pixels[pixelIndex] = {x = x, y = y, color = color}
-                
+            drawPixel(x, y, color)
             cachedColors[coordIndex] = color
         end
     end
 
     self.sv.cachedColors[displayId] = cachedColors
-
-    return pixels
 end
 
-function CameraClass:sv_advancedDraw(rays, coordinateTbl, threshold, width, height, displayId)
+function CameraClass:sv_advancedDraw(rays, coordinateTbl, threshold, width, height, displayId, drawPixel)
     local pixelCount = #rays
 
     self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
@@ -777,7 +755,6 @@ function CameraClass:sv_advancedDraw(rays, coordinateTbl, threshold, width, heig
     cachedColors = self.sv.cachedColors[displayId]
     cachedShadows = self.sv.cachedShadows[displayId]
 
-    local pixels = {}
     local pointTbl = {}
     local shadowRays = {}
 
@@ -792,7 +769,6 @@ function CameraClass:sv_advancedDraw(rays, coordinateTbl, threshold, width, heig
     local type = "ray"
 
     local tblIndex = 0
-    local pixelIndex = 0
 
     for i = 1, pixelCount do
         local data = rays[i]
@@ -815,9 +791,7 @@ function CameraClass:sv_advancedDraw(rays, coordinateTbl, threshold, width, heig
                 local coordIndex = coordinateToIndex(x, y, width)
 
                 if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
-                    pixelIndex = pixelIndex + 1
-                    pixels[pixelIndex] = {x = x, y = y, color = color}
-
+                    drawPixel(x, y, color)
                     cachedColors[coordIndex] = color
                 end
             else
@@ -841,9 +815,7 @@ function CameraClass:sv_advancedDraw(rays, coordinateTbl, threshold, width, heig
             local finalColor = applySunShader(result, color, time)
 
             if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], finalColor, threshold)) then
-                pixelIndex = pixelIndex + 1
-                pixels[pixelIndex] = {x = x, y = y, color = finalColor}
-
+                drawPixel(x, y, finalColor)
                 cachedColors[coordIndex] = finalColor
             end
         end
@@ -874,31 +846,24 @@ function CameraClass:sv_advancedDraw(rays, coordinateTbl, threshold, width, heig
         local coordIndex = coordinateToIndex(x, y, width)
 
         if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], pointDataColor, threshold)) then
-            pixelIndex = pixelIndex + 1
-            pixels[pixelIndex] = {x = x, y = y, color = pointDataColor}
-
+            drawPixel(x, y, pointDataColor)
             cachedColors[coordIndex] = pointDataColor
         end
     end
 
     self.sv.cachedColors[displayId] = cachedColors
     self.sv.cachedShadows[displayId] = cachedShadows
-
-    return pixels
 end
 
-function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width, height, displayId)
+function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width, height, displayId, drawPixel)
     local xOffset = self.sv.xOffset
     local yOffset = self.sv.yOffset
     
     local pixelCount = #rays
-    local pixels = {}
     local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
     
     self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
     local cachedColors = self.sv.cachedColors[displayId]
-
-    local pixelIndex = 0
 
     for i = 1, pixelCount do
         local data = rays[i]
@@ -913,21 +878,16 @@ function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width
         local color = drawer(hit, result, x, y)
 
         if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
-            pixelIndex = pixelIndex + 1
-            pixels[pixelIndex] = {x = x + xOffset, y = y + yOffset, color = color}
-
+            drawPixel(x + xOffset, y + yOffset, color)
             cachedColors[coordIndex] = color
         end
     end
 
     self.sv.cachedColors[displayId] = cachedColors
-
-    return pixels
 end
 
-function CameraClass:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height)
+function CameraClass:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height, drawPixel)
     local pixelCount = #rays
-    local pixels = {}
 
     local defaultColor = sm_color_new("000000")
     local blackColor = sm_color_new("222222")
@@ -968,13 +928,11 @@ function CameraClass:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height
         local coord = coordinateTbl[i]
         local x, y = coord[1] + xOffset, coord[2] + yOffset
 
-        pixels[i] = {x = x, y = y, color = color}
+        drawPixel(x, y, color)
     end
-
-    return pixels
 end
 
-function CameraClass:sv_drawDepthFrame(rays, coordinateTbl, focalLength, width, height)
+function CameraClass:sv_drawDepthFrame(rays, coordinateTbl, focalLength, width, height, drawPixel)
     local pixelCount = #rays
     local pixels = {}
     local defaultColor = sm_color_new("000000")
@@ -999,7 +957,7 @@ function CameraClass:sv_drawDepthFrame(rays, coordinateTbl, focalLength, width, 
         local coord = coordinateTbl[i]
         local x, y = coord[1] + xOffset, coord[2] + yOffset
 
-        pixels[i] = {x = x, y = y, color = color}
+        drawPixel(x, y, color)
     end
 
     return pixels

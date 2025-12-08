@@ -59,6 +59,8 @@ DisplayClass.colorHighlight = sm_color_new(0x969696ff)
 
 -- CLIENT/SERVER --
 
+sm.scrapcomputers.backend.displayCameraDraw = {}
+
 local localPlayer = sm.localPlayer
 local camera = sm.camera
 local tinkerBind = sm.gui.getKeyBinding("Tinker", true)
@@ -230,8 +232,6 @@ function DisplayClass:sv_createData()
         dataBuffer[dataIndex] = colorToID(color)
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = isFilled
-
-        clearCache = true
     end
 
     ---Draw Triangle function
@@ -269,8 +269,6 @@ function DisplayClass:sv_createData()
         dataBuffer[dataIndex] = colorToID(color)
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = isFilled
-
-        clearCache = true
     end
 
     ---Draw Rectangle Function
@@ -301,8 +299,17 @@ function DisplayClass:sv_createData()
         dataBuffer[dataIndex] = colorToID(color)
         dataIndex = dataIndex + 1
         dataBuffer[dataIndex] = isFilled
+    end
 
-        clearCache = true
+    sm.scrapcomputers.backend.displayCameraDraw[self.shape.id] = function (x, y, color)
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = 1
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = x
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = y
+        dataIndex = dataIndex + 1
+        dataBuffer[dataIndex] = bit_bor(bit_lshift(math_floor(color.r * 255), 16), bit_lshift(math_floor(color.g * 255), 8), math_floor(color.b * 255))
     end
 
     local display = {
@@ -357,6 +364,8 @@ function DisplayClass:sv_createData()
                 dataIndex = dataIndex + 1
                 dataBuffer[dataIndex] = colorToID(pixel_color)
             end
+
+            clearCache = true
         end,
 
         -- Clear the display
@@ -2080,16 +2089,48 @@ function DisplayClass:cl_pushData()
                         end
                     end
                 elseif notEqual and not meshNeighbours(i, colNew) then
-                    local data = {
-                        createEffect(),
-                        1,
-                        1,
-                        (i - 1) % width + 1,
-                        math_floor((i - 1) / width) + 1,
-                        colNew
-                    }
+                    local foundRect = knownRects[i]
+                    local data
 
-                    pixels[i] = data
+                    if foundRect then
+                        local sx, sy = (foundRect - 1) % width + 1, math_floor((foundRect - 1) / width) + 1
+                        local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
+                        
+                        data = {
+                            createEffect(),
+                            sx,
+                            sy,
+                            x,
+                            y,
+                            colNew
+                        }
+
+                        local x1, y1 = x, y
+                        local mx = x + sx - 1
+
+                        for _ = 1, sx * sy do
+                            pixels[(y1 - 1) * width + x1] = data
+
+                            x1 = x1 + 1
+
+                            if x1 > mx then
+                                x1 = x
+                                y1 = y1 + 1
+                            end
+                        end
+                    else
+                        data = {
+                            createEffect(),
+                            1,
+                            1,
+                            (i - 1) % width + 1,
+                            math_floor((i - 1) / width) + 1,
+                            colNew
+                        }
+
+                        pixels[i] = data
+                    end
+
                     dataChange[data] = true
                     colorChange[data[1]] = colNew
                 end
@@ -2133,16 +2174,48 @@ function DisplayClass:cl_pushData()
                         end
                     end
                 elseif notEqual and not meshNeighbours(i, colNew) then
-                    local data = {
-                        createEffect(),
-                        1,
-                        1,
-                        (i - 1) % width + 1,
-                        math_floor((i - 1) / width) + 1,
-                        colNew
-                    }
+                    local foundRect = knownRects[i]
+                    local data
 
-                    pixels[i] = data
+                    if foundRect then
+                        local sx, sy = (foundRect - 1) % width + 1, math_floor((foundRect - 1) / width) + 1
+                        local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
+                        
+                        data = {
+                            createEffect(),
+                            sx,
+                            sy,
+                            x,
+                            y,
+                            colNew
+                        }
+
+                        local x1, y1 = x, y
+                        local mx = x + sx - 1
+
+                        for _ = 1, sx * sy do
+                            pixels[(y1 - 1) * width + x1] = data
+
+                            x1 = x1 + 1
+
+                            if x1 > mx then
+                                x1 = x
+                                y1 = y1 + 1
+                            end
+                        end
+                    else
+                        data = {
+                            createEffect(),
+                            1,
+                            1,
+                            (i - 1) % width + 1,
+                            math_floor((i - 1) / width) + 1,
+                            colNew
+                        }
+
+                        pixels[i] = data
+                    end
+
                     dataChange[data] = true
                     colorChange[data[1]] = colNew
                 end

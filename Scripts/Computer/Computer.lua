@@ -490,8 +490,6 @@ function ComputerClass:sv_password_setEncryption(value, player)
 
     local value, newPassword = unpack(value)
     self.sv.encrypted = value
-
-    newPassword = sm.scrapcomputers.csha256.encode(newPassword)
     
     if value then
         self.sv.storage.filesystem:enableEncryption(newPassword)
@@ -527,7 +525,6 @@ function ComputerClass:sv_password_sendPassword(password, player)
         return printIliegalPacketPlayer(player)
     end
 
-    password = sm.scrapcomputers.csha256.encode(password)
 
     if self.sv.storage.filesystem:enterEncryptionPassword(password) then
         sm.scrapcomputers.sharedTable:forceSyncProperty(self.sv.storage, "filesystem")
@@ -553,8 +550,6 @@ function ComputerClass:sv_password_clearPassword(password, player)
         return printIliegalPacketPlayer(player)
     end
 
-    password = password sm.scrapcomputers.csha256.encode(password)
-
     if self.sv.encrypted and self.sv.nonHashedPassword == password then
         self:sv_password_setEncryption({false, password})
         self.sv.allowedPlayersDuringEncryption = {}
@@ -568,8 +563,6 @@ function ComputerClass:sv_password_updatePassword(data, player)
     end
 
     local oldPassword, newPassword = unpack(data)
-    oldPassword = sm.scrapcomputers.csha256.encode(oldPassword)
-    newPassword = sm.scrapcomputers.csha256.encode(newPassword)
 
     if self.sv.encrypted and self.sv.nonHashedPassword == oldPassword then
         self:sv_password_setEncryption({false, oldPassword})
@@ -1021,6 +1014,8 @@ function ComputerClass:client_onFixedUpdate()
     if not sharedData or not self.cl.playerOwnership:isOwner() then return end -- Optimization!
 
     if sharedData.logger then
+        self:cl_fixLoggerIfNeeded()
+
         local log = sharedData.logger:getLog()
         self.cl.main.gui:setTextRaw("MainHeaderTextInfoText", log)
     end
@@ -1082,6 +1077,12 @@ function ComputerClass:client_onFixedUpdate()
     end
 
     self:cl_password_onFixedUpdate()
+end
+
+function ComputerClass:cl_fixLoggerIfNeeded()
+    if self.cl.sharedData.logger and not self.cl.sharedData.logger.getLog then
+        self.cl.sharedData.logger = sm.scrapcomputers.fancyInfoLogger:newFromSharedTable(self.cl.sharedData.logger)
+    end
 end
 
 function ComputerClass:cl_updateCanUpdateInfoValue()
@@ -1327,6 +1328,7 @@ function ComputerClass:cl_deleteCachedBytecodeBtnPressed()
 end
 
 function ComputerClass:cl_showLog(msg, color, ...)
+    self:cl_fixLoggerIfNeeded()
     self.cl.sharedData.logger:showLog(msg, color, ...)
     sm.scrapcomputers.sharedTable:forceSyncProperty(self.cl.sharedData, "logger")
 end
@@ -1347,6 +1349,8 @@ function ComputerClass:cl_rehighlightCode(code, exceptionLines)
 end
 
 function ComputerClass:cl_updateDefaultText()
+    self:cl_fixLoggerIfNeeded()
+    
     local safeCurrentlyEditingFile = self.cl.main.currentlyEditingFile:gsub("#", "##")
     self.cl.sharedData.logger:setDefaultText("scrapcomputers.computer.currently_editing", safeCurrentlyEditingFile .. (self.cl.main.hasUnsavedChanges and "*" or ""))
 end

@@ -231,8 +231,7 @@ function sm.scrapcomputers.config.initConfig()
     ---Saves the current configurations to the world
     function sm.scrapcomputers.config.saveConfig()
         sm.storage.saveAndSync(sm.scrapcomputers.config.key, sm.scrapcomputers.config.configurations)
-        sm.event.sendToTool(sm.scrapcomputers.config.__tool, "sv_syncClients")
-
+        sm.event.sendToTool(sm.scrapcomputers.config.__tool, "sv_syncClients", sm.scrapcomputers.config.configurations)
     end
 
     ---Creates a new config.

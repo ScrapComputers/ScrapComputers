@@ -158,7 +158,7 @@ function AntennaClass:client_onFixedUpdate()
     if self.cl.name ~= self.cl.oldName then
         self.cl.oldName = self.cl.name
         
-        if sm.exists(self.cl.gui) then
+        if self.cl.gui then
             self.cl.gui:setTextRaw("Input", self.cl.name)
         end
     end
@@ -169,7 +169,7 @@ function AntennaClass:client_onTextChanged(widget, text)
 end
 
 function AntennaClass:client_onAccepted()
-    if sm.exists(self.cl.gui) then
+    if self.cl.gui then
         self.cl.gui:close()
     end
     

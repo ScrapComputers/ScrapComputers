@@ -115,7 +115,15 @@ function sm.scrapcomputers.sharedTable:runTick(classInstance)
 
     for _, proxyData in pairs(storedSharedTables) do
         if sm.scrapcomputers.table.getTableSize(proxyData.replicationTable) ~= 0 then
-            local jsonStr = sm.scrapcomputers.json.toString(proxyData.replicationTable, true, false)
+            local clonedData = sm.scrapcomputers.json.toJsonCompatibleTable(proxyData.replicationTable)
+
+            -- Create special behaviour for self.sv.filesystem so the password doesnt go from server to client
+            if clonedData.filesystem and clonedData.filesystem.__hey_computer_please_cast_this_shit == 6969 then
+                clonedData.filesystem.password = nil
+                clonedData.filesystem.encrypted = nil
+            end
+
+            local jsonStr = sm.scrapcomputers.json.toString(clonedData, true, false)
             local packets = splitStringForNetworking(jsonStr)
             
             for i, packet in pairs(packets) do
@@ -123,7 +131,7 @@ function sm.scrapcomputers.sharedTable:runTick(classInstance)
             end
 
             if classInstance[onSharedTableChangeName] then
-                for key, value in pairs(proxyData.replicationTable) do
+                for key, value in pairs(clonedData) do
                     classInstance[onSharedTableChangeName](classInstance, proxyData.id, key, value, true, nil)
                 end
             end
@@ -281,14 +289,20 @@ function sm.scrapcomputers.sharedTable:initServer(classInstance)
         local callbacks = {} ---@type function[]
 
         for _, proxyData in pairs(classInstance.sv_sc_st_storedSharedTables) do
-            local rawData = sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data))
+            local clonedData = sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data))
+
+            -- Create special behaviour for self.sv.filesystem so the password doesnt go from server to client
+            if clonedData.filesystem and clonedData.filesystem.__hey_computer_please_cast_this_shit == 6969 then
+                clonedData.filesystem.password = nil
+                clonedData.filesystem.encrypted = nil
+            end
 
             classInstance.network:sendToClient(player, CLIENT_CREATE_SHAREDTABLE, {id = proxyData.id, clientPath = proxyData.clientPath})
 
-            local jsonStr = sm.scrapcomputers.json.toString(rawData, true, false)
-            local packets = splitStringForNetworking(jsonStr)
-            
-            if sm.scrapcomputers.table.getTableSize(rawData) ~= 0 then
+            if sm.scrapcomputers.table.getTableSize(clonedData) ~= 0 then
+                local jsonStr = sm.scrapcomputers.json.toString(clonedData, true, false)
+                local packets = splitStringForNetworking(jsonStr)
+
                 local function callback()
                     for i, packet in pairs(packets) do
                         classInstance.network:sendToClient(player, CLIENT_ON_PACKET_DATA, {id = proxyData.id, data = packet, isEnd = i == #packets})
@@ -319,14 +333,19 @@ function sm.scrapcomputers.sharedTable:initServer(classInstance)
             return
         end
 
-        local rawData = sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data))
-        local jsonStr = sm.scrapcomputers.json.toString(rawData, true, false)
+        local clonedData = sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data))
+
+        -- Create special behaviour for self.sv.filesystem so the password doesnt go from server to client
+        if clonedData.filesystem and clonedData.filesystem.__hey_computer_please_cast_this_shit == 6969 then
+            clonedData.filesystem.password = nil
+            clonedData.filesystem.encrypted = nil
+        end
+
+        local jsonStr = sm.scrapcomputers.json.toString(clonedData, true, false)
         local packets = splitStringForNetworking(jsonStr)
         
-        if sm.scrapcomputers.table.getTableSize(rawData) ~= 0 then
-            for i, packet in pairs(packets) do
-                classInstance.network:sendToClient(player, CLIENT_ON_PACKET_DATA, {id = proxyData.id, data = packet, isEnd = i == #packets})
-            end
+        for i, packet in pairs(packets) do
+            classInstance.network:sendToClient(player, CLIENT_ON_PACKET_DATA, {id = proxyData.id, data = packet, isEnd = i == #packets})
         end
     end
 
@@ -380,7 +399,6 @@ function sm.scrapcomputers.sharedTable:initServer(classInstance)
 
         sm.scrapcomputers.table.transferTable(proxyData.data, parsedBuffer)
 
-        local revet
         if classInstance.server_onSharedTableChange then
             for key, value in pairs(parsedBuffer) do
                 local allowed = classInstance:server_onSharedTableChange(proxyData.id, key, value, false, player)
@@ -390,18 +408,22 @@ function sm.scrapcomputers.sharedTable:initServer(classInstance)
             end
         end
 
-        for _, proxyData in pairs(classInstance.sv_sc_st_storedSharedTables) do
-            if sm.scrapcomputers.table.getTableSize(proxyData.replicationTable) ~= 0 then
-                local jsonStr = sm.scrapcomputers.json.toString(sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data)), true, false)
-                local packets = splitStringForNetworking(jsonStr)
+        local clonedData = sm.scrapcomputers.json.toJsonCompatibleTable(sm.scrapcomputers.table.clone(proxyData.data))
 
-                for i, packet in pairs(packets) do
-                    classInstance.network:sendToClients(CLIENT_ON_PACKET_DATA, {id = proxyData.id, data = packet, isEnd = i == #packets})
-                end
-
-                proxyData.replicationTable = {}
-            end
+        -- Create special behaviour for self.sv.filesystem so the password doesnt go from server to client
+        if clonedData.filesystem and clonedData.filesystem.__hey_computer_please_cast_this_shit == 6969 then
+            clonedData.filesystem.password = nil
+            clonedData.filesystem.encrypted = nil
         end
+
+        local jsonStr = sm.scrapcomputers.json.toString(clonedData, true, false)
+        local packets = splitStringForNetworking(jsonStr)
+
+        for i, packet in pairs(packets) do
+            classInstance.network:sendToClients(CLIENT_ON_PACKET_DATA, {id = proxyData.id, data = packet, isEnd = i == #packets})
+        end
+
+        proxyData.replicationTable = {}
     end
 end
 

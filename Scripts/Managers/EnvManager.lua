@@ -430,10 +430,22 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
         environmentVariables.os = os
     end
 
-    for _, environmentHook in pairs(sm.scrapcomputers.environmentManager.environmentHooks) do
-        local contents = environmentHook(self)
+    local function fastMerge(dest, src)
+        for key, value in pairs(src) do
+            if dest[key] == nil then
+                dest[key] = value
+            else
+                if type(dest[key]) == "table" and type(value) == "table" then
+                    fastMerge(dest[key], value)
+                end
+            end
+        end
 
-        environmentVariables = sm.scrapcomputers.table.merge(environmentVariables, contents)
+        return dest
+    end
+
+    for _, environmentHook in pairs(sm.scrapcomputers.environmentManager.environmentHooks) do
+        environmentVariables = fastMerge(environmentVariables, environmentHook(self))
     end
 
     return environmentVariables

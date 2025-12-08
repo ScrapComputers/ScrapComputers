@@ -139,8 +139,8 @@ function ConfigUpdaterClass:sv_updateConfig()
     end
 end
 
-function ConfigUpdaterClass:sv_syncClients()
-    self.network:sendToClients("cl_syncClient")
+function ConfigUpdaterClass:sv_syncClients(configurations)
+    self.network:sendToClients("cl_syncClient", configurations)
 end
 
 -- CLIENT --
@@ -148,8 +148,8 @@ end
 function ConfigUpdaterClass:client_onCreate() end
 function ConfigUpdaterClass:client_onRefresh() self:client_onCreate() end
 
-function ConfigUpdaterClass:cl_syncClient()
-    sm.scrapcomputers.config.configurations = sm.storage.load(sm.scrapcomputers.config.key)
+function ConfigUpdaterClass:cl_syncClient(configurations)
+    sm.scrapcomputers.config.configurations = configurations
 end
 
 function ConfigUpdaterClass:cl_printResettedConfigurations(data)
