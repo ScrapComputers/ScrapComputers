@@ -1,5 +1,6 @@
 sm.scrapcomputers.syntax = sm.scrapcomputers.syntax or {}
 
+dofile("./Tokenizer.lua")
 dofile("./Comment.lua")
 
 -- Github Theme - Github Dark
@@ -258,87 +259,7 @@ function sm.scrapcomputers.syntax.highlightCode(source, exceptionLines, theme, s
     
     local bracketColorsSize = #theme.bracketColors
 
-    ---@param input string
-    local function tokenize(input)
-        local patterns = {
-            { "NEWLINE",         "^\r?\n" },
-            { "WHITESPACE",      "^%s+" },
-            { "COMMENT",         "^%-%-%[%[.-%]%]" },
-            { "COMMENT",         "^%-%-%[=*%[.-%]=*%]" },
-            { "COMMENT",         "^%-%-[^\n]*" },
-            { "STRING",          "^%[=*%[.-%]=*%]" },
-            { "STRING",          "^'(\\?.-)'"},
-            { "STRING",          '^"(\\?.-)"'},
-            { "NUMBER",          "^%d+%.%d*[eE]?%-?%d*" },
-            { "NUMBER",          "^%d+[eE]%-?%d+" },
-            { "NUMBER",          "^0[xX][%x]+" },
-            { "NUMBER",          "^%d+%.%d*" },
-            { "NUMBER",          "^%d+" },
-            { "ELLIPSIS",        "^%.%.%." },
-            { "CONCAT",          "^%.%." },
-            { "NEQ",             "^~=" },
-            { "LE",              "^<=" },
-            { "GE",              "^>=" },
-            { "EQ",              "^==" },
-            { "ASSIGN",          "^=" },
-            { "LT",              "^<" },
-            { "GT",              "^>" },
-            { "OPERATOR",        "^[%+%-%*/%%#%^]" },
-            { "PUNCTUATION",     "^[%(%)%[%]%{%}%.,;:]" },
-            { "IDENTIFIER",      "^[%a_][%w_]*" },
-        }
-
-        local keywords = {
-            ["and"]      = true, ["break"] = true, ["do"]    = true, ["else"]   = true,
-            ["elseif"]   = true, ["end"]   = true, ["false"] = true, ["for"]    = true,
-            ["function"] = true, ["if"]    = true, ["in"]    = true, ["local"]  = true,
-            ["nil"]      = true, ["not"]   = true, ["or"]    = true, ["repeat"] = true,
-            ["return"]   = true, ["then"]  = true, ["true"]  = true, ["until"]  = true,
-            ["while"]    = true,
-        }
-
-        local output = {}
-        local outputIndex = 1
-        local i = 1
-        local len = #input
-
-        while i <= len do
-            local matched = false
-
-            for _, pattern in ipairs(patterns) do
-                local tokenType, pat = pattern[1], pattern[2]
-                local startStr, endStr = string_find(input, pat, i)
-
-                if startStr then
-                    local val = string_sub(input, startStr, endStr)
-                    if tokenType == "IDENTIFIER" then
-                        if keywords[val] then
-                            tokenType = "KEYWORD"
-                        end
-                    elseif tokenType == "STRING" then
-                        val = val:gsub("\\", "⁄")
-                    end
-
-                    output[outputIndex] = { type = tokenType, value = val }
-                    outputIndex = outputIndex + 1
-                    i = endStr + 1
-                    matched = true
-                    break
-                end
-            end
-
-            if not matched then
-                local c = string_sub(input, i, i)
-                output[outputIndex] = { type = "UNKNOWN", value = c }
-                outputIndex = outputIndex + 1
-                i = i + 1
-            end
-        end
-
-        return output
-    end
-
-    local tokens = tokenize(source)
+    local tokens = sm.scrapcomputers.syntax.tokenize(source)
     local text = {}
 
     local tokensNW = {}
@@ -902,28 +823,9 @@ function sm.scrapcomputers.syntax.highlightCode(source, exceptionLines, theme, s
         end
     end
 
-    local lineCount = 1
     for index, token in ipairs(tokens) do
-        if token.type == "NEWLINE" then
-            lineCount = lineCount + 1
-        elseif token.type == "STRING" or token.type == "COMMENT" or token.type == "WHITESPACE" then
-            local newlineCount = 0
-            local startPos = 1
-
-            while startPos <= #token.value do
-                local byte = string.byte(token.value, startPos)
-                if byte == 10 then
-                    newlineCount = newlineCount + 1
-                end
-
-                startPos = startPos + 1
-            end
-
-            lineCount = lineCount + newlineCount
-        end
-
         for i, errorLine in pairs(exceptionLines) do
-            if errorLine == lineCount then
+            if errorLine == token.line then
                 text[index] = replaceColor(text[index], i == 1 and themeError_exactError or themeError_referenceError)
             end
         end

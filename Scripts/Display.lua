@@ -2089,50 +2089,19 @@ function DisplayClass:cl_pushData()
                         end
                     end
                 elseif notEqual and not meshNeighbours(i, colNew) then
-                    local foundRect = knownRects[i]
-                    local data
+                    local effect = createEffect()
+                    local data = {
+                        effect,
+                        1,
+                        1,
+                        (i - 1) % width + 1,
+                        math_floor((i - 1) / width) + 1,
+                        colNew
+                    }
 
-                    if foundRect then
-                        local sx, sy = (foundRect - 1) % width + 1, math_floor((foundRect - 1) / width) + 1
-                        local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
-                        
-                        data = {
-                            createEffect(),
-                            sx,
-                            sy,
-                            x,
-                            y,
-                            colNew
-                        }
-
-                        local x1, y1 = x, y
-                        local mx = x + sx - 1
-
-                        for _ = 1, sx * sy do
-                            pixels[(y1 - 1) * width + x1] = data
-
-                            x1 = x1 + 1
-
-                            if x1 > mx then
-                                x1 = x
-                                y1 = y1 + 1
-                            end
-                        end
-                    else
-                        data = {
-                            createEffect(),
-                            1,
-                            1,
-                            (i - 1) % width + 1,
-                            math_floor((i - 1) / width) + 1,
-                            colNew
-                        }
-
-                        pixels[i] = data
-                    end
-
+                    pixels[i] = data
                     dataChange[data] = true
-                    colorChange[data[1]] = colNew
+                    colorChange[effect] = colNew
                 end
             end
         else
@@ -2174,50 +2143,19 @@ function DisplayClass:cl_pushData()
                         end
                     end
                 elseif notEqual and not meshNeighbours(i, colNew) then
-                    local foundRect = knownRects[i]
-                    local data
+                    local effect = createEffect()
+                    local data = {
+                        effect,
+                        1,
+                        1,
+                        (i - 1) % width + 1,
+                        math_floor((i - 1) / width) + 1,
+                        colNew
+                    }
 
-                    if foundRect then
-                        local sx, sy = (foundRect - 1) % width + 1, math_floor((foundRect - 1) / width) + 1
-                        local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
-                        
-                        data = {
-                            createEffect(),
-                            sx,
-                            sy,
-                            x,
-                            y,
-                            colNew
-                        }
-
-                        local x1, y1 = x, y
-                        local mx = x + sx - 1
-
-                        for _ = 1, sx * sy do
-                            pixels[(y1 - 1) * width + x1] = data
-
-                            x1 = x1 + 1
-
-                            if x1 > mx then
-                                x1 = x
-                                y1 = y1 + 1
-                            end
-                        end
-                    else
-                        data = {
-                            createEffect(),
-                            1,
-                            1,
-                            (i - 1) % width + 1,
-                            math_floor((i - 1) / width) + 1,
-                            colNew
-                        }
-
-                        pixels[i] = data
-                    end
-
+                    pixels[i] = data
                     dataChange[data] = true
-                    colorChange[data[1]] = colNew
+                    colorChange[effect] = colNew
                 end
             end
         end
