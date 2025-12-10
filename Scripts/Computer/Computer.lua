@@ -267,7 +267,7 @@ function ComputerClass:server_onFixedUpdate()
             end
         end
     end
-
+    
     if active and self.sv.fileSavePerformed then
         active = false
 
@@ -592,6 +592,14 @@ function ComputerClass:server_onPlayerOwnershipRequested(player, caller)
     return false
 end
 
+function ComputerClass:sv_forceReload(_, player)
+    if player:getId() ~= self.sv.playerOwnership:getPlayerId() then
+        return printIliegalPacketPlayer(player)
+    end
+
+    self.sv.fileSavePerformed = true
+end
+
 function ComputerClass:server_onSharedTableEventReceived(_, player)
     if player:getId() ~= self.sv.playerOwnership:getPlayerId() then
         return printIliegalPacketPlayer(player)
@@ -609,10 +617,6 @@ function ComputerClass:server_onSharedTableChange(id, key, value, comesFromSelf,
         if key == "filesystem" then
             if self.sv.luaVM:hasException() then
                 self.sv.luaVM:clearException()
-            end
-            
-            if self.sv.lastActive then
-                self.sv.fileSavePerformed = true
             end
         end
     
@@ -1296,7 +1300,10 @@ function ComputerClass:cl_onSaveBtnPressed()
     
     self.cl.tempDisableLogs = true
     self.cl.lastException = false
-    self.network:sendToServer("sv_clearError") -- The ONLY non-shared table network call ever
+    
+    self.network:sendToServer("sv_clearError")
+    self.network:sendToServer("sv_forceReload")
+
     self:cl_rehighlightCode(self.cl.main.currentCode, {})
     if not self.cl.main.hasUnsavedChanges then
         self:cl_showLog("scrapcomputers.computer.logs.no_saved_changes")

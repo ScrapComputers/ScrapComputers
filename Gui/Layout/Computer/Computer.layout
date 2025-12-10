@@ -134,7 +134,6 @@
                     <Property key="WordWrap" value="true"/>
                     <Property key="MaxTextLength" value="999999999"/>
                     <Property key="NeedKey" value="false"/>
-                    <Property key="NeedMouse" value="false"/>
                 </Widget>
                 <Widget type="Button" skin="PrimaryButton" position_real="0.041666666666666664 0.79861111111111116 0.93055555555555558 0.083333333333333329" name="ExamplesMainLoadExampleBtn">
                     <Property key="FontName" value="SM_Button"/>

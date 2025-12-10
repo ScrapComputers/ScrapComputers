@@ -18,6 +18,7 @@
                     <Property key="MaxTextLength" value="999999999"/>
                     <Property key="ReadOnly" value="true"/>
                     <Property key="Static" value="true"/>
+                    <Property key="NeedKey" value="false"/>
                 </Widget>
                 <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.06684491978609626 0.87418300653594772 0.86898395721925137 0.098039215686274508" name="ConfigMainInput">
                     <Property key="FontName" value="SM_Text"/>
@@ -47,6 +48,7 @@
                     <Property key="WordWrap" value="true"/>
                     <Property key="ReadOnly" value="true"/>
                     <Property key="Static" value="true"/>
+                    <Property key="NeedKey" value="false"/>
                 </Widget>
                 <Widget type="Button" skin="PrimaryButton" position_real="0.027472527472527472 0.86601307189542487 0.65934065934065933 0.11437908496732026" name="ConfigMainCurrentTextBtn">
                     <Property key="Caption" value="BULLSHIT"/>
