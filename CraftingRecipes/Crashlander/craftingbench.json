@@ -1,0 +1,2067 @@
+
+[
+	// Shapes
+	{
+		"craftTime" : 30,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "a736ffdf-22c1-40f2-8e40-988cab7c0559", // Thruster 5
+				"quantity" : 2
+			},
+			{
+				"itemId": "24001201-40dd-4950-b99f-17d878a9e07b", // Large Explosive
+				"quantity" : 1
+			},
+			{
+				"itemId": "3a3280e4-03b6-4a4d-9e02-e348478213c9", // Glowstick
+				"quantity" : 4
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 4
+			}
+		],
+		"itemId" : "3e3e0c14-1f4b-4077-a740-f8cdb328c6d0",
+		"name" : "Large Gravity Controller",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 3,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "5530e6a0-4748-4926-b134-50ca9ecb9dcf", // Component Kit
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "802bcd73-1a56-4694-bfb6-bbf5a8b6aa24",
+		"name" : "Breaker",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 10.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "da4833fd-f981-4e08-a9f7-48e630a7c146", // Battery Container
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "834cc2a0-b5a9-4b33-a18b-d9d5f05757d9",
+		"name" : "Battery",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 20,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "3ce99404-fd41-4c22-aa26-d8e6e57a0b45", // Compact Alternator
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "029ecf24-2ed0-4ea3-9c84-a3b4f4ec7fa6", // Analog Dial
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "60e8e257-f1fa-4c71-8cdb-4e89dbcdff55",
+		"name" : "Generator",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 3,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "43957878-e9d8-47c9-ad2e-10cfd5079733", // Radio receiver
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "72ba5139-8cb4-4aa7-bb86-687a73bced0a", // Speed trigger
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 1
+			},
+			{
+				"itemId" : "fcf0958c-084d-4854-9b1b-b06594b4262a", // Beeswax
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "aab546f4-2112-41f4-9dfc-203099fb8b26",
+		"name" : "GPS Wheel",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 15,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "598d865c-324c-4129-9c57-21a6abd2cb2e", // Controller 1
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "6978c3ae-1d8f-4c07-9574-ba171e5c10fa", // Basic Large Chest
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 3.0
+			},
+			{
+				"itemId" : "36335664-6e61-4d44-9876-54f9660a8565", // Glue
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "d89e6c4e-7455-4ccf-8fc8-4f4ef4acb598",
+		"name" : "Harddrive",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 25,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f", // Glass
+				"quantity" : 4.0
+			},
+			{
+				"itemId": "3a3280e4-03b6-4a4d-9e02-e348478213c9", // Glowstick
+				"quantity" : 16
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 2.0
+			},
+			{
+				"itemId" : "1d4793af-cb66-4628-804a-9d7404712643", // Sensor 1
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "94a220da-97c2-4b08-bfd2-24a5802c422e",
+		"name" : "Hologram",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 15,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "be791e80-ee66-4284-83f1-d91faf15bb4b", // Keyboard Black
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "5685e8fc-0b38-40f6-8af3-e53102424d11", // Display 128 x 128 (3x3)
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 1
+			}
+		],
+		"itemId" : "6ad29c0e-8209-4dca-9133-20d7a2fc2d63",
+		"name" : "Terminal (Black)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 15,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "86b84f8d-0a62-4ffc-aafd-17e29b781484", // Keyboard White
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "5685e8fc-0b38-40f6-8af3-e53102424d11", // Display 128 x 128 (3x3)
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 1
+			}
+		],
+		"itemId" : "5e4bfb11-c378-4a08-b310-565ee3a379f2",
+		"name" : "Terminal (White)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 15,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "86b84f8d-0a62-4ffc-aafd-17e29b781484", // Keyboard White
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "5685e8fc-0b38-40f6-8af3-e53102424d11", // Display 128 x 128 (3x3)
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 1
+			},
+			{
+				"itemId" : "c7322cd1-3158-41d9-b15a-eff2f2f8d9f7", // Paint Ammo
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "71663a3e-e6d0-49b9-a42b-33c758813fec",
+		"name" : "Terminal (Yellow)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 30,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "20dcd41c-0a11-4668-9b00-97f278ce21af", // Sensor 5
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "a9e443ab-f33b-408c-ae08-981249b2dfc3", // Motor
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "36335664-6e61-4d44-9876-54f9660a8565", // Glue
+				"quantity" : 2.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 5.0
+			}
+		],
+		"itemId" : "37a1945a-0b31-4e64-8556-a5fe92b387be",
+		"name" : "Radar",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 5,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "36335664-6e61-4d44-9876-54f9660a8565", // Glue
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "1e8d93a4-506b-470d-9ada-9c0a321e2db5", // Button
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "cac86f35-50dd-47b1-8a26-76cc86195555",
+		"name" : "Input register",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 5,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "36335664-6e61-4d44-9876-54f9660a8565", // Glue
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "1e8d93a4-506b-470d-9ada-9c0a321e2db5", // Button
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "045b633f-77c9-41d7-bd82-dae29383c167",
+		"name" : "Output register",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 3,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "37a1945a-0b31-4e64-8556-a5fe92b387be", // Radar
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "43957878-e9d8-47c9-ad2e-10cfd5079733", // Radio receiver
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "36335664-6e61-4d44-9876-54f9660a8565", // Glue
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "bf8c40c7-9657-46c9-8635-31edfcd93964",
+		"name" : "Radar Warning Detector",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 3,
+		"ingredientList" : 
+		[
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "1e8d93a4-506b-470d-9ada-9c0a321e2db5", // Button
+				"quantity" : 4.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 3.0
+			},
+			{
+				"itemId" : "c7322cd1-3158-41d9-b15a-eff2f2f8d9f7", // Paint Ammo
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "86b84f8d-0a62-4ffc-aafd-17e29b781484",
+		"name" : "Keyboard (White)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 10.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "dfefc9d7-db03-4d25-ad85-eae1d824d8c0", // Radio
+				"quantity" : 2.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 2.0
+			},
+			{
+				"itemId" : "36335664-6e61-4d44-9876-54f9660a8565", // Glue
+				"quantity" : 3.0
+			}
+		],
+		"itemId" : "c9259b11-9100-421e-871a-f00ed56484d8",
+		"name" : "Speaker",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 7,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "dfefc9d7-db03-4d25-ad85-eae1d824d8c0", // Radio
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 2.0
+			},
+			{
+				"itemId" : "36335664-6e61-4d44-9876-54f9660a8565", // Glue
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "310c1d41-420c-48a0-a631-f16c52d1bf06",
+		"name" : "Mini-Speaker",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 20,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "79ab84f0-fcb7-477c-be4c-ad448d9c1913", // Electric Motor component
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "fcf0958c-084d-4854-9b1b-b06594b4262a", // Beeswax
+				"quantity" : 5.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 2.0
+			},
+			{
+				"itemId" : "78732eba-e13a-47c1-988d-f89f546a2d9b", // Metal Cage component
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "a9e443ab-f33b-408c-ae08-981249b2dfc3",
+		"name" : "Motor",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 5,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "cf46678b-c947-4267-ba85-f66930f5faa4", // Sensor 2
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "cc1c0235-b98e-4119-a176-aeec024f26f8", // Light Bulb
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 2.0
+			},
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "875b7675-2365-49c2-a7b0-9b6a09a0a001",
+		"name" : "Laser",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 3,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "43957878-e9d8-47c9-ad2e-10cfd5079733", // Radio receiver
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "72ba5139-8cb4-4aa7-bb86-687a73bced0a", // Speed Trigger
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 1
+			}
+		],
+		"itemId" : "dd4967a9-dfd1-42eb-b48c-414a123bffe2",
+		"name" : "GPS",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 15,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "6bb84152-c4d7-4644-bc37-a3becd79298d", // Controller 3
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f74c2891-79a9-45e0-982e-4896651c2e25", // Chemicals
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "c1e327f9-4b0b-4cd5-b461-abad0d67f408", // Drivers Seat Controls Component
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "e0f54d87-49e1-43e0-b5fc-c9f562840a76",
+		"name" : "Seat Controller",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 3,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "cc1c0235-b98e-4119-a176-aeec024f26f8", // Light bulb
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f", // Glass
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "c7322cd1-3158-41d9-b15a-eff2f2f8d9f7", // Paint Ammo
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "f824937c-7638-4b2a-93aa-e89eb1d9c753",
+		"name" : "Controllable Light",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 25,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "a736ffdf-22c1-40f2-8e40-988cab7c0559", // Thruster 5
+				"quantity" : 1
+			},
+			{
+				"itemId": "8d3b98de-c981-4f05-abfe-d22ee4781d33", // Small Explosive
+				"quantity" : 1
+			},
+			{
+				"itemId": "3a3280e4-03b6-4a4d-9e02-e348478213c9", // Glowstick
+				"quantity" : 2
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 2
+			}
+		],
+		"itemId" : "150fbf90-b9b9-40d7-9ff2-040fa0db0b92",
+		"name" : "Small Gravity Controller",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 5,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "cac86f35-50dd-47b1-8a26-76cc86195555", // Input Register
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "43957878-e9d8-47c9-ad2e-10cfd5079733", // Radio receiver
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "afd0a82c-3d88-46fb-acad-7ab902acf6e1",
+		"name" : "Network Port",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 3,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "43957878-e9d8-47c9-ad2e-10cfd5079733", // Radio receiver
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 1
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "ed6875f0-a29d-4849-b496-1a7a441fd98f",
+		"name" : "Antenna",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 30,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "cac86f35-50dd-47b1-8a26-76cc86195555", // Input Register
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "045b633f-77c9-41d7-bd82-dae29383c167", // Output Register
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 3
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 1
+			}
+		],
+		"itemId" : "c44f6e8e-b0b8-4821-83a5-7928c1446df0",
+		"name" : "Lua Computer",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 5,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "1d4793af-cb66-4628-804a-9d7404712643", // Sensor 1
+				"quantity" : 1.0
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 1
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 2.0
+			}
+		],
+		"itemId" : "6b49f636-9049-4871-a2ef-43f94a21c64a",
+		"name" : "Collision Detector",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 3,
+		"ingredientList" : 
+		[
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f", // Logic Gate
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "1e8d93a4-506b-470d-9ada-9c0a321e2db5", // Button
+				"quantity" : 4.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 3.0
+			},
+			{
+				"itemId" : "c7322cd1-3158-41d9-b15a-eff2f2f8d9f7", // Paint Ammo
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "be791e80-ee66-4284-83f1-d91faf15bb4b",
+		"name" : "Keyboard (Black)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 25,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "20dcd41c-0a11-4668-9b00-97f278ce21af", // Sensor 5
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 3.0
+			},
+			{
+				"itemId" : "5530e6a0-4748-4926-b134-50ca9ecb9dcf", // Component Kit
+				"quantity" : 2.0
+			}
+		],
+		"itemId" : "c438b4f8-9c65-4341-b407-b68106a59f12",
+		"name" : "Camera",
+		"quantity" : 1.0
+	},
+
+	{
+		"craftTime": 20,
+		"ingredientList":
+		[
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f", // Glass
+				"quantity" : 4.0
+			},
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3", // Circuit Board
+				"quantity" : 2.0
+			},
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a", // Plastic Block
+				"quantity" : 4.0
+			},
+			{
+				"itemId": "e19c43c4-1031-4b62-b404-5a4ed7cb6401", // Compact Computer
+				"quantity" : 1.0
+			},
+			{
+				"itemId" : "1d4793af-cb66-4628-804a-9d7404712643", // Sensor 1
+				"quantity" : 1.0
+			}
+		],
+		"itemId": "3213f286-ecce-4f5e-b48a-d96893a14987",
+		"name": "Solar Panel",
+		"quantity": 1.0
+	},
+
+	// Displays
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "a1c2dde3-45d4-43eb-b95a-32e4ff3b6e36",
+		"name" : "16x16 Display (1x1)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "f2a0dc3c-9bde-4f53-bc1a-70506a5e1c50",
+		"name" : "32x32 Display (1x1)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "58765a74-fe13-497b-8916-562e4c4cbd6f",
+		"name" : "64x64 Display (1x1)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 8.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "277d508a-26b2-4986-a15f-6a2c0ffcd4bf",
+		"name" : "128x128 Display (1x1)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 16.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "6120601f-1254-4c8d-8226-fb67626b32b0",
+		"name" : "256x256 Display (1x1)",
+		"quantity" : 1.0
+	},
+
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "f4e4d700-d0df-4bce-a1ec-096b03a781c8",
+		"name" : "16x16 Display (2x2)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "6c9f96ba-50a1-4650-b1fa-fb3e754748df",
+		"name" : "32x32 Display (2x2)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "741db0dd-f144-47cb-86f9-967046b26bb6",
+		"name" : "64x64 Display (2x2)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 8.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "c5572003-cf4d-4943-ae2b-2b37347f6c3d",
+		"name" : "128x128 Display (2x2)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 16.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "c32baf39-3884-4048-9a78-de450f6056b3",
+		"name" : "256x256 Display (2x2)",
+		"quantity" : 1.0
+	},
+
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "baf3e4cb-c98a-4024-840d-a3972ac96f43",
+		"name" : "16x16 Display (3x3)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "32363673-3fea-477d-965a-9e71766e337e",
+		"name" : "32x32 Display (3x3)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "e93e2bb0-3683-4ef3-8641-213cd8ed5aea",
+		"name" : "64x64 Display (3x3)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 8.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "5685e8fc-0b38-40f6-8af3-e53102424d11",
+		"name" : "128x128 Display (3x3)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 16.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "b12ad37a-ff81-4b80-a605-ccb397cfb1c3",
+		"name" : "256x256 Display (3x3)",
+		"quantity" : 1.0
+	},
+
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "d79f2f3b-e173-48fb-be19-99870bb9c3fd",
+		"name" : "16x16 Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "4402539e-b44c-4f52-8b04-b06bd8710deb",
+		"name" : "32x32 Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "e3d2193b-4c7a-437d-ab34-dd508212ff62",
+		"name" : "64x64 Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 8.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "6baf3290-3f8b-4b5a-8745-b40f03e9dbdd",
+		"name" : "128x128 Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 16.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "319e03b4-dc20-4535-b4f3-a1ea525a644e",
+		"name" : "256x256 Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 32.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "d05b6e4a-43e0-4ba2-bee9-9ca6fa9281c5",
+		"name" : "512x512 Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 64.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "13a8d04f-f5d6-4285-9874-ee6f3f283bd4",
+		"name" : "1024x1024 Display (4x4)",
+		"quantity" : 1.0
+	},
+
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "6ec93d0a-d0af-44e7-a797-a7b2c8e5c070",
+		"name" : "16x16 Aircraft Display (1x1)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "5f030374-6cb1-4628-8fa8-64db7e1034fa",
+		"name" : "32x32 Aircraft Display (1x1)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "3b231066-4003-4ddd-b8d1-fd45fb550e37",
+		"name" : "64x64 Aircraft Display (1x1)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 8.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "e2e6e830-fcea-4b9f-85f8-5a67cb6163cd",
+		"name" : "128x128 Aircraft Display (1x1)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 16.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "bf2c884a-b88e-4f17-beb2-9d4ba2a447d5",
+		"name" : "256x256 Aircraft Display (1x1)",
+		"quantity" : 1.0
+	},
+
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "46576d52-9cf6-4d04-9d1c-3304aad7495e",
+		"name" : "16x16 Aircraft Display (2x2)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "06987d0a-da13-439e-9ca0-a730af409bc5",
+		"name" : "32x32 Aircraft Display (2x2)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "05209b1f-bc17-4d9e-87f6-8b9862ab3ab0",
+		"name" : "64x64 Aircraft Display (2x2)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 8.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "1aee6b0f-3c86-4c60-93e8-0b49e5094cb7",
+		"name" : "128x128 Aircraft Display (2x2)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 16.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "7a1a19f2-06dd-4bd1-b6ea-c8bc0e3ebef6",
+		"name" : "256x256 Aircraft Display (2x2)",
+		"quantity" : 1.0
+	},
+
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 5.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "b535b2a1-8144-4301-bf0f-477bf83b0c3a",
+		"name" : "16x16 Aircraft Display (3x3)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 5.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "bca6e542-3377-466e-8237-6d3bee18efae",
+		"name" : "32x32 Aircraft Display (3x3)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 5.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "b7a9a225-b801-4145-9f3b-537881b62169",
+		"name" : "64x64 Aircraft Display (3x3)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 8.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 5.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "4bc0d088-30b9-4704-a0ba-890268928977",
+		"name" : "128x128 Aircraft Display (3x3)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 16.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 9.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 5.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "bbcc9ca4-465f-4ea5-b0b9-b5d60a061a26",
+		"name" : "256x256 Aircraft Display (3x3)",
+		"quantity" : 1.0
+	},
+
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "48c66be3-db95-48ea-889a-2bc3d202d9f6",
+		"name" : "16x16 Aircraft Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "a269d00c-3df2-4b51-899f-19edbbb13cde",
+		"name" : "32x32 Aircraft Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 4.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 1.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "b0d18e27-7069-4aaf-86f2-be055a51d4ee",
+		"name" : "64x64 Aircraft Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 8.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 2.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "e7f069b2-a105-41cf-90a2-6999cac36932",
+		"name" : "128x128 Aircraft Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 16.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 4.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "7b6c3bf3-6c66-40ff-9a6c-c892990bec5c",
+		"name" : "256x256 Aircraft Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 32.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "40fd9657-c71c-4a51-b44b-13265615119a",
+		"name" : "512x512 Aircraft Display (4x4)",
+		"quantity" : 1.0
+	},
+	
+	{
+		"craftTime" : 64.0,
+		"ingredientList" : 
+		[
+			
+			{
+				"itemId" : "5f41af56-df4c-4837-9b3c-10781335757f",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "628b2d61-5ceb-43e9-8334-a4135566df7a",
+				"quantity" : 8.0
+			},
+			
+			{
+				"itemId" : "f152e4df-bc40-44fb-8d20-3b3ff70cdfe3",
+				"quantity" : 16.0
+			},
+			
+			{
+				"itemId" : "9f0f56e8-2c31-4d83-996c-d00a9b296c3f",
+				"quantity" : 1.0
+			}
+		],
+		"itemId" : "14314830-2156-450e-82b5-cbb8aa3d1005",
+		"name" : "1024x1024 Aircraft Display (4x4)",
+		"quantity" : 1.0
+	}
+]
