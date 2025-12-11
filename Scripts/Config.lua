@@ -13,6 +13,9 @@ sm.scrapcomputers = {}
 --A table relating to special backend activities that need to happen between components
 sm.scrapcomputers.backend = {}
 
+--Special backend declared display functions to allow for seemless communication between components
+sm.scrapcomputers.backend.displayCameraDraw = {} 
+
 -- Do not fucking put any modules behind ErrorHandler, so that you atleast can have proper error handling.
 local modules = {
     -- Core modules

@@ -59,8 +59,6 @@ DisplayClass.colorHighlight = sm_color_new(0x969696ff)
 
 -- CLIENT/SERVER --
 
-sm.scrapcomputers.backend.displayCameraDraw = {}
-
 local localPlayer = sm.localPlayer
 local camera = sm.camera
 local tinkerBind = sm.gui.getKeyBinding("Tinker", true)

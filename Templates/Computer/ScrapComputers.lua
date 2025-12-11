@@ -928,55 +928,23 @@ function sc.fontmanager.getDefaultFontName() end
 ---@return ScrapComputersFont font The default font
 function sc.fontmanager.getDefaultFont() end
 
----@class VirtualDisplay : Display A emulated display
+---@class VirtualDisplay : Display An emulated display
 local VirtualDisplay = {}
-
----This function cannot be used by Virtual Displays!
----@deprecated
-function VirtualDisplay.hide() end
-
----This function cannot be used by Virtual Displays!
----@deprecated
-function VirtualDisplay.show() end
-
----This function cannot be used by Virtual Displays!
----@deprecated
-function VirtualDisplay.setRenderDistance(distance) end
-
----This function cannot be used by Virtual Displays!
----@deprecated
-function VirtualDisplay.enableTouchScreen(bool) end
-
----This function cannot be used by Virtual Displays!
----@deprecated
-function VirtualDisplay.getTouchData() end
-
----This function cannot be used by Virtual Displays! (Use render instead!)
----@deprecated
-function VirtualDisplay.update() end
-
----This function cannot be used by Virtual Displays!
----@deprecated
-function VirtualDisplay.autoUpdate(bool) end
-
----This function cannot be used by Virtual Displays!
----@deprecated
-function VirtualDisplay.setOptimizationThreshold(int) end
-
----This function cannot be used by Virtual Displays!
----@deprecated
-function VirtualDisplay.getOptimizationThreshold() end
 
 ---Generates a frame and returns a PixelTable to be rendered on a Display. Use offsets to offset where it should render
 ---@param xOffset number? The x offset, Defaults to 0 (Left)
 ---@param yOffset number? The y offset, Defaults to 0 (Top)
+---@param cacheBased boolean? Whether the virtual disply caches the previous rendered frame and only pushes the changed pixels to the output.
 ---@return PixelTable pixelTable The rendered frame
-function VirtualDisplay.render(xOffset, yOffset) end
+function VirtualDisplay.render(xOffset, yOffset, cacheBased) end
 
 ---Sets the virtual display's resolution
 ---@param newWidth integer The new display width
 ---@param newHeight integer The new display height
 function VirtualDisplay.setDimensions(newWidth, newHeight) end
+
+---Clears the cache buffer of the virtual display.
+function VirtualDisplay.clearCache() end
 
 ---Virtual displays enable the emulation of additional screens, allowing you to create fake displays in any resolution.
 sc.virtualdisplay = {}
