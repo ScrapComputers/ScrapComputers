@@ -10,7 +10,7 @@ local luaKeywords = {
     ["function"] = true, ["if"]     = true, ["in"]    = true, ["local"]  = true,
     ["nil"]      = true, ["not"]    = true, ["or"]    = true, ["repeat"] = true,
     ["return"]   = true, ["then"]   = true, ["true"]  = true, ["until"]  = true,
-    ["while"]  = true
+    ["while"]    = true
 }
 
 local function getUtf8CharacterLength(firstByte)

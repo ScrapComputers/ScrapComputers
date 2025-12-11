@@ -786,7 +786,7 @@ function sm.scrapcomputers.syntax.highlightCode(source, exceptionLines, theme, s
     local func = simpleMode and simpleParseToken or advancedParseToken
     local function parseToken(index, tokenType, tokenValue)
         local outColor = themeTextColor
-        local outValue = string_gsub(tokenValue, "#", "##")
+        local outValue = string_gsub(string_gsub(string_gsub(tokenValue, "\\t", "⁄t"), "\\n", "⁄n"), "#", "##")
 
         if tokenType == "IDENTIFIER" then
             local nwTokenindex = getNWTokenIndex(index)
