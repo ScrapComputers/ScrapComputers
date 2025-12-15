@@ -307,6 +307,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
             util           = sm.scrapcomputers.table.clone(sm.scrapcomputers.util),
             utf8           = sm.scrapcomputers.table.clone(sm.scrapcomputers.utf8),
             vec3           = sm.scrapcomputers.table.clone(sm.scrapcomputers.vector3),
+            vec2           = sm.scrapcomputers.table.clone(sm.scrapcomputers.vector2),
             audio          = sm.scrapcomputers.table.clone(sm.scrapcomputers.audio),
             base64         = sm.scrapcomputers.table.clone(sm.scrapcomputers.base64),
             base91         = sm.scrapcomputers.table.clone(sm.scrapcomputers.base91),
@@ -322,7 +323,6 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
             aes256         = sm.scrapcomputers.table.clone(sm.scrapcomputers.aes256),
             time           = sm.scrapcomputers.table.clone(sm.scrapcomputers.time),
             qrcode         = sm.scrapcomputers.table.clone(sm.scrapcomputers.qrcode),
-
 
             nbs = {
                 loadNBS = sm.scrapcomputers.nbs.loadNBS,

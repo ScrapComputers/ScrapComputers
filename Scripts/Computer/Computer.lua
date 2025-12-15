@@ -177,6 +177,8 @@ function ComputerClass:server_onCreate()
     end, self, not storage.flags.stripDebugInfo, self.sv.encrypted)
 
     self.sv.lastActive = false
+    self.sv.lastOnLift = false
+
     self.sv.lastException = false
     self.sv.fileSavePerformed = false
     self.sv.canClearException = false
@@ -198,6 +200,15 @@ end
 function ComputerClass:server_onFixedUpdate()
     sm.scrapcomputers.sharedTable:runTick(self)
 
+    local onLift = self.shape:getBody():isOnLift()
+    if self.sv.lastOnLift ~= onLift then
+        self.sv.lastOnLift = onLift
+
+        if onLift and self.sv.lastActive and self.sv.storage.flags.alwaysOn then
+            self.sv.forceReset = true
+        end
+    end
+
     local currentServerTick = sm.game.getServerTick()
     local currentOwnerId = self.sv.playerOwnership:getPlayerId()
     if currentOwnerId ~= -1 and self.sv.allowedPlayersDuringEncryption[currentOwnerId] then
@@ -217,7 +228,6 @@ function ComputerClass:server_onFixedUpdate()
         end
     end
 
-    
     if currentServerTick % 20 == 0 and type(self.sv.hasPower) ~= "nil" then
         local players = sm.player.getAllPlayers()
 
@@ -241,6 +251,20 @@ function ComputerClass:server_onFixedUpdate()
         self.sv.forceReset = false
 
         self.sv.luaVM:clearException()
+
+        if self.sv.lastActive then
+            -- Turning off
+            if self.sv.luaVM.enviroment.onDestroy then
+                local success, errMsg = pcall(self.sv.luaVM.enviroment.onDestroy)
+                if not success then
+                    self.sv.luaVM:forceSetException(ErrorParser:fixErrorMessage(errMsg, self.sv.luaVM.luaState.currentFunction))
+                end
+            end
+
+            -- We need to reset the luaVM to free up memory
+            self.sv.memoryTracker:reset()
+            self.sv.luaVM:reset()
+        end
 
         self.sv.sharedData.isRunning = false
         self.sv.sharedData.hasException = false
