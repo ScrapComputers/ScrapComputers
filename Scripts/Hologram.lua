@@ -416,7 +416,7 @@ end
 
 function HologramClass:client_onFixedUpdate()
     local parents = self.interactable:getParents()
-    local killEffects = #parents == 0
+    local killEffects = #parents ~= 0
 
     for _, parent in pairs(parents) do
         if parent.active then
