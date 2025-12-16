@@ -414,6 +414,23 @@ function HologramClass:client_onCreate()
     }
 end
 
+function HologramClass:client_onFixedUpdate()
+    local parents = self.interactable:getParents()
+    local killEffects = #parents == 0
+
+    for _, parent in pairs(parents) do
+        if parent.active then
+            killEffects = false
+            break
+        end
+    end
+
+    if killEffects then
+        self:cl_killEmAll()
+    end
+end
+
+
 function HologramClass:client_onDestroy()
     self:cl_killEmAll()
 end

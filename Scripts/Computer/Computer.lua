@@ -178,6 +178,7 @@ function ComputerClass:server_onCreate()
 
     self.sv.lastActive = false
     self.sv.lastOnLift = false
+    self.sv.lastInteractiveState = false
 
     self.sv.lastException = false
     self.sv.fileSavePerformed = false
@@ -205,6 +206,16 @@ function ComputerClass:server_onFixedUpdate()
         self.sv.lastOnLift = onLift
 
         if onLift and self.sv.lastActive and self.sv.storage.flags.alwaysOn then
+            self.sv.forceReset = true
+        end
+    end
+
+    if self.interactable.active ~= self.sv.lastInteractiveState then
+        self.sv.lastInteractiveState = self.interactable.active
+        
+        if self.sv.lastInteractiveState then
+            -- This is probably unintended behaviour and i dont know how to reimplement this from the behaviour on the V2 computer
+        else
             self.sv.forceReset = true
         end
     end
@@ -270,6 +281,10 @@ function ComputerClass:server_onFixedUpdate()
         self.sv.sharedData.hasException = false
         self.sv.lastActive = false
         self.sv.lastException = false
+
+        
+        self.interactable.active = false
+        self.sv.lastInteractiveState = false
         return
     end
     
@@ -336,6 +351,7 @@ function ComputerClass:server_onFixedUpdate()
     if self.sv.lastActive ~= active then
         self.sv.lastActive = active
         self.interactable.active = active
+        self.sv.lastInteractiveState = active
 
         if hasException then
             if active and sm.scrapcomputers.config.getConfig("scrapcomputers.computer.reset_error_on_restart").selectedOption == 2 then
@@ -353,6 +369,7 @@ function ComputerClass:server_onFixedUpdate()
 
                     self.sv.lastActive = false
                     self.interactable.active = false
+                    self.sv.lastInteractiveState = active
                     return
                 end
 
@@ -480,6 +497,7 @@ function ComputerClass:server_onFixedUpdate()
             end
 
             self.interactable.active = false
+            self.sv.lastInteractiveState = false
 
             self.sv.sharedData.isRunning = false
             self.sv.sharedData.hasException = true
