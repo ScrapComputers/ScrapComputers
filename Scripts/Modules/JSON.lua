@@ -191,8 +191,8 @@ function sm.scrapcomputers.json.prettifyTable(rootContents)
     if rootType ~= "table" then
         if rootType == "string" then
             local safeText = rootContents:gsub("\\", "⁄")
-            local safeEscapeCodes = {"⁄b", "⁄f", "⁄n", "⁄r", "⁄t", "\\\""}
-            for key, value in pairs({"\b", "\f", "\n", "\r", "\t", "\""}) do
+            local safeEscapeCodes = {"⁄b", "⁄f", "⁄n", "⁄r", "⁄t", "\\\"", "##"}
+            for key, value in pairs({"\b", "\f", "\n", "\r", "\t", "\"", "#"}) do
                 safeText = safeText:gsub(value, safeEscapeCodes[key])
             end
 
