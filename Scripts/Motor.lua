@@ -85,6 +85,20 @@ function MotorClass:sv_onPowerLoss()
 
     self.sv.updateBearingValues = true
     self.sv.updatePistonValues = true
+
+    if self.sv.bearings then
+        for _, bearing in pairs(self.sv.bearings) do
+            bearing:setMotorVelocity(0, 0)
+        end 
+    end
+
+    if self.sv.pistons then
+        for _, piston in pairs(self.sv.pistons) do
+            piston:setTargetLength(0, 0, 0)
+        end
+    end
+    
+    self.sv.tickDelay = false
 end
 
 function MotorClass:server_onFixedUpdate()
@@ -103,6 +117,39 @@ function MotorClass:server_onFixedUpdate()
         self.sv.updatePistonValues = true
         self.sv.lastPistonCount = pistonLen
     end
+
+    local parents = self.interactable:getParents()
+    local reset = #parents == 0
+    for _, parent in pairs(parents) do
+        if parent.active then
+            reset = false
+            break
+        end
+    end
+
+    if reset then
+        self.sv.bearingSpeed = 0
+        self.sv.torque = 0
+        self.sv.pistonSpeed = 0
+        self.sv.force = 0
+
+        for _, bearing in pairs(self.sv.bearings) do
+            bearing:setMotorVelocity(0, 0)
+        end
+
+        for _, piston in pairs(self.sv.pistons) do
+            piston:setTargetLength(0, 0, 0)
+        end
+
+        goto END
+    end
+
+    if sm.scrapcomputers.powerManager.isEnabled() and (self.sv.updateBearingValues or self.sv.updatePistonValues) and not self.sv.tickDelay then
+        self.sv.tickDelay = true
+        goto END
+    end
+
+    self.sv.tickDelay = false
 
     if self.sv.updateBearingValues then
         for i, bearing in pairs(self.sv.bearings) do
@@ -124,6 +171,7 @@ function MotorClass:server_onFixedUpdate()
         self.sv.updatePistonValues = false
     end
 
+    ::END::
     local bearingSpeed = self.sv.bearingSpeed > 0 and self.sv.bearingSpeed or 1
     local bearingPower = (bearingSpeed * self.sv.torque / 9550) * (1 / 0.85) -- 85% efficient
     local pistonPower = (self.sv.pistonSpeed * self.sv.force / 50000)
