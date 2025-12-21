@@ -207,6 +207,7 @@
     "scrapcomputers.power.unused_power"                                     : "Unused: #(SUCCESS)%s kW",
 
     // Other
+    "scrapcomputers.other.lua_error"                                        : "#F14C4CAn error occurred! This should be reported immediately to the ScrapComputers team!",
     "scrapcomputers.other.save_and_closebtn"                                : "Save & Close",
 
     "scrapcomputers.other.enabled"                                          : "ENABLED",

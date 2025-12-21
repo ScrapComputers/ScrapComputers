@@ -1179,6 +1179,18 @@ function ComputerClass:cl_createExceptionLines()
 end
 
 function ComputerClass:cl_openGui()
+    local success, result = pcall(self.cl_openGuiReal, self)
+    if success then
+        return
+    end
+    
+    sm.scrapcomputers.logger.error(result)
+    sm.scrapcomputers.gui:alert("scrapcomputers.other.lua_error")
+
+    self.cl.playerOwnership:stopOwningInteractable()
+end
+
+function ComputerClass:cl_openGuiReal()
     self:cl_reloadTranslations()
 
     if self.cl.isOtherGuiOpening then

@@ -4,28 +4,24 @@ sm.scrapcomputers.gui = {}
 ---@param message string The message to send
 ---@param ... any? Additional arguments to send to the language manager
 function sm.scrapcomputers.gui:chatMessage(message, ...)
-    local additionalArgsType = type(...)
-
-    if additionalArgsType == "nil" then
+    if select("#", ...) == 0 then
         sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message))
         return
     end
 
-    sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message, additionalArgsType == "table" and unpack(...) or ...))
+    sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message, ...))
 end
 
 ---Shows a alert with scrapcomputer's language manger applied
 ---@param message string The message to alert
 ---@param ... any? Additional arguments to send to the language manager
 function sm.scrapcomputers.gui:alert(message, ...)
-    local additionalArgsType = type(...)
-
-    if additionalArgsType == "nil" then
+    if select("#", ...) == 0 then
         sm.gui.displayAlertText("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message))
         return
     end
 
-    sm.gui.displayAlertText("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message, additionalArgsType == "table" and unpack(...) or ...))
+    sm.gui.displayAlertText("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message, ...))
 end
 
 ---Creates a gui from a layout file with translation support
@@ -45,15 +41,7 @@ function sm.scrapcomputers.gui:translationsForGUIInterface(gui)
     
     local function BindFunction(func)
         return function(_, ...)
-            local args = {...}
-
-            if #args == 0 then
-                return func(gui)
-            elseif #args == 1 and type(args[1]) == "table" then
-                return func(gui, unpack(args[1]))
-            else
-                return func(gui, unpack(args))
-            end
+            return func(gui, ...)
         end
     end
 
