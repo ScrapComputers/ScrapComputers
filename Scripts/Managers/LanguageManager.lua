@@ -90,6 +90,10 @@ function sm.scrapcomputers.languageManager.getSelectedLanguage()
     local config = sm.scrapcomputers.config.getConfig("scrapcomputers.global.selectedLanguage")
     local data = config.options[config.selectedOption]
 
+    if data == nil then
+        return "English"
+    end
+
     if config.selectedOption == 1 then
         sm.scrapcomputers.languageManager.autoDetectLanguage()
         return sm.scrapcomputers.languageManager.currentLanguage
