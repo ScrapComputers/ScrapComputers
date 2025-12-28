@@ -119,7 +119,7 @@ function MotorClass:server_onFixedUpdate()
     end
 
     local parents = self.interactable:getParents()
-    local reset = true
+    local reset = #parents == 0
     for _, parent in pairs(parents) do
         if parent.active then
             reset = false
