@@ -15,6 +15,7 @@ function MotorClass:sv_createData()
         ---@param speed number The speed to set to bearing(s)
         setBearingSpeed = function(speed)
             sm.scrapcomputers.errorHandler.assertArgument(speed, nil, {"number"})
+            sm.scrapcomputers.errorHandler.assert(speed ~= math.huge and speed ~= math.huge, nil, "Cannot set a non-finite bearing speed!")
 
             self.sv.bearingSpeed = speed
             self.sv.updateBearingValues = true
@@ -24,6 +25,9 @@ function MotorClass:sv_createData()
         ---@param angle number The angle to set to bearing(s)
         setBearingAngle = function(angle)
             sm.scrapcomputers.errorHandler.assertArgument(angle, nil, {"number", "nil"})
+            if type(angle) == "number" then
+                sm.scrapcomputers.errorHandler.assert(angle ~= math.huge and angle ~= math.huge, nil, "Cannot set a non-finite bearing angle!")
+            end
 
             self.sv.targetAngle = angle
             self.sv.updateBearingValues = true
@@ -33,6 +37,7 @@ function MotorClass:sv_createData()
         ---@param speed number The speed to set to piston(s)
         setPistonSpeed = function(speed)
             sm.scrapcomputers.errorHandler.assertArgument(speed, nil, {"number"})
+            sm.scrapcomputers.errorHandler.assert(speed ~= math.huge and speed ~= math.huge, nil, "Cannot set a non-finite piston speed!")
 
             self.sv.pistonSpeed = speed
             self.sv.updateBearingValues = true
@@ -42,6 +47,7 @@ function MotorClass:sv_createData()
         ---@param torque number The torque to set to bearing(s)
         setTorque = function(torque)
             sm.scrapcomputers.errorHandler.assertArgument(torque, nil, {"number"})
+            sm.scrapcomputers.errorHandler.assert(force ~= math.huge and force ~= math.huge, nil, "Cannot set a non-finite bearing torque!")
 
             self.sv.torque = torque
             self.sv.updateBearingValues = true
@@ -51,6 +57,7 @@ function MotorClass:sv_createData()
         ---@param length number The length to set to piston(s)
         setLength = function(length)
             sm.scrapcomputers.errorHandler.assertArgument(length, nil, {"number"})
+            sm.scrapcomputers.errorHandler.assert(length ~= math.huge and length ~= math.huge, nil, "Cannot set a non-finite piston length!")
 
             self.sv.length = length
             self.sv.updatePistonValues = true
@@ -60,6 +67,7 @@ function MotorClass:sv_createData()
         ---@param force number The force to set to
         setForce = function(force)
             sm.scrapcomputers.errorHandler.assertArgument(force, nil, {"number"})
+            sm.scrapcomputers.errorHandler.assert(force ~= math.huge and force ~= math.huge, nil, "Cannot set a non-finite piston force!")
 
             self.sv.force = force
             self.sv.updatePistonValues = true
@@ -118,30 +126,35 @@ function MotorClass:server_onFixedUpdate()
         self.sv.lastPistonCount = pistonLen
     end
 
+    -- For fucks sakes let this be the final time i have to fix the motors.
+    --      - VeraDev
+    
     local parents = self.interactable:getParents()
-    local reset = #parents == 0
+    local needsReset = true
     for _, parent in pairs(parents) do
         if parent.active then
-            reset = false
+            needsReset = false
             break
-        end
+        end 
     end
 
-    if reset then
-        self.sv.bearingSpeed = 0
-        self.sv.torque = 0
-        self.sv.pistonSpeed = 0
-        self.sv.force = 0
+    if needsReset then
+        if not (self.sv.updateBearingValues or self.sv.updatePistonValues) then
+            self.sv.bearingSpeed = 0
+            self.sv.torque = 0
 
-        for _, bearing in pairs(self.sv.bearings) do
-            bearing:setMotorVelocity(0, 0)
+            self.sv.pistonSpeed = 0
+            self.sv.length = 0
+            self.sv.force = 0
+
+            for _, bearing in pairs(self.sv.bearings) do
+                bearing:setMotorVelocity(0, 0)
+            end
+
+            for _, piston in pairs(self.sv.pistons) do
+                piston:setTargetLength(0, 0, 0)
+            end
         end
-
-        for _, piston in pairs(self.sv.pistons) do
-            piston:setTargetLength(0, 0, 0)
-        end
-
-        goto END
     end
 
     if sm.scrapcomputers.powerManager.isEnabled() and (self.sv.updateBearingValues or self.sv.updatePistonValues) and not self.sv.tickDelay then
