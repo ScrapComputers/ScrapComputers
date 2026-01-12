@@ -330,7 +330,11 @@ function HologramClass:sv_createData()
 
             local bb = largestCorner - smallestCorner
             local center = bb / 2 + smallestCorner
-            local modify = center - sm.vec3.new(0, bb.y / 2, 0)
+            local v1 = bb.y / 2
+            
+            if v1 ~= v1 then v1 = 0 end
+
+            local modify = center - sm.vec3.new(0, v1, 0)
 
             for _, id in pairs(hologramEffects) do
                 local object = self.sv.rawObjects[id] and self:sv_createObjectData(id)

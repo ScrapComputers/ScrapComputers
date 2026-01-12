@@ -865,6 +865,8 @@ function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width
     self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
     local cachedColors = self.sv.cachedColors[displayId]
 
+    local assert = assert
+
     for i = 1, pixelCount do
         local data = rays[i]
         local hit, result = data[1], data[2]
@@ -875,7 +877,10 @@ function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width
 
         result = isUnsafeENV and result or makeSafe(result)
 
-        local color = drawer(hit, result, x, y)
+        local color = drawer(hit, result, x, y) or sm_color_new("000000")
+        local colorType = type(color)
+
+        assert(colorType == "Color", "Bad color value at "..x..", "..y..". Expected Color, got "..colorType.." instead!")
 
         if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
             drawPixel(x + xOffset, y + yOffset, color)
