@@ -875,7 +875,7 @@ function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width
 
         result = isUnsafeENV and result or makeSafe(result)
 
-        local color = drawer(hit, result, x, y)
+        local color = drawer(hit, result, x, y) or sm.color.new("000000")
 
         if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
             drawPixel(x + xOffset, y + yOffset, color)
