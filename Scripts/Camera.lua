@@ -2,18 +2,11 @@ local sm_scrapcomputers_errorHandler_assertArgument = sm.scrapcomputers.errorHan
 local sm_physics_getGroundMaterial = sm.physics.getGroundMaterial
 local sm_vec3_new = sm.vec3.new
 local sm_color_new = sm.color.new
-local sm_util_clamp = sm.util.clamp
-local scrap_generateGradient = sm.scrapcomputers.color.generateGradient
+local sm_physics_multicast = sm.physics.multicast
 local sm_game_getTimeOfDay = sm.game.getTimeOfDay
 local sm_vec3_normalize = sm.vec3.normalize
 local sm_vec3_dot = sm.vec3.dot
 local math_floor = math.floor
-local math_pow = math.pow
-local math_min = math.min
-local math_max = math.max
-
-local bit_band = bit.band
-local bit_rshift = bit.rshift
 local bit_bor = bit.bor
 local bit_lshift = bit.lshift
 
@@ -55,13 +48,21 @@ local userdataColors = {
 local sunDir = sm_vec3_new(0.232843, 0.688331, -0.687011)
 local shadowMult = 0.5
 local groundColorCache = {}
+local groundMaterialCache = {}
+local cachedShadows = {}
+local serverColorCache = {}
 
 local function formatVec(vec3)
-    return "" .. math.floor(vec3.x * 5) .. "" .. math.floor(vec3.y * 5) .. "" .. math.floor(vec3.z * 5)
+    return math_floor(vec3.x) + (math_floor(vec3.y) * 3000)
 end
 
 local function coordinateToIndex(x, y, width)
     return (y - 1) * width + x
+end
+
+local function colorToID(color)
+    local scale = 255
+    return bit_bor(bit_lshift(math_floor(color.r * scale), 16), bit_lshift(math_floor(color.g * scale), 8), math_floor(color.b * scale))
 end
 
 local function map(value, low, high, low1, high1)
@@ -105,19 +106,13 @@ local function getSkyColor()
 end
 
 local function areColorsSimilar(color1, color2, threshold)
-    local isSame = color1 == color2
+    if color1 == color2 then return true end
 
-    if isSame then
-        return true
-    end
+    local dr = math_floor(color1 / 65536) - math_floor(color2 / 65536)
+    local dg = (math_floor(color1 / 256) % 256) - (math_floor(color2 / 256) % 256)
+    local db = (color1 % 256) - (color2 % 256)
 
-    if threshold == 0 then 
-        return isSame
-    end
-
-    local dr, dg, db = (color1.r * 255) - (color2.r * 255), (color1.g * 255) - (color2.g * 255), (color1.b * 255) - (color2.b * 255)
-
-    return (dr * dr + dg * dg + db * db) <= (threshold * 255) ^ 2 * 3
+    return dr * dr + dg * dg + db * db <= (threshold * 255) ^ 2 * 3
 end
 
 local function applySunShader(result, color, time)
@@ -134,82 +129,107 @@ local function applySunShader(result, color, time)
     return color
 end
 
-function CameraClass:sv_getObjCol(raycastResult, advanced)
+local function getObjCol(raycastResult, advanced)
+    local skyColor = getSkyColor()
+
     if not raycastResult then
-        return getSkyColor()
+        return skyColor
     end
 
     local pointWorld = raycastResult.pointWorld
-    local type = raycastResult.type
-    local material = sm_physics_getGroundMaterial(pointWorld)
-    local returnColor = getSkyColor()
+    local pkey = formatVec(pointWorld)
 
-    if type == "terrainSurface" or type == "terrainAsset" then
-        local materialsTable = (type == "terrainSurface") and groundMaterials or assetMaterials
-        local groundColor = materialsTable[material]
+    local rtype = raycastResult.type
+    local material = groundMaterialCache[pkey]
 
-        if not groundColor then
-            returnColor = getSkyColor()
-            goto cont
-        elseif not advanced then
-            returnColor = groundColor
-            goto cont
-        end
-
-        local formattedPoint = formatVec(pointWorld)
-        local cachedPoint = groundColorCache[formattedPoint]
-
-        if cachedPoint then
-            returnColor = cachedPoint
-            goto cont
-        end
-
-        local average_r = 0
-        local average_g = 0
-        local average_b = 0
-
-        local div = 1
-        local x, y = -1, -1
-
-        for _ = 1, 25 do
-            local fColor
-
-            if sm_terrainpp_getColorAt and type == "terrainSurface" then
-                fColor = sm_terrainpp_getColorAt(x + pointWorld.x, y + pointWorld.y) or groundColor
-            else
-                fColor = materialsTable[sm_physics_getGroundMaterial(sm_vec3_new(x, y, 0) + pointWorld)] or groundColor
-            end
-
-            average_r = average_r + fColor.r
-            average_g = average_g + fColor.g
-            average_b = average_b + fColor.b
-
-            div = div + 1
-
-            x = x + 0.5
-
-            if x == 1.5 then
-                y = y + 0.5
-                x = -1
-            end
-        end
-
-        local new = sm_color_new(average_r / div, average_g / div, average_b / div)
-        groundColorCache[formattedPoint] = new
-
-        returnColor = new
-    elseif type == "body" then
-        returnColor = raycastResult:getShape().color
-    elseif type == "joint" then
-        returnColor = raycastResult:getJoint().color
-    elseif userdataColors[type] then
-        returnColor = userdataColors[type]
+    if not material then
+        material = sm_physics_getGroundMaterial(pointWorld)
+        groundMaterialCache[pkey] = material
     end
 
-    ::cont::
+    local returnColor = skyColor
+
+    -- TERRAIN
+    if rtype == "terrainSurface" or rtype == "terrainAsset" then
+        local materialsTable =
+            (rtype == "terrainSurface") and groundMaterials or assetMaterials
+
+        local groundColor = materialsTable[material]
+        if not groundColor then
+            returnColor = skyColor
+        elseif not advanced then
+            returnColor = groundColor
+        else
+            local cached = groundColorCache[pkey]
+            if cached then
+                returnColor = cached
+            else
+                local ar, ag, ab = 0, 0, 0
+                local count = 0
+
+                local x, y = -1, -1
+
+                for _ = 1, 25 do
+                    local fColor
+
+                    if sm_terrainpp_getColorAt and rtype == "terrainSurface" then
+                        fColor = sm_terrainpp_getColorAt(
+                            x + pointWorld.x,
+                            y + pointWorld.y
+                        ) or groundColor
+                    else
+                        local wp = sm_vec3_new(x, y, 0) + pointWorld
+                        local k = formatVec(wp)
+
+                        local m = groundMaterialCache[k]
+                        if not m then
+                            m = sm_physics_getGroundMaterial(wp)
+                            groundMaterialCache[k] = m
+                        end
+
+                        fColor = materialsTable[m] or groundColor
+                    end
+
+                    ar = ar + fColor.r
+                    ag = ag + fColor.g
+                    ab = ab + fColor.b
+                    count = count + 1
+
+                    x = x + 0.5
+                    if x == 1.5 then
+                        x = -1
+                        y = y + 0.5
+                    end
+                end
+
+                local avg = sm_color_new(ar / count, ag / count, ab / count)
+                groundColorCache[pkey] = avg
+                returnColor = avg
+            end
+        end
+
+    -- BODY
+    elseif rtype == "body" then
+        returnColor = raycastResult:getShape().color
+
+    -- JOINT
+    elseif rtype == "joint" then
+        returnColor = raycastResult:getJoint().color
+
+    -- OTHER USERDATA
+    else
+        local ucol = userdataColors[rtype]
+        if ucol then
+            returnColor = ucol
+        end
+    end
 
     if advanced then
-        returnColor = applySunShader(raycastResult, returnColor, sm_game_getTimeOfDay())
+        return applySunShader(
+            raycastResult,
+            returnColor,
+            sm_game_getTimeOfDay()
+        )
     end
 
     return returnColor
@@ -239,7 +259,168 @@ local function makeSafe(result)
     }
 end
 
+local function simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
+    local pixelCount = #rays
+    local timeModifier = darknessMap[math.floor(map(sm_game_getTimeOfDay(), 0, 1, 1, #darknessMap))]
+    local defaultColor = getSkyColor()
+
+    for i = 1, pixelCount do
+        local data = rays[i]
+        local hit, result = data[1], data[2]
+        local color = defaultColor
+        local normalModifier = 1
+
+        if hit then
+            if result.type ~= "limiter" then
+                normalModifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.4
+            end
+
+            color = getObjCol(result) * timeModifier * normalModifier
+        end
+
+        local coord = coordinateTbl[i]
+        local x, y = coord[1] + xOffset, coord[2] + yOffset
+        local index = (y - 1) * width + x
+        local dColor = fullBuffer[index]
+        local cColor = colorToID(color)
+
+        if not dColor or not areColorsSimilar(dColor, cColor, threshold) then
+            drawPixel(x, y, cColor)
+        end
+    end
+end
+
+local function advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, shadowRange, filter)
+    local pixelCount = #rays
+    local pointTbl = {}
+    local shadowRays = {}
+    local time = sm_game_getTimeOfDay()
+    local timeModifier = darknessMap[math.floor(map(time, 0, 1, 1, #darknessMap))]
+    local defaultColor = getSkyColor()
+    local type = "ray"
+    local tblIndex = 0
+
+    for i = 1, pixelCount do
+        local data = rays[i]
+        local hit, result = data[1], data[2]
+        local pointWorld = result.pointWorld
+        local resultType = result.type
+        local color = defaultColor
+        local modifier = 1
+
+        if hit then
+            if resultType ~= "limiter" then
+                modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.3 + 0.5
+            end
+
+            color = getObjCol(result, true) * timeModifier * modifier
+         
+            if (resultType == "terrainSurface" or resultType == "terrainAsset") and cachedShadows[formatVec(pointWorld)] then
+                color = color * shadowMult
+
+                local coordinate = coordinateTbl[i]
+                local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
+                local coordIndex = coordinateToIndex(x, y, width)
+                local dColor = fullBuffer[coordIndex]
+                local cColor = colorToID(color)
+
+                if not dColor or not areColorsSimilar(colodColor, cColor, threshold) then
+                    drawPixel(x, y, cColor)
+                end
+            else
+                tblIndex = tblIndex + 1
+                pointTbl[tblIndex] = {point = pointWorld, color = color, index = i}
+
+                local startPos = pointWorld + -sunDir * shadowRange
+
+                shadowRays[tblIndex] = {
+                    type = type,
+                    startPoint = startPos,
+                    endPoint = startPos + sunDir * shadowRange,
+                    mask = filter,
+                }
+            end
+        else
+            local coordinate = coordinateTbl[i]
+            local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
+            local coordIndex = coordinateToIndex(x, y, width)
+
+            local finalColor = applySunShader(result, color, time)
+            local dColor = fullBuffer[coordIndex]
+            local cColor = colorToID(finalColor)
+
+            if not dColor or not areColorsSimilar(dColor, cColor, threshold) then
+                drawPixel(x, y, cColor)
+            end
+        end
+    end
+
+    local shadowResults = sm_physics_multicast(shadowRays)
+
+    for i = 1, tblIndex, 1 do
+        local data = shadowResults[i]
+        local hit, result = data[1], data[2]
+        local pointWorld = result.pointWorld
+        local pointData = pointTbl[i]
+        local pointDataPoint = pointData.point
+        local pointDataColor = pointData.color
+
+        if hit and (pointWorld - pointDataPoint):length() > 0.05 then
+            local type_ = pointData.type
+
+            if type_ == "terrainSurface" or type_ == "terrainAsset" then
+                cachedShadows[formatVec(pointDataPoint)] = true
+            end
+
+            pointDataColor = pointDataColor * shadowMult
+        end
+
+        local coordinate = coordinateTbl[pointData.index]
+        local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
+        local coordIndex = coordinateToIndex(x, y, width)
+        local dColor = fullBuffer[coordIndex]
+        local cColor = colorToID(pointDataColor)
+
+        if not dColor or not areColorsSimilar(dColor, cColor, threshold) then
+            drawPixel(x, y, cColor)
+        end
+    end
+end
+
+local clientSelfs = {}
+
+sm.scrapcomputers.backend.cameraVideoHook = function(data, drawPixel, fullBuffer, threshold)
+    local _, _type, sliceWidth, width, height, shapeId = unpack(data)
+    local cameraSelf = clientSelfs[shapeId]
+    if not cameraSelf or not cameraSelf.drawData then return end
+    local xOffset, yOffset = cameraSelf.drawData.xOffset, cameraSelf.drawData.yOffset
+    local rays, coordinateTbl = cameraSelf:cl_sv_computeVideoRays(sliceWidth, width, height)
+
+    if _type == "video" then
+        simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
+    elseif _type == "advancedVideo" then
+        advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, cameraSelf.drawData.shadowRange, cameraSelf.drawData.raycastFilter)
+    end 
+end
+
+sm.scrapcomputers.backend.cameraFrameHook = function(data, drawPixel, fullBuffer, threshold)
+    local _, _type, width, height, shapeId = unpack(data)
+    local cameraSelf = clientSelfs[shapeId]
+    if not cameraSelf or not cameraSelf.drawData then return end
+
+    local xOffset, yOffset = cameraSelf.drawData.xOffset, cameraSelf.drawData.yOffset
+    local rays, coordinateTbl = cameraSelf:cl_sv_computeFrameRays(width, height)
+
+    if _type == "frame" then
+        simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
+    elseif _type == "advancedFrame" then
+        advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, cameraSelf.drawData.shadowRange, cameraSelf.drawData.raycastFilter)
+    end
+end
+
 -- SERVER --
+
+local bufferDodger = 0
 
 function CameraClass:sv_createData()
     return {
@@ -254,56 +435,16 @@ function CameraClass:sv_createData()
 
             local width1, height1 = display.getDimensions()
 
-            width = width  or width1
-            height = height or height1
-
-            local displayId = display.getId()
-
-            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced[displayId] then
-                self.sv.forced[displayId] = true
-                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
-            end
-
-            local rays, coordinateTbl = self:sv_computeFrameRays(width, height)
-
-            self:sv_simpleDraw(rays, coordinateTbl, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
-        end,
-
-        ---Takes a frame and draws it. (Designed for video)
-        ---@param display    Display The display to draw it on
-        ---@param sliceWidth integer                The slice width. The bigger, the faster it is to render a frame but with more performance lost.
-        ---@param width      integer?               The width of the video
-        ---@param height     integer?               The height of the video
-        video = function(display, sliceWidth, width, height)
-            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
-            sm_scrapcomputers_errorHandler_assertArgument(sliceWidth, 2, {"integer"})
-            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
-            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
-
-            local width1, height1 = display.getDimensions()
-
             width = width or width1
             height = height or height1
 
             local displayId = display.getId()
+            local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
 
-            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced[displayId] then
-                self.sv.forced[displayId] = true
-                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+            if rawAdd then
+                rawAdd({101, bufferDodger, "frame", width, height, self.shape.id})
+                bufferDodger = bufferDodger + 1
             end
-
-            if sliceWidth ~= self.sv.lastSliceWidth then
-                self.sv.lastSliceWidth = sliceWidth
-                self.sv.screenSection = 0
-                sm.scrapcomputers.backend.cameraColorCache[displayId] = nil
-                
-                self:sv_clearCache()
-            end
-
-            local threshold = display.getOptimizationThreshold()
-
-            local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
-            self:sv_simpleDraw(rays, coordinateTbl, threshold, width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         ---Takes a frame and draws it. (Has shadows)
@@ -321,55 +462,12 @@ function CameraClass:sv_createData()
             height = height or height1
 
             local displayId = display.getId()
+            local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
 
-            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced[displayId] then
-                self.sv.forced[displayId] = true
-                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+            if rawAdd then
+                rawAdd({101, bufferDodger, "advancedFrame", width, height, self.shape.id})
+                bufferDodger = bufferDodger + 1
             end
-
-            local rays, coordinateTbl = self:sv_computeFrameRays (width, height)
-            local pixels = self:sv_advancedDraw(rays, coordinateTbl, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
-
-            if #pixels > 0 then
-                display.drawFromTable(pixels)
-            end
-        end,
-
-        ---Takes a frame and draws it. (Designed for video & Has shadows)
-        ---@param display    Display The display to draw it on
-        ---@param sliceWidth integer                The slice width. The bigger, the faster it is to render a frame but with more performance lost.
-        ---@param width      integer?               The width of the video
-        ---@param height     integer?               The height of the video
-        advancedVideo = function(display, sliceWidth, width, height)
-            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
-            sm_scrapcomputers_errorHandler_assertArgument(sliceWidth, 2, {"integer"})
-            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
-            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
-
-            local width1, height1 = display.getDimensions()
-
-            width = width  or width1
-            height = height or height1
-
-            local displayId = display.getId()
-
-            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced[displayId] then
-                self.sv.forced[displayId] = true
-                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
-            end
-
-            if sliceWidth ~= self.sv.lastSliceWidth then
-                self.sv.lastSliceWidth = sliceWidth
-                self.sv.screenSection = 0
-                sm.scrapcomputers.backend.cameraColorCache[displayId] = nil
-                
-                self:sv_clearCache()
-            end
-
-            local thershold = display.getOptimizationThreshold()
-
-            local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
-            self:sv_advancedDraw(rays, coordinateTbl, thershold, width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         ---Takes a frame and draws it. This allows you to use a custom drawer if you want to modify how the result looks like
@@ -390,13 +488,162 @@ function CameraClass:sv_createData()
 
             local displayId = display.getId()
 
-            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced[displayId] then
-                self.sv.forced[displayId] = true
+            if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+                serverVideoCache = {}
             end
 
-            local rays, coordinateTbl = self:sv_computeFrameRays (width, height)
+            local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
             self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
+        end,
+
+        ---Takes a depth frame and draws it.
+        ---@param display Display The display to draw it on
+        ---@param focalLength number The focal length
+        ---@param width integer? The width of the frame
+        ---@param height integer? The height of the frame
+        depthFrame = function(display, focalLength, width, height)
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(focalLength, 2, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
+
+            local width1, height1 = display.getDimensions()
+
+            width = width  or width1
+            height = height or height1
+
+            local displayId = display.getId()
+
+            if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
+                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+                self.sv.attachedDisplays[displayId] = true
+                serverVideoCache = {}
+            end
+
+            local range = self.drawData.range
+
+            local function drawer(hit, result, x, y)
+                if hit then
+                    return sm.color.new(1, 1, 1) * (focalLength / range / result.fraction)
+                end
+
+                return sm.color.new("000000")
+            end
+
+            local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
+            self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
+        end,
+
+        ---Takes a masked frame and draws it.
+        ---@param display Display The display to draw it on
+        ---@param mask string The masked string
+        ---@param width integer? The width of the frame
+        ---@param height integer? The height of the frame
+        maskedFrame = function(display, mask, width, height)
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(mask, 2, {"string", "table"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
+
+            local width1, height1 = display.getDimensions()
+
+            width = width  or width1
+            height = height or height1
+
+            local displayId = display.getId()
+
+            if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
+                sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+                self.sv.attachedDisplays[displayId] = true
+                serverVideoCache = {}
+            end
+
+            local defaultColor = sm_color_new("000000")
+            local blackColor = sm_color_new("222222")
+            local whiteColor = sm_color_new("ffffff")
+            local range = self.drawData.range
+            local rangeFactor = range * 1.1
+
+            local drawer = function(hit, result, x, y)
+                local color = defaultColor
+
+                if hit then
+                    if result.type ~= "limiter" then
+                        local modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
+
+                        if type(mask) == "table" then
+                            color = blackColor
+
+                            for _, string in pairs(mask) do
+                                if result.type == string then
+                                    color = whiteColor
+                                    break
+                                end
+                            end
+                        else
+                            color = result.type == mask and whiteColor or blackColor
+                        end
+
+                        color = color * modifier * (1 - (result.fraction * range / rangeFactor))
+                    end
+                end
+
+                return color
+            end
+
+            local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
+            self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
+        end,
+
+        ---Draws a video to the given display.
+        ---@param display    Display The display to draw it on
+        ---@param sliceWidth integer                The slice width. The bigger, the faster it is to render a frame but with more performance lost.
+        ---@param width      integer?               The width of the video
+        ---@param height     integer?               The height of the video
+        video = function(display, sliceWidth, width, height)
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(sliceWidth, 2, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
+
+            local width1, height1 = display.getDimensions()
+
+            width = width or width1
+            height = height or height1
+
+            local displayId = display.getId()
+            local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
+
+            if rawAdd then
+                rawAdd({100, bufferDodger, "video", sliceWidth, width, height, self.shape.id})
+                bufferDodger = bufferDodger + 1
+            end
+        end,
+
+        ---Draws a video to the given display.
+        ---@param display    Display The display to draw it on
+        ---@param sliceWidth integer                The slice width. The bigger, the faster it is to render a frame but with more performance lost.
+        ---@param width      integer?               The width of the video
+        ---@param height     integer?               The height of the video
+        advancedVideo = function(display, sliceWidth, width, height)
+            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
+            sm_scrapcomputers_errorHandler_assertArgument(sliceWidth, 2, {"integer"})
+            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
+            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
+
+            local width1, height1 = display.getDimensions()
+
+            width = width or width1
+            height = height or height1
+
+            local displayId = display.getId()
+            local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
+
+            if rawAdd then
+                rawAdd({100, bufferDodger, "advancedVideo", sliceWidth, width, height, self.shape.id})
+                bufferDodger = bufferDodger + 1
+            end
         end,
 
         ---Takes a frame and draws it. This allows you to use a custom drawer if you want to modify how the result looks like
@@ -419,69 +666,20 @@ function CameraClass:sv_createData()
 
             local displayId = display.getId()
 
-            if not sm.scrapcomputers.backend.cameraColorCache[displayId] and not self.sv.forced[displayId] then
-                self.sv.forced[displayId] = true
+            if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+                serverVideoCache = {}
             end
 
             if sliceWidth ~= self.sv.lastSliceWidth then
-                self.sv.lastSliceWidth = sliceWidth
-                self.sv.screenSection = 0
-                sm.scrapcomputers.backend.cameraColorCache[displayId] = nil
+                self.lastSliceWidth = sliceWidth
+                self.screenSection = 0
 
-                self:sv_clearCache()
+                self:cl_sv_clearCache()
             end
 
-            local rays, coordinateTbl = self:sv_computeVideoRays(sliceWidth, width, height)
+            local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height)
             self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
-        end,
-
-        ---Takes a depth frame and draws it.
-        ---@param display Display The display to draw it on
-        ---@param focalLength number The focal length
-        ---@param width integer? The width of the frame
-        ---@param height integer? The height of the frame
-        depthFrame = function(display, focalLength, width, height)
-            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
-            sm_scrapcomputers_errorHandler_assertArgument(focalLength, 2, {"integer"})
-            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
-            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
-
-            local width1, height1 = display.getDimensions()
-
-            width = width  or width1
-            height = height or height1
-
-            local rays, coordinateTbl = self:sv_computeFrameRays(width, height)
-            self:sv_drawDepthFrame(rays, coordinateTbl, focalLength, width, height, sm.scrapcomputers.backend.displayCameraDraw[displayId])
-        end,
-
-        ---Takes a masked frame and draws it.
-        ---@param display Display The display to draw it on
-        ---@param mask string The masked string
-        ---@param width integer? The width of the frame
-        ---@param height integer? The height of the frame
-        maskedFrame = function(display, mask, width, height)
-            sm_scrapcomputers_errorHandler_assertArgument(display, 1, {"table"}, {"Display"})
-            sm_scrapcomputers_errorHandler_assertArgument(mask, 2, {"string", "table"})
-            sm_scrapcomputers_errorHandler_assertArgument(width, 3, {"integer", "nil"})
-            sm_scrapcomputers_errorHandler_assertArgument(height, 4, {"integer", "nil"})
-
-            local width1, height1 = display.getDimensions()
-
-            width = width  or width1
-            height = height or height1
-
-            if type(mask) == "table" then
-                for index, str in pairs(mask) do
-                    local strType = type(str)
-
-                    assert(strType == "string", "Bad frame mask value at index #"..index..". Expected string, got "..strType.." instead!")
-                end
-            end
-
-            local rays, coordinateTbl = self:sv_computeFrameRays(width, height)
-            self:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
         -- Sets the range, The bigger. the further you can see
@@ -490,18 +688,18 @@ function CameraClass:sv_createData()
             sm_scrapcomputers_errorHandler_assertArgument(range, nil, {"integer"})
             assert(range > 0, "bad argument #1, range must be above 0")
 
-            self.sv.range = range
-            self:sv_clearCache()
+            self.drawData.range = range
+            self.sv.drawDataUpdate = true
         end,
 
         -- Sets the shadow range. The bigger the range, the further away that shadows are able to be recognised from things blocking the sun at a cost of performance.
-        ---@param range integer The range to set it to
-        setShadowRange = function(range)
+        ---@param shadowRange integer The range to set it to
+        setShadowRange = function(shadowRange)
             sm_scrapcomputers_errorHandler_assertArgument(range, nil, {"integer"})
             assert(range > 0, "bad argument #1, range must be above 0")
 
-            self.sv.shadowRange = range
-            self:sv_clearCache()
+            self.drawData.shadowRange = shadowRange
+            self.sv.drawDataUpdate = true
         end,
 
         ---Sets the FOV
@@ -510,8 +708,8 @@ function CameraClass:sv_createData()
             sm_scrapcomputers_errorHandler_assertArgument(fov, nil, {"integer"})
             assert(fov > 0 and fov <= 120, "bad argument #1, fov out of range")
 
-            self.sv.fov = math.rad(fov)
-            self:sv_clearCache()
+            self.drawData.fov = math.rad(fov)
+            self.sv.drawDataUpdate = true
         end,
 
         ---The x position it would be rendered at
@@ -519,8 +717,8 @@ function CameraClass:sv_createData()
         setOffsetX = function(xOffset)
             sm_scrapcomputers_errorHandler_assertArgument(xOffset, nil, {"integer"})
 
-            self.sv.xOffset = xOffset
-            self:sv_clearCache()
+            self.drawData.xOffset = xOffset
+            self.sv.drawDataUpdate = true
         end,
 
         --The y position it would be rendered at
@@ -528,8 +726,8 @@ function CameraClass:sv_createData()
         setOffsetY = function(yOffset)
             sm_scrapcomputers_errorHandler_assertArgument(yOffset, nil, {"integer"})
 
-            self.sv.yOffset = yOffset
-            self:sv_clearCache()
+            self.drawData.yOffset = yOffset
+            self.sv.drawDataUpdate = true
         end,
 
         --Sets the raycast filter used by the camera
@@ -537,135 +735,171 @@ function CameraClass:sv_createData()
         setFilter = function(raycastFilter)
             sm_scrapcomputers_errorHandler_assertArgument(raycastFilter, nil, {"integer"})
 
-            self.sv.raycastFilter = raycastFilter
-            self:sv_clearCache()
+            self.drawData.raycastFilter = raycastFilter
+            self.sv.drawDataUpdate = true
         end
     }
 end
 
 function CameraClass:server_onCreate()
-    self.sv = {
-        sliceIndex = 1,
-
+    self.drawData = {
         range = 250,
         shadowRange = 100,
-        fov = math.rad(90),
+        fov = math.rad(50),
         xOffset = 0,
         yOffset = 0,
-
-        raycastPreCache = {},
-        cachedCoordinates = {},
-        cachedColors = {},
-        cachedShadows = {},
-
-        screenSection = 0,
         raycastFilter = sm.physics.filter.all,
+    }
 
-        forced = {}
+    self.sliceIndex = 1
+
+    self.sv = {
+        attachedDisplays = {}
     }
 
     sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 1)
 end
 
 function CameraClass:server_onFixedUpdate()
-    local pos = self.shape.worldPosition
-    local rot = self.shape.worldRotation
+    self:cl_sv_checkShapeDelta()
 
-    if self.sv.lastPos ~= pos then
-        self.sv.lastPos = pos
+    if self.sv.drawDataUpdate then
+        self:cl_sv_clearCache()
+        self.sv.drawDataUpdate = false
 
-        self:sv_clearCache()
+        self.network:sendToClients("cl_drawDataUpdate", self.drawData)
     end
 
-    if self.sv.lastRot ~= rot then
-        self.sv.lastRot = rot
-
-        self:sv_clearCache()
-    end
-
-    for displayId in pairs(self.sv.forced) do
+    for displayId in pairs(self.sv.attachedDisplays) do
         if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
-            self.sv.cachedColors[displayId] = {}
-            self.sv.forced[displayId] = nil
+            serverColorCache = {}
         end
     end
 end
 
+function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width, height, displayId, drawPixel)
+    local xOffset = self.drawData.xOffset
+    local yOffset = self.drawData.xOffset
+    
+    local pixelCount = #rays
+    local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
 
-function CameraClass:sv_computeFrameRays(width, height)
-    local rayTbl = {}
-    local coordinateTbl = {}
+    local assert = assert
 
-    local aspectRatio = width / height
+    for i = 1, pixelCount do
+        local data = rays[i]
+        local hit, result = data[1], data[2]
 
-    local position = self.shape.worldPosition
-    local rotation = self.shape.worldRotation
+        local coordinates = coordinateTbl[i]
+        local x, y = coordinates[1], coordinates[2]
+        local coordIndex = coordinateToIndex(x, y, width)
 
-    local tanHalfFovX = math.tan(self.sv.fov / 2)
-    local tanHalfFovY = tanHalfFovX / aspectRatio
+        result = isUnsafeENV and result or makeSafe(result)
 
-    local x, y = 1, 1
-    local range = self.sv.range
-    local filter = self.sv.raycastFilter
-    local type = "ray"
+        local color = drawer(hit, result, x, y) or sm_color_new("000000")
+        local colorType = type(color)
+        local cColor = colorToID(color)
 
-    for i = 1, width * height do
-        local x1 = (2 * (x - 0.5) / width - 1) * tanHalfFovX
-        local y1 = (2 * (y - 0.5) / height - 1) * tanHalfFovY
+        assert(colorType == "Color", "Bad color value at "..x..", "..y..". Expected Color, got "..colorType.." instead!")
 
-        local direction = rotation * sm_vec3_normalize(sm_vec3_new(-x1, -y1, 1))
-
-        rayTbl[i] = {
-            type = type,
-            startPoint = position,
-            endPoint = position + direction * range,
-            mask = filter,
-        }
-
-        coordinateTbl[i] = {x, y}
-
-        x = x + 1
-
-        if x > width then
-            y = y + 1
-            x = 1
+        if not serverColorCache[coordIndex] or not areColorsSimilar(serverColorCache[coordIndex], cColor, threshold) then
+            drawPixel(x + xOffset, y + yOffset, cColor)
+            serverColorCache[coordIndex] = cColor
         end
     end
-
-    return sm.physics.multicast(rayTbl), coordinateTbl
 end
 
-function CameraClass:sv_computeVideoRays(sliceWidth, width, height)
-    if width ~= self.sv.lastWidth then
-        self.sv.lastWidth = width
-        self:sv_clearCache()
+-- CLIENT --
+
+function CameraClass:client_onCreate()
+    self.drawData = {
+        range = 250,
+        shadowRange = 100,
+        fov = math.rad(50),
+        xOffset = 0,
+        yOffset = 0,
+        raycastFilter = sm.physics.filter.all
+    }
+
+    self.sliceIndex = 1
+    self.cl = {}
+   
+    clientSelfs[self.shape.id] = self
+end
+
+function CameraClass:client_onRefresh()
+    clientSelfs = {}
+    clientSelfs[self.shape.id] = self
+end
+
+function CameraClass:client_onFixedUpdate()
+    self:cl_sv_checkShapeDelta()
+end
+
+function CameraClass:cl_drawDataUpdate(tbl)
+    self.drawData = tbl
+    self:cl_sv_clearCache()
+end
+
+function CameraClass:cl_sv_checkShapeDelta()
+    if self.shape.worldPosition ~= self.lastPos then
+        self.lastPos = self.shape.worldPosition
+        self:cl_sv_clearCache()
     end
 
-    if height ~= self.sv.lastHeight then
-        self.sv.lastHeight = height
-        self:sv_clearCache()
+    if self.shape.worldRotation ~= self.lastRot then
+        self.lastRot = self.shape.worldRotation
+        self:cl_sv_clearCache()
+    end
+end
+
+function CameraClass:cl_sv_clearCache()
+    self.raycastPreCache = {}
+    self.cachedCoordinates = {}
+end
+
+-- CLIENT/SERVER --
+
+function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
+    if not self.screenSection then
+        self.sliceIndex = 1
+        self.raycastPreCache = {}
+        self.cachedCoordinates = {}
+        self.cachedColors = {}
+        self.cachedShadows = {}
+        self.screenSection = 0
     end
 
-    self.sv.screenSection = self.sv.screenSection % (width / sliceWidth) + 1
+    if width ~= self.lastWidth then
+        self.lastWidth = width 
+        self:cl_sv_clearCache()
+    end
 
-    if self.sv.raycastPreCache[self.sv.screenSection] then
-        return sm.physics.multicast(self.sv.raycastPreCache[self.sv.screenSection]), self.sv.cachedCoordinates[self.sv.screenSection]
+    if height ~= self.lastHeight then
+        self.lastHeight = height
+        self:cl_sv_clearCache()
+    end
+
+    self.screenSection = self.screenSection % (width / sliceWidth) + 1
+
+    if self.raycastPreCache[self.screenSection] then
+        return sm_physics_multicast(self.raycastPreCache[self.screenSection]), self.cachedCoordinates[self.screenSection]
     end
 
     local rays = {}
     local coordinateTbl = {}
 
     local aspectRatio = width / height
-    local position = self.shape.worldPosition
+    local position = self.shape.worldPosition + self.shape.up * 0.125
     local rotation = self.shape.worldRotation
 
-    local tanHalfFovX = math.tan(self.sv.fov / 2)
+    local tanHalfFovX = math.tan(self.drawData.fov / 2)
     local tanHalfFovY = tanHalfFovX / aspectRatio
-    local range = self.sv.range
+    local range = self.drawData.range
 
-    local filter = self.sv.raycastFilter
+    local filter = self.drawData.raycastFilter
     local type = "ray"
-    local sliceIndex = self.sv.sliceIndex
+    local sliceIndex = self.sliceIndex
 
     local x, y = 1, 1
 
@@ -692,286 +926,60 @@ function CameraClass:sv_computeVideoRays(sliceWidth, width, height)
         end
     end
 
-    self.sv.sliceIndex = self.sv.sliceIndex + sliceWidth
-    if self.sv.sliceIndex > width then
-        self.sv.sliceIndex = 1
+    self.sliceIndex = self.sliceIndex + sliceWidth
+    if self.sliceIndex > width then
+        self.sliceIndex = 1
     end
 
-    self.sv.raycastPreCache[self.sv.screenSection] = rays
-    self.sv.cachedCoordinates[self.sv.screenSection] = coordinateTbl
+    self.raycastPreCache[self.screenSection] = rays
+    self.cachedCoordinates[self.screenSection] = coordinateTbl
 
-    return sm.physics.multicast(rays), coordinateTbl
+    return sm_physics_multicast(rays), coordinateTbl
 end
 
--- DRAWERS --
+function CameraClass:cl_sv_computeFrameRays(width, height)
+    local rayTbl = {}
+    local coordinateTbl = {}
 
-function CameraClass:sv_simpleDraw(rays, coordinateTbl, threshold, width, height, displayId, drawPixel)
-    local pixelCount = #rays
-    local pixels = {}
-    local timeModifier = darknessMap[math.floor(map(sm_game_getTimeOfDay(), 0, 1, 1, #darknessMap))]
+    local aspectRatio = width / height
 
-    local defaultColor = getSkyColor()
+    local position = self.shape.worldPosition + self.shape.up * 0.125
+    local rotation = self.shape.worldRotation
 
-    local xOffset = self.sv.xOffset
-    local yOffset = self.sv.yOffset
+    local tanHalfFovX = math.tan(self.drawData.fov / 2)
+    local tanHalfFovY = tanHalfFovX / aspectRatio
 
-    self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
-    local cachedColors = self.sv.cachedColors[displayId]
-
-    for i = 1, pixelCount do
-        local data = rays[i]
-        local hit, result = data[1], data[2]
-
-        local color = defaultColor
-        local normalModifier = 1
-
-        if hit then
-            if result.type ~= "limiter" then
-                normalModifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.4 + 0.4
-            end
-
-            color = self:sv_getObjCol(result) * timeModifier * normalModifier
-        end
-
-        local coord = coordinateTbl[i]
-        local x, y = coord[1] + xOffset, coord[2] + yOffset
-        local coordIndex = coordinateToIndex(x, y, width)
-
-        if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
-            drawPixel(x, y, color)
-            cachedColors[coordIndex] = color
-        end
-    end
-
-    self.sv.cachedColors[displayId] = cachedColors
-end
-
-function CameraClass:sv_advancedDraw(rays, coordinateTbl, threshold, width, height, displayId, drawPixel)
-    local pixelCount = #rays
-
-    self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
-    self.sv.cachedShadows[displayId] = self.sv.cachedShadows[displayId] or {}
-
-    cachedColors = self.sv.cachedColors[displayId]
-    cachedShadows = self.sv.cachedShadows[displayId]
-
-    local pointTbl = {}
-    local shadowRays = {}
-
-    local time = sm_game_getTimeOfDay()
-    local timeModifier = darknessMap[math.floor(map(time, 0, 1, 1, #darknessMap))]
-    local defaultColor = getSkyColor()
-
-    local shadowRange = self.sv.shadowRange
-    local xOffset = self.sv.xOffset
-    local yOffset = self.sv.yOffset
-    local filter = self.sv.raycastFilter
+    local x, y = 1, 1
+    local range = self.drawData.range
+    local filter = self.drawData.raycastFilter
     local type = "ray"
 
-    local tblIndex = 0
+    for i = 1, width * height do
+        local x1 = (2 * (x - 0.5) / width - 1) * tanHalfFovX
+        local y1 = (2 * (y - 0.5) / height - 1) * tanHalfFovY
 
-    for i = 1, pixelCount do
-        local data = rays[i]
-        local hit, result = data[1], data[2]
-        local pointWorld = result.pointWorld
-        local resultType = result.type
-        local color = defaultColor
-        local modifier = 1
+        local direction = rotation * sm_vec3_normalize(sm_vec3_new(-x1, -y1, 1))
 
-        if hit then
-            if resultType ~= "limiter" then
-                modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.3 + 0.5
-            end
+        rayTbl[i] = {
+            type = type,
+            startPoint = position,
+            endPoint = position + direction * range,
+            mask = filter, 
+        }
 
-            color = self:sv_getObjCol(result, true) * timeModifier * modifier
-         
-            if (resultType == "terrainSurface" or resultType == "terrainAsset") and cachedShadows[formatVec(pointWorld)] then
-                local coordinate = coordinateTbl[i]
-                local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
-                local coordIndex = coordinateToIndex(x, y, width)
+        coordinateTbl[i] = {x, y}
 
-                if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
-                    drawPixel(x, y, color)
-                    cachedColors[coordIndex] = color
-                end
-            else
-                tblIndex = tblIndex + 1
-                pointTbl[tblIndex] = {point = pointWorld, color = color, index = i}
+        x = x + 1
 
-                local startPos = pointWorld + -sunDir * shadowRange
-
-                shadowRays[tblIndex] = {
-                    type = type,
-                    startPoint = startPos,
-                    endPoint = startPos + sunDir * shadowRange,
-                    mask = filter,
-                }
-            end
-        else
-            local coordinate = coordinateTbl[i]
-            local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
-            local coordIndex = coordinateToIndex(x, y, width)
-
-            local finalColor = applySunShader(result, color, time)
-
-            if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], finalColor, threshold)) then
-                drawPixel(x, y, finalColor)
-                cachedColors[coordIndex] = finalColor
-            end
+        if x > width then
+            y = y + 1
+            x = 1
         end
     end
 
-    local shadowResults = sm.physics.multicast(shadowRays)
-
-    for i = 1, tblIndex, 1 do
-        local data = shadowResults[i]
-        local hit, result = data[1], data[2]
-        local pointWorld = result.pointWorld
-        local pointData = pointTbl[i]
-        local pointDataPoint = pointData.point
-        local pointDataColor = pointData.color
-
-        if hit and (pointWorld - pointDataPoint):length() > 0.05 then
-            local type_ = pointData.type
-
-            if type_ == "terrainSurface" or type_ == "terrainAsset" then
-                cachedShadows[formatVec(pointDataPoint)] = true
-            end
-
-            pointDataColor = pointDataColor * shadowMult
-        end
-
-        local coordinate = coordinateTbl[pointData.index]
-        local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
-        local coordIndex = coordinateToIndex(x, y, width)
-
-        if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], pointDataColor, threshold)) then
-            drawPixel(x, y, pointDataColor)
-            cachedColors[coordIndex] = pointDataColor
-        end
-    end
-
-    self.sv.cachedColors[displayId] = cachedColors
-    self.sv.cachedShadows[displayId] = cachedShadows
+    return sm_physics_multicast(rayTbl), coordinateTbl
 end
 
-function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width, height, displayId, drawPixel)
-    local xOffset = self.sv.xOffset
-    local yOffset = self.sv.yOffset
-    
-    local pixelCount = #rays
-    local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
-    
-    self.sv.cachedColors[displayId] = self.sv.cachedColors[displayId] or {}
-    local cachedColors = self.sv.cachedColors[displayId]
-
-    local assert = assert
-
-    for i = 1, pixelCount do
-        local data = rays[i]
-        local hit, result = data[1], data[2]
-
-        local coordinates = coordinateTbl[i]
-        local x, y = coordinates[1], coordinates[2]
-        local coordIndex = coordinateToIndex(x, y, width)
-
-        result = isUnsafeENV and result or makeSafe(result)
-
-        local color = drawer(hit, result, x, y) or sm_color_new("000000")
-        local colorType = type(color)
-
-        assert(colorType == "Color", "Bad color value at "..x..", "..y..". Expected Color, got "..colorType.." instead!")
-
-        if not (cachedColors[coordIndex] and areColorsSimilar(cachedColors[coordIndex], color, threshold)) then
-            drawPixel(x + xOffset, y + yOffset, color)
-            cachedColors[coordIndex] = color
-        end
-    end
-
-    self.sv.cachedColors[displayId] = cachedColors
-end
-
-function CameraClass:sv_drawMaskedFrame(rays, coordinateTbl, mask, width, height, drawPixel)
-    local pixelCount = #rays
-
-    local defaultColor = sm_color_new("000000")
-    local blackColor = sm_color_new("222222")
-    local whiteColor = sm_color_new("ffffff")
-
-    local range = self.sv.range
-    local rangeFactor = range * 1.1
-    local xOffset = self.sv.xOffset
-    local yOffset = self.sv.xOffset
-
-    for i = 1, pixelCount do
-        local data = rays[i]
-        local hit, result = data[1], data[2]
-
-        local color = defaultColor
-
-        if hit then
-            if result.type ~= "limiter" then
-                local modifier = sm_vec3_dot(-sunDir, result.normalWorld) * 0.6 + 0.6
-
-                if type(mask) == "table" then
-                    color = blackColor
-
-                    for _, string in pairs(mask) do
-                        if result.type == string then
-                            color = whiteColor
-                            break
-                        end
-                    end
-                else
-                    color = result.type == mask and whiteColor or blackColor
-                end
-
-                color = color * modifier * (1 - (result.fraction * range / rangeFactor))
-            end
-        end
-
-        local coord = coordinateTbl[i]
-        local x, y = coord[1] + xOffset, coord[2] + yOffset
-
-        drawPixel(x, y, color)
-    end
-end
-
-function CameraClass:sv_drawDepthFrame(rays, coordinateTbl, focalLength, width, height, drawPixel)
-    local pixelCount = #rays
-    local pixels = {}
-    local defaultColor = sm_color_new("000000")
-    local whiteColor = sm_color_new(1, 1, 1)
-
-    local rangeFactor = self.sv.range * 1.1
-    local div = focalLength / rangeFactor
-
-    local xOffset = self.sv.xOffset
-    local yOffset = self.sv.yOffset
-
-    for i = 1, pixelCount do
-        local data = rays[i]
-        local hit, result = data[1], data[2]
-
-        local color = defaultColor
-
-        if hit and result.type ~= "limiter" then
-            color = whiteColor * (1 - (result.fraction / div))
-        end
-
-        local coord = coordinateTbl[i]
-        local x, y = coord[1] + xOffset, coord[2] + yOffset
-
-        drawPixel(x, y, color)
-    end
-
-    return pixels
-end
-
-function CameraClass:sv_clearCache()
-    self.sv.raycastPreCache = {}
-    self.sv.cachedCoordinates = {}
-end
 
 
 sm.scrapcomputers.componentManager.toComponent(CameraClass, "Cameras", true, nil, true)

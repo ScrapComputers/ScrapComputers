@@ -8,22 +8,17 @@ RadarClass.colorNormal = sm.color.new(0xa8604cff)
 RadarClass.colorHighlight = sm.color.new(0xe06d2bff)
 
 -- CLIENT / SERVER --
+local body_getAllBodies = sm.body.getAllBodies
+local player_getAllPlayers = sm.player.getAllPlayers
+local unit_getAllUnits = sm.unit.getAllUnits
+local physics_raycast = sm.physics.raycast
+
+local math_abs = math.abs
+local math_asin = math.asin
+local math_acos = math.acos
+local math_sqrt = math.sqrt
 
 local isSurvival = sm.scrapcomputers.gamemodeManager.isSurvival() or sm.scrapcomputers.config.getConfig("scrapcomputers.global.survivalBehavior").selectedOption == 2
-
--- Returns true of a body is in a creation
----@param body Body The body to find
----@param creation Body[] The body's creations
----@return boolean bodyInCreation If true, the body is in the creation. else not!
-local function isBodyInCreation(body, creation)
-    for _, cBody in pairs(creation) do
-        if cBody.id == body.id then
-            return true
-        end
-    end
-
-    return false
-end
 
 -- SERVER --
 
@@ -72,68 +67,91 @@ function RadarClass:server_onFixedUpdate()
     sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 30)
 end
 
+local function getCreationPosition(body)
+    local minBound, maxBound
+
+    for _, body in pairs(body:getCreationBodies()) do
+        local _min, _max = body:getWorldAabb()
+
+        if not minBound then
+            minBound = _min
+            maxBound = _max
+        else
+            minBound = minBound:min(_min)
+            maxBound = maxBound:max(_max)
+        end
+    end
+
+    return minBound + (maxBound - minBound) / 2
+end
+
 function RadarClass:sv_calculateTargets()
-    local bodies = sm.body.getAllBodies()
-    local players = sm.player.getAllPlayers()
-    local units = sm.unit.getAllUnits()
+    local bodies = body_getAllBodies()
+    local players = player_getAllPlayers()
+    local units = unit_getAllUnits()
 
-    local losCreations = {} ---@type Body[][]
-    local losCreationsCheck
-    local losUnits = {} ---@type Unit|Player[][]
-    local losUnitsCheck
+    local losCreations = {}
+    local creationPoss = {}
+    local losUnits = {}
 
-    local radarPos = self.shape.worldPosition
-    local radarAt = sm.quat.getAt(self.shape.worldRotation)
-    local radarUp = sm.quat.getUp(self.shape.worldRotation)
+    local shape = self.shape
+    local interp = shape.worldPosition - shape:getInterpolatedWorldPosition()
+    local radarPos = shape.worldPosition + interp
+    local radarRot = shape.worldRotation
+    local radarAt = sm.quat.getAt(radarRot)
+    local radarUp = sm.quat.getUp(radarRot)
 
-    local vAngleRad = math.rad(self.sv.vAngle / 2)
-    local hAngleRad = math.rad(self.sv.hAngle / 2)
+    local vAngleRad = math.rad(self.sv.vAngle * 0.5)
+    local hAngleRad = math.rad(self.sv.hAngle * 0.5)
     local surfaceAreaBound = self.sv.hAngle * self.sv.vAngle / 80
 
-    for _, body in pairs(bodies) do
-        local bool = isBodyInCreation(body, self.shape.body:getCreationBodies())
+    local localCreationId = shape.body:getCreationId()
 
-        if not bool then
-            for _, creation in pairs(losCreations) do
-                bool = isBodyInCreation(body, creation)
+    for i = 1, #bodies do
+        local body = bodies[i]
+        local creationId = body:getCreationId()
 
-                if bool then break end
-            end
-        end
+        if creationId ~= localCreationId and not losCreations[creationId] then
+            local creationPos = getCreationPosition(body)
+            local diff = creationPos - radarPos
+            local dist = diff:length()
 
-        if not bool then
-            local bodyPos = body:getShapes()[1].worldPosition
-            local dir = bodyPos - radarPos
+            if dist > 0 then
+                local dir = diff / dist
 
-            if dir:length() ~= 0 then
-                local distance = dir:length()
-                dir = dir:normalize()
-
-                local verticalAngle = math.asin(dir:dot(radarUp))
-
-                if math.abs(verticalAngle) > vAngleRad then
+                if radarAt:dot(dir) <= 0 then
                     goto continue
                 end
 
-                local horizontalDir = dir - radarUp * dir:dot(radarUp)
-                local horizontalAngle = math.acos(radarAt:dot(horizontalDir:normalize()))
+                local vDot = dir:dot(radarUp)
+                local vAngle = math_abs(math_asin(vDot))
 
-                if horizontalAngle > hAngleRad then
-                    goto continue
-                end
+                if vAngle <= vAngleRad then
+                    local hDir = dir - radarUp * vDot
+                    local hLen = hDir:length()
 
-                local hit, res = sm.physics.raycast(radarPos, radarPos + dir * distance, self.shape.body)
+                    if hLen > 0 then
+                        hDir = hDir / hLen
+                        if math_acos(radarAt:dot(hDir)) <= hAngleRad then
+                            local shape0 = body:getShapes()[1]
+                            local bInterp = shape0.worldPosition - shape0:getInterpolatedWorldPosition()
 
-                if hit then
-                    if res.type == "body" then
-                        local resBody = res:getBody()
-                        local bool1 = isBodyInCreation(resBody, body:getCreationBodies())
+                            local hit, res = physics_raycast(
+                                radarPos,
+                                creationPos + bInterp,
+                                shape.body
+                            )
 
-                        local creationId = resBody:getCreationId()
+                            if hit and res.type == "body" then
+                                local resBody = res:getBody()
+                                local cid = resBody:getCreationId()
 
-                        if bool1 and not losCreations[creationId] then
-                            losCreations[creationId] = resBody:getCreationBodies()
-                            losCreationsCheck = true
+                                if not losCreations[cid] then
+                                    losCreations[cid] = resBody:getCreationBodies()
+                                    creationPoss[cid] = creationPos
+                                    losCreationsCheck = true
+                                end
+                            end
                         end
                     end
                 end
@@ -146,176 +164,110 @@ function RadarClass:sv_calculateTargets()
     local function unitCheck(unit)
         local character = unit.character
         if not character then return end
-        
-        local characterPos = character.worldPosition
-        local dir = characterPos - radarPos
 
-        if dir:length() ~= 0 then
-            local distance = dir:length()
-            dir = dir:normalize()
+        local diff = character.worldPosition - radarPos
+        local dist = diff:length()
+        if dist <= 0 then return end
 
-            local verticalAngle = math.asin(dir:dot(radarUp))
+        local dir = diff / dist
 
-            if math.abs(verticalAngle) > vAngleRad then
-                return
-            end
+        if radarAt:dot(dir) <= 0 then return end
 
-            local horizontalDir = dir - radarUp * dir:dot(radarUp)
-            local horizontalAngle = math.acos(radarAt:dot(horizontalDir:normalize()))
+        local vDot = dir:dot(radarUp)
+        if math_abs(math_asin(vDot)) > vAngleRad then return end
 
-            if horizontalAngle > hAngleRad then
-                return
-            end
+        local hDir = dir - radarUp * vDot
+        local hLen = hDir:length()
+        if hLen <= 0 then return end
 
-            local hit, res = sm.physics.raycast(radarPos, radarPos + dir * distance, self.shape.body)
+        hDir = hDir / hLen
+        if math_acos(radarAt:dot(hDir)) > hAngleRad then return end
 
-            if hit then
-                if res.type == "character" then
-                    losUnits[unit.id] = unit
-                    losUnitsCheck = true
-                end
-            end
+        local hit, res = physics_raycast(radarPos, radarPos + dir * dist, shape.body)
+        if hit and res.type == "character" then
+            losUnits[unit.id] = unit
         end
     end
 
-    for _, player in pairs(players) do
-        unitCheck(player)
-    end
-
-    for _, unit in pairs(units) do
-        unitCheck(unit)
-    end
-
-    local validTargets = {}
-
-    if losUnitsCheck or losCreationsCheck then
-        for _, creation in pairs(losCreations) do
-            local minBound ---@type Vec3?
-            local maxBound ---@type Vec3?
-
-            for _, body in pairs(creation) do
-                if sm.exists(body) then
-                    local min, max = body:getLocalAabb()
-
-                    if not minBound then
-                        minBound = min
-                        maxBound = max
-                    else
-                        minBound = minBound:min(min)
-                        maxBound = maxBound:max(max)
-                    end
-                end
-            end
-
-            if maxBound and minBound then
-                local averagePos = sm.vec3.zero()
-
-                for _, body in pairs(creation) do
-                    averagePos = averagePos + body:getCenterOfMassPosition()
-                end
-
-                averagePos = averagePos / #creation
-
-                local distance = (self.shape.worldPosition - averagePos):length() ---@type number
-
-                local bb = maxBound - minBound
-                local surfaceArea = ((bb.x * bb.z + bb.x * bb.y + bb.z * bb.y) / 2 / math.sqrt(distance)) * 8
-
-                if surfaceArea > surfaceAreaBound or distance < 200 then
-                    local creationId = creation[1]:getCreationId()
-
-                    if not sm.scrapcomputers.backend.radarTargets[creationId] then
-                        sm.scrapcomputers.backend.radarTargets[creationId] = {}
-                    end
-
-                    local position = self.shape.worldPosition
-
-                    if isSurvival then
-                        local noise = sm.scrapcomputers.vector3.randomNoise(20)
-                        position = position + (noise - noise / 2)
-                    end
-
-                    sm.scrapcomputers.backend.radarTargets[creationId][self.shape.id] = position
-                    table.insert(validTargets, {creation, surfaceArea, "creation"})
-                end
-            end
-        end
-
-        for _, unit in pairs(losUnits) do
-            local character = unit.character
-            local distance = (self.shape.worldPosition - character.worldPosition):length()
-            local surfaceArea = (character:getHeight() * character.mass) / math.sqrt(distance)
-
-            if surfaceArea > surfaceAreaBound or distance < 200 then
-                table.insert(validTargets, {unit, surfaceArea, "unit"})
-            end
-        end
-    end
+    for i = 1, #players do unitCheck(players[i]) end
+    for i = 1, #units do unitCheck(units[i]) end
 
     local finalTargets = {}
 
-    if #validTargets > 0 then
-        for _, data in pairs(validTargets) do
-            local type = data[3]
+    for creationId, creation in pairs(losCreations) do
+        local minBound, maxBound
+        local isDynamic = true
+        local mass = 0
 
-            if type == "creation" then
-                local creation, surfaceArea = unpack(data) ---@type Body[], number
-                local averagePos = sm.vec3.zero()
-                local averageVelo = sm.vec3.zero()
-                local mass = 0
-                local isDynamic = true
+        for i = 1, #creation do
+            local body = creation[i]
+            if sm.exists(body) then
+                local min, max = body:getLocalAabb()
+                minBound = minBound and minBound:min(min) or min
+                maxBound = maxBound and maxBound:max(max) or max
 
-                for _, body in pairs(creation) do
-                    averagePos = averagePos + body:getCenterOfMassPosition()
-                    averageVelo = averageVelo + body.velocity
-                    mass = mass + body.mass / 10
-
-                    if isDynamic and body:isStatic() then
-                        isDynamic = false
-                    end
+                if isDynamic and body:isStatic() then
+                    isDynamic = false
                 end
 
-                averagePos = averagePos / #creation
-                averageVelo = averageVelo / #creation
-
-                if isSurvival then
-                    local noise = sm.scrapcomputers.vector3.randomNoise(10)
-                    averagePos = averagePos + (noise - noise / 2)
-                end
-
-                table.insert(finalTargets, {
-                    position = averagePos, 
-                    velocity = averageVelo, 
-                    isDynamic = isDynamic, 
-                    mass = mass, 
-                    surfaceArea = surfaceArea, 
-                    type = type, 
-                    id = creation[1]:getCreationId()
-                })
-            elseif type == "unit" then
-                local unit, surfaceArea = unpack(data)
-                local character = unit.character
-                local position = character.worldPosition
-
-                if isSurvival then
-                    local noise = sm.scrapcomputers.vector3.randomNoise(10)
-                    position = position + (noise - noise / 2)
-                end
-
-                table.insert(finalTargets, {
-                    position = position, 
-                    velocity = character.velocity,
-                    isDynamic = true,
-                    mass = character.mass, 
-                    surfaceArea = surfaceArea, 
-                    type = type, 
-                    id = unit.id
-                })
+                mass = mass + body.mass
             end
+        end
+
+        local position = creationPoss[creationId]
+        local distance = (shape.worldPosition - position):length()
+        local bb = maxBound - minBound
+
+        local surfaceArea =
+            ((bb.x * bb.z + bb.x * bb.y + bb.z * bb.y) / 2 / math_sqrt(distance)) * 8
+
+        if surfaceArea > surfaceAreaBound or distance < 200 then
+            if not sm.scrapcomputers.backend.radarTargets[creationId] then
+                sm.scrapcomputers.backend.radarTargets[creationId] = {}
+            end
+
+            local sPosition = shape.worldPosition
+            if isSurvival then
+                local noise = sm.scrapcomputers.vector3.randomNoise(20)
+                sPosition = sPosition + (noise - noise / 2)
+            end
+
+            sm.scrapcomputers.backend.radarTargets[creationId][shape.id] = sPosition
+
+            finalTargets[#finalTargets + 1] = {
+                position = position,
+                velocity = creation[1].velocity,
+                isDynamic = isDynamic,
+                mass = mass,
+                surfaceArea = surfaceArea,
+                type = "creation",
+                id = creationId
+            }
+        end
+    end
+
+    for _, unit in pairs(losUnits) do
+        local c = unit.character
+        local pos = c.worldPosition
+        local dist = (shape.worldPosition - pos):length()
+        local surfaceArea = (c:getHeight() * c.mass) / math_sqrt(dist)
+
+        if surfaceArea > surfaceAreaBound or dist < 200 then
+            finalTargets[#finalTargets + 1] = {
+                position = pos,
+                velocity = c.velocity,
+                isDynamic = true,
+                mass = c.mass,
+                surfaceArea = surfaceArea,
+                type = "unit",
+                id = unit.id
+            }
         end
     end
 
     return finalTargets
 end
+
+
 
 sm.scrapcomputers.componentManager.toComponent(RadarClass, "Radars", true, nil, true)

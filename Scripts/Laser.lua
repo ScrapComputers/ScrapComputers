@@ -57,14 +57,9 @@ function LaserClass:sv_onPowerLoss()
 end
 
 function LaserClass:server_onCreate()
-    -- Server side variables
     self.sv = {
         distance = 1000,
-        laserVisibility = true,
-        lastVisible = true,
-        ignoreCurrentBody = false,
-        hit = false,
-        res = nil, ---@type RaycastResult 
+        laserVisibility = true
     }
 end
 
@@ -125,8 +120,7 @@ end
 
 function LaserClass:client_onCreate()
     self.cl = {
-        effect = sm.effect.createEffect("ShapeRenderable", self.interactable),
-        laserVisibility = true
+        effect = sm.effect.createEffect("ShapeRenderable", self.interactable)
     }
 
     self.cl.effect:setParameter("color", sm.color.new("ee0000"))
@@ -137,16 +131,22 @@ function LaserClass:client_onCreate()
 end
 
 function LaserClass:cl_updateEffect(data)
-    self.cl.effect:setScale(data.scale)
-    self.cl.effect:setOffsetPosition(data.offset)
+    if sm.exists(self.cl.effect) then
+        self.cl.effect:setScale(data.scale)
+        self.cl.effect:setOffsetPosition(data.offset)
+    else
+        self:client_onCreate()
+    end
 end
 
 function LaserClass:cl_setVis(bool)
-    if not self.cl.effect:isPlaying() and bool then
+    local isPlaying = self.cl.effect:isPlaying()
+
+    if isPlaying and not bool then
+        self.cl.effect:stop()
+    elseif not isPlaying and bool then
         self.cl.effect:start()
-        return
     end
-    self.cl.effect:stop()
 end
 
 sm.scrapcomputers.componentManager.toComponent(LaserClass, "Lasers", true, nil, true)

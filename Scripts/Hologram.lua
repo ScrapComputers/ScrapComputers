@@ -331,7 +331,7 @@ function HologramClass:sv_createData()
             local bb = largestCorner - smallestCorner
             local center = bb / 2 + smallestCorner
             local v1 = bb.y / 2
-            
+
             if v1 ~= v1 then v1 = 0 end
 
             local modify = center - sm.vec3.new(0, v1, 0)
@@ -445,6 +445,8 @@ function HologramClass:cl_killEmAll()
             effect:destroy()
         end
     end
+
+    self.cl.effects = {}
 end
 
 ---@param data {[1]: table, [2]: integer} The data

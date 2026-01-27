@@ -119,7 +119,7 @@ function SeatControllerClass:client_onFixedUpdate()
             local seatedCharacter = singleParent:getSeatCharacter()
 
             if seatedCharacter and seatedCharacter == character then
-                self.network:sendToServer("sv_setCameraInfo", {camera.getPosition(), camera.getDefaultRotation(), localPlayer.getDirection(), camera.getDefaultFov()})
+                self.network:sendToServer("sv_setCameraInfo", {camera.getDefaultPosition() + seatedCharacter.velocity * 0.025, camera.getDefaultRotation(), localPlayer.getDirection(), camera.getDefaultFov()})
             end
         end
     end
