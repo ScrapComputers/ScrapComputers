@@ -343,7 +343,7 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
 
     -- Super duper cool camera only function, (and maybe addon posibilities)
     sm.scrapcomputers.backend.displayCameraDraw[displayID] = function(x, y, color)
-        drawBuffer[(y - 1) * displayWidth + x] = bit_bor(bit_lshift(math_floor(color.r * 255), 16), bit_lshift(math_floor(color.g * 255), 8), math_floor(color.b * 255))
+        drawBuffer[(y - 1) * displayWidth + x] = color
     end
 
     output.drawPixel = function(x, y, color)

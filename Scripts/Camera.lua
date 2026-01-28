@@ -259,7 +259,7 @@ local function makeSafe(result)
     }
 end
 
-local function simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
+local function simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, cacheTable, threshold, fromVD)
     local pixelCount = #rays
     local timeModifier = darknessMap[math.floor(map(sm_game_getTimeOfDay(), 0, 1, 1, #darknessMap))]
     local defaultColor = getSkyColor()
@@ -281,16 +281,20 @@ local function simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, widt
         local coord = coordinateTbl[i]
         local x, y = coord[1] + xOffset, coord[2] + yOffset
         local index = (y - 1) * width + x
-        local dColor = fullBuffer[index]
+        local dColor = cacheTable[index]
         local cColor = colorToID(color)
 
         if not dColor or not areColorsSimilar(dColor, cColor, threshold) then
             drawPixel(x, y, cColor)
+
+            if fromVD then
+                cacheTable[index] = cColor
+            end
         end
     end
 end
 
-local function advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, shadowRange, filter)
+local function advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, cacheTable, threshold, shadowRange, filter, fromVD)
     local pixelCount = #rays
     local pointTbl = {}
     local shadowRays = {}
@@ -321,11 +325,15 @@ local function advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, wi
                 local coordinate = coordinateTbl[i]
                 local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
                 local coordIndex = coordinateToIndex(x, y, width)
-                local dColor = fullBuffer[coordIndex]
+                local dColor = cacheTable[coordIndex]
                 local cColor = colorToID(color)
 
-                if not dColor or not areColorsSimilar(colodColor, cColor, threshold) then
+                if not dColor or not areColorsSimilar(dColor, cColor, threshold) then
                     drawPixel(x, y, cColor)
+
+                    if fromVD then
+                        cacheTable[coordIndex] = cColor
+                    end
                 end
             else
                 tblIndex = tblIndex + 1
@@ -346,11 +354,15 @@ local function advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, wi
             local coordIndex = coordinateToIndex(x, y, width)
 
             local finalColor = applySunShader(result, color, time)
-            local dColor = fullBuffer[coordIndex]
+            local dColor = cacheTable[coordIndex]
             local cColor = colorToID(finalColor)
 
             if not dColor or not areColorsSimilar(dColor, cColor, threshold) then
                 drawPixel(x, y, cColor)
+
+                if fromVD then
+                    cacheTable[coordIndex] = cColor
+                end
             end
         end
     end
@@ -378,11 +390,15 @@ local function advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, wi
         local coordinate = coordinateTbl[pointData.index]
         local x, y = coordinate[1] + xOffset, coordinate[2] + yOffset
         local coordIndex = coordinateToIndex(x, y, width)
-        local dColor = fullBuffer[coordIndex]
+        local dColor = cacheTable[coordIndex]
         local cColor = colorToID(pointDataColor)
 
         if not dColor or not areColorsSimilar(dColor, cColor, threshold) then
             drawPixel(x, y, cColor)
+
+            if fromVD then
+                cacheTable[coordIndex] = cColor
+            end
         end
     end
 end
@@ -439,11 +455,23 @@ function CameraClass:sv_createData()
             height = height or height1
 
             local displayId = display.getId()
-            local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
 
-            if rawAdd then
-                rawAdd({101, bufferDodger, "frame", width, height, self.shape.id})
-                bufferDodger = bufferDodger + 1
+            if displayId > 0 then
+                local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
+
+                if rawAdd then
+                    rawAdd({101, bufferDodger, "frame", width, height, self.shape.id})
+                    bufferDodger = bufferDodger + 1
+                end
+            else
+                if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
+                    sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+                    self.sv.attachedDisplays[displayId] = true
+                    serverColorCache = {}
+                end
+
+                local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
+                simpleDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache, display.getOptimizationThreshold(), true)
             end
         end,
 
@@ -462,11 +490,23 @@ function CameraClass:sv_createData()
             height = height or height1
 
             local displayId = display.getId()
-            local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
 
-            if rawAdd then
-                rawAdd({101, bufferDodger, "advancedFrame", width, height, self.shape.id})
-                bufferDodger = bufferDodger + 1
+            if displayId > 0 then
+                local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
+
+                if rawAdd then
+                    rawAdd({101, bufferDodger, "advancedFrame", width, height, self.shape.id})
+                    bufferDodger = bufferDodger + 1
+                end
+            else
+                if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
+                    sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+                    self.sv.attachedDisplays[displayId] = true
+                    serverColorCache = {}
+                end
+
+                local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
+                advancedDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache, display.getOptimizationThreshold(), self.drawData.shadowRange, self.drawData.raycastFilter, true)
             end
         end,
 
@@ -490,7 +530,8 @@ function CameraClass:sv_createData()
 
             if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
-                serverVideoCache = {}
+                self.sv.attachedDisplays[displayId] = true
+                serverColorCache = {}
             end
 
             local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
@@ -518,7 +559,7 @@ function CameraClass:sv_createData()
             if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                 self.sv.attachedDisplays[displayId] = true
-                serverVideoCache = {}
+                serverColorCache = {}
             end
 
             local range = self.drawData.range
@@ -556,7 +597,7 @@ function CameraClass:sv_createData()
             if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                 self.sv.attachedDisplays[displayId] = true
-                serverVideoCache = {}
+                serverColorCache = {}
             end
 
             local defaultColor = sm_color_new("000000")
@@ -613,11 +654,30 @@ function CameraClass:sv_createData()
             height = height or height1
 
             local displayId = display.getId()
-            local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
 
-            if rawAdd then
-                rawAdd({100, bufferDodger, "video", sliceWidth, width, height, self.shape.id})
-                bufferDodger = bufferDodger + 1
+            if displayId > 0 then
+                local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
+
+                if rawAdd then
+                    rawAdd({100, bufferDodger, "video", sliceWidth, width, height, self.shape.id})
+                    bufferDodger = bufferDodger + 1
+                end
+            else
+                if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
+                    sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+                    self.sv.attachedDisplays[displayId] = true
+                    serverColorCache = {}
+                end
+
+                if sliceWidth ~= self.sv.lastSliceWidth then
+                    self.lastSliceWidth = sliceWidth
+                    self.screenSection = 0
+
+                    self:cl_sv_clearCache()
+                end
+
+                local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height)
+                simpleDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache, display.getOptimizationThreshold(), true)
             end
         end,
 
@@ -638,11 +698,30 @@ function CameraClass:sv_createData()
             height = height or height1
 
             local displayId = display.getId()
-            local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
 
-            if rawAdd then
-                rawAdd({100, bufferDodger, "advancedVideo", sliceWidth, width, height, self.shape.id})
-                bufferDodger = bufferDodger + 1
+            if displayId > 0 then
+                local rawAdd = sm.scrapcomputers.backend.displayRawAdd[displayId]
+
+                if rawAdd then
+                    rawAdd({100, bufferDodger, "advancedVideo", sliceWidth, width, height, self.shape.id})
+                    bufferDodger = bufferDodger + 1
+                end
+            else
+                if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
+                    sm.scrapcomputers.backend.cameraColorCache[displayId] = true
+                    self.sv.attachedDisplays[displayId] = true
+                    serverColorCache = {}
+                end
+
+                if sliceWidth ~= self.sv.lastSliceWidth then
+                    self.lastSliceWidth = sliceWidth
+                    self.screenSection = 0
+
+                    self:cl_sv_clearCache()
+                end
+
+                local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height)
+                advancedDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache, display.getOptimizationThreshold(), self.drawData.shadowRange, self.drawData.raycastFilter, true)
             end
         end,
 
@@ -668,7 +747,8 @@ function CameraClass:sv_createData()
 
             if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
-                serverVideoCache = {}
+                self.sv.attachedDisplays[displayId] = true
+                serverColorCache = {}
             end
 
             if sliceWidth ~= self.sv.lastSliceWidth then
@@ -773,6 +853,7 @@ function CameraClass:server_onFixedUpdate()
     for displayId in pairs(self.sv.attachedDisplays) do
         if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
             serverColorCache = {}
+            self.sv.attachedDisplays[displayId] = nil
         end
     end
 end
@@ -868,10 +949,12 @@ function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
         self.cachedColors = {}
         self.cachedShadows = {}
         self.screenSection = 0
+        self.totalSlices = math.ceil(width / sliceWidth)
     end
 
     if width ~= self.lastWidth then
-        self.lastWidth = width 
+        self.lastWidth = width
+        self.totalSlices = math.ceil(width / sliceWidth)
         self:cl_sv_clearCache()
     end
 
@@ -880,10 +963,11 @@ function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
         self:cl_sv_clearCache()
     end
 
-    self.screenSection = self.screenSection % (width / sliceWidth) + 1
+    self.screenSection = self.screenSection % self.totalSlices + 1
 
     if self.raycastPreCache[self.screenSection] then
-        return sm_physics_multicast(self.raycastPreCache[self.screenSection]), self.cachedCoordinates[self.screenSection]
+        return sm_physics_multicast(self.raycastPreCache[self.screenSection]),
+               self.cachedCoordinates[self.screenSection]
     end
 
     local rays = {}
@@ -899,12 +983,17 @@ function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
 
     local filter = self.drawData.raycastFilter
     local type = "ray"
-    local sliceIndex = self.sliceIndex
+
+    local sliceStart = self.sliceIndex
+    local sliceEnd = math.min(sliceStart + sliceWidth - 1, width)
+    local actualSliceWidth = sliceEnd - sliceStart + 1
 
     local x, y = 1, 1
 
-    for i = 1, sliceWidth * height do
-        local x1 = (2 * (sliceIndex + x - 1.5) / width - 1) * tanHalfFovX
+    for i = 1, actualSliceWidth * height do
+        local screenX = sliceStart + x - 1
+
+        local x1 = (2 * (screenX - 0.5) / width - 1) * tanHalfFovX
         local y1 = (2 * (y - 0.5) / height - 1) * tanHalfFovY
 
         local direction = sm_vec3_normalize(rotation * sm_vec3_new(-x1, -y1, 1))
@@ -916,11 +1005,10 @@ function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
             mask = filter
         }
 
-        coordinateTbl[i] = {sliceIndex + x - 1, y}
+        coordinateTbl[i] = { screenX, y }
 
         x = x + 1
-
-        if x > sliceWidth then
+        if x > actualSliceWidth then
             x = 1
             y = y + 1
         end
@@ -936,6 +1024,7 @@ function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
 
     return sm_physics_multicast(rays), coordinateTbl
 end
+
 
 function CameraClass:cl_sv_computeFrameRays(width, height)
     local rayTbl = {}
