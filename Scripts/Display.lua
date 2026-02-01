@@ -59,6 +59,7 @@ DisplayClass.colorHighlight = sm_color_new(0x969696ff)
 
 -- CLIENT/SERVER --
 
+sm.scrapcomputers.backend.displayCameraDraw = sm.scrapcomputers.backend.displayCameraDraw or {}
 sm.scrapcomputers.backend.displayRawAdd = sm.scrapcomputers.backend.displayRawAdd or {}
 
 local localPlayer = sm.localPlayer
@@ -684,15 +685,7 @@ function DisplayClass:sv_createData()
                 pixelScale.z
             )
 
-            if not self.sv.xLerp then
-                self.sv.xLerp = x
-                self.sv.yLerp = y
-            else
-                self.sv.xLerp = sm.util.lerp(self.sv.xLerp, x, 0.4)
-                self.sv.yLerp = sm.util.lerp(self.sv.yLerp, y, 0.4)
-            end
-
-            return self.sv.xLerp, self.sv.yLerp
+            return x, y
         end,
 
 
@@ -1743,7 +1736,8 @@ function DisplayClass:cl_pushData()
     local totalLen = #data
     local searchIndex = 1
 
-    local videoHook, frameHook = sm.scrapcomputers.backend.cameraVideoHook, sm.scrapcomputers.backend.cameraFrameHook
+    local videoHook, frameHook = sm.scrapcomputers.backend.cameraVideoHooks, sm.scrapcomputers.backend.cameraFrameHooks
+    local shapeId = self.shape.id
 
     while searchIndex < totalLen do
         local action = data[searchIndex]
@@ -1765,9 +1759,32 @@ function DisplayClass:cl_pushData()
         elseif action == 8 then
             drawWithPoints(data[searchIndex + 1], data[searchIndex + 2])
         elseif action == 100 then
-            videoHook({data[searchIndex + 1], data[searchIndex + 2], data[searchIndex + 3], data[searchIndex + 4], data[searchIndex + 5], data[searchIndex + 6]}, addPixel, fullBuffer, threshold)
+            videoHook[data[searchIndex + 6]](
+                {
+                    data[searchIndex + 1], 
+                    data[searchIndex + 2], 
+                    data[searchIndex + 3], 
+                    data[searchIndex + 4], 
+                    data[searchIndex + 5]
+                }, 
+                addPixel, 
+                fullBuffer, 
+                threshold, 
+                shapeId
+            )
         elseif action == 101 then
-            frameHook({data[searchIndex + 1], data[searchIndex + 2], data[searchIndex + 3], data[searchIndex + 4], data[searchIndex + 5]}, addPixel, fullBuffer, threshold)
+            frameHook[data[searchIndex + 5]](
+                {
+                    data[searchIndex + 1], 
+                    data[searchIndex + 2],
+                    data[searchIndex + 3], 
+                    data[searchIndex + 4]
+                }, 
+                addPixel, 
+                fullBuffer, 
+                threshold, 
+                shapeId
+            )
         end
 
         searchIndex = searchIndex + dataCountLookup[action] + 1
@@ -2233,6 +2250,33 @@ function DisplayClass:cl_pushData()
             dataChange[effectData] = nil
             pixels[index] = nil
         end
+    end
+
+    local function meshBuffer(index, color)
+        local mSx = 1
+        local x, y = (index - 1) % width + 1, math_floor((index - 1) / width) + 1
+
+        for x1 = x, width do
+            local testColor = fullBuffer[(y - 1) * width + x1]
+
+            if not testColor or testColor ~= color then
+                break
+            end
+
+            mSx = mSx + 1
+        end
+
+        local x1, y1, mx = x, y + 1, x + mSx - 1
+
+        for _ = 1, mSx * height - y do
+            local testColor = fullBuffer[(y1 - 1) * width + x1]
+
+            if not testColor or testColor ~= color then
+                break
+            end
+        end
+
+        return mSx, y1 - y
     end
 
     if (not hasUpdated and hasCleared) or not next(updatedPoints) then

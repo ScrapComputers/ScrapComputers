@@ -403,36 +403,8 @@ local function advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, wi
     end
 end
 
-local clientSelfs = {}
-
-sm.scrapcomputers.backend.cameraVideoHook = function(data, drawPixel, fullBuffer, threshold)
-    local _, _type, sliceWidth, width, height, shapeId = unpack(data)
-    local cameraSelf = clientSelfs[shapeId]
-    if not cameraSelf or not cameraSelf.drawData then return end
-    local xOffset, yOffset = cameraSelf.drawData.xOffset, cameraSelf.drawData.yOffset
-    local rays, coordinateTbl = cameraSelf:cl_sv_computeVideoRays(sliceWidth, width, height)
-
-    if _type == "video" then
-        simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
-    elseif _type == "advancedVideo" then
-        advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, cameraSelf.drawData.shadowRange, cameraSelf.drawData.raycastFilter)
-    end 
-end
-
-sm.scrapcomputers.backend.cameraFrameHook = function(data, drawPixel, fullBuffer, threshold)
-    local _, _type, width, height, shapeId = unpack(data)
-    local cameraSelf = clientSelfs[shapeId]
-    if not cameraSelf or not cameraSelf.drawData then return end
-
-    local xOffset, yOffset = cameraSelf.drawData.xOffset, cameraSelf.drawData.yOffset
-    local rays, coordinateTbl = cameraSelf:cl_sv_computeFrameRays(width, height)
-
-    if _type == "frame" then
-        simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
-    elseif _type == "advancedFrame" then
-        advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, cameraSelf.drawData.shadowRange, cameraSelf.drawData.raycastFilter)
-    end
-end
+sm.scrapcomputers.backend.cameraVideoHooks = sm.scrapcomputers.backend.cameraVideoHooks or {}
+sm.scrapcomputers.backend.cameraFrameHooks = sm.scrapcomputers.backend.cameraFrameHooks or {}
 
 -- SERVER --
 
@@ -467,11 +439,11 @@ function CameraClass:sv_createData()
                 if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                     sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                     self.sv.attachedDisplays[displayId] = true
-                    serverColorCache = {}
+                    serverColorCache[displayId] = {}
                 end
 
                 local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
-                simpleDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache, display.getOptimizationThreshold(), true)
+                simpleDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache[displayId], display.getOptimizationThreshold(), true)
             end
         end,
 
@@ -502,11 +474,11 @@ function CameraClass:sv_createData()
                 if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                     sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                     self.sv.attachedDisplays[displayId] = true
-                    serverColorCache = {}
+                    serverColorCache[displayId] = {}
                 end
 
                 local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
-                advancedDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache, display.getOptimizationThreshold(), self.drawData.shadowRange, self.drawData.raycastFilter, true)
+                advancedDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache[displayId], display.getOptimizationThreshold(), self.drawData.shadowRange, self.drawData.raycastFilter, true)
             end
         end,
 
@@ -531,7 +503,7 @@ function CameraClass:sv_createData()
             if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                 self.sv.attachedDisplays[displayId] = true
-                serverColorCache = {}
+                serverColorCache[displayId] = {}
             end
 
             local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
@@ -559,7 +531,7 @@ function CameraClass:sv_createData()
             if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                 self.sv.attachedDisplays[displayId] = true
-                serverColorCache = {}
+                serverColorCache[displayId] = {}
             end
 
             local range = self.drawData.range
@@ -597,7 +569,7 @@ function CameraClass:sv_createData()
             if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                 self.sv.attachedDisplays[displayId] = true
-                serverColorCache = {}
+                serverColorCache[displayId] = {}
             end
 
             local defaultColor = sm_color_new("000000")
@@ -666,7 +638,7 @@ function CameraClass:sv_createData()
                 if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                     sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                     self.sv.attachedDisplays[displayId] = true
-                    serverColorCache = {}
+                    serverColorCache[displayId] = {}
                 end
 
                 if sliceWidth ~= self.sv.lastSliceWidth then
@@ -676,8 +648,8 @@ function CameraClass:sv_createData()
                     self:cl_sv_clearCache()
                 end
 
-                local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height)
-                simpleDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache, display.getOptimizationThreshold(), true)
+                local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height, displayId)
+                simpleDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache[displayId], display.getOptimizationThreshold(), true)
             end
         end,
 
@@ -710,7 +682,7 @@ function CameraClass:sv_createData()
                 if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                     sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                     self.sv.attachedDisplays[displayId] = true
-                    serverColorCache = {}
+                    serverColorCache[displayId] = {}
                 end
 
                 if sliceWidth ~= self.sv.lastSliceWidth then
@@ -720,8 +692,8 @@ function CameraClass:sv_createData()
                     self:cl_sv_clearCache()
                 end
 
-                local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height)
-                advancedDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache, display.getOptimizationThreshold(), self.drawData.shadowRange, self.drawData.raycastFilter, true)
+                local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height, displayId)
+                advancedDraw(rays, coordinateTbl, self.drawData.xOffset, self.drawData.yOffset, sm.scrapcomputers.backend.displayCameraDraw[displayId], width, serverColorCache[displayId], display.getOptimizationThreshold(), self.drawData.shadowRange, self.drawData.raycastFilter, true)
             end
         end,
 
@@ -748,7 +720,7 @@ function CameraClass:sv_createData()
             if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
                 sm.scrapcomputers.backend.cameraColorCache[displayId] = true
                 self.sv.attachedDisplays[displayId] = true
-                serverColorCache = {}
+                serverColorCache[displayId] = {}
             end
 
             if sliceWidth ~= self.sv.lastSliceWidth then
@@ -758,7 +730,7 @@ function CameraClass:sv_createData()
                 self:cl_sv_clearCache()
             end
 
-            local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height)
+            local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height, displayId)
             self:sv_customDraw(rays, coordinateTbl, drawer, display.getOptimizationThreshold(), width, height, displayId, sm.scrapcomputers.backend.displayCameraDraw[displayId])
         end,
 
@@ -831,6 +803,8 @@ function CameraClass:server_onCreate()
         raycastFilter = sm.physics.filter.all,
     }
 
+    self.rayData = {}
+
     self.sliceIndex = 1
 
     self.sv = {
@@ -852,7 +826,7 @@ function CameraClass:server_onFixedUpdate()
 
     for displayId in pairs(self.sv.attachedDisplays) do
         if not sm.scrapcomputers.backend.cameraColorCache[displayId] then
-            serverColorCache = {}
+            serverColorCache[displayId] = {}
             self.sv.attachedDisplays[displayId] = nil
         end
     end
@@ -866,6 +840,7 @@ function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width
     local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
 
     local assert = assert
+    local localCache = serverColorCache[displayId]
 
     for i = 1, pixelCount do
         local data = rays[i]
@@ -880,12 +855,13 @@ function CameraClass:sv_customDraw(rays, coordinateTbl, drawer, threshold, width
         local color = drawer(hit, result, x, y) or sm_color_new("000000")
         local colorType = type(color)
         local cColor = colorToID(color)
+        local dColor = localCache[coordIndex]
 
         assert(colorType == "Color", "Bad color value at "..x..", "..y..". Expected Color, got "..colorType.." instead!")
 
-        if not serverColorCache[coordIndex] or not areColorsSimilar(serverColorCache[coordIndex], cColor, threshold) then
+        if not dColor or not areColorsSimilar(dColor, cColor, threshold) then
             drawPixel(x + xOffset, y + yOffset, cColor)
-            serverColorCache[coordIndex] = cColor
+            localCache[coordIndex] = cColor
         end
     end
 end
@@ -902,15 +878,32 @@ function CameraClass:client_onCreate()
         raycastFilter = sm.physics.filter.all
     }
 
-    self.sliceIndex = 1
+    self.rayData = {}
     self.cl = {}
-   
-    clientSelfs[self.shape.id] = self
-end
 
-function CameraClass:client_onRefresh()
-    clientSelfs = {}
-    clientSelfs[self.shape.id] = self
+    sm.scrapcomputers.backend.cameraVideoHooks[self.shape.id] = function(data, drawPixel, fullBuffer, threshold, displayId)
+        local _, _type, sliceWidth, width, height = unpack(data)
+        local xOffset, yOffset = self.drawData.xOffset, self.drawData.yOffset
+        local rays, coordinateTbl = self:cl_sv_computeVideoRays(sliceWidth, width, height, displayId)
+
+        if _type == "video" then
+            simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
+        elseif _type == "advancedVideo" then
+            advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, cameraSelf.drawData.shadowRange, cameraSelf.drawData.raycastFilter)
+        end
+    end
+
+    sm.scrapcomputers.backend.cameraFrameHooks[self.shape.id] = function(data, drawPixel, fullBuffer, threshold, displayId)
+        local _, _type, width, height = unpack(data)
+        local xOffset, yOffset = self.drawData.xOffset, self.drawData.yOffset
+        local rays, coordinateTbl = self:cl_sv_computeFrameRays(width, height)
+
+        if _type == "frame" then
+            simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
+        elseif _type == "advancedFrame" then
+            advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, cameraSelf.drawData.shadowRange, cameraSelf.drawData.raycastFilter)
+        end
+    end
 end
 
 function CameraClass:client_onFixedUpdate()
@@ -934,40 +927,51 @@ function CameraClass:cl_sv_checkShapeDelta()
     end
 end
 
-function CameraClass:cl_sv_clearCache()
-    self.raycastPreCache = {}
-    self.cachedCoordinates = {}
+function CameraClass:cl_sv_clearCache(displayId)
+    if displayId then
+        self.rayData[displayId].raycastPreCache = {}
+        self.rayData[displayId].cachedCoordinates = {}
+    else
+        for _, data in pairs(self.rayData) do
+            data.raycastPreCache = {}
+            data.cachedCoordinates = {}
+        end
+    end
 end
 
 -- CLIENT/SERVER --
 
-function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
-    if not self.screenSection then
-        self.sliceIndex = 1
-        self.raycastPreCache = {}
-        self.cachedCoordinates = {}
-        self.cachedColors = {}
-        self.cachedShadows = {}
-        self.screenSection = 0
-        self.totalSlices = math.ceil(width / sliceWidth)
+function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height, displayId)
+    if not self.rayData[displayId] then
+        self.rayData[displayId] = {
+            sliceIndex = 1,
+            raycastPreCache = {},
+            cachedCoordinates = {},
+            cachedColors = {},
+            cachedShadows = {},
+            screenSection = 0,
+            totalSlices = math.ceil(width / sliceWidth)
+        }
     end
 
-    if width ~= self.lastWidth then
-        self.lastWidth = width
-        self.totalSlices = math.ceil(width / sliceWidth)
-        self:cl_sv_clearCache()
+    local rayData = self.rayData[displayId]
+
+    if width ~= rayData.lastWidth then
+        rayData.lastWidth = width
+        rayData.totalSlices = math.ceil(width / sliceWidth)
+        self:cl_sv_clearCache(displayId)
     end
 
-    if height ~= self.lastHeight then
-        self.lastHeight = height
-        self:cl_sv_clearCache()
+    if height ~= rayData.lastHeight then
+        rayData.lastHeight = height
+        self:cl_sv_clearCache(displayId)
     end
 
-    self.screenSection = self.screenSection % self.totalSlices + 1
+    rayData.screenSection = rayData.screenSection % rayData.totalSlices + 1
 
-    if self.raycastPreCache[self.screenSection] then
-        return sm_physics_multicast(self.raycastPreCache[self.screenSection]),
-               self.cachedCoordinates[self.screenSection]
+    if rayData.raycastPreCache[rayData.screenSection] then
+        return sm_physics_multicast(rayData.raycastPreCache[rayData.screenSection]),
+               rayData.cachedCoordinates[rayData.screenSection]
     end
 
     local rays = {}
@@ -984,7 +988,7 @@ function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
     local filter = self.drawData.raycastFilter
     local type = "ray"
 
-    local sliceStart = self.sliceIndex
+    local sliceStart = rayData.sliceIndex
     local sliceEnd = math.min(sliceStart + sliceWidth - 1, width)
     local actualSliceWidth = sliceEnd - sliceStart + 1
 
@@ -1014,13 +1018,13 @@ function CameraClass:cl_sv_computeVideoRays(sliceWidth, width, height)
         end
     end
 
-    self.sliceIndex = self.sliceIndex + sliceWidth
-    if self.sliceIndex > width then
-        self.sliceIndex = 1
+    rayData.sliceIndex = rayData.sliceIndex + sliceWidth
+    if rayData.sliceIndex > width then
+        rayData.sliceIndex = 1
     end
 
-    self.raycastPreCache[self.screenSection] = rays
-    self.cachedCoordinates[self.screenSection] = coordinateTbl
+    rayData.raycastPreCache[rayData.screenSection] = rays
+    rayData.cachedCoordinates[rayData.screenSection] = coordinateTbl
 
     return sm_physics_multicast(rays), coordinateTbl
 end

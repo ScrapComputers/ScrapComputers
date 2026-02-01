@@ -1056,8 +1056,10 @@ function ComputerClass:client_onFixedUpdate()
     end
 
     local localPlayer = sm.localPlayer.getPlayer()
-    if (localPlayer.character.worldPosition - self.shape.worldPosition):length() <= 7.5 and sm.game.getCurrentTick() % 10 == 0 then
-        self:cl_updateCanUpdateInfoValue()
+    if localPlayer and localPlayer.character and sm.exists(localPlayer.character) then
+        if (localPlayer.character.worldPosition - self.shape.worldPosition):length() <= 7.5 and sm.game.getCurrentTick() % 10 == 0 then
+            self:cl_updateCanUpdateInfoValue()
+        end
     end
 
     local sharedData = self.cl.sharedData
