@@ -481,25 +481,25 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
     end
 
     output.drawText = function (params_x, params_y, params_text, params_color, params_font, params_maxWidth, params_wordWrappingEnabled)
-        sm_scrapcomputers_errorHandler_assertArgument(x, 1, {"number"})
-        sm_scrapcomputers_errorHandler_assertArgument(y, 2, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(params_x, 1, {"number"})
+        sm_scrapcomputers_errorHandler_assertArgument(params_y, 2, {"number"})
 
-        sm_scrapcomputers_errorHandler_assertArgument(text, 3, {"string"})
-        sm_scrapcomputers_errorHandler_assertArgument(color, 4, {"Color", "string", "nil"})
+        sm_scrapcomputers_errorHandler_assertArgument(params_text, 3, {"string", "number"})
+        sm_scrapcomputers_errorHandler_assertArgument(params_color, 4, {"Color", "string", "nil"})
         
-        sm_scrapcomputers_errorHandler_assertArgument(fontName, 5, {"string", "nil"})
+        sm_scrapcomputers_errorHandler_assertArgument(params_font, 5, {"string", "nil"})
 
-        sm_scrapcomputers_errorHandler_assertArgument(maxWidth, 5, {"boolean", "nil"})
-        sm_scrapcomputers_errorHandler_assertArgument(wordWrappingEnabled, 5, {"boolean", "nil"})
+        sm_scrapcomputers_errorHandler_assertArgument(params_maxWidth, 5, {"boolean", "nil"})
+        sm_scrapcomputers_errorHandler_assertArgument(params_wordWrappingEnabled, 5, {"boolean", "nil"})
         
-        fontName = fontName or sm_scrapcomputers_fontManager_getDefaultFontName()
+        params_font = params_font or sm_scrapcomputers_fontManager_getDefaultFontName()
     
-        local font, errMsg = sm_scrapcomputers_fontManager_getFont(fontName)
+        local font, errMsg = sm_scrapcomputers_fontManager_getFont(params_font)
         sm_scrapcomputers_errorHandler_assert(font, 5, errMsg)
 
         params_x = round(params_x)
         params_y = round(params_y)
-        params_maxWidth = round(params_maxWidth)
+        params_text = tostring(params_text)
 
         local font, err = sm_scrapcomputers_fontManager_getFont(params_font)
         local font_width = font.fontWidth
@@ -519,7 +519,7 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
 
         local i = 1
 
-        local width = params_maxWidth or width
+        local width = params_maxWidth and round(params_maxWidth) or width
 
         if not params_wordWrappingEnabled then
             width = math.huge

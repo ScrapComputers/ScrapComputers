@@ -68,21 +68,22 @@ function RadarClass:server_onFixedUpdate()
 end
 
 local function getCreationPosition(body)
-    local minBound, maxBound
+    local bodies = body:getCreationBodies()
+    local totalMass = 0
+    local comSum = sm.vec3.zero()
 
-    for _, body in pairs(body:getCreationBodies()) do
-        local _min, _max = body:getWorldAabb()
-
-        if not minBound then
-            minBound = _min
-            maxBound = _max
-        else
-            minBound = minBound:min(_min)
-            maxBound = maxBound:max(_max)
-        end
+    for _, b in pairs(bodies) do
+        local mass = b.mass
+        local pos = b:getCenterOfMassPosition()
+        comSum = comSum + pos * mass
+        totalMass = totalMass + mass
     end
 
-    return minBound + (maxBound - minBound) / 2
+    if totalMass == 0 then
+        return sm.vec3.zero()
+    end
+
+    return comSum / totalMass
 end
 
 function RadarClass:sv_calculateTargets()
