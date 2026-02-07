@@ -317,6 +317,9 @@ end
 -- Displays have camera cache built-in to them, so we can imitate a display by doing this.
 local idDisplayCounter = -1
 
+local lastOffsetX = 0
+local lastOffsetY = 0
+
 ---Creates a virtual display
 ---@param displayWidth integer The width of the virtual display
 ---@param displayHeight integer The height of the virtual display
@@ -600,7 +603,7 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
         local formatted = {}
         local index = 1
 
-        if cacheBased then
+        if cacheBased and lastOffsetX == xOffset and lastOffsetY == yOffset then
             local cache = sm.scrapcomputers.backend.virtualDisplayCache[displayID] or {}
 
             for dIndex, color in pairs(drawBuffer) do
@@ -616,6 +619,9 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
 
             sm.scrapcomputers.backend.virtualDisplayCache[displayID] = cache
         else
+            lastOffsetX = xOffset
+            lastOffsetY = yOffset
+
             for dIndex, color in pairs(drawBuffer) do
                 if color ~= clearColor then
                     formatted[index] = {x = (dIndex - 1) % displayWidth + 1 + xOffset, y = math_floor((dIndex - 1) / displayWidth) + 1 + yOffset, color = idToColor(color or clearColor)}

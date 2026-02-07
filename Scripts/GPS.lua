@@ -24,39 +24,13 @@ local function getBearing(direction)
 end
 
 local function quatToEuler(quat)
-    local x, y, z, w = quat.x, quat.y, quat.z, quat.w
+    local at = sm.quat.getAt(quat)
+    local right = sm.quat.getRight(quat)
+    local up = sm.quat.getUp(quat)
 
-    local sinr_cosp = 2 * (w * x + y * z)
-    local cosr_cosp = 1 - 2 * (x * x + y * y)
-    local roll = math.atan2(sinr_cosp, cosr_cosp)
-
-    local sinp = 2 * (w * y - z * x)
-    local pitch
-    if math.abs(sinp) >= 1 then
-        pitch = math.pi / 2 * (sinp > 0 and 1 or -1)
-    else
-        pitch = math.asin(sinp)
-    end
-
-    local siny_cosp = 2 * (w * z + x * y)
-    local cosy_cosp = 1 - 2 * (y * y + z * z)
-    local yaw = math.atan2(siny_cosp, cosy_cosp)
-
-    roll = roll - math.rad(90)
-
-    local function normalizeAngle(angle)
-        local degAngle = math.deg(angle)
-        if degAngle > 180 then
-            degAngle = degAngle - 360
-        elseif degAngle <= -180 then
-            degAngle = degAngle + 360
-        end
-        return degAngle
-    end
-
-    roll = normalizeAngle(roll)
-    pitch = normalizeAngle(pitch)
-    yaw = normalizeAngle(yaw)
+    local pitch = math.deg(math.atan2(at.z, math.sqrt(at.x * at.x + at.y * at.y)))
+    local yaw = math.deg(math.atan2(at.y, at.x))
+    local roll = math.deg(math.atan2(right.z, up.z))
 
     return sm.vec3.new(pitch, roll, yaw)
 end

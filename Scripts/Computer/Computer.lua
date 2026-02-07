@@ -1553,10 +1553,10 @@ function ComputerClass:cl_fs_closeGui()
     self.cl.main.unsavedChanges.onCloseCallback = function ()
         if comfirmed then
             self.cl.main.currentlyEditingFile = self.cl.filesystem.currentPath .. self.cl.filesystem.newSelectedElement
-            self:cl_openGui()
+            self:cl_openGuiDelayed()
+        else
+            self:cl_fs_open()
         end
-
-        self:cl_fs_open()
     end
 
     self.cl.main.unsavedChanges.onButtonPressedCallback = function (comfirm)
@@ -1859,8 +1859,9 @@ function ComputerClass:cl_fs_openFileOrDir()
 
     self.cl.filesystem.selectedElement = -1
 
+    local newCurrentPath = self.cl.filesystem.currentPath .. selectedElement[1]
     if selectedElement[2] == "directory" then
-        self.cl.filesystem.currentPath = self.cl.filesystem.currentPath .. selectedElement[1] .. "/"
+        self.cl.filesystem.currentPath = newCurrentPath .. "/"
 
         self:cl_fs_refreshList()
         self:cl_fs_updatePaginationText()
@@ -1869,9 +1870,13 @@ function ComputerClass:cl_fs_openFileOrDir()
         return
     end
 
-    
-    if not self.cl.main.hasUnsavedChanges then
-        self.cl.main.currentlyEditingFile = self.cl.filesystem.currentPath .. selectedElement[1]
+    local hasUnsavedChanges = self.cl.main.hasUnsavedChanges
+    if self.cl.main.currentlyEditingFile == newCurrentPath then
+        hasUnsavedChanges = false
+    end
+
+    if not hasUnsavedChanges then
+        self.cl.main.currentlyEditingFile = newCurrentPath
     else
         self:cl_reloadTranslations()
         
