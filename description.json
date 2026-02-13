@@ -1,12 +1,6 @@
 {
    "allow_add_mods" : true,
    "custom_icons" : true,
-   "dependencies" : [
-      {
-         "fileId" : 2504530003,
-         "localId" : "40639a2c-bb9f-4d4f-b88c-41bfe264ffa8"
-      }
-   ],
    "description" : "[h2]One of the GREATEST Computer Mods out there![/h2]\r\n\r\n[hr][/hr]\r\nScrapComputers is an awesome Computer mod for Scrap Mechanic. There are so many possibilities that you can't even think of! Want to emulate a MOS 6502 CPU? You can do that! Create a Piston Engine Dyno? Why not!\r\n\r\n[b]Benefits of using our Computer Mod over others:[/b]\r\n[list]\r\n  [*]Easy-To-Use Interface.\r\n  [*]Everything is documented. (Everything!)\r\n  [*]Best Display Optimization out there.\r\n  [*]Fast Lua Virtual Machine (Custom LuaVM)\r\n[/list]\r\n\r\n[b][url=https://scrapcomputers.dev/]Documentation Website[/url][/b]\r\n\r\n[quote] If you have spotted any bugs in ScrapComputers, please report it in the comments or in this [url=https://discord.gg/6r46PkYr9s] Discord Server[/url]. Thank you![/quote]",
    "fileId" : 3269912087,
    "localId" : "632be32f-6ebd-414e-a061-d45906ae4dc6",

@@ -649,15 +649,13 @@ function DisplayClass:sv_createData()
             sm_scrapcomputers_errorHandler_assertArgument(cameraPosition, 1, {"Vec3"})
             sm_scrapcomputers_errorHandler_assertArgument(worldPosition, 2, {"Vec3"})
 
-            local tInterpolation = self.shape.worldPosition - self.shape:getInterpolatedWorldPosition()
-            local dInterpolation = sm.vec3.getRotation(self.shape.right, self.shape:getInterpolatedRight())
-            local screenNormal = dInterpolation * self.shape.right
-            local screenPos = self.shape.worldPosition + tInterpolation + -screenNormal * 0.125
+            local screenNormal = self.shape.right
+            local screenPos = self.shape.worldPosition + screenNormal * 0.125
 
             local rayDir = (worldPosition - cameraPosition):normalize()
             local denom = screenNormal:dot(rayDir)
             local t = screenNormal:dot(screenPos - cameraPosition) / denom
-            local hitPoint = self.shape:transformPoint(cameraPosition + rayDir * t)
+            local hitPoint = self.shape:transformPoint(cameraPosition + rayDir * t) + self.shape:transformPoint(self.shape:getInterpolatedWorldPosition())
 
             local width = self.data.width
             local height = self.data.height

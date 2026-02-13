@@ -317,9 +317,6 @@ end
 -- Displays have camera cache built-in to them, so we can imitate a display by doing this.
 local idDisplayCounter = -1
 
-local lastOffsetX = 0
-local lastOffsetY = 0
-
 ---Creates a virtual display
 ---@param displayWidth integer The width of the virtual display
 ---@param displayHeight integer The height of the virtual display
@@ -343,6 +340,13 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
     local clearCache
 
     local optimisationThreshold = 0.02
+
+    local lastOffsetX = 0
+    local lastOffsetY = 0
+
+    if sm.scrapcomputers.backend.cameraColorCache[displayID] then
+        sm.scrapcomputers.backend.cameraColorCache[displayID] = nil
+    end
 
     -- Super duper cool camera only function, (and maybe addon posibilities)
     sm.scrapcomputers.backend.displayCameraDraw[displayID] = function(x, y, color)
@@ -609,8 +613,8 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
             for dIndex, color in pairs(drawBuffer) do
                 local cachePoint = cache[dIndex]
 
-                if not (cachePoint and areColorsSimilar(cachePoint, color, optimisationThreshold)) and color ~= clearColor then
-                    formatted[index] = {x = (dIndex - 1) % displayWidth + 1 + xOffset, y = math_floor((dIndex - 1) / displayWidth) + 1 + yOffset, color = idToColor(color or clearColor)}
+                if not cachePoint or not areColorsSimilar(cachePoint, color, optimisationThreshold) then
+                    formatted[index] = {x = (dIndex - 1) % displayWidth + 1 + xOffset, y = math_floor((dIndex - 1) / displayWidth) + 1 + yOffset, color = idToColor(color)}
                     index = index + 1
 
                     cache[dIndex] = color
@@ -622,11 +626,15 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
             lastOffsetX = xOffset
             lastOffsetY = yOffset
 
-            for dIndex, color in pairs(drawBuffer) do
-                if color ~= clearColor then
-                    formatted[index] = {x = (dIndex - 1) % displayWidth + 1 + xOffset, y = math_floor((dIndex - 1) / displayWidth) + 1 + yOffset, color = idToColor(color or clearColor)}
-                    index = index + 1
+            for i = 1, displayWidth * displayHeight do
+                local color = drawBuffer[i]
+
+                if not color then 
+                    drawBuffer[i] = clearColor 
                 end
+                
+                formatted[index] = {x = (i - 1) % displayWidth + 1 + xOffset, y = math_floor((i - 1) / displayWidth) + 1 + yOffset, color = idToColor(color or clearColor)}
+                index = index + 1
             end
 
             sm.scrapcomputers.backend.virtualDisplayCache[displayID] = {}
@@ -695,6 +703,30 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
         sm_scrapcomputers_errorHandler_assertArgument(newWidth, 1, { "integer" })
         sm_scrapcomputers_errorHandler_assertArgument(newHeight, 2, { "integer" })
 
+        local newBuffer = {}
+        local newCache = {}
+        local currentCache = sm.scrapcomputers.backend.virtualDisplayCache[displayID]
+
+        for i, color in pairs(drawBuffer) do
+            if i <= newWidth * newHeight then
+                local x, y = (i - 1) % displayWidth + 1, math_floor((i - 1) / displayWidth) + 1
+                newBuffer[(y - 1) * newWidth + x] = color
+            end
+        end
+
+        drawBuffer = newBuffer
+
+        if currentCache then
+            for i, color in pairs(currentCache) do
+                if i <= newWidth * newHeight then
+                    local x, y = (i - 1) % displayWidth + 1, math_floor((i - 1) / displayWidth) + 1
+                    newCache[(y - 1) * newWidth + x] = color
+                end
+            end
+
+            sm.scrapcomputers.backend.virtualDisplayCache[displayID] = newCache
+        end
+
         displayWidth = newWidth
         displayHeight = newHeight
     end
@@ -710,6 +742,10 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
 
     output.clearCache = function ()
         sm.scrapcomputers.backend.virtualDisplayCache[displayID] = {}
+
+        if sm.scrapcomputers.backend.cameraColorCache[displayID] then
+            sm.scrapcomputers.backend.cameraColorCache[displayID] = nil
+        end
     end
 
     sm.scrapcomputers.ascfManager.applyDisplayFunctions(output)
