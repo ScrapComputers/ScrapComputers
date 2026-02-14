@@ -889,7 +889,7 @@ function CameraClass:client_onCreate()
         if _type == "video" then
             simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
         elseif _type == "advancedVideo" then
-            advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, cameraSelf.drawData.shadowRange, cameraSelf.drawData.raycastFilter)
+            advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, self.drawData.shadowRange, self.drawData.raycastFilter)
         end
     end
 
@@ -901,7 +901,7 @@ function CameraClass:client_onCreate()
         if _type == "frame" then
             simpleDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold)
         elseif _type == "advancedFrame" then
-            advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, cameraSelf.drawData.shadowRange, cameraSelf.drawData.raycastFilter)
+            advancedDraw(rays, coordinateTbl, xOffset, yOffset, drawPixel, width, fullBuffer, threshold, self.drawData.shadowRange, self.drawData.raycastFilter)
         end
     end
 end
