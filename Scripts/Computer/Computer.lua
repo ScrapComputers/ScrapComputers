@@ -491,7 +491,7 @@ function ComputerClass:server_onFixedUpdate()
             if self.sv.luaVM.enviroment.onError then
                 local success, errMsg = pcall(self.sv.luaVM.enviroment.onError, self.sv.luaVM:getException())
                 if not success then
-                    table.insert(self.sv.sharedData.logs, ErrorParser:generateError(errMsg))
+                    table.insert(self.sv.sharedData.logs, ErrorParser:parseAndGenError(ErrorParser:fixErrorMessage(errMsg)))
                     sm.scrapcomputers.sharedTable:forceSyncProperty(self.sv.sharedData, "logs")
                 end
             end

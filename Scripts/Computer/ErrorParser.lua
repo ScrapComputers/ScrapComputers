@@ -138,7 +138,7 @@ function ErrorParser:generateError(data)
         text = text .. tracebackLog.path .. ":" .. tostring(tracebackLog.line) .. ":"
     end
 
-    return text
+    return text .. "\n"
 end
 
 ---Parses and generates to a formatted error message

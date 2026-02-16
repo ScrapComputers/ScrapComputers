@@ -233,8 +233,8 @@ function sm.scrapcomputers.json.prettifyTable(rootContents)
                     prettifyTable(value, level + 1, numberIndex ~= dataSize)
                 elseif valueType == "string" then
                     local safeText = value:gsub("\\", "⁄")
-                    local safeEscapeCodes = {"⁄b", "⁄f", "⁄n", "⁄r", "⁄t", "\\\""}
-                    for key, value in pairs({"\b", "\f", "\n", "\r", "\t", "\""}) do
+                    local safeEscapeCodes = {"⁄b", "⁄f", "⁄n", "⁄r", "⁄t", "\\\"", "##"}
+                    for key, value in pairs({"\b", "\f", "\n", "\r", "\t", "\"", "#"}) do
                         safeText = safeText:gsub(value, safeEscapeCodes[key])
                     end
                     output = output .. stringColor .. "\"" .. safeText .. "\""
