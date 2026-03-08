@@ -2254,7 +2254,7 @@ function ComputerClass:cl_reloadTranslations()
 end
 
 function ComputerClass:cl_chatMessage(msg)
-    if self.cl.storage.flags.allowPrinting then
+    if self.cl and self.cl.storage and self.cl.storage.flags.allowPrinting then
         sm.gui.chatMessage(msg)
     end
 end
