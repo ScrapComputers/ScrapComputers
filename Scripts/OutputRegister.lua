@@ -22,8 +22,7 @@ end
 
 function OutputRegisterClass:server_onCreate()
     self.sv = {
-        power = 0,
-        lastPower = 0
+        power = 0
     }
 
     local name = sm.scrapcomputers.dataList["OutputRegisters"][self.shape.id].name
@@ -46,9 +45,7 @@ function OutputRegisterClass:sv_setName(name, player)
 end
 
 function OutputRegisterClass:sv_onReceivePowerUpdate(power)
-    if self.sv.lastPower ~= power then
-        self.sv.lastPower = power
-
+    if self.interactable.power ~= power then
         sm.scrapcomputers.dataList["OutputRegisters"][self.shape.id].power = power
 
         self.interactable.power = power
@@ -57,8 +54,6 @@ function OutputRegisterClass:sv_onReceivePowerUpdate(power)
 end
 
 function OutputRegisterClass:sv_onPowerLoss()
-    self.sv.lastPower = 0
-
     self.interactable.power = 0
     self.interactable.active = false
 end
