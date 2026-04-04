@@ -80,6 +80,6 @@ function sm.scrapcomputers.utf8.loopCharacters(str)
 
         local char = string_sub(str, index, index + byteCount - 1)
         index = index + byteCount
-        return index, char
+        return index - 1, char
     end
 end
