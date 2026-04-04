@@ -204,9 +204,9 @@ function MotorClass:server_onCreate()
         updateBearingValues = false,
         updatePistonValues = false,
 
-        bearings = {}, ---@type Joint[]
+        bearings = self.interactable:getBearings(), ---@type Joint[]
         lastBearingCount = 0,
-        pistons = {},---@type Joint[]
+        pistons = self.interactable:getPistons(), ---@type Joint[]
         lastPistonCount = 0,
     }
 end
