@@ -1590,6 +1590,10 @@ function Motor.setForce(force) end
 ---@return number angle The current angle
 function Motor.getCurrentAngle() end
 
+---Gets the pistons's current length. Note that only 1 piston can be connected!
+---@return number length The current length
+function Motor.getCurrentLength() end
+
 ---@class Radar The radar allows you to scan objects around it.
 local Radar = {}
 

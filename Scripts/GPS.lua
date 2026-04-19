@@ -24,15 +24,19 @@ local function getBearing(direction)
 end
 
 local function quatToEuler(quat)
-    local at = sm.quat.getAt(quat)
-    local right = sm.quat.getRight(quat)
-    local up = sm.quat.getUp(quat)
+    local right = quat * sm.vec3.new(1, 0, 0)
+    local forward = quat * sm.vec3.new(0, 1, 0)
+    local up = quat * sm.vec3.new(0, 0, 1)
 
-    local pitch = math.deg(math.atan2(at.z, math.sqrt(at.x * at.x + at.y * at.y)))
-    local yaw = math.deg(math.atan2(at.y, at.x))
-    local roll = math.deg(math.atan2(right.z, up.z))
+    local yaw = math.atan2(forward.x, forward.y)
+    local pitch = math.atan2(-forward.z, math.sqrt(forward.x^2 + forward.y^2))
+    local roll = math.atan2(right.z, up.z)
 
-    return sm.vec3.new(pitch, roll, yaw)
+    return sm.vec3.new(
+        math.deg(pitch),
+        math.deg(roll),
+        math.deg(yaw)
+    )
 end
 
 -- SERVER --

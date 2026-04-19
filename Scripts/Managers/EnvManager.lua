@@ -376,7 +376,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
         },
 
         sm = {
-            vec3 = sm.vec3,
+            vec3 = sm.scrapcomputers.table.clone(sm.vec3),
             util = {
                 axesToQuat = sm.util.axesToQuat,
                 bezier2 = sm.util.bezier2,
@@ -388,10 +388,10 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
                 smootherstep = sm.util.smootherstep,
                 smoothstep = sm.util.smoothstep,
             },
-            quat = sm.quat,
-            noise = sm.noise,
-            color = sm.color,
-            uuid = sm.uuid,
+            quat = sm.scrapcomputers.table.clone(sm.quat),
+            noise = sm.scrapcomputers.table.clone(sm.noise),
+            color = sm.scrapcomputers.table.clone(sm.color),
+            uuid = sm.scrapcomputers.table.clone(sm.uuid),
             json = {
                 open = sm.json.open,
 
@@ -404,7 +404,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
                 solveBallisticArc = sm.projectile.solveBallisticArc
             },
             physics = {
-                filter = sm.physics.filter
+                filter = sm.scrapcomputers.table.clone(sm.physics.filter)
             }
         },
     }

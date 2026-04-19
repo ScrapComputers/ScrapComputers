@@ -396,7 +396,7 @@
                 "friction": 3
             },
             "renderable": "$CONTENT_DATA/Objects/Renderables/GPS.rend",
-            "rotationSet": "PropY",
+            "rotationSet": "PropZ",
             "scripted": {
                 "classname": "GPSClass",
                 "filename": "$CONTENT_DATA/Scripts/GPS.lua"
@@ -420,7 +420,7 @@
                 "friction": 3
             },
             "renderable": "$CONTENT_DATA/Objects/Renderables/GPSNotAWheel.rend",
-            "rotationSet": "PropY",
+            "rotationSet": "PropZ",
             "scripted": {
                 "classname": "GPSClass",
                 "filename": "$CONTENT_DATA/Scripts/GPS.lua"

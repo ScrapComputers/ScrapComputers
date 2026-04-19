@@ -344,7 +344,7 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
     local lastOffsetX = 0
     local lastOffsetY = 0
 
-    if sm.scrapcomputers.backend.cameraColorCache[displayID] then
+    if sm.scrapcomputers.backend.cameraColorCache and sm.scrapcomputers.backend.cameraColorCache[displayID] then
         sm.scrapcomputers.backend.cameraColorCache[displayID] = nil
     end
 
@@ -743,7 +743,7 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
     output.clearCache = function ()
         sm.scrapcomputers.backend.virtualDisplayCache[displayID] = {}
 
-        if sm.scrapcomputers.backend.cameraColorCache[displayID] then
+        if sm.scrapcomputers.backend.cameraColorCache and sm.scrapcomputers.backend.cameraColorCache[displayID] then
             sm.scrapcomputers.backend.cameraColorCache[displayID] = nil
         end
     end
