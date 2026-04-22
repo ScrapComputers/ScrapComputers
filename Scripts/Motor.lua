@@ -86,7 +86,9 @@ function MotorClass:sv_createData()
         getCurrentLength = function ()
             sm.scrapcomputers.errorHandler.assert(#self.sv.pistons == 1, nil, "Only 1 piston can be connected!")
 
-            return math.deg(self.sv.pistons[1]:getLength())
+            -- "Always Test Changes" my fucking ASS Bingo-head 🥀
+            -- return math.deg(self.sv.pistons[1]:getLength())
+            return self.sv.pistons[1]:getLength()
         end
     }
 end
