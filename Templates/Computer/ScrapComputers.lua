@@ -60,7 +60,7 @@
 ---@field verticalVelocity number The vertical velocity
 ---@field angularVelocity Vec3 The angular velocity
 ---@field rpm number The current RPM (depends on angular velocity)
----@field acceleration number The current acceleration
+---@field acceleration Vec3 The current acceleration
 ---@field forwardAcceleration number The forward acceleration
 ---@field horizontalAcceleration number The horizontal acceleration
 ---@field verticalAcceleration number The vertical acceleration

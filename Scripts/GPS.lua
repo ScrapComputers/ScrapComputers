@@ -11,12 +11,8 @@ GPSClass.colorHighlight = sm.color.new(0x969696ff)
 
 local isSurvival = sm.scrapcomputers.gamemodeManager.isSurvival() or sm.scrapcomputers.config.getConfig("scrapcomputers.global.survivalBehavior").selectedOption == 2
 
-local function getAcceleration(velocity, lastVelocity, dt)
-    return (velocity - lastVelocity) / dt
-end
-
 local function getBearing(direction)
-    local angleDeg = math.deg(math.atan2(direction.y, direction.x))
+    local angleDeg = math.deg(math.atan2(direction.x, direction.y))
 
     if angleDeg < 0 then return angleDeg + 360 end
 
@@ -46,30 +42,41 @@ function GPSClass:sv_createData()
         --- Gets GPS data and returns it
         ---@return GPSData GPSData The GPS data
         getGPSData = function()
-            local angularVelocity = self.shape.body:getAngularVelocity()
-            local data = {
-                worldPosition = self.shape.worldPosition,
-                localPosition = self.shape.localPosition,
-                worldRotation = self.shape.worldRotation,
-                localRotation = self.shape.localRotation,
+            local shape = self.shape
+            local angularVelocity = shape.body:getAngularVelocity()
+            local velocity = shape.velocity
 
-                bearing = getBearing(self.shape.worldRotation * sm.vec3.new(1, 0, 0)),
+            local worldPosition = shape.worldPosition
+
+            local worldRotation = shape.worldRotation
+            local right = worldRotation * sm.vec3.new(1, 0, 0)
+            local at = worldRotation * sm.vec3.new(0, 1, 0)
+            local up = worldRotation * sm.vec3.new(0, 0, 1)
+
+            local acceleration = self.sv.acceleration
+            local data = {
+                worldPosition = worldPosition,
+                localPosition = shape.localPosition,
+                worldRotation = worldRotation,
+                localRotation = shape.localRotation,
+
+                bearing = getBearing(at),
                     -- What the fuck are bearings? -VeraDev
 
-                velocity = self.shape.velocity,
-                speed = self.shape.velocity:length(),
-                degreeRotation = quatToEuler(self.shape.worldRotation),
+                velocity = velocity,
+                speed = velocity:length(),
+                degreeRotation = quatToEuler(worldRotation),
 
-                forwardVelocity = self.sv.forwardVelocity,
-                horizontalVelocity = self.sv.horizontalVelocity,
-                verticalVelocity = self.sv.verticalVelocity,
+                horizontalVelocity = velocity:dot(right),
+                forwardVelocity = velocity:dot(at),
+                verticalVelocity = velocity:dot(up),
                 angularVelocity = angularVelocity,
-                rpm = self.shape.at:dot(angularVelocity) * 9.549296585513721,
+                rpm = up:dot(angularVelocity) * 9.549296585513721,
 
-                acceleration = self.sv.acceleration,
-                forwardAcceleration = self.sv.forwardAcceleration,
-                horizontalAcceleration = self.sv.horizontalVelocity,
-                verticalAcceleration = self.sv.verticalAcceleration,
+                acceleration = acceleration,
+                horizontalAcceleration = acceleration:dot(right),
+                forwardAcceleration = acceleration:dot(at),
+                verticalAcceleration = acceleration:dot(up),
             }
             
             if isSurvival then
@@ -84,7 +91,7 @@ function GPSClass:sv_createData()
                 self.sv.positionDrift.y = sm.util.clamp(self.sv.positionDrift.y, -maxDrift, maxDrift)
                 self.sv.positionDrift.z = sm.util.clamp(self.sv.positionDrift.z, -maxDrift, maxDrift)
 
-                data.worldPosition = data.worldPosition + self.sv.positionDrift
+                data.worldPosition = worldPosition + self.sv.positionDrift
             end
 
             return data
@@ -94,20 +101,8 @@ end
 
 function GPSClass:server_onCreate()
     self.sv = {
-        lastVelocity = 0,
-        lastForwardVelocity = 0,
-        lastHorizontalVelocity = 0,
-        lastVerticalVelocity = 0,
-
-        acceleration = 0,
-        forwardAcceleration = 0,
-        horizontalAcceleration = 0,
-        verticalAcceleration = 0,
-
-        forwardVelocity = 0,
-        horizontalVelocity = 0,
-        verticalVelocity = 0,
-
+        lastVelocity = sm.vec3.zero(),
+        acceleration = sm.vec3.zero(),
         positionDrift = sm.vec3.zero()
     }
 
@@ -115,20 +110,10 @@ function GPSClass:server_onCreate()
 end
 
 function GPSClass:server_onFixedUpdate(dt)
-    self.sv.forwardVelocity = self.shape.velocity:dot(self.shape.worldRotation * sm.vec3.new(0, 0, -1))
-    self.sv.horizontalVelocity = self.shape.velocity:dot(self.shape.worldRotation * sm.vec3.new(1, 0, 0))
-    self.sv.verticalVelocity = self.shape.velocity:dot(self.shape.worldRotation * sm.vec3.new(0, 1, 0))
+    local velocity = self.shape.velocity
 
-    self.sv.acceleration = getAcceleration(self.shape.velocity:length(), self.sv.lastVelocity, dt)
-    self.sv.lastVelocity = self.shape.velocity:length()
-
-    self.sv.forwardAcceleration = getAcceleration(self.sv.forwardVelocity, self.sv.lastForwardVelocity, dt)
-    self.sv.horizontalAcceleration = getAcceleration(self.sv.horizontalVelocity, self.sv.lastHorizontalVelocity, dt)
-    self.sv.verticalAcceleration = getAcceleration(self.sv.verticalVelocity, self.sv.lastVerticalVelocity, dt)
-
-    self.sv.lastForwardVelocity = self.sv.forwardVelocity
-    self.sv.lastHorizontalVelocity = self.sv.horizontalVelocity
-    self.sv.lastVerticalVelocity = self.sv.verticalVelocity
+    self.sv.acceleration = (velocity - self.sv.lastVelocity) / dt
+    self.sv.lastVelocity = velocity
 end
 
 sm.scrapcomputers.componentManager.toComponent(GPSClass, "GPSs", true, nil, true)
