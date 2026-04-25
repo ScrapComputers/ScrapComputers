@@ -12,7 +12,7 @@
     "scrapcomputers.computer.buttons.load_example"                          : "LOAD EXAMPLE",
     "scrapcomputers.computer.buttons.save"                                  : "SAVE FILE",
     
-    "scrapcomputers.computer.failed_to_load_default_example"                : "#ffa000WARNING: Failed to get the Script Template! Recommended to reinstall ScrapComputers!",
+    "scrapcomputers.computer.failed_to_load_default_example"                : "#ffa000WARNING: Failed to get the script template! Reinstalling ScrapComputers is recommended!",
     "scrapcomputers.computer.gui_already_opened"                            : "Someone is already editing the computer! Please wait until they are done!",
     "scrapcomputers.computer.failed_to_find"                                : "Failed to find the file or directory!",
     "scrapcomputers.computer.already_exists"                                : "A file or directory with that name already exists!",
@@ -26,7 +26,7 @@
     "scrapcomputers.computer.interationtext.is_running.true"                : "#[CHECKMARK]#(SUCCESS)Running",
     "scrapcomputers.computer.interationtext.is_running.false"               : "#[MINUS]#(ERROR)Not running",
     "scrapcomputers.computer.interationtext.exception.true"                 : "#[BUG]#(ERROR)Got exception",
-    "scrapcomputers.computer.interationtext.exception.false"                : "#[CHECKMARK]#(SUCCESS)No Exception",
+    "scrapcomputers.computer.interationtext.exception.false"                : "#[CHECKMARK]#(SUCCESS)No exception",
     "scrapcomputers.computer.interationtext.power.true"                     : "#[CHECKMARK]#(SUCCESS)Consuming %s kW",
     "scrapcomputers.computer.interationtext.power.false"                    : "#[MINUS]#(ERROR)Consuming %s kW",
     "scrapcomputers.computer.interationtext.no_exception"                   : "No Exception",
@@ -83,7 +83,7 @@
 
     "scrapcomputers.computer.passwordmgr.new.title"                         : "SET NEW PASSWORD",
     "scrapcomputers.computer.passwordmgr.new.enter_text"                    : "Enter Password:",
-    "scrapcomputers.computer.passwordmgr.new.comfirm_text"                  : "Comfirm Password:",
+    "scrapcomputers.computer.passwordmgr.new.comfirm_text"                  : "Confirm Password:",
     "scrapcomputers.computer.passwordmgr.new.warn_text"                     : "#f14c4cWARNING: You will NOT be able to recover your data if you set and forget the password!",
     "scrapcomputers.computer.passwordmgr.new.set_button"                    : "Set New Password",
 
@@ -101,7 +101,7 @@
 
     "scrapcomputers.computer.passwordmgr.update.old_password"               : "Enter Old Password",
     "scrapcomputers.computer.passwordmgr.update.new_password"               : "Enter New Password",
-    "scrapcomputers.computer.passwordmgr.update.comfirm_new_password"       : "Comfirm New Password",
+    "scrapcomputers.computer.passwordmgr.update.comfirm_new_password"       : "Confirm New Password",
 
     "scrapcomputers.computer.passwordmgr.clear.title"                       : "CLEAR PASSWORD",
     "scrapcomputers.computer.passwordmgr.clear.button"                      : "Clear Password",
@@ -130,7 +130,7 @@
     "scrapcomputers.computer.fileexplorer.rename.apply"                     : "APPLY NEW NAME",
 
     // HDD (Hard Drive or Drive)
-    "scrapcomputers.drive.gui_already_opened"                               : "Someone is already editing the harddrive! Please wait until they are done!",
+    "scrapcomputers.drive.gui_already_opened"                               : "Someone is already editing the hard drive! Please wait until they are done!",
     "scrapcomputers.drive.title"                                            : "HARDDRIVE",
     
     "scrapcomputers.drive.save"                                             : "SAVE CONTENTS",
@@ -144,7 +144,7 @@
     "scrapcomputers.drive.logs.no_contents_modified"                        : "No changes were saved (The drive's content was not modified!)",
     "scrapcomputers.drive.logs.contents_modified_by_computer"                : "The contents were just modified by the computer. Press \"RELOAD CONTENTS\" to see it!",
     "scrapcomputers.drive.logs.contents_modified_by_user"                   : "The contents were just modified by a user. Press \"RELOAD CONTENTS\" to see it!",
-    "scrapcomputers.drive.logs.json_error"                                  : "Invalid json data! On line %d, column %d: %s",
+    "scrapcomputers.drive.logs.json_error"                                  : "Invalid JSON data! On line %d, column %d: %s",
     "scrapcomputers.drive.logs.reformatted"                                 : "Reformatted the contents!",
     
     "scrapcomputers.drive.unsaved_changes.title"                            : "Are you sure?",
@@ -157,7 +157,7 @@
 
     // Input & Output registers
     "scrapcomputers.registers.input_title"                                  : "#5eed6dINPUT #ffffffREGISTER NAME",
-    "scrapcomputers.registers.output_title"                                 : "#ed6d5eOUTPUT #ffffffREIGSTER NAME",
+    "scrapcomputers.registers.output_title"                                 : "#ed6d5eOUTPUT #ffffffREGISTER NAME",
 
     // Keyboard
     "scrapcomputers.keyboard.exit"                                          : "Exit Keyboard",
@@ -262,7 +262,7 @@
     "config.scrapcomputers.computer.reset_error_on_restart=option=1"        : "Disabled",
     "config.scrapcomputers.computer.reset_error_on_restart=option=2"        : "Enabled",
 
-    "config.scrapcomputers.computer.show_info_on_computer_hover=name"       : "Show information while hovering computer",
+    "config.scrapcomputers.computer.show_info_on_computer_hover=name"       : "Show information while hovering over the computer",
     "config.scrapcomputers.computer.show_info_on_computer_hover=description": "This option allows you to access unsafe functions within the environment. When enabled, you gain access to powerful features like _G, self, the entire sm table, and more. Additionally, some tables may be modified to permit Lua DLL mods, giving you greater control and flexibility, but also increasing the risk of unintended changes or security vulnerabilities.",
     "config.scrapcomputers.computer.show_info_on_computer_hover=option=1"   : "Show information",
     "config.scrapcomputers.computer.show_info_on_computer_hover=option=2"   : "Hide information",
@@ -275,18 +275,18 @@
     "config.scrapcomputers.computer.nanvalues=option=1"                     : "No change in behavior",
     "config.scrapcomputers.computer.nanvalues=option=2"                     : "ScrapComputers-related functions disallowed",
 
-    "config.scrapcomputers.global.power=name"                               : "Power Consumtion",
+    "config.scrapcomputers.global.power=name"                               : "Power Consumption",
     "config.scrapcomputers.global.power=description"                        : "In ScrapComputers (especially in survival-based game modes), a power system is required to operate the computers. You can toggle this setting here if you'd like to enable or disable the power requirement, for example, in Creative mode.",
     "config.scrapcomputers.global.power=option=1"                           : "Disabled",
     "config.scrapcomputers.global.power=option=2"                           : "Enabled",
 
     "config.scrapcomputers.global.survivalBehavior=name"                    : "Survival Behaviors",
-    "config.scrapcomputers.global.survivalBehavior=description"             : "This setting toggles survival behaviour for survival effected components. Some components when in survival act slightly differently, for example, a GPS's world position has a noise of 5 meters when in survival, this config setting when enabled would allow the GPS to exibit that 5 meter noise quirk in creative instead of being perfect.",
+    "config.scrapcomputers.global.survivalBehavior=description"             : "This setting toggles survival behavior for survival-affected components. Some components act slightly differently in survival; for example, a GPS's world position has 5 meters of noise in survival. When enabled, this config setting allows the GPS to exhibit that 5-meter noise quirk in creative mode instead of being perfect.",
     "config.scrapcomputers.global.survivalBehavior=option=1"                : "Disabled",
     "config.scrapcomputers.global.survivalBehavior=option=2"                : "Enabled",
 
     "config.scrapcomputers.global.networkTableReferences=name"               : "Network Table References",
-    "config.scrapcomputers.global.networkTableReferences=description"        : "When this config setting is enabled, network packets that are tables will send the raw LUA table, thus resulting in the receiving network port getting the LUA table reference instead its clone. This means that if a table reference is sent, any modifications to the table on either side of the network will sync without any more networking, do note however that tables that were previously sent before this option was enabled will still be clones and will not sync, also vice versa.",
+    "config.scrapcomputers.global.networkTableReferences=description"        : "When this config setting is enabled, network packets that are tables will send the raw LUA table, resulting in the receiving network port getting the LUA table reference instead of its clone. This means that if a table reference is sent, any modifications to the table on either side of the network will sync without additional networking. Note, however, that tables sent before this option was enabled will still be clones and will not sync, and vice versa.",
     "config.scrapcomputers.global.networkTableReferences=option=1"           : "Disabled",
     "config.scrapcomputers.global.networkTableReferences=option=2"           : "Enabled"
 }
