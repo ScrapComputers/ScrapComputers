@@ -460,6 +460,29 @@ function sc.json.isSafe(root) end
 ---@return string jsonString The converted JSON string
 function sc.json.toString(root, prettifyOutput, indentCharacter) end
 
+-- Functions for letting you print to the computer's console.
+sc.console = {}
+
+---Prints a info message to the console. Arguments are passed into a `string.format`
+---@param format string The message format to print.
+---@param ... any Values to pass into the format.
+function sc.console.info(format, ...) end
+
+---Prints a error message to the console. Arguments are passed into a `string.format`
+---@param format string The message format to print.
+---@param ... any Values to pass into the format.
+function sc.console.warn(format, ...) end
+
+---Prints a warn message to the console. Arguments are passed into a `string.format`
+---@param format string The message format to print.
+---@param ... any Values to pass into the format.
+function sc.console.error(format, ...) end
+
+---Prints a generic message to the console. Arguments are passed into a `string.format`
+---@param format string The message format to print.
+---@param ... any Values to pass into the format.
+function sc.console.log(format, ...) end
+
 -- Lets you get information about SM's built in audio's! (Does not include custom ones from SM-CustomAudioExcension DLL mod)
 sc.audio = {}
 
