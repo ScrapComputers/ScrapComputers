@@ -195,7 +195,7 @@ function MotorClass:server_onFixedUpdate()
     end
 
     ::END::
-    local bearingSpeed = self.sv.bearingSpeed > 0 and self.sv.bearingSpeed or 1
+    local bearingSpeed = math.abs(self.sv.bearingSpeed)
     local bearingPower = (bearingSpeed * self.sv.torque / 9550) * (1 / 0.85) -- 85% efficient
     local pistonPower = (self.sv.pistonSpeed * self.sv.force / 50000)
 
