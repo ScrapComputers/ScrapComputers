@@ -67,7 +67,7 @@ function InputRegisterClass:sv_setName(name, player)
     sm.scrapcomputers.dataList["InputRegisters"][self.shape.id].name = name
     self.storage:save(name)
 
-	-- How the fuck did we forgot to do mulitplayer testing on fucking registers?
+	-- How the fuck did we forget to do mulitplayer testing on fucking registers?
 	
 	for _, plr in pairs(sm.player.getAllPlayers()) do
 		if plr.id ~= player.id then

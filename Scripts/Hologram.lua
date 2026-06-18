@@ -80,12 +80,12 @@ function HologramClass:sv_createObjectData(index)
             sm.scrapcomputers.errorHandler.assert(self.sv.rawObjects[index] ~= nil, nil, "Object dosen't exist!")
             sm.scrapcomputers.errorHandler.assertArgument(value, nil, {"Uuid", "string"})
 
-            uuid = type(uuid) == "Uuid" and uuid or sm.uuid.new(uuid)
+            value = type(value) == "Uuid" and value or sm.uuid.new(value)
 
-            sm.scrapcomputers.errorHandler.assert(not uuid:isNil(), nil, "UUID cannot be nil!")
-            sm.scrapcomputers.errorHandler.assert(sm.shape.uuidExists(uuid), nil, "UUID doesnt exist! (Or its not a shape!)")
+            sm.scrapcomputers.errorHandler.assert(not value:isNil(), nil, "UUID cannot be nil!")
+            sm.scrapcomputers.errorHandler.assert(sm.shape.uuidExists(value), nil, "UUID is not assigned to any shape!")
 
-            self.sv.rawObjects[index][1] = uuid
+            self.sv.rawObjects[index][1] = value
             self:sv_updateObj(self.sv.rawObjects[index], index)
         end,
 
