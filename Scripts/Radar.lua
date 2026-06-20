@@ -134,12 +134,9 @@ function RadarClass:sv_calculateTargets()
                     if hLen > 0 then
                         hDir = hDir / hLen
                         if math_acos(radarAt:dot(hDir)) <= hAngleRad then
-                            local shape0 = body:getShapes()[1]
-                            local bInterp = shape0.worldPosition - shape0:getInterpolatedWorldPosition()
-
                             local hit, res = physics_raycast(
                                 radarPos,
-                                creationPos + bInterp,
+                                creationPos + body.velocity * 0.025,
                                 shape.body
                             )
 

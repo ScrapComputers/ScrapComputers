@@ -195,8 +195,10 @@ function MotorClass:server_onFixedUpdate()
     end
 
     ::END::
-    local bearingSpeed = math.abs(self.sv.bearingSpeed)
-    local bearingPower = (bearingSpeed * self.sv.torque / 9550) * (1 / 0.85) -- 85% efficient
+    local absSpeed = math.abs(self.sv.bearingSpeed)
+    local powerSpeed = absSpeed < 1 and 1 or absSpeed
+    local bearingRpm = powerSpeed / 6
+    local bearingPower = (bearingRpm * self.sv.torque / 9550) * (1 / 0.85) -- 85% efficient
     local pistonPower = (self.sv.pistonSpeed * self.sv.force / 50000)
 
     sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, bearingPower * bearingLen + pistonPower * pistonLen)

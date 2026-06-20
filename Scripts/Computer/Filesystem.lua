@@ -229,7 +229,7 @@ function Filesystem:createFile(path, content)
         sm.scrapcomputers.errorHandler.assert(false, 1, "File already exists or a directory is using that name: " .. filename)
     end
 
-    parent[filename] = TextCodec:encode(content, self.isEncrypted, self.currentPath)
+    parent[filename] = TextCodec:encode(content, self.isEncrypted, self.password)
     self.cachedContents[self:resolve(path)] = content
 end
 
