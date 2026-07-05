@@ -122,6 +122,9 @@ function HDDClass:client_onCreate()
 
     ---@type HDD.SharedData
     self.cl.sharedData = nil
+
+    -- We are going to rewrite the HDD anyways to not depend on shared tables. doesnt need to be non-jank
+    self.cl.isFirstWriteCounter = 0
 end
 
 function HDDClass:client_onFixedUpdate()
@@ -317,8 +320,12 @@ function HDDClass:client_onSharedTableChange(id, key, value, comesFromSelf)
         sm.scrapcomputers.sharedTable:enableSync(self.cl.sharedData)
     end
 
-    if id == self.cl.storageId and not comesFromSelf then
-        self:cl_showLog("scrapcomputers.drive.logs.contents_modified_by_computer", "#23d18b")
+    if id == self.cl.storageId and not comesFromSelf and key == "data" then
+        if self.cl.isFirstWriteCounter > 2 then
+            self:cl_showLog("scrapcomputers.drive.logs.contents_modified_by_computer", "#23d18b")
+        else
+            self.cl.isFirstWriteCounter = self.cl.isFirstWriteCounter + 1
+        end
     end
 end
 

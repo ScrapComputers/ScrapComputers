@@ -47,6 +47,7 @@ local string_byte = string.byte
 local string_sub = string.sub
 
 local table_sort = table.sort
+local pairs = pairs
 
 ---@class DisplayClass : ShapeClass
 DisplayClass = class()
@@ -76,6 +77,7 @@ local tableLimit = 15000
 local displayHidingCooldown = 0.5
 local optimiseCooldown = 1
 local pixelBorderMultiplier = 0.05
+local pixelEffect = "ScrapComputers - ShapeRenderablePixel"
 
 local imagePath = "$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/DisplayImages/"
 
@@ -1012,8 +1014,6 @@ function DisplayClass:client_onCreate()
     self.cl = {
         pixel = {
             stoppedEffects = {},
-            selectionIndex = 0,
-
             pixelScale = sm.vec3.zero()
         },
 
@@ -1353,7 +1353,6 @@ end
 
 function DisplayClass:cl_pushData()
     local newBuffer = {}
-    local knownRects = {}
     local hasCleared = false
     local self_cl = self.cl
     local self_cl_backPanel = self_cl.backPanel
@@ -1382,8 +1381,6 @@ function DisplayClass:cl_pushData()
     local function scaledAdd(x, y, sx, sy, color)
         local x1, y1 = x, y
         local mx = sx + x - 1
-
-        knownRects[(y - 1) * width + x] = (sy - 1) * width + sx 
     
         for _ = 1, sx * sy do
             addPixel(x1, y1, color)
@@ -1686,19 +1683,6 @@ function DisplayClass:cl_pushData()
         end
     end
 
-    -- local lookup = {
-    --     [1] = addToTable,
-    --     [2] = drawLine,
-    --     [3] = clearDisplay,
-    --     [4] = drawCircle,
-    --     [5] = drawTriangle,
-    --     [6] = drawRect,
-    --     [7] = drawText,
-    --     [8] = drawWithPoints,
-    --     [100] = sm.scrapcomputers.backend.cameraVideoHook,
-    --     [101] = sm.scrapcomputers.backend.cameraFrameHook
-    -- }
-
     local dataCountLookup = {
         [1] = 3,
         [2] = 5,
@@ -1711,24 +1695,6 @@ function DisplayClass:cl_pushData()
         [100] = 6,
         [101] = 5
     }
-
-    -- while searchIndex < totalLen do
-    --     searchIndex = searchIndex + 1
-
-    --     local instruction = data[searchIndex]
-    --     local currentParam = {}
-
-    --     for i = 1, dataCountLookup[instruction] do
-    --         searchIndex = searchIndex + 1
-    --         currentParam[i] = data[searchIndex]
-    --     end
-
-    --     if instruction == 100 or instruction == 101 then
-    --         lookup[instruction](currentParam, addToTable, fullBuffer, threshold)
-    --     else
-    --         lookup[instruction](currentParam)
-    --     end
-    -- end
 
     local data = self_cl.buffer.data
     local totalLen = #data
@@ -1801,7 +1767,6 @@ function DisplayClass:cl_pushData()
     local isHidden = self_cl_display.isHidden
     local widthScale = self_cl_display.widthScale
     local heightScale = self_cl_display.heightScale
-    local selectionIndex = self_cl_pixel.selectionIndex
 
     local self_data_panelOffset = self_data.panelOffset
     local pixel_scale = self_cl_pixel.pixelScale
@@ -1823,10 +1788,8 @@ function DisplayClass:cl_pushData()
                 effect_start(effect)
             end
         else
-            effect = sm_effect_createEffect(effectPrefix..selectionIndex, self_interactable)
+            effect = sm_effect_createEffect(pixelEffect, self_interactable)
             effect_setParameter(effect, "uuid", PIXEL_UUID)
-
-            selectionIndex = (selectionIndex + 1) % 256
 
             if not isHidden then
                 effect_start(effect)
@@ -1836,125 +1799,6 @@ function DisplayClass:cl_pushData()
         return effect
     end
 
-    -- local function meshNeighbours(index, sendColor)
-    --     local success = false
-    
-    --     local originData = pixels[index]
-    --     local originSx, originSy = 1, 1
-    --     local originOx, originOy = (index - 1) % width + 1, math_floor((index - 1) / width) + 1
-
-    --     local nxData = pixels[(originOy - 1) * width + originOx - 1]
-
-    --     if nxData and nxData[3] == originSy and nxData[5] == originOy and areColorsSimilar(sendColor, nxData[6], threshold) then
-    --         nxData[2] = nxData[2] + originSx
-    --         success = true
-
-    --         dataChange[nxData] = true
-
-    --         if originData then
-    --             local effect = originData[1]
-
-    --             stoppedIndex = stoppedIndex + 1
-    --             stoppedEffects[stoppedIndex] = effect
-
-    --             offsetBuffer[effect] = true
-
-    --             dataChange[originData] = nil
-    --         end
-
-    --         originData, originSx, originSy, originOx, originOy = nxData, nxData[2], nxData[3], nxData[4], nxData[5]
-    --     end
-
-    --     local nyData = pixels[(originOy - 2) * width + originOx]
-
-    --     if nyData and nyData[2] == originSx and nyData[4] == originOx and areColorsSimilar(sendColor, nyData[6], threshold) then
-    --         nyData[3] = nyData[3] + originSy
-    --         success = true
-
-    --         dataChange[nyData] = true
-
-    --         if originData then
-    --             local effect = originData[1]
-
-    --             stoppedIndex = stoppedIndex + 1
-    --             stoppedEffects[stoppedIndex] = effect
-
-    --             offsetBuffer[effect] = true
-
-    --             dataChange[originData] = nil
-    --         end
-
-    --         originData, originSx, originSy, originOx, originOy = nyData, nyData[2], nyData[3], nyData[4], nyData[5]
-    --     end
-
-    --     local pxData = pixels[(originOy - 1) * width + originOx + originSx]
-
-    --     if pxData and pxData[3] == originSy and pxData[5] == originOy and areColorsSimilar(sendColor, pxData[6], threshold) then
-    --         pxData[4] = originOx
-    --         pxData[2] = pxData[2] + originSx
-
-    --         success = true
-
-    --         dataChange[pxData] = true
-
-    --         if originData then
-    --             local effect = originData[1]
-
-    --             stoppedIndex = stoppedIndex + 1
-    --             stoppedEffects[stoppedIndex] = effect
-
-    --             offsetBuffer[effect] = true
-
-    --             dataChange[originData] = nil
-    --         end
-
-    --         originData, originSx, originSy, originOx, originOy = pxData, pxData[2], pxData[3], pxData[4], pxData[5]
-    --     end
-
-    --     local pyData = pixels[(originOy + originSy - 1) * width + originOx]
-
-    --     if pyData and pyData[2] == originSx and pyData[4] == originOx and areColorsSimilar(sendColor, pyData[6], threshold) then
-    --         pyData[3] = pyData[3] + originSy
-    --         pyData[5] = originOy
-    --         success = true
-
-    --         dataChange[pyData] = true
-
-    --         if originData then
-    --             local effect = originData[1]
-
-    --             stoppedIndex = stoppedIndex + 1
-    --             stoppedEffects[stoppedIndex] = effect
-
-    --             offsetBuffer[effect] = true
-
-    --             dataChange[originData] = nil
-    --         end
-
-    --         originData, originSx, originSy, originOx, originOy = pyData, pyData[2], pyData[3], pyData[4], pyData[5]
-    --     end
-
-    --     if success then
-    --         local x1, y1 = originOx, originOy
-    --         local mx = originOx + originSx - 1
-            
-    --         for _ = 1, originSx * originSy do
-    --             pixels[(y1 - 1) * width + x1] = originData
-
-    --             x1 = x1 + 1
-
-    --             if x1 > mx then
-    --                 x1 = originOx
-    --                 y1 = y1 + 1
-    --             end
-    --         end
-
-    --         return true
-    --     else
-    --         return false
-    --     end
-    -- end
-
     local function meshNeighbours(index, originColor)
         local success
         local originData = pixels[index]
@@ -1963,6 +1807,8 @@ function DisplayClass:cl_pushData()
         if originData then
             originEffect, originSx, originSy, originX, originY = 
             originData[1], originData[2], originData[3], originData[4], originData[5]
+
+            index = (originY - 1) * width + originX
         else
             originSx, originSy, originX, originY = 
             1, 1, (index - 1) % width + 1, math_floor((index - 1) / width) + 1
@@ -1971,12 +1817,13 @@ function DisplayClass:cl_pushData()
         local nxData = pixels[index - 1]
         local pxData = pixels[index + originSx]
 
-        local nxPossible = nxData and nxData[3] == originSy and nxData[5] == originY and areColorsSimilar(nxData[6], originColor, threshold)
-        local pxPossible = pxData and pxData[3] == originSy and pxData[5] == originY and areColorsSimilar(pxData[6], originColor, threshold)
+        local nxPossible = nxData and nxData[1] ~= originEffect and nxData[3] == originSy and nxData[5] == originY and areColorsSimilar(nxData[6], originColor, threshold)
+        local pxPossible = pxData and pxData[1] ~= originEffect and pxData[3] == originSy and pxData[5] == originY and areColorsSimilar(pxData[6], originColor, threshold)
 
         if nxPossible and pxPossible then
             originX = nxData[4]
             originSx = originSx + nxData[2] + pxData[2]
+
 
             local nxEffect = nxData[1]
             local pxEffect = pxData[1]
@@ -2022,6 +1869,8 @@ function DisplayClass:cl_pushData()
 
             success = true
         end
+
+        index = (originY - 1) * width + originX
 
         local nyData = pixels[index - width]
         local pyData = pixels[index + width * originSy]
@@ -2080,15 +1929,20 @@ function DisplayClass:cl_pushData()
         if success then
             if originData then
                 dataChange[originData] = nil
+
+                if originEffect then
+                    colorChange[originEffect] = nil
+                end
             end
 
-            originData = {
+            local originData = {
                 originEffect or createEffect(),
                 originSx,
                 originSy,
                 originX,
                 originY,
-                originColor
+                originColor,
+                (originY - 1) * width + originX
             }
 
             dataChange[originData] = true
@@ -2112,48 +1966,27 @@ function DisplayClass:cl_pushData()
     end
 
 
-    local function splitEffect(index, sxChange, syChange, createAtRoot)
+    local function splitEffect(index, createAtRoot)
         local x, y = (index - 1) % width + 1, math_floor((index - 1) / width) + 1
         local effectData = pixels[index]
         local eEffect, eSx, eSy, ex, ey, color = effectData[1], effectData[2], effectData[3], effectData[4], effectData[5], effectData[6]
         local eMx, eMy = ex + eSx - 1, ey + eSy - 1
         local rootAvaliable = not createAtRoot
 
-        if sxChange and ex < x then
+        if ex < x then
             local effect = rootAvaliable and eEffect or createEffect()
             local sx = x - ex
+            local startIndex = (y - 1) * width + ex
             local effectData = {
                 effect, 
                 sx,
                 1,
                 ex,
                 y,
-                color
+                color,
+                startIndex
             }
 
-            local startIndex = (y - 1) * width + ex
-            for i = 0, sx do
-                pixels[startIndex + i] = effectData
-            end
-
-            dataChange[effectData] = true
-            colorChange[effect] = color
-            rootAvaliable = false
-        end
-
-        if sxChange and eMx > x then
-            local effect = rootAvaliable and eEffect or createEffect()
-            local nx, sx = x + 1, eMx - x
-            local effectData = {
-                effect,
-                sx,
-                1,
-                nx,
-                y,
-                color
-            }
-
-            local startIndex = (y - 1) * width + nx
             for i = 0, sx - 1 do
                 pixels[startIndex + i] = effectData
             end
@@ -2163,7 +1996,30 @@ function DisplayClass:cl_pushData()
             rootAvaliable = false
         end
 
-        if syChange and ey < y then
+        if eMx > x then
+            local effect = rootAvaliable and eEffect or createEffect()
+            local nx, sx = x + 1, eMx - x
+            local startIndex = (y - 1) * width + nx
+            local effectData = {
+                effect,
+                sx,
+                1,
+                nx,
+                y,
+                color,
+                startIndex
+            }
+            
+            for i = 0, sx - 1 do
+                pixels[startIndex + i] = effectData
+            end
+
+            dataChange[effectData] = true
+            colorChange[effect] = color
+            rootAvaliable = false
+        end
+
+        if ey < y then
             local effect = rootAvaliable and eEffect or createEffect()
             local sy = y - ey
             local effectData = {
@@ -2172,7 +2028,8 @@ function DisplayClass:cl_pushData()
                 sy,
                 ex,
                 ey,
-                color
+                color,
+                (ey - 1) * width + ex
             }
 
             local x1, y1 = ex, ey
@@ -2194,7 +2051,7 @@ function DisplayClass:cl_pushData()
             rootAvaliable = false
         end
 
-        if syChange and eMy > y then
+        if eMy > y then
             local effect = rootAvaliable and eEffect or createEffect()
             local ny, sy = y + 1, eMy - y
             local effectData = {
@@ -2203,7 +2060,8 @@ function DisplayClass:cl_pushData()
                 sy,
                 ex,
                 ny,
-                color
+                color,
+                (ny - 1) * width + ex
             }
 
             local x1, y1 = ex, ny
@@ -2230,9 +2088,12 @@ function DisplayClass:cl_pushData()
             effectData[3] = 1
             effectData[4] = x
             effectData[5] = y
+            effectData[6] = createAtRoot
+            effectData[7] = (y - 1) * width + x
 
             pixels[index] = effectData
             dataChange[effectData] = true
+            colorChange[eEffect] = createAtRoot
 
             return effectData
         else
@@ -2248,36 +2109,79 @@ function DisplayClass:cl_pushData()
             dataChange[effectData] = nil
             pixels[index] = nil
         end
+
+        updatedPoints[index] = nil
     end
 
-    local function meshBuffer(index, color)
+    local function meshBufferPC(index, color)
         local mSx = 1
         local x, y = (index - 1) % width + 1, math_floor((index - 1) / width) + 1
 
-        for x1 = x, width do
-            local testColor = fullBuffer[(y - 1) * width + x1]
+        for x1 = 1, width - x do
+            local cIndex = index + x1
 
-            if not testColor or testColor ~= color then
+            if pixels[cIndex] or newBuffer[cIndex] ~= color then
                 break
             end
 
             mSx = mSx + 1
         end
 
-        local x1, y1, mx = x, y + 1, x + mSx - 1
+        local x1, y1, mx = x, y + 1, x + mSx - 1 
+        local mSy = 1
 
-        for _ = 1, mSx * height - y do
-            local testColor = fullBuffer[(y1 - 1) * width + x1]
+        for _ = 1, mSx * (height - y) do
+            local cIndex = (y1 - 1) * width + x1
 
-            if not testColor or testColor ~= color then
-                break
+            if pixels[cIndex] or newBuffer[cIndex] ~= color then
+                return mSx, mSy
+            end
+
+            x1 = x1 + 1
+
+            if x1 > mx then
+                x1 = x
+                y1 = y1 + 1
+                mSy = mSy + 1
             end
         end
 
         return mSx, y1 - y
     end
 
-    if (not hasUpdated and hasCleared) or not next(updatedPoints) then
+    local function meshBuffer(index, color)
+        local mSx = 1
+        local x, y = (index - 1) % width + 1, math_floor((index - 1) / width) + 1
+
+        for x1 = 1, width - x do
+            if newBuffer[index + x1] ~= color then
+                break
+            end
+
+            mSx = mSx + 1
+        end
+
+        local x1, y1, mx = x, y + 1, x + mSx - 1 
+        local mSy = 1
+
+        for _ = 1, mSx * (height - y) do
+            if newBuffer[(y1 - 1) * width + x1] ~= color then
+                return mSx, mSy
+            end
+
+            x1 = x1 + 1
+
+            if x1 > mx then
+                x1 = x
+                y1 = y1 + 1
+                mSy = mSy + 1
+            end
+        end
+
+        return mSx, y1 - y
+    end
+
+    if not hasUpdated and hasCleared then
         local deleted = {}
 
         for _, effectData in pairs(pixels) do
@@ -2318,47 +2222,66 @@ function DisplayClass:cl_pushData()
                 local colNew = newBuffer[i]
                 local notEqual = colNew and colNew ~= backpanelColor
 
-                if effectPos then
-                    if effectPos[6] ~= colNew then
-                        local sx, sy = effectPos[2], effectPos[3]
-                        local foundRect = knownRects[i]
-                        local sxa, sya = sx > 1, sy > 1
-                        local forceColor
-
-                        if foundRect and foundRect == (sy - 1) * width + sx then
-                            sxa = false
-                            sya = false
-                            forceColor = true
-                        end
-
-                        if sxa or sya then
-                            effectPos = splitEffect(i, sxa, sya, notEqual)
-                        elseif not notEqual and not forceColor then
-                            local effect = effectPos[1]
-
-                            stoppedIndex = stoppedIndex + 1
-                            stoppedEffects[stoppedIndex] = effect
-                            offsetBuffer[effect] = true
-
-                            updatedPoints[i] = nil
-                            dataChange[effectPos] = nil
-                            pixels[i] = nil
-                            effectPos = nil
-                        end
-                        
-                        if effectPos and (forceColor or not meshNeighbours(i, colNew)) then
-                            effectPos[6] = colNew
-                            colorChange[effectPos[1]] = colNew
-                        end
+                if effectPos and effectPos[6] ~= colNew then
+                    local sx, sy = effectPos[2], effectPos[3]
+                    
+                    local bsx, bsy = 0, 0
+                    if notEqual then
+                        bsx, bsy = meshBuffer(effectPos[7], colNew)
                     end
-                elseif notEqual and not meshNeighbours(i, colNew) then
+
+                    local equalCheck = bsx == sx and bsy == sy
+
+                    if not equalCheck and (sx > 1 or sy > 1) then
+                        effectPos = splitEffect(i, notEqual)
+                    elseif not notEqual then
+                        local effect = effectPos[1]
+
+                        stoppedIndex = stoppedIndex + 1
+                        stoppedEffects[stoppedIndex] = effect
+                        offsetBuffer[effect] = true
+
+                        updatedPoints[i] = nil
+                        dataChange[effectPos] = nil
+                        pixels[i] = nil
+                        effectPos = nil
+                    end
+                    
+                    if effectPos and (equalCheck or not meshNeighbours(i, colNew)) then
+                        effectPos[6] = colNew
+                        colorChange[effectPos[1]] = colNew
+                    end
+                elseif not effectPos and notEqual and not meshNeighbours(i, colNew) then
                     local effect = createEffect()
+                    local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
+                    local sx, sy = meshBufferPC(i, colNew)
                     local data = {
-                        effect, 1, 1, (i - 1) % width + 1, math_floor((i - 1) / width) + 1,
-                        colNew
+                        effect, 
+                        sx, 
+                        sy, 
+                        x, 
+                        y,
+                        colNew,
+                        i
                     }
 
-                    pixels[i] = data
+                    if sx == 1 and sy == 1 then
+                        pixels[i] = data
+                    else
+                        local x1, y1, mx = x, y, x + sx - 1
+
+                        for _ = 1, sx * sy do
+                            pixels[(y1 - 1) * width + x1] = data
+
+                            x1 = x1 + 1
+
+                            if x1 > mx then
+                                x1 = x
+                                y1 = y1 + 1
+                            end
+                        end
+                    end
+
                     dataChange[data] = true
                     colorChange[effect] = colNew
                 end
@@ -2368,46 +2291,65 @@ function DisplayClass:cl_pushData()
                 local effectPos = pixels[i]
                 local notEqual = colNew ~= backpanelColor
 
-                if effectPos then
-                    if effectPos[6] ~= colNew then
-                        local sx, sy = effectPos[2], effectPos[3]
-                        local foundRect = knownRects[i]
-                        local sxa, sya = sx > 1, sy > 1
-                        local forceColor
+                if effectPos and effectPos[6] ~= colNew then
+                    local sx, sy = effectPos[2], effectPos[3]
 
-                        if foundRect and foundRect == (sy - 1) * width + sx then
-                            sxa = false
-                            sya = false
-                            forceColor = true
-                        end
-
-                        if sxa or sya then
-                            effectPos = splitEffect(i, sxa, sya, notEqual)
-                        elseif not notEqual and not forceColor then
-                            local effect = effectPos[1]
-
-                            stoppedIndex = stoppedIndex + 1
-                            stoppedEffects[stoppedIndex] = effect
-                            offsetBuffer[effect] = true
-
-                            dataChange[effectPos] = nil
-                            pixels[i] = nil
-                            effectPos = nil
-                        end
-                        
-                        if effectPos and (forceColor or not meshNeighbours(i, colNew)) then
-                            effectPos[6] = colNew
-                            colorChange[effectPos[1]] = colNew
-                        end
+                    local bsx, bsy = 0, 0
+                    if notEqual then
+                        bsx, bsy = meshBuffer(effectPos[7], colNew)
                     end
-                elseif notEqual and not meshNeighbours(i, colNew) then
+
+                    local equalCheck = bsx == sx and bsy == sy
+
+                    if not equalCheck and (sx > 1 or sy > 1) then
+                        effectPos = splitEffect(i, notEqual)
+                    elseif not notEqual then
+                        local effect = effectPos[1]
+
+                        stoppedIndex = stoppedIndex + 1
+                        stoppedEffects[stoppedIndex] = effect
+                        offsetBuffer[effect] = true
+
+                        dataChange[effectPos] = nil
+                        pixels[i] = nil
+                        effectPos = nil
+                    end
+                    
+                    if effectPos and (equalCheck or not meshNeighbours(i, colNew)) then
+                        effectPos[6] = colNew
+                        colorChange[effectPos[1]] = colNew
+                    end
+                elseif not effectPos and notEqual and not meshNeighbours(i, colNew) then
                     local effect = createEffect()
+                    local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
+                    local sx, sy = meshBufferPC(i, colNew)
                     local data = {
-                        effect, 1, 1, (i - 1) % width + 1, math_floor((i - 1) / width) + 1,
-                        colNew
+                        effect, 
+                        sx, 
+                        sy, 
+                        x, 
+                        y,
+                        colNew,
+                        i
                     }
 
-                    pixels[i] = data
+                    if sx == 1 and sy == 1 then
+                        pixels[i] = data
+                    else
+                        local x1, y1, mx = x, y, x + sx - 1
+
+                        for _ = 1, sx * sy do
+                            pixels[(y1 - 1) * width + x1] = data
+
+                            x1 = x1 + 1
+
+                            if x1 > mx then
+                                x1 = x
+                                y1 = y1 + 1
+                            end
+                        end
+                    end
+
                     dataChange[data] = true
                     colorChange[effect] = colNew
                 end
@@ -2450,7 +2392,6 @@ function DisplayClass:cl_pushData()
     self_cl.updatedPoints = updatedPoints
     self_cl.fullBuffer = fullBuffer
     self_cl_pixel.stoppedEffects = stoppedEffects
-    self_cl_pixel.selectionIndex = selectionIndex
     self_cl.offsetBuffer = offsetBuffer
     self_cl.newBuffer = {}
 end
@@ -2466,7 +2407,6 @@ function DisplayClass:cl_optimiseDisplay()
     local pixels = self_cl.pixels
     local stoppedIndex = self_cl.stoppedIndex
     local stoppedEffects = self_cl_pixel.stoppedEffects
-    local selectionIndex = self_cl_pixel.selectionIndex
     local isHidden = self_cl_display.isHidden
 
     local self_data_panelOffset = self_data.panelOffset
@@ -2490,10 +2430,8 @@ function DisplayClass:cl_optimiseDisplay()
                 effect_start(effect)
             end
         else
-            effect = sm_effect_createEffect(effectPrefix..selectionIndex, self_interactable)
+            effect = sm_effect_createEffect(pixelEffect, self_interactable)
             effect_setParameter(effect, "uuid", PIXEL_UUID)
-
-            selectionIndex = (selectionIndex + 1) % 256
 
             if not isHidden then
                 effect_start(effect)
@@ -2614,7 +2552,8 @@ function DisplayClass:cl_optimiseDisplay()
                 sy,
                 x,
                 y,
-                color
+                color,
+                index
             }
 
             local x1, y1 = x, y
@@ -2648,7 +2587,6 @@ function DisplayClass:cl_optimiseDisplay()
     self_cl.stoppedIndex = stoppedIndex
     self_cl.offsetBuffer = {}
     self_cl_pixel.stoppedEffects = stoppedEffects
-    self_cl_pixel.selectionIndex = selectionIndex
 end
 
 function DisplayClass:cl_setVisibility(setHidden)

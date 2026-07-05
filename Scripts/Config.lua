@@ -32,7 +32,7 @@ local modules = {
     "Base64", "Base91",
 
     -- Generic libraries
-    "LZ4", "Color", "JSON", "MD5", "Table", "Util", "Gui", "Time", "QRCode",
+    "LZ4", "Color", "MD5", "Table", "JSON", "Util", "Gui", "Time", "QRCode",
 
     -- Helpers
     "FancyInfoLogger",
