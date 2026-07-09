@@ -149,18 +149,26 @@ local function splitTable(numbers, length)
 end
 
 local inv255 = 1 / 255
-local maxSqr = 195075
 
 local function colorToID(color) 
-    if not color then 
-        color = sm_color_new(0, 0, 0) 
-    elseif type(color) == "string" then 
-        color = sm_color_new(color) 
-    elseif type(color) == "number" then 
+    local colorType = type(color)
+    if colorType == "number" then 
         return color 
-    end 
-    
-    return math_floor(color.r * 255) * 65536 + math_floor(color.g * 255) * 256 + math_floor(color.b * 255)
+    elseif colorType == "string" then 
+        local r = tonumber(string_sub(color, 1, 2), 16) or 0
+        local g = tonumber(string_sub(color, 3, 4), 16) or 0
+        local b = tonumber(string_sub(color, 5, 6), 16) or 0
+        
+        return bit_bor(bit_lshift(r, 16), bit_lshift(g, 8), b)
+    elseif colorType == "Color" then
+        local r = math_floor(color.r * 255)
+        local g = math_floor(color.g * 255)
+        local b = math_floor(color.b * 255)
+
+        return bit_bor(bit_lshift(r, 16), bit_lshift(g, 8), b)
+    end
+
+    return 0
 end
 
 local function idToColor(colorID)
