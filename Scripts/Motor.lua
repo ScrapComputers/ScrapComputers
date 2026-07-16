@@ -86,8 +86,6 @@ function MotorClass:sv_createData()
         getCurrentLength = function ()
             sm.scrapcomputers.errorHandler.assert(#self.sv.pistons == 1, nil, "Only 1 piston can be connected!")
 
-            -- "Always Test Changes" my fucking ASS Bingo-head 🥀
-            -- return math.deg(self.sv.pistons[1]:getLength())
             return self.sv.pistons[1]:getLength()
         end
     }
@@ -135,9 +133,6 @@ function MotorClass:server_onFixedUpdate()
         self.sv.updatePistonValues = true
         self.sv.lastPistonCount = pistonLen
     end
-
-    -- For fucks sakes let this be the final time i have to fix the motors.
-    --      - VeraDev
     
     local parents = self.interactable:getParents()
     local needsReset = true
@@ -196,10 +191,15 @@ function MotorClass:server_onFixedUpdate()
 
     ::END::
     local absSpeed = math.abs(self.sv.bearingSpeed)
+    local absTorque = math.abs(self.sv.torque)
     local powerSpeed = absSpeed < 1 and 1 or absSpeed
     local bearingRpm = powerSpeed / 6
-    local bearingPower = (bearingRpm * self.sv.torque / 9550) * (1 / 0.85) -- 85% efficient
-    local pistonPower = (self.sv.pistonSpeed * self.sv.force / 50000)
+    local bearingPower = (bearingRpm * absTorque / 9550) * (1 / 0.85) -- 85% efficient
+
+    local absPistonSpeed = math.abs(self.sv.pistonSpeed)
+    local absForce = math.abs(self.sv.force)
+    local pistonPowerSpeed = absPistonSpeed < 1 and 1 or absPistonSpeed
+    local pistonPower = (pistonPowerSpeed * absForce / 50000)
 
     sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, bearingPower * bearingLen + pistonPower * pistonLen)
 end
