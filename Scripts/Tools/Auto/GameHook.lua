@@ -224,10 +224,6 @@
 --     sm.gui.chatMessage(message)
 -- end
 
--- function GameHookClass:client_onCreate()
---     sm.scrapcomputers.backend.thisPlayer = sm.localPlayer.getPlayer()
--- end
-
 -- local oldBindCommand = sm.game.bindChatCommand
 
 -- local function newBindCommand(command, params, callback, help)
@@ -236,7 +232,7 @@
 
 --         oldBindCommand("/setconfig", {{"string", "configId"}, {"int", "configOption"}}, "cl_onChatCommand", "Allows a user to set ScrapComputers config settings via a command.")
 --         oldBindCommand("/getconfigs", {}, "cl_onChatCommand", "Returns a list of the loaded config data sets, used for the /setconfig command.")
---     end
+--     endww
 
 --     oldBindCommand(command, params, callback, help)
 -- end
@@ -268,4 +264,8 @@ GameHookClass = class()
 
 function GameHookClass:server_onCreate()
     sm.gui.chatMessage("#00c0e0NOTICE:#eeeeee Certain features with ScrapComputers have either been degraded or removed thanks to Chapter 2. More information provided in the Discord Server.")
+end
+
+function GameHookClass:client_onCreate()
+    sm.scrapcomputers.backend.thisPlayer = sm.localPlayer.getPlayer()
 end
