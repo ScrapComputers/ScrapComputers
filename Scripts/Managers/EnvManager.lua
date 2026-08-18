@@ -88,6 +88,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
 
         tonumber = tonumber,
         type = type,
+        enumType = enumType,
         string = {
             byte = string.byte,
             char = string.char,
@@ -246,7 +247,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
 
                 for _, writer in pairs(writers) do
                     if writer.name == registerName then
-                        sm.event.sendToInteractable(writer.SC_PRIVATE_interactable, "sv_onReceivePowerUpdate", power)
+                        sm.event.sendToInteractable(writer.SC_PRIVATE_interactable, "sv_onReceivePowerUpdate", power, sm.event.types.instant)
                         return
                     end
                 end
@@ -376,6 +377,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
         },
 
         sm = {
+            types = sm.scrapcomputers.table.clone(LUA_TYPES),
             vec3 = sm.scrapcomputers.table.clone(sm.vec3),
             util = {
                 axesToQuat = sm.util.axesToQuat,

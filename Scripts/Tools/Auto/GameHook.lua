@@ -179,12 +179,12 @@ sm.game.bindChatCommand = newBindCommand
 
 local oldSendToWorld = sm.event.sendToWorld
 
-local function newSendToWorld(world, callback, args)
+local function newSendToWorld(world, callback, args, eventType, pauseSave)
     if callback == "sv_e_onChatCommand" then
-        sm.event.sendToTool(GameHookClass.sv_toolInstance, "sv_onConfigCommand", args)
+        sm.event.sendToTool(GameHookClass.sv_toolInstance, "sv_onConfigCommand", args, sm.event.types.instant)
     end
     
-    oldSendToWorld(world, callback, args)
+    return oldSendToWorld(world, callback, args, eventType, pauseSave)
 end
 
 sm.event.sendToWorld = newSendToWorld

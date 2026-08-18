@@ -193,7 +193,7 @@ function PowerManagerClass:server_onFixedUpdate()
             if not hasPower and klass.sv.wasPowered then
                 for _, child in pairs(allChilds) do
                     if child:getType() == "scripted" then
-                        sm.event.sendToInteractable(child, "sv_onPowerLoss")
+                        sm.event.sendToInteractable(child, "sv_onPowerLoss", nil, sm.event.types.instant)
                     end
                 end
 
@@ -202,16 +202,16 @@ function PowerManagerClass:server_onFixedUpdate()
                 klass.sv.wasPowered = true
             end
         elseif type_ == "battery" then
-            sm.event.sendToInteractable(powerComponent.shape.interactable, "sv_receiveChargePower", powerEnabled and generatedActual or powerComponent.data.chargeRate)
+            sm.event.sendToInteractable(powerComponent.shape.interactable, "sv_receiveChargePower", powerEnabled and generatedActual or powerComponent.data.chargeRate, sm.event.types.instant)
         end
     end
 
     for id, source in pairs(useage) do
         if sm.exists(source.src) then
             if updatedGenerators[id] then
-                sm.event.sendToInteractable(source.src, "sv_receiveUsedPower", source.count)
+                sm.event.sendToInteractable(source.src, "sv_receiveUsedPower", source.count, sm.event.types.instant)
             else
-                sm.event.sendToInteractable(source.src, "sv_receiveUsedPower", 0)
+                sm.event.sendToInteractable(source.src, "sv_receiveUsedPower", 0, sm.event.types.instant)
             end
 
             source.count = 0
@@ -222,7 +222,7 @@ function PowerManagerClass:server_onFixedUpdate()
 
     for _, customComponent in pairs(sm.scrapcomputers.powerManager.customTable) do
         if customComponent.type == "breaker" then
-            sm.event.sendToInteractable(customComponent.shape.interactable, "sv_receiveTransferredPower", breakerPowers[customComponent.shape.id] or 0)
+            sm.event.sendToInteractable(customComponent.shape.interactable, "sv_receiveTransferredPower", breakerPowers[customComponent.shape.id] or 0, sm.event.types.instant)
         end
     end
 end
