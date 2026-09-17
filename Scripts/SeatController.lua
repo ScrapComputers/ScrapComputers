@@ -26,13 +26,13 @@ function SeatControllerClass:sv_createData()
 
         ---Gets all connected joints and gets its data and returns it
         ---@return JointData[]? data The connected joints data
-        getJointData = function() return self.sv.seat and self:sv_getJointData() or nil end,
+        getJointData = function() return self.sv.seat and self.sv.jointData or nil end,
 
         ---Gets the seated characters camera data and returns it
         ---@return CameraData data The camera data
         getCameraData = function() return self.sv.seat and self.sv.camera or nil end,
 
-        getSteeringAngles = function() return self.sv.seat and self:sv_getSteeringAngles() or nil end,
+        getSteeringAngles = function() return self.sv.seat and self.sv.steeringAngles or nil end,
 
         ---Presses a button
         ---@param index integer The button to press
@@ -66,6 +66,8 @@ function SeatControllerClass:server_onCreate()
         },
         camera = {},
         seat = nil, ---@type Interactable
+        jointData = {},
+        steeringAngles = {}
     }
 
     sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, 1)
@@ -84,39 +86,56 @@ function SeatControllerClass:server_onFixedUpdate()
         self.sv.data.adPower = singleParent:getSteeringAngle()
         self.sv.data.sprint = singleParent:getSteeringSprint()
         self.sv.data.characterName = name
+
+        self:sv_updateJointsInfo()
     else
         self.sv.seat = nil
+
+        for i = #self.sv.jointData, 1, -1 do self.sv.jointData[i] = nil end
+        for i = #self.sv.steeringAngles, 1, -1 do self.sv.steeringAngles[i] = nil end
     end
 end
 
-function SeatControllerClass:sv_getJointData()
-    local jointData = {}
+function SeatControllerClass:sv_updateJointsInfo()
     local joints = self.sv.seat:getJoints()
+    if not joints then return end
 
-    for i, joint in ipairs(joints) do
-        if joint:getBearingEnabled() then
-            local leftSpeed, rightSpeed, leftLimit, rightLimit, locked = self.sv.seat:getSteeringJointSettings(joint)
+    local jointData = self.sv.jointData
+    local steeringAngles = self.sv.steeringAngles
+
+    local count = 0
+    for _, joint in ipairs(joints) do
+        if sm.exists(joint) and joint:getBearingEnabled() then
+            count = count + 1
+            
+            local angle = joint:getAngle()
             local jointType = joint:getType()
+
+            steeringAngles[count] = (jointType == "spring" and -angle or angle)
+
+            local leftSpeed, rightSpeed, leftLimit, rightLimit, locked = self.sv.seat:getSteeringJointSettings(joint)
             local isReversed = joint:isReversed()
+            isReversed = (jointType == "spring") ~= isReversed
 
-            -- NOTE: Springs have inverted rotation compared to regular bearings (same arrow direction = opposite spin). (Idk, is this even needed???)
-            if jointType == "spring" then
-                isReversed = not isReversed
-            end
+            local item = jointData[count] or {}
+            item.leftSpeed = leftSpeed
+            item.rightSpeed = rightSpeed
+            item.leftLimit = leftLimit
+            item.rightLimit = rightLimit
+            item.bearingLock = not locked
+            item.isReversed = isReversed
+            item.bearingType = jointType
 
-            jointData[i] = {
-                leftSpeed = leftSpeed,
-                rightSpeed = rightSpeed,
-                leftLimit = leftLimit,
-                rightLimit = rightLimit,
-                bearingLock = not locked,
-                isReversed = isReversed,
-                bearingType = jointType
-            }
+            jointData[count] = item
         end
     end
 
-    return jointData
+    for i = #jointData, count + 1, -1 do
+        jointData[i] = nil
+    end
+    for i = #steeringAngles, count + 1, -1 do
+        steeringAngles[i] = nil
+    end
 end
 
 function SeatControllerClass:sv_setCameraInfo(data)
@@ -126,25 +145,6 @@ function SeatControllerClass:sv_setCameraInfo(data)
         direction = data[3],
         fov = data[4]
     }
-end
-
-function SeatControllerClass:sv_getSteeringAngles()
-    local angles = {}
-    local joints = self.sv.seat:getJoints()
-
-    for i, joint in ipairs(joints) do
-        if joint:getBearingEnabled() then
-            local angle = joint:getAngle()
-
-            if joint.type == "spring" then
-                angle = -angle
-            end
-
-            angles[i] = angle
-        end
-    end
-
-    return angles
 end
 
 function SeatControllerClass:client_onFixedUpdate()
