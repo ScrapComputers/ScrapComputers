@@ -196,6 +196,9 @@
     "scrapcomputers.battery.charge_delta.false"                             : "Charge Delta: #(ERROR)%s / %s kW",
     
     // BREAKER
+    "scrapcomputers.breaker.status.true"                                    : "#(SUCCESS)Enabled",
+    "scrapcomputers.breaker.status.false"                                   : "#(ERROR)Disabled",
+
     "scrapcomputers.breaker.power_transfer.true"                            : "Transferring: #(SUCCESS)%s kW",
     "scrapcomputers.breaker.power_transfer.false"                           : "Transferring: #(ERROR)%s kW",
 

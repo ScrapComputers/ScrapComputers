@@ -53,35 +53,24 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
         ---@param duration number?
         ---@param player Player?
         alert = function(message, duration, player)
-            duration = duration or 5
-
+            duration = duration or 4
+            
             sm.scrapcomputers.errorHandler.assertArgument(message, 1, {"string"})
             sm.scrapcomputers.errorHandler.assertArgument(duration, 2, {"number", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(player, 3, {"Player", "nil"})
+            sm.scrapcomputers.errorHandler.assertArgument(player, 4, {"Player", "nil"})
+            if not isUnsafeENV and player then error("Cannot use Player argument in safe-env!") end
 
-            if not isUnsafeENV and player then
-                error("Cannot use Player argument in safe-env!")
-            end
+            local payload = { message, duration }
 
             if player then
-                self.network:sendToClient(player, "cl_alert", {message, duration})
+                self.network:sendToClient(player, "cl_alert", payload)
             else
-                self.network:sendToClients("cl_alert", {message, duration})
+                self.network:sendToClients("cl_alert", payload)
             end
         end,
 
         debug = function(...)
             print("[SC]:", ...)
-        end,
-
-        ---@param seconds number
-        sleep = function (seconds)
-            sm.scrapcomputers.errorHandler.assertArgument(seconds, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(seconds <= 5, nil, "Too long to wait! (Max is 5 secconds!)")
-
-            local endClock = tonumber(os.clock() + seconds)
-
-            while os.clock() < endClock do end
         end,
 
         tostring = sm.scrapcomputers.toString,
@@ -423,6 +412,10 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
 
         environmentVariables.bit = bit
         environmentVariables.os = os
+    end
+
+    environmentVariables.sleep = function (...)
+        environmentVariables.sc.console.warn("sleep() is deprecated and will be removed in future updates.")
     end
 
     local function fastMerge(dest, src)

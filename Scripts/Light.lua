@@ -16,8 +16,8 @@ end
 function LightClass:sv_createData()
     return {
         setColor = function (color)
-            sm.scrapcomputers.errorHandler.assertArgument(color, nil, {"string", "Color"})
-            self.shape.color = type(color) == "string" and sm.color.new(color) or color
+            sm.scrapcomputers.errorHandler.assertArgument(color, nil, {"Color", "string", "number"})
+            self.shape.color = type(color) ~= "Color" and sm.color.new(color) or color
         end,
         getColor = function () return self.shape.color end
     }

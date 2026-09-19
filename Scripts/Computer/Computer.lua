@@ -2264,9 +2264,12 @@ function ComputerClass:cl_internalChatMessage(msg)
 end
 
 function ComputerClass:cl_alert(data)
-    if self.cl.storage.flags.allowAlerts then
-        sm.gui.displayAlertText(data[1], data[2])
-    end
+    if not self.cl.storage.flags.allowAlerts then return end
+
+    local msg = data[1]
+    local duration = data[2]
+
+    sm.gui.displayAlertText(msg, duration)
 end
 
 sm.scrapcomputers.componentManager.toComponent(ComputerClass, nil, false, true)

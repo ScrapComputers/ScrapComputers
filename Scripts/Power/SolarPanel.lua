@@ -6,6 +6,8 @@ SolarPanelClass.connectionInput = sm.interactable.connectionType.computerIO + sm
 SolarPanelClass.connectionOutput = sm.interactable.connectionType.computerIO
 SolarPanelClass.colorNormal = sm.color.new(0xFFDC82FF)
 SolarPanelClass.colorHighlight = sm.color.new(0xFCE8B5FF)
+SolarPanelClass.connectIcon = "electrical"
+SolarPanelClass.connectIconScale = 0.75
 
 -- CLIENT / SERVER --
 
@@ -114,9 +116,8 @@ function SolarPanelClass:cl_receiveTotalPower(totalPower)
     self.cl.totalPower = totalPower
 end
 
-
 function SolarPanelClass:cl_receiveUsedPower(usedPower)
     self.cl.usedPower = usedPower
 end
 
-sm.scrapcomputers.componentManager.toComponent(SolarPanelClass, "PowerComponents", true, _, true)
+sm.scrapcomputers.componentManager.toComponent(SolarPanelClass, "PowerComponents", true, nil, true)
