@@ -2268,13 +2268,8 @@ function ComputerClass:cl_alert(data)
 
     local msg = data[1]
     local duration = data[2]
-    local alertType = data[3]
 
-    if alertType == 1 then
-        sm.gui.displayAlertText(msg, duration)
-    elseif alertType == 2 then
-        sm.event.sendToPlayer(sm.localPlayer.getPlayer(), "cl_n_onMessage", { message = msg, displayTime = duration })
-    end
+    sm.gui.displayAlertText(msg, duration)
 end
 
 sm.scrapcomputers.componentManager.toComponent(ComputerClass, nil, false, true)

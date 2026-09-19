@@ -52,16 +52,15 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
         ---@param message string
         ---@param duration number?
         ---@param player Player?
-        alert = function(message, duration, isNotification, player)
+        alert = function(message, duration, player)
             duration = duration or 4
             
             sm.scrapcomputers.errorHandler.assertArgument(message, 1, {"string"})
             sm.scrapcomputers.errorHandler.assertArgument(duration, 2, {"number", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(isNotification, 2, {"boolean", "nil"})
             sm.scrapcomputers.errorHandler.assertArgument(player, 4, {"Player", "nil"})
             if not isUnsafeENV and player then error("Cannot use Player argument in safe-env!") end
 
-            local payload = { message, duration, (isNotification and 2 or 1) }
+            local payload = { message, duration }
 
             if player then
                 self.network:sendToClient(player, "cl_alert", payload)
@@ -72,16 +71,6 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
 
         debug = function(...)
             print("[SC]:", ...)
-        end,
-
-        ---@param seconds number
-        sleep = function (seconds)
-            sm.scrapcomputers.errorHandler.assertArgument(seconds, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(seconds <= 5, nil, "Too long to wait! (Max is 5 secconds!)")
-
-            local endClock = tonumber(os.clock() + seconds)
-
-            while os.clock() < endClock do end
         end,
 
         tostring = sm.scrapcomputers.toString,
@@ -423,6 +412,10 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
 
         environmentVariables.bit = bit
         environmentVariables.os = os
+    end
+
+    environmentVariables.sleep = function (...)
+        environmentVariables.sc.console.warn("sleep() is deprecated and will be removed in future updates.")
     end
 
     local function fastMerge(dest, src)
