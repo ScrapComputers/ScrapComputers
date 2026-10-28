@@ -26,9 +26,6 @@ GameHookClass = class()
 
 function GameHookClass:server_onCreate()
     GameHookClass.sv_toolInstance = self.tool
-    
-    -- Im pretty sure everything works fine now?
-    -- sm.gui.chatMessage("#00c0e0NOTICE:#eeeeee Certain features with ScrapComputers have either been degraded or removed due to Chapter 2. More information can be found in the Discord Server.")
 end
 
 function GameHookClass:server_onFixedUpdate()
@@ -127,8 +124,8 @@ local function newBindCommand(command, params, callback, help)
         if pcall(sm.json.fileExists, "$CONTENT_DATA/description.json") then
             backend.gamemodeType = "Custom"
 
-            local descExists, description = pcall(sm.json.open, "$CONTENT_DATA/description.json")
-            local confExists, config = pcall(sm.json.open, "$CONTENT_DATA/config.json")
+            local descExists, description = pcall(sm.json.open, "$CONTENT_DATA/description.json", false)
+            local confExists, config = pcall(sm.json.open, "$CONTENT_DATA/config.json", false)
 
             if descExists and type(description) == "table" and type(description.localId) == "string" then
                 backend.customGameLocalId = description.localId

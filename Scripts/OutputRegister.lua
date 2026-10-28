@@ -11,16 +11,20 @@ OutputRegisterClass.colorHighlight = sm.color.new(0xee0000ff)
 
 -- Computer API* Data
 function OutputRegisterClass:sv_createData()
-    local data = {
-        name = self.storage:load() or "",
+    local name = self.storage:load()
+    if not name then
+        name = sm.scrapcomputers.toString(math.random(0,100))
+        self.storage:save(name)
+    end
+
+    self.network:sendToClients("cl_setName", name)
+    
+    return {
+        name = name,
         power = 0,
 
-        -- The only time SC_PRIVATE was used.
         SC_PRIVATE_interactable = self.interactable
     }
-
-    self.network:sendToClients("cl_setName", data.name)
-    return data
 end
 
 function OutputRegisterClass:server_onCreate()
@@ -105,4 +109,4 @@ function OutputRegisterClass:cl_reloadTranslations()
     self.cl.gui:setText("Button", "scrapcomputers.other.save_and_closebtn")
 end
 
-sm.scrapcomputers.componentManager.toComponent(OutputRegisterClass, "OutputRegisters", true, nil, true)
+sm.scrapcomputers.componentManager.toComponent(OutputRegisterClass, "OutputRegisters", true, nil, true, true)

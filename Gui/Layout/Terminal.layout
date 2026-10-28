@@ -9,19 +9,19 @@
             </Widget>
         </Widget>
         <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.11149425287356322 1 0.88735632183908042" align="Stretch" name="MainMain">
-            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.018450184501845018 0.031088082901554404 0.96309963099630991 0.84326424870466321" name="MainMainConsole">
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.01107011070110701 0.019430051813471502 0.97785977859778594 0.8613989637305699" name="MainMainConsole">
                 <Property key="MaxTextLength" value="999999999"/>
                 <Property key="ReadOnly" value="true"/>
                 <Property key="TabPrinting" value="true"/>
                 <Property key="WordWrap" value="true"/>
                 <Property key="MultiLine" value="true"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.7409594095940959 0.88082901554404147 0.24354243542435425 0.10362694300518134" name="MainMainSendBtn">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.75276752767527677 0.90025906735751293 0.23468634686346865 0.077720207253886009" name="MainMainSendBtn">
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="Caption" value="Stupid Submit button haha yes"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.018450184501845018 0.89378238341968907 0.71955719557195574 0.077720207253886009" name="MainMainInput">
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.01107011070110701 0.90025906735751293 0.73431734317343178 0.077720207253886009" name="MainMainInput">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="TextAlign" value="Left VCenter"/>
                 <Property key="MaxTextLength" value="999999999"/>

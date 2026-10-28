@@ -1,4 +1,4 @@
-local audioData = sm.json.open("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/audio.json")
+local audioData = sm.json.open("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/audio.json", false)
 
 -- Lets you manage audio. (Names, not playing them)
 sm.scrapcomputers.audio = {}

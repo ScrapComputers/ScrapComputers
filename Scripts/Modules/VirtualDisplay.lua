@@ -574,7 +574,7 @@ function sm.scrapcomputers.virtualdisplay.new(displayWidth, displayHeight)
         local fileLocation = customSearch and path or imagePath..path
         sm_scrapcomputers_errorHandler_assert(sm.json.fileExists(fileLocation), 3, "Image doesnt exist")
 
-        local imageTbl = sm.json.open(fileLocation)
+        local imageTbl = sm.json.open(fileLocation, false)
         local x, y = 1, 1
         
         for i = 1, #imageTbl do

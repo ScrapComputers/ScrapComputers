@@ -10,13 +10,18 @@ InputRegisterClass.colorHighlight = sm.color.new(0x00ee00ff)
 -- SERVER --
 
 function InputRegisterClass:sv_createData()
-    local data = {
-        name = self.storage:load() or "",
+    local name = self.storage:load()
+    if not name then
+        name = sm.scrapcomputers.toString(math.random(0,100))
+        self.storage:save(name)
+    end
+
+    self.network:sendToClients("cl_setName", name)
+
+    return {
+        name = name,
         power = 0,
     }
-
-    self.network:sendToClients("cl_setName", data.name)
-    return data
 end
 
 function InputRegisterClass:server_onCreate()
@@ -126,4 +131,4 @@ function InputRegisterClass:cl_reloadTranslations()
     self.cl.gui:setText("Button", "scrapcomputers.other.save_and_closebtn")
 end
 
-sm.scrapcomputers.componentManager.toComponent(InputRegisterClass, "InputRegisters", true, nil, true)
+sm.scrapcomputers.componentManager.toComponent(InputRegisterClass, "InputRegisters", true, nil, true, true)

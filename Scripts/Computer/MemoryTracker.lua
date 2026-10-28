@@ -22,8 +22,7 @@ function MemoryTracker:new()
         highTrendStreak = 0
     }
 
-    sm.scrapcomputers.util.setmetatable(obj, self)
-    return obj
+    return sm.scrapcomputers.metatable.setmetatable(obj, self)
 end
 
 function MemoryTracker:trackMemory(L)

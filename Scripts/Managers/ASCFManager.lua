@@ -69,13 +69,12 @@ local function findOrLoadFont(fontName)
     sm.scrapcomputers.logger.info("ASCFManager.lua", "Loading font:", path)
 
     if not sm.json.fileExists(path) then
-        sm.scrapcomputers.logger.fatal("ASCFManager.lua",
-            "Font does not exist! This shouldn't be possble. Mod may be unstable!")
+        sm.scrapcomputers.logger.fatal("ASCFManager.lua", "Font does not exist! This shouldn't be possble. Mod may be unstable!")
         ascfManagerBackend.notFoundFonts[fontName] = true
         return nil, -2
     end
 
-    ascfManager.fonts[fontName] = sm.json.open(path)
+    ascfManager.fonts[fontName] = sm.json.open(path, false)
     return ascfManager.fonts[fontName], 1
 end
 
@@ -136,7 +135,8 @@ function ascfManager.addFont(fontPath)
 
     local filename = fontPath:match("([^/]+)%.%w+$")
     ascfManager.fonts[filename] = fontPath
-    sm.scrapcomputers.logger.info("ASCFManager.lua", "Cached font", fontPath)
+    
+    --sm.scrapcomputers.logger.info("ASCFManager.lua", "Cached font", fontPath)
 end
 
 ---Gets information/data about the font

@@ -111,6 +111,12 @@ local function indexToCoordinate(index, width)
     return (index - 1) % width + 1, math_floor((index - 1) / width) + 1
 end
 
+local function clearTable(tbl)
+    for i in pairs(tbl) do
+        tbl[i] = nil
+    end
+end
+
 local function splitTable(numbers, length)
     local numbLen = #numbers
 
@@ -156,7 +162,7 @@ local function colorToID(color)
         local r = tonumber(string_sub(color, 1, 2), 16) or 0
         local g = tonumber(string_sub(color, 3, 4), 16) or 0
         local b = tonumber(string_sub(color, 5, 6), 16) or 0
-        
+
         return bit_bor(bit_lshift(r, 16), bit_lshift(g, 8), b)
     elseif colorType == "Color" then
         local r = math_floor(color.r * 255)
@@ -170,19 +176,23 @@ local function colorToID(color)
 end
 
 local function idToColor(colorID)
+    local r = bit_rshift(colorID, 16)
+    local g = bit_band(bit_rshift(colorID, 8), 255)
+    local b = bit_band(colorID, 255)
+
     return sm_color_new(
-        math_floor(colorID / 65536) * inv255,
-        (math_floor(colorID / 256) % 256) * inv255,
-        (colorID % 256) * inv255
+        r * inv255,
+        g * inv255,
+        b * inv255
     )
 end
 
 local function areColorsSimilar(color1, color2, threshold)
     if color1 == color2 then return true end
 
-    local dr = math_floor(color1 / 65536) - math_floor(color2 / 65536)
-    local dg = (math_floor(color1 / 256) % 256) - (math_floor(color2 / 256) % 256)
-    local db = (color1 % 256) - (color2 % 256)
+    local dr = bit_rshift(color1, 16) - bit_rshift(color2, 16)
+    local dg = bit_band(bit_rshift(color1, 8), 0xFF) - bit_band(bit_rshift(color2, 8), 0xFF)
+    local db = bit_band(color1, 0xFF) - bit_band(color2, 0xFF)
 
     return dr * dr + dg * dg + db * db <= (threshold * 255) ^ 2 * 3
 end
@@ -196,8 +206,18 @@ function DisplayClass:sv_createData()
     local data = self.data
     local data_width = data.width
     local data_height = data.height
-    local dataBuffer = {}
+    local self_sv = self.sv
+    local dataBuffer = self_sv.buffer.data
+    local lastBuffer = self_sv.lastBuffer
     local dataIndex = 0
+
+    self_sv.resetBuffer = function()
+        for i = 1, dataIndex do
+            dataBuffer[i] = nil
+        end
+
+        dataIndex = 0
+    end
 
     -- Draw Circle function
     ---@param x number The center X coordinates
@@ -369,8 +389,11 @@ function DisplayClass:sv_createData()
         ---@param color MultiColorType The new background color or 000000
         clear = function (color)
             local clearColor = colorToID(color)
-            
-            dataBuffer = {}
+
+            for i = 1, dataIndex do
+                dataBuffer[i] = nil
+            end
+
             dataBuffer[1] = 3
             dataBuffer[2] = clearColor
             dataIndex = 2
@@ -771,12 +794,6 @@ function DisplayClass:sv_createData()
             return self.sv.display.touchTbl
         end,
 
-        -- Returns display's id
-        ---@return integer id The display's shape id.
-        getId = function()
-            return self.shape.id
-        end,
-
         -- Returns displays optimization threshold (0 - 1)
         ---@return number threshold The current optimization threshold
         getOptimizationThreshold = function ()
@@ -795,9 +812,6 @@ function DisplayClass:sv_createData()
 
         -- Renders the pixels to the display.
         update = function ()
-            local self_sv = self.sv
-
-            local lastBuffer = self_sv.lastBuffer
             local lastLength = self_sv.lastBufferLen
             local update = not lastLength or not lastBuffer
 
@@ -813,39 +827,24 @@ function DisplayClass:sv_createData()
             end
 
             if not update then
-                local maxLen = math_max(lastLength, dataIndex)
-                local i = 0
-
-                while not update and i < maxLen do
-                    i = i + 1
-                    update = dataBuffer[i] ~= lastBuffer[i]
+                for i = 1, dataIndex do
+                    if dataBuffer[i] ~= lastBuffer[i] then
+                        update = true
+                        break
+                    end  
                 end
             end
 
             if update then
-                local currBuffer = self_sv.buffer.data
+                local loopIndex = lastLength > dataIndex and lastLength or dataIndex
 
-                if currBuffer[1] then
-                    local selIndex = #currBuffer
-
-                    for i = 1, #dataBuffer do
-                        local data = dataBuffer[i]
-
-                        selIndex = selIndex + 1
-                        currBuffer[selIndex] = data
-                    end
-                else
-                    currBuffer = dataBuffer
+                for i = 1, loopIndex do
+                    lastBuffer[i] = dataBuffer[i]
                 end
 
-                self_sv.buffer.data = currBuffer
-                self_sv.lastBuffer = currBuffer
-                self_sv.lastBufferLen = #currBuffer
+                self_sv.lastBufferLen = dataIndex
                 self_sv.allowUpdate = true
             end
-
-            dataBuffer = {}
-            dataIndex = 0
         end,
 
         ---Sets the max buffer size
@@ -872,11 +871,6 @@ function DisplayClass:server_onCreate()
             touchTbl = {}
         },
 
-        pixel = {
-            pixelData = {},
-            backPanel = 0
-        },
-
         buffer = {
             data = {},
             network = {},
@@ -885,7 +879,10 @@ function DisplayClass:server_onCreate()
         },
 
         snapshotTable = {},
-        totalPlayers = 1
+        totalPlayers = 1,
+
+        lastBufferLen = 0,
+        lastBuffer = {}
     }
 
     sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, self.data.scale / 10)
@@ -945,11 +942,16 @@ function DisplayClass:server_onFixedUpdate()
                 sendToClients(self_network, "cl_buildData", {chunk, i == len})
             end
         else
-            self.cl.buffer.data = dataBuffer
-            sendToClients(self_network, "cl_pushData")
+            local clientBuffer = self.cl.buffer.data
+
+            for i = 1, #dataBuffer do
+                clientBuffer[i] = dataBuffer[i]
+            end
+
+            sendToClients(self_network, "cl_pushData", true)
         end
 
-        self_sv_buffer.data = {}
+        self_sv.resetBuffer()
         self_sv.allowUpdate = false
     end
 
@@ -1040,9 +1042,17 @@ function DisplayClass:client_onCreate()
             threshold =  0.005
         },
 
-        pixels = {},
-        startBuffer = {},
-        stopBuffer = {},
+        indexToOrigin = {},
+        originToArray = {},
+        arrayIndex = 0,
+        effectArray = {},
+        scaleXArray = {},
+        scaleYArray = {},
+        coordXArray = {},
+        coordYArray = {},
+        colorArray = {},
+        indexArray = {},
+
         newBuffer = {},
         fullBuffer = {},
         updatedPoints = {},
@@ -1084,6 +1094,12 @@ function DisplayClass:client_onCreate()
     end
 end
 
+function DisplayClass:client_onRefresh()
+    print("-----------------------")
+    print("CONSOLE SEPARATION")
+    print("-----------------------")
+end
+
 function DisplayClass:cl_setRenderDistance(param)
     self.cl.display.renderDistance = param
 end
@@ -1107,8 +1123,11 @@ function DisplayClass:cl_takeSnapshot()
     local self_network = self.network
     local sendToServer = self_network.sendToServer
     
-    for i, effectData in pairs(self.cl.pixels) do
-        colorTbl[i] = effectData[6]
+    local originToArray = self.cl.originToArray
+    local colorArray = self.cl.colorArray
+
+    for index, origin in pairs(self.cl.indexToOrigin) do
+        colorTbl[index] = colorArray[originToArray[origin]]
     end
 
     local lastPlayerLen = self.cl.lastLen
@@ -1195,17 +1214,27 @@ function DisplayClass:client_onFixedUpdate()
                 local dataTbl = {3, self_cl_backPanel.currentColor}
                 local dataIndex = 2
 
-                for index, data in pairs(self_cl.pixels) do
-                    local x, y = indexToCoordinate(index, self_data.width)
+                local scaleXArray = self.cl.scaleXArray
+                local scaleYArray = self.cl.scaleYArray
+                local coordXArray = self.cl.coordXArray
+                local coordYArray = self.cl.coordYArray
+                local colorArray = self.cl.colorArray
 
+                for i = 1, self.cl.arrayIndex do
                     dataIndex = dataIndex + 1
-                    dataTbl[dataIndex] = 1
+                    dataBuffer[dataIndex] = 6
                     dataIndex = dataIndex + 1
-                    dataTbl[dataIndex] = x
+                    dataBuffer[dataIndex] = coordXArray[i]
                     dataIndex = dataIndex + 1
-                    dataTbl[dataIndex] = y
+                    dataBuffer[dataIndex] = coordYArray[i]
                     dataIndex = dataIndex + 1
-                    dataTbl[dataIndex] = data[6]
+                    dataBuffer[dataIndex] = scaleXArray[i]
+                    dataIndex = dataIndex + 1
+                    dataBuffer[dataIndex] = scaleYArray[i]
+                    dataIndex = dataIndex + 1
+                    dataBuffer[dataIndex] = colorArray[i]
+                    dataIndex = dataIndex + 1
+                    dataBuffer[dataIndex] = true
                 end
 
                 local self_network = self.network
@@ -1238,12 +1267,6 @@ function DisplayClass:client_onFixedUpdate()
         if self_cl.lastLangUpdate ~= lastLangUpdt or self_cl.seatState ~= self_cl.characterSeated then
             self_cl.lastLangUpdate = lastLangUpdt
             self_cl.seatState = self_cl.characterSeated
-
-            if self_cl.characterSeated then
-                self_cl.interactionText = sm_scrapcomputers_languageManager_translatable("scrapcomputers.display.touchscreen", tinkerBind)
-            else
-                self_cl.interactionText = sm_scrapcomputers_languageManager_translatable("scrapcomputers.display.touchscreen_multi", interactBind, tinkerBind)
-            end
         end
     end
 
@@ -1293,14 +1316,6 @@ function DisplayClass:client_onUpdate(dt)
     local self_cl = self.cl
     local self_shape = self.shape
 
-    if self_cl.raycastValid and self_cl.display.touchAllowed and self_cl.interactionText then
-        sm.gui.setInteractionText("", self_cl.interactionText, "")
-        sm.gui.setInteractionText("")
-    elseif self_cl.isRaycasted then
-        sm.gui.setInteractionText("")
-        sm.gui.setInteractionText("")
-    end
-
     local interpolation = self.shape.worldPosition - self.shape:getInterpolatedWorldPosition()
     local start = localPlayer.getRaycastStart() + interpolation
     local hit, res = sm_physics_raycast(start, start + localPlayer.getDirection() * 7.5, nil, sm.physics.filter.dynamicBody + sm.physics.filter.staticBody)
@@ -1336,7 +1351,22 @@ function DisplayClass:client_onInteract(character, state)
     return false
 end
 
+function DisplayClass:cl_updateInteractionText()
+    local self_cl = self.cl
+    if self_cl.raycastValid and self_cl.display.touchAllowed then
+        if self_cl.characterSeated then
+            sm.scrapcomputers.gui:showCustomInteractiveText({{"scrapcomputers.display.touchscreen", tinkerBind}})
+        else
+            sm.scrapcomputers.gui:showCustomInteractiveText({{"scrapcomputers.display.touchscreen_multi", interactBind, tinkerBind}})
+        end
+    elseif self_cl.isRaycasted then
+        sm.gui.setInteractionText(" ")
+        sm.gui.setInteractionText("")
+    end
+end
+
 function DisplayClass:client_canInteract()
+    self:cl_updateInteractionText()
     return self.shape.usable
 end
 
@@ -1353,10 +1383,11 @@ function DisplayClass:client_onTinker(character, state)
 end
 
 function DisplayClass:client_canTinker()
+    self:cl_updateInteractionText()
     return true
 end
 
-function DisplayClass:cl_pushData()
+function DisplayClass:cl_pushData(clearDataTable)
     local newBuffer = {}
     local hasCleared = false
     local self_cl = self.cl
@@ -1367,7 +1398,7 @@ function DisplayClass:cl_pushData()
     local height = self_data.height
     local fullBuffer = self_cl.fullBuffer
     local updatedPoints = self_cl.updatedPoints
-    local offsetBuffer = self_cl.offsetBuffer
+    --local offsetBuffer = self_cl.offsetBuffer
     local hasUpdated = false
     local self_cl_display = self_cl.display
     local threshold = self_cl_display.threshold
@@ -1377,9 +1408,7 @@ function DisplayClass:cl_pushData()
             index = (y - 1) * width + x
 
             newBuffer[index] = color
-            fullBuffer[index] = color
             updatedPoints[index] = true
-            hasUpdated = true
         end
     end
 
@@ -1426,8 +1455,9 @@ function DisplayClass:cl_pushData()
 
     local function clearDisplay(color)
         hasCleared = true
-        newBuffer = {}
-        fullBuffer = {}
+
+        clearTable(newBuffer)
+        clearTable(fullBuffer)
         
         if not isAircraftDisplay then
             if color and color ~= self_cl_backPanel.currentColor then
@@ -1713,20 +1743,27 @@ function DisplayClass:cl_pushData()
 
         if action == 1 then
             addPixel(data[searchIndex + 1], data[searchIndex + 2], data[searchIndex + 3])
+            hasUpdated = true
         elseif action == 2 then
             drawLine(data[searchIndex + 1], data[searchIndex + 2], data[searchIndex + 3], data[searchIndex + 4], data[searchIndex + 5])
+            hasUpdated = true
         elseif action == 3 then
             clearDisplay(data[searchIndex + 1])
         elseif action == 4 then
             drawCircle(data[searchIndex + 1], data[searchIndex + 2], data[searchIndex + 3], data[searchIndex + 4], data[searchIndex + 5])
+            hasUpdated = true
         elseif action == 5 then
             drawTriangle(data[searchIndex + 1], data[searchIndex + 2], data[searchIndex + 3], data[searchIndex + 4], data[searchIndex + 5], data[searchIndex + 6], data[searchIndex + 7], data[searchIndex + 8])
+            hasUpdated = true
         elseif action == 6 then
             drawRect(data[searchIndex + 1], data[searchIndex + 2], data[searchIndex + 3], data[searchIndex + 4], data[searchIndex + 5], data[searchIndex + 6])
+            hasUpdated = true
         elseif action == 7 then
             drawText(data[searchIndex + 1], data[searchIndex + 2], data[searchIndex + 3], data[searchIndex + 4], data[searchIndex + 5], data[searchIndex + 6], data[searchIndex + 7])
+            hasUpdated = true
         elseif action == 8 then
             drawWithPoints(data[searchIndex + 1], data[searchIndex + 2])
+            hasUpdated = true
         elseif action == 100 then
             videoHook[data[searchIndex + 6]](
                 {
@@ -1741,6 +1778,7 @@ function DisplayClass:cl_pushData()
                 threshold, 
                 shapeId
             )
+            hasUpdated = true
         elseif action == 101 then
             frameHook[data[searchIndex + 5]](
                 {
@@ -1754,17 +1792,31 @@ function DisplayClass:cl_pushData()
                 threshold, 
                 shapeId
             )
+            hasUpdated = true
         end
 
         searchIndex = searchIndex + dataCountLookup[action] + 1
     end
 
-    self_cl.buffer.data = {}
+    if clearDataTable then
+        clearTable(data)
+    end
 
     local self_interactable = self.interactable
     local self_cl_pixel = self_cl.pixel
     local backpanelColor = self_cl_backPanel.currentColor
-    local pixels = self_cl.pixels
+
+    local indexToOrigin = self_cl.indexToOrigin
+    local originToArray = self_cl.originToArray
+    local arrayIndex = self_cl.arrayIndex
+    local effectArray = self_cl.effectArray
+    local scaleXArray = self_cl.scaleXArray
+    local scaleYArray = self_cl.scaleYArray
+    local coordXArray = self_cl.coordXArray
+    local coordYArray = self_cl.coordYArray
+    local colorArray = self_cl.colorArray
+    local indexArray = self_cl.indexArray
+
     local stoppedIndex = self_cl.stoppedIndex
     local stoppedEffects = self_cl_pixel.stoppedEffects
     local dataChange = {}
@@ -1784,178 +1836,181 @@ function DisplayClass:cl_pushData()
         
         if stoppedIndex > 0 then
             effect = stoppedEffects[stoppedIndex]
-    
-            offsetBuffer[effect] = nil
+            --offsetBuffer[effect] = nil
             stoppedEffects[stoppedIndex] = nil
             stoppedIndex = stoppedIndex - 1
-
-            if not isHidden and not effect_isPlaying(effect) then
-                effect_start(effect)
-            end
         else
             effect = sm_effect_createEffect(pixelEffect, self_interactable)
-
-            if not isHidden then
-                effect_start(effect)
-            end
         end
     
         return effect
     end
 
+    local function suspendEffect(arrayPointer)
+        local effect = effectArray[arrayPointer]
+        local originIndex = indexArray[arrayPointer] 
+
+        stoppedIndex = stoppedIndex + 1
+        stoppedEffects[stoppedIndex] = effect
+        --offsetBuffer[effect] = true
+        --effect_setOffsetPosition(effect, rePos)
+        effect_stop(effect)
+
+        if arrayPointer ~= arrayIndex then
+            local popIndex = indexArray[arrayIndex]
+
+            effectArray[arrayPointer] = effectArray[arrayIndex]
+            scaleXArray[arrayPointer] = scaleXArray[arrayIndex]
+            scaleYArray[arrayPointer] = scaleYArray[arrayIndex]
+            coordXArray[arrayPointer] = coordXArray[arrayIndex]
+            coordYArray[arrayPointer] = coordYArray[arrayIndex]
+            colorArray[arrayPointer]  = colorArray[arrayIndex]
+            indexArray[arrayPointer]  = popIndex
+            
+            dataChange[arrayPointer]  = dataChange[arrayIndex]
+            colorChange[arrayPointer] = colorChange[arrayIndex]
+
+            originToArray[originIndex] = nil
+            originToArray[popIndex] = arrayPointer
+
+            effectArray[arrayIndex] = nil
+            scaleXArray[arrayIndex] = nil
+            scaleYArray[arrayIndex] = nil
+            coordXArray[arrayIndex] = nil
+            coordYArray[arrayIndex] = nil
+            colorArray[arrayIndex]  = nil
+            indexArray[arrayIndex]  = nil
+            
+            dataChange[arrayIndex]  = nil
+            colorChange[arrayIndex] = nil
+        else
+            effectArray[arrayPointer] = nil
+            scaleXArray[arrayPointer] = nil
+            scaleYArray[arrayPointer] = nil
+            coordXArray[arrayPointer] = nil
+            coordYArray[arrayPointer] = nil
+            colorArray[arrayPointer]  = nil
+            indexArray[arrayPointer]  = nil
+            
+            dataChange[arrayPointer]  = nil
+            colorChange[arrayPointer] = nil
+            
+            originToArray[originIndex] = nil
+        end
+
+        arrayIndex = arrayIndex - 1
+    end
+
     local function meshNeighbours(index, originColor)
         local success
-        local originData = pixels[index]
+        local originIndex = indexToOrigin[index]
+        local arrayPointer = originIndex and originToArray[originIndex]
         local originEffect, originSx, originSy, originX, originY
 
-        if originData then
+        if arrayPointer then
             originEffect, originSx, originSy, originX, originY = 
-            originData[1], originData[2], originData[3], originData[4], originData[5]
+            effectArray[arrayPointer], scaleXArray[arrayPointer], scaleYArray[arrayPointer], 
+            coordXArray[arrayPointer], coordYArray[arrayPointer]
 
-            index = (originY - 1) * width + originX
+            index = originIndex
         else
             originSx, originSy, originX, originY = 
             1, 1, (index - 1) % width + 1, math_floor((index - 1) / width) + 1
         end
 
-        local nxData = pixels[index - 1]
-        local pxData = pixels[index + originSx]
+        -- local nxOriginIndex = indexToOrigin[index - 1]
+        -- local nxArrayPointer = nxOriginIndex and originToArray[nxOriginIndex]
 
-        local nxPossible = nxData and nxData[1] ~= originEffect and nxData[3] == originSy and nxData[5] == originY and areColorsSimilar(nxData[6], originColor, threshold)
-        local pxPossible = pxData and pxData[1] ~= originEffect and pxData[3] == originSy and pxData[5] == originY and areColorsSimilar(pxData[6], originColor, threshold)
+        -- local pxOriginIndex = indexToOrigin[index + originSx]
+        -- local pxArrayPointer = pxOriginIndex and originToArray[pxOriginIndex]
 
-        if nxPossible and pxPossible then
-            originX = nxData[4]
-            originSx = originSx + nxData[2] + pxData[2]
+        -- local nxPossible = nxArrayPointer and scaleYArray[nxArrayPointer] == originSy and coordYArray[nxArrayPointer] == originY and areColorsSimilar(colorArray[nxArrayPointer], originColor, threshold)
+        -- local pxPossible = pxArrayPointer and scaleYArray[pxArrayPointer] == originSy and coordYArray[pxArrayPointer] == originY and areColorsSimilar(colorArray[pxArrayPointer], originColor, threshold)
+        
+        -- if nxPossible and pxPossible then
+        --     originX = coordXArray[nxArrayPointer]
+        --     originSx = originSx + scaleXArray[nxArrayPointer] + scaleXArray[pxArrayPointer]
 
+        --     suspendEffect(nxArrayPointer)
+        --     pxArrayPointer = originToArray[pxOriginIndex]
+        --     suspendEffect(pxArrayPointer)
 
-            local nxEffect = nxData[1]
-            local pxEffect = pxData[1]
+        --     success = true
+        -- elseif nxPossible then
+        --     originX = coordXArray[nxArrayPointer]
+        --     originSx = originSx + scaleXArray[nxArrayPointer]
 
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = nxEffect
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = pxEffect
+        --     suspendEffect(nxArrayPointer)
 
-            offsetBuffer[nxEffect] = true
-            offsetBuffer[pxEffect] = true
-            dataChange[nxData] = nil
-            dataChange[pxData] = nil
-            colorChange[nxEffect] = nil
-            colorChange[pxEffect] = nil
+        --     success = true
+        -- elseif pxPossible then
+        --     originSx = originSx + scaleXArray[pxArrayPointer]
 
-            success = true
-        elseif nxPossible then
-            originX = nxData[4]
-            originSx = originSx + nxData[2]
+        --     suspendEffect(pxArrayPointer)
 
-            local nxEffect = nxData[1]
+        --     success = true
+        -- end
 
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = nxEffect
+        -- index = (originY - 1) * width + originX
 
-            offsetBuffer[nxEffect] = true
-            dataChange[nxData] = nil
-            colorChange[nxEffect] = nil
+        local nyOriginIndex = indexToOrigin[index - width]
+        local nyArrayPointer = nyOriginIndex and originToArray[nyOriginIndex]
 
-            success = true
-        elseif pxPossible then
-            originSx = originSx + pxData[2]
+        local pyOriginIndex = indexToOrigin[index + width * originSy]
+        local pyArrayPointer = pyOriginIndex and originToArray[pyOriginIndex]
 
-            local pxEffect = pxData[1]
-
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = pxEffect
-
-            offsetBuffer[pxEffect] = true
-            dataChange[pxData] = nil
-            colorChange[pxEffect] = nil
-
-            success = true
-        end
-
-        index = (originY - 1) * width + originX
-
-        local nyData = pixels[index - width]
-        local pyData = pixels[index + width * originSy]
-        local nyPossible = nyData and nyData[2] == originSx and nyData[4] == originX and areColorsSimilar(nyData[6], originColor, threshold)
-        local pyPossible = pyData and pyData[2] == originSx and pyData[4] == originX and areColorsSimilar(pyData[6], originColor, threshold)
+        local nyPossible = nyArrayPointer and scaleXArray[nyArrayPointer] == originSx and coordXArray[nyArrayPointer] == originX and areColorsSimilar(colorArray[nyArrayPointer], originColor, threshold)
+        local pyPossible = pyArrayPointer and scaleXArray[pyArrayPointer] == originSx and coordXArray[pyArrayPointer] == originX and areColorsSimilar(colorArray[pyArrayPointer], originColor, threshold)
 
         if nyPossible and pyPossible then
-            originY = nyData[5]
-            originSy = originSy + nyData[3] + pyData[3]
+            originY = coordYArray[nyArrayPointer]
+            originSy = originSy + scaleYArray[nyArrayPointer] + scaleYArray[pyArrayPointer]
 
-            local nyEffect = nyData[1]
-            local pyEffect = pyData[1]
-
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = nyEffect
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = pyEffect
-
-            offsetBuffer[nyEffect] = true
-            offsetBuffer[pyEffect] = true
-            dataChange[nyData] = nil
-            dataChange[pyData] = nil
-            colorChange[nyEffect] = nil
-            colorChange[pyEffect] = nil
+            suspendEffect(nyArrayPointer)
+            pyArrayPointer = originToArray[pyOriginIndex]
+            suspendEffect(pyArrayPointer)
 
             success = true
         elseif nyPossible then
-            originY = nyData[5]
-            originSy = originSy + nyData[3]
+            originY = coordYArray[nyArrayPointer]
+            originSy = originSy + scaleYArray[nyArrayPointer]
 
-            local nyEffect = nyData[1]
-
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = nyEffect
-
-            offsetBuffer[nyEffect] = true
-            dataChange[nyData] = nil
-            colorChange[nyEffect] = nil
+            suspendEffect(nyArrayPointer)
 
             success = true
         elseif pyPossible then
-            originSy = originSy + pyData[3]
+            originSy = originSy + scaleYArray[pyArrayPointer]
 
-            local pyEffect = pyData[1]
-
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = pyEffect
-
-            offsetBuffer[pyEffect] = true
-            dataChange[pyData] = nil
-            colorChange[pyEffect] = nil
+            suspendEffect(pyArrayPointer)
 
             success = true
         end
 
         if success then
-            if originData then
-                dataChange[originData] = nil
+            local appendIndex = originToArray[originIndex]
 
-                if originEffect then
-                    colorChange[originEffect] = nil
-                end
+            if not appendIndex then
+                arrayIndex = arrayIndex + 1
+                appendIndex = arrayIndex
             end
 
-            local originData = {
-                originEffect or createEffect(),
-                originSx,
-                originSy,
-                originX,
-                originY,
-                originColor,
-                (originY - 1) * width + originX
-            }
+            local startIndex = (originY - 1) * width + originX
+            effectArray[appendIndex] = originEffect or createEffect()
+            scaleXArray[appendIndex] = originSx
+            scaleYArray[appendIndex] = originSy
+            coordXArray[appendIndex] = originX
+            coordYArray[appendIndex] = originY
+            colorArray[appendIndex] = originColor
+            indexArray[appendIndex] = startIndex
+            originToArray[startIndex] = appendIndex
 
-            dataChange[originData] = true
-            colorChange[originData[1]] = originColor
+            dataChange[appendIndex] = true
+            --colorChange[appendIndex] = originColor
 
             local x1, y1, mx = originX, originY, originX + originSx - 1
 
             for _ = 1, originSx * originSy do
-                pixels[(y1 - 1) * width + x1] = originData
+                indexToOrigin[(y1 - 1) * width + x1] = startIndex
 
                 x1 = x1 + 1
 
@@ -1969,78 +2024,127 @@ function DisplayClass:cl_pushData()
         return success
     end
 
-
     local function splitEffect(index, createAtRoot)
         local x, y = (index - 1) % width + 1, math_floor((index - 1) / width) + 1
-        local effectData = pixels[index]
-        local eEffect, eSx, eSy, ex, ey, color = effectData[1], effectData[2], effectData[3], effectData[4], effectData[5], effectData[6]
+        local originIndex = indexToOrigin[index]
+        local arrayPointer = originToArray[originIndex]
+        local eSx = scaleXArray[arrayPointer]
+        local eSy = scaleYArray[arrayPointer]
+        local ex = coordXArray[arrayPointer]
+        local ey = coordYArray[arrayPointer]
+        local color = colorArray[arrayPointer]
         local eMx, eMy = ex + eSx - 1, ey + eSy - 1
         local rootAvaliable = not createAtRoot
 
         if ex < x then
-            local effect = rootAvaliable and eEffect or createEffect()
             local sx = x - ex
             local startIndex = (y - 1) * width + ex
-            local effectData = {
-                effect, 
-                sx,
-                1,
-                ex,
-                y,
-                color,
-                startIndex
-            }
 
-            for i = 0, sx - 1 do
-                pixels[startIndex + i] = effectData
+            if rootAvaliable then
+                scaleXArray[arrayPointer] = sx
+                scaleYArray[arrayPointer] = 1
+                coordXArray[arrayPointer] = ex
+                coordYArray[arrayPointer] = y
+                colorArray[arrayPointer] = color
+                indexArray[arrayPointer] = startIndex
+                originToArray[startIndex] = arrayPointer
+
+                dataChange[arrayPointer] = true
+                --colorChange[arrayPointer] = color
+            else
+                arrayIndex = arrayIndex + 1
+                effectArray[arrayIndex] = createEffect()
+                scaleXArray[arrayIndex] = sx
+                scaleYArray[arrayIndex] = 1
+                coordXArray[arrayIndex] = ex
+                coordYArray[arrayIndex] = y
+                colorArray[arrayIndex] = color
+                indexArray[arrayIndex] = startIndex
+                originToArray[startIndex] = arrayIndex
+
+                dataChange[arrayIndex] = false
+                --colorChange[arrayIndex] = color
             end
 
-            dataChange[effectData] = true
-            colorChange[effect] = color
+            for i = 0, sx - 1 do
+                indexToOrigin[startIndex + i] = startIndex
+            end
+
             rootAvaliable = false
         end
 
         if eMx > x then
-            local effect = rootAvaliable and eEffect or createEffect()
             local nx, sx = x + 1, eMx - x
             local startIndex = (y - 1) * width + nx
-            local effectData = {
-                effect,
-                sx,
-                1,
-                nx,
-                y,
-                color,
-                startIndex
-            }
+
+            if rootAvaliable then
+                scaleXArray[arrayPointer] = sx
+                scaleYArray[arrayPointer] = 1
+                coordXArray[arrayPointer] = nx
+                coordYArray[arrayPointer] = y
+                colorArray[arrayPointer] = color
+                indexArray[arrayPointer] = startIndex
+                originToArray[startIndex] = arrayPointer
+
+                dataChange[arrayPointer] = true
+                --colorChange[arrayPointer] = color
+            else
+                arrayIndex = arrayIndex + 1
+                effectArray[arrayIndex] = createEffect()
+                scaleXArray[arrayIndex] = sx
+                scaleYArray[arrayIndex] = 1
+                coordXArray[arrayIndex] = nx
+                coordYArray[arrayIndex] = y
+                colorArray[arrayIndex] = color
+                indexArray[arrayIndex] = startIndex
+                originToArray[startIndex] = arrayIndex
+
+                dataChange[arrayIndex] = false
+                --colorChange[arrayIndex] = color
+            end
             
             for i = 0, sx - 1 do
-                pixels[startIndex + i] = effectData
+                indexToOrigin[startIndex + i] = startIndex
             end
 
-            dataChange[effectData] = true
-            colorChange[effect] = color
             rootAvaliable = false
         end
 
         if ey < y then
-            local effect = rootAvaliable and eEffect or createEffect()
             local sy = y - ey
-            local effectData = {
-                effect,
-                eSx,
-                sy,
-                ex,
-                ey,
-                color,
-                (ey - 1) * width + ex
-            }
+            local startIndex = (ey - 1) * width + ex
+
+            if rootAvaliable then
+                scaleXArray[arrayPointer] = eSx
+                scaleYArray[arrayPointer] = sy
+                coordXArray[arrayPointer] = ex
+                coordYArray[arrayPointer] = ey
+                colorArray[arrayPointer] = color
+                indexArray[arrayPointer] = startIndex
+                originToArray[startIndex] = arrayPointer
+
+                dataChange[arrayPointer] = true
+                --colorChange[arrayPointer] = color
+            else
+                arrayIndex = arrayIndex + 1
+                effectArray[arrayIndex] = createEffect()
+                scaleXArray[arrayIndex] = eSx
+                scaleYArray[arrayIndex] = sy
+                coordXArray[arrayIndex] = ex
+                coordYArray[arrayIndex] = ey
+                colorArray[arrayIndex] = color
+                indexArray[arrayIndex] = startIndex
+                originToArray[startIndex] = arrayIndex
+
+                dataChange[arrayIndex] = false
+                --colorChange[arrayIndex] = color
+            end
 
             local x1, y1 = ex, ey
             local mx = ex + eSx - 1
             
             for _ = 1, eSx * sy do
-                pixels[(y1 - 1) * width + x1] = effectData
+                indexToOrigin[(y1 - 1) * width + x1] = startIndex
 
                 x1 = x1 + 1
 
@@ -2050,29 +2154,44 @@ function DisplayClass:cl_pushData()
                 end
             end
 
-            dataChange[effectData] = true
-            colorChange[effect] = color
             rootAvaliable = false
         end
 
         if eMy > y then
-            local effect = rootAvaliable and eEffect or createEffect()
             local ny, sy = y + 1, eMy - y
-            local effectData = {
-                effect,
-                eSx,
-                sy,
-                ex,
-                ny,
-                color,
-                (ny - 1) * width + ex
-            }
+            local startIndex = (ny - 1) * width + ex
+
+            if rootAvaliable then
+                scaleXArray[arrayPointer] = eSx
+                scaleYArray[arrayPointer] = sy
+                coordXArray[arrayPointer] = ex
+                coordYArray[arrayPointer] = ny
+                colorArray[arrayPointer] = color
+                indexArray[arrayPointer] = startIndex
+                originToArray[startIndex] = arrayPointer
+
+                dataChange[arrayPointer] = true
+                --colorChange[arrayPointer] = color
+            else
+                arrayIndex = arrayIndex + 1
+                effectArray[arrayIndex] = createEffect()
+                scaleXArray[arrayIndex] = eSx
+                scaleYArray[arrayIndex] = sy
+                coordXArray[arrayIndex] = ex
+                coordYArray[arrayIndex] = ny
+                colorArray[arrayIndex] = color
+                indexArray[arrayIndex] = startIndex
+                originToArray[startIndex] = arrayIndex
+
+                dataChange[arrayIndex] = false
+                --colorChange[arrayIndex] = color
+            end
 
             local x1, y1 = ex, ny
             local mx = ex + eSx - 1
             
             for _ = 1, eSx * sy do
-                pixels[(y1 - 1) * width + x1] = effectData
+                indexToOrigin[(y1 - 1) * width + x1] = startIndex
 
                 x1 = x1 + 1
 
@@ -2082,36 +2201,28 @@ function DisplayClass:cl_pushData()
                 end
             end
 
-            dataChange[effectData] = true
-            colorChange[effect] = color
             rootAvaliable = false
         end
 
         if createAtRoot then
-            effectData[2] = 1
-            effectData[3] = 1
-            effectData[4] = x
-            effectData[5] = y
-            effectData[6] = createAtRoot
-            effectData[7] = (y - 1) * width + x
+            local startIndex = (y - 1) * width + x
+            scaleXArray[arrayPointer] = 1
+            scaleYArray[arrayPointer] = 1
+            coordXArray[arrayPointer] = x
+            coordYArray[arrayPointer] = y
+            indexArray[arrayPointer] = startIndex
+            originToArray[startIndex] = arrayPointer
 
-            pixels[index] = effectData
-            dataChange[effectData] = true
-            colorChange[eEffect] = createAtRoot
+            indexToOrigin[startIndex] = startIndex
+            dataChange[arrayPointer] = true
 
-            return effectData
+            return arrayPointer
         else
             if rootAvaliable then
-                stoppedIndex = stoppedIndex + 1
-                stoppedEffects[stoppedIndex] = effect
-
-                offsetBuffer[effect] = true
-
-                colorChange[effect] = nil
+                suspendEffect(arrayPointer)
             end
 
-            dataChange[effectData] = nil
-            pixels[index] = nil
+            indexToOrigin[index] = nil
         end
 
         updatedPoints[index] = nil
@@ -2124,7 +2235,7 @@ function DisplayClass:cl_pushData()
         for x1 = 1, width - x do
             local cIndex = index + x1
 
-            if pixels[cIndex] or newBuffer[cIndex] ~= color then
+            if indexToOrigin[cIndex] or newBuffer[cIndex] ~= color then
                 break
             end
 
@@ -2137,7 +2248,7 @@ function DisplayClass:cl_pushData()
         for _ = 1, mSx * (height - y) do
             local cIndex = (y1 - 1) * width + x1
 
-            if pixels[cIndex] or newBuffer[cIndex] ~= color then
+            if indexToOrigin[cIndex] or newBuffer[cIndex] ~= color then
                 return mSx, mSy
             end
 
@@ -2186,17 +2297,23 @@ function DisplayClass:cl_pushData()
     end
 
     if not hasUpdated and hasCleared then
-        local deleted = {}
-
-        for _, effectData in pairs(pixels) do
-            local effect = effectData[1]
-            local id = effect.id
-
-            if sm_exists(effect) and not deleted[id] then
+        for i = 1, arrayIndex do
+            local effect = effectArray[i]
+            
+            if sm_exists(effect) then
                 effect_destroy(effect)
-                deleted[id] = true
             end
+
+            effectArray[i] = nil
+            scaleXArray[i] = nil
+            scaleYArray[i] = nil
+            coordXArray[i] = nil
+            coordYArray[i] = nil
+            colorArray[i] = nil
+            indexArray[i] = nil
         end
+
+        arrayIndex = 0
 
         if stoppedIndex > 1 then
             local itterated = {}
@@ -2208,74 +2325,86 @@ function DisplayClass:cl_pushData()
                 end
             end
 
-            offsetBuffer = {}
-            stoppedEffects = {}
+            --clearTable(offsetBuffer)
+            clearTable(stoppedEffects)
             stoppedIndex = 0
         end
 
-        dataChange = {}
-        colorChange = {}
-        pixels = {}
-        updatedPoints = {}
+        clearTable(indexToOrigin)
+        clearTable(originToArray)
+        clearTable(dataChange)
+        clearTable(colorChange)
+        clearTable(updatedPoints)
     elseif hasUpdated then
         self_cl.hasUpdated = true
 
         if hasCleared then
             for i in pairs(updatedPoints) do
-                local effectPos = pixels[i]
+                local originIndex = indexToOrigin[i]
+                local arrayPointer = originIndex and originToArray[originIndex]
                 local colNew = newBuffer[i]
                 local notEqual = colNew and colNew ~= backpanelColor
+                fullBuffer[i] = colNew
 
-                if effectPos and effectPos[6] ~= colNew then
-                    local sx, sy = effectPos[2], effectPos[3]
+                if arrayPointer and colorArray[arrayPointer] ~= colNew then
+                    local sx, sy = scaleXArray[arrayPointer], scaleYArray[arrayPointer]
                     
-                    local bsx, bsy = 0, 0
+                    local bsx, bsy = 1, 1
                     if notEqual then
-                        bsx, bsy = meshBuffer(effectPos[7], colNew)
+                        bsx, bsy = meshBuffer(originIndex, colNew)
                     end
 
                     local equalCheck = bsx == sx and bsy == sy
 
                     if not equalCheck and (sx > 1 or sy > 1) then
-                        effectPos = splitEffect(i, notEqual)
-                    elseif not notEqual then
-                        local effect = effectPos[1]
+                        arrayPointer = splitEffect(i, notEqual, colNew)
+                    elseif equalCheck and not notEqual then
+                        local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
+                        local x1, y1, mx = x, y, x + sx - 1
 
-                        stoppedIndex = stoppedIndex + 1
-                        stoppedEffects[stoppedIndex] = effect
-                        offsetBuffer[effect] = true
+                        for _ = 1, sx * sy do
+                            local index = (y1 - 1) * width + x1
 
-                        updatedPoints[i] = nil
-                        dataChange[effectPos] = nil
-                        pixels[i] = nil
-                        effectPos = nil
+                            updatedPoints[index] = nil
+                            indexToOrigin[index] = nil
+
+                            if x1 > mx then
+                                x1 = x
+                                y1 = y1 + 1
+                            end
+                        end
+
+                        suspendEffect(arrayPointer)
+                        arrayPointer = nil
                     end
                     
-                    if effectPos and (equalCheck or not meshNeighbours(i, colNew)) then
-                        effectPos[6] = colNew
-                        colorChange[effectPos[1]] = colNew
+                    if arrayPointer and (equalCheck or not meshNeighbours(i, colNew)) then
+                        colorArray[arrayPointer] = colNew
+                        colorChange[arrayPointer] = colNew
                     end
-                elseif not effectPos and notEqual and not meshNeighbours(i, colNew) then
+                elseif not arrayPointer and notEqual and not meshNeighbours(i, colNew) then
                     local effect = createEffect()
                     local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
                     local sx, sy = meshBufferPC(i, colNew)
-                    local data = {
-                        effect, 
-                        sx, 
-                        sy, 
-                        x, 
-                        y,
-                        colNew,
-                        i
-                    }
+
+                    arrayIndex = arrayIndex + 1
+                    effectArray[arrayIndex] = effect
+                    scaleXArray[arrayIndex] = sx
+                    scaleYArray[arrayIndex] = sy
+                    coordXArray[arrayIndex] = x
+                    coordYArray[arrayIndex] = y
+                    colorArray[arrayIndex] = colNew
+                    indexArray[arrayIndex] = i
+
+                    originToArray[i] = arrayIndex
 
                     if sx == 1 and sy == 1 then
-                        pixels[i] = data
+                        indexToOrigin[i] = i
                     else
                         local x1, y1, mx = x, y, x + sx - 1
 
                         for _ = 1, sx * sy do
-                            pixels[(y1 - 1) * width + x1] = data
+                            indexToOrigin[(y1 - 1) * width + x1] = i
 
                             x1 = x1 + 1
 
@@ -2286,64 +2415,76 @@ function DisplayClass:cl_pushData()
                         end
                     end
 
-                    dataChange[data] = true
-                    colorChange[effect] = colNew
+                    dataChange[arrayIndex] = false
+                    --colorChange[arrayIndex] = colNew
                 end
             end
         else
             for i, colNew in pairs(newBuffer) do
-                local effectPos = pixels[i]
+                local originIndex = indexToOrigin[i]
+                local arrayPointer = originIndex and originToArray[originIndex]
                 local notEqual = colNew ~= backpanelColor
+                fullBuffer[i] = colNew
 
-                if effectPos and effectPos[6] ~= colNew then
-                    local sx, sy = effectPos[2], effectPos[3]
-
-                    local bsx, bsy = 0, 0
+                if arrayPointer and colorArray[arrayPointer] ~= colNew then
+                    local sx, sy = scaleXArray[arrayPointer], scaleYArray[arrayPointer]
+                    
+                    local bsx, bsy = 1, 1
                     if notEqual then
-                        bsx, bsy = meshBuffer(effectPos[7], colNew)
+                        bsx, bsy = meshBuffer(originIndex, colNew)
                     end
 
                     local equalCheck = bsx == sx and bsy == sy
 
                     if not equalCheck and (sx > 1 or sy > 1) then
-                        effectPos = splitEffect(i, notEqual)
-                    elseif not notEqual then
-                        local effect = effectPos[1]
+                        arrayPointer = splitEffect(i, notEqual, colNew)
+                    elseif equalCheck and not notEqual then
+                        local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
+                        local x1, y1, mx = x, y, x + sx - 1
 
-                        stoppedIndex = stoppedIndex + 1
-                        stoppedEffects[stoppedIndex] = effect
-                        offsetBuffer[effect] = true
+                        for _ = 1, sx * sy do
+                            local index = (y1 - 1) * width + x1
 
-                        dataChange[effectPos] = nil
-                        pixels[i] = nil
-                        effectPos = nil
+                            updatedPoints[index] = nil
+                            indexToOrigin[index] = nil
+
+                            if x1 > mx then
+                                x1 = x
+                                y1 = y1 + 1
+                            end
+                        end
+
+                        suspendEffect(arrayPointer)
+                        arrayPointer = nil
                     end
                     
-                    if effectPos and (equalCheck or not meshNeighbours(i, colNew)) then
-                        effectPos[6] = colNew
-                        colorChange[effectPos[1]] = colNew
+                    if arrayPointer and (equalCheck or not meshNeighbours(i, colNew)) then
+                        colorArray[arrayPointer] = colNew
+                        colorChange[arrayPointer] = colNew
                     end
-                elseif not effectPos and notEqual and not meshNeighbours(i, colNew) then
+                elseif not arrayPointer and notEqual and not meshNeighbours(i, colNew) then
                     local effect = createEffect()
                     local x, y = (i - 1) % width + 1, math_floor((i - 1) / width) + 1
                     local sx, sy = meshBufferPC(i, colNew)
-                    local data = {
-                        effect, 
-                        sx, 
-                        sy, 
-                        x, 
-                        y,
-                        colNew,
-                        i
-                    }
+
+                    arrayIndex = arrayIndex + 1
+                    effectArray[arrayIndex] = effect
+                    scaleXArray[arrayIndex] = sx
+                    scaleYArray[arrayIndex] = sy
+                    coordXArray[arrayIndex] = x
+                    coordYArray[arrayIndex] = y
+                    colorArray[arrayIndex] = colNew
+                    indexArray[arrayIndex] = i
+
+                    originToArray[i] = arrayIndex
 
                     if sx == 1 and sy == 1 then
-                        pixels[i] = data
+                        indexToOrigin[i] = i
                     else
                         local x1, y1, mx = x, y, x + sx - 1
 
                         for _ = 1, sx * sy do
-                            pixels[(y1 - 1) * width + x1] = data
+                            indexToOrigin[(y1 - 1) * width + x1] = i
 
                             x1 = x1 + 1
 
@@ -2354,18 +2495,23 @@ function DisplayClass:cl_pushData()
                         end
                     end
 
-                    dataChange[data] = true
-                    colorChange[effect] = colNew
+                    dataChange[arrayIndex] = false
+                    --colorChange[arrayIndex] = colNew
                 end
             end
         end
 
-        for effectData in pairs(dataChange) do
-            local effect = effectData[1]
-            local sx     = effectData[2]
-            local sy     = effectData[3]
-            local x      = effectData[4]
-            local y      = effectData[5]
+        for arrayPointer, initCheck in pairs(dataChange) do
+            local effect = effectArray[arrayPointer]
+            local sx     = scaleXArray[arrayPointer]
+            local sy     = scaleYArray[arrayPointer]
+            local x      = coordXArray[arrayPointer]
+            local y      = coordYArray[arrayPointer]
+            local color  = colorArray[arrayPointer]
+
+            if initCheck and effect_isPlaying(effect) then
+                effect_stop(effect)
+            end
 
             local scaleY = pixel_scale_y * sy
             local scaleX = pixel_scale_z * sx
@@ -2380,24 +2526,31 @@ function DisplayClass:cl_pushData()
 
             local xPos, yPos = pixelPosToShapePos(centerX, centerY, widthScale, heightScale, pixel_scale_y, pixel_scale_z)
             effect_setOffsetPosition(effect, sm_vec3_new(pixelDepth, yPos, xPos))
-        end
 
-        for effect, color in pairs(colorChange) do
             effect_setParameter(effect, "color", idToColor(color))
+
+            if not isHidden then
+                effect_start(effect)
+            end
         end
 
-        for effect in pairs(offsetBuffer) do
-            effect_setOffsetPosition(effect, rePos)
+        for arrayPointer, color in pairs(colorChange) do
+            local effect = effectArray[arrayPointer]
+
+            -- if effect_isPlaying(effect) then
+            --     effect_stop(effect)
+            -- end
+
+            effect_setParameter(effect, "color", idToColor(color))
+
+            if not (isHidden or effect_isPlaying(effect)) then
+                effect_start(effect)
+            end
         end
     end
 
-    self_cl.pixels = pixels
+    self_cl.arrayIndex = arrayIndex
     self_cl.stoppedIndex = stoppedIndex
-    self_cl.updatedPoints = updatedPoints
-    self_cl.fullBuffer = fullBuffer
-    self_cl_pixel.stoppedEffects = stoppedEffects
-    self_cl.offsetBuffer = offsetBuffer
-    self_cl.newBuffer = {}
 end
 
 function DisplayClass:cl_optimiseDisplay()
@@ -2408,7 +2561,6 @@ function DisplayClass:cl_optimiseDisplay()
     local self_data = self.data
     local width, height = self_data.width, self_data.height
     local threshold = self_cl_display.threshold
-    local pixels = self_cl.pixels
     local stoppedIndex = self_cl.stoppedIndex
     local stoppedEffects = self_cl_pixel.stoppedEffects
     local isHidden = self_cl_display.isHidden
@@ -2421,159 +2573,155 @@ function DisplayClass:cl_optimiseDisplay()
     local widthScale = self_cl_display.widthScale
     local heightScale = self_cl_display.heightScale
 
+    local indexToOrigin = self_cl.indexToOrigin
+    local originToArray = self_cl.originToArray
+    local arrayIndex = self_cl.arrayIndex
+    local effectArray = self_cl.effectArray
+    local colorArray = self_cl.colorArray
+    local indexArray = self_cl.indexArray
+
     local function createEffect()
-        local effect 
-        
+        local effect
+
         if stoppedIndex > 0 then
             effect = stoppedEffects[stoppedIndex]
-    
             stoppedEffects[stoppedIndex] = nil
             stoppedIndex = stoppedIndex - 1
-
-            if not isHidden and not effect_isPlaying(effect) then
-                effect_start(effect)
-            end
         else
             effect = sm_effect_createEffect(pixelEffect, self_interactable)
-
-            if not isHidden then
-                effect_start(effect)
-            end
         end
-    
+
         return effect
     end
 
-    local function setEffectParameters(effectData)
-        local x, y, effect, sx, sy, color = effectData[4], effectData[5], effectData[1], effectData[2], effectData[3], effectData[6]
-    
-        local scaleY, scaleX = pixel_scale_y * sy, pixel_scale_z * sx
-        local centerX = x - 1 + ((sx > 1) and (sx / 2 - 0.5) or 0)
-        local centerY = y - 1 + ((sy > 1) and (sy / 2 - 0.5) or 0)
-    
-        effect_setScale(effect, sm_vec3_new(0, scaleY + (pixelBorderMultiplier * pixel_scale_y), scaleX + (pixelBorderMultiplier * pixel_scale_z)))
+    local function setEffectParameters(effect, sx, sy, x, y, color)
+        local scaleY = pixel_scale_y * sy
+        local scaleX = pixel_scale_z * sx
+
+        local centerX = x - 1 + (sx - 1) * 0.5
+        local centerY = y - 1 + (sy - 1) * 0.5
+        
+        local scaleYFinal = scaleY + pixelBorderMultiplier * pixel_scale_y
+        local scaleXFinal = scaleX + pixelBorderMultiplier * pixel_scale_z
+
+        effect_setScale(effect, sm_vec3_new(0, scaleYFinal, scaleXFinal))
 
         local xPos, yPos = pixelPosToShapePos(centerX, centerY, widthScale, heightScale, pixel_scale_y, pixel_scale_z)
         effect_setOffsetPosition(effect, sm_vec3_new(pixelDepth, yPos, xPos))
-
         effect_setParameter(effect, "color", idToColor(color))
+
+        if not (isHidden or effect_isPlaying(effect)) then
+            effect_start(effect)
+        end
     end
 
     local processed = {}
 
-    local function findMaxDimensions(startIndex, color)
-        local maxWidth, maxHeight = 1, 1
-        processed[startIndex] = true
-
-        for i = startIndex + 1, startIndex + (width - (startIndex - 1) % width) - 1 do
-            local pixel = pixels[i]
-    
-            if not pixel or processed[i] or not areColorsSimilar(pixel[6], color, threshold) then
-                break
-            end
-    
-            processed[i] = true
-            maxWidth = maxWidth + 1
-        end
-   
-        for i = startIndex + width, startIndex + (height - math_floor((startIndex - 1) / width)) * width, width do
-            local tempIndex = 0
-            local tempIndices = {}
-            local rowIsUniform = true
-
-            for j = i, i + maxWidth - 1 do
-                local pixel = pixels[j]
-    
-                if not pixel or processed[j] or not areColorsSimilar(pixel[6], color, threshold) then
-                    rowIsUniform = false
-                    break
-                end
-
-                tempIndex = tempIndex + 1
-                tempIndices[tempIndex] = j
-            end
-
-            if not rowIsUniform then
-                return maxWidth, maxHeight
-            end
-
-            for _, index in pairs(tempIndices) do
-                processed[index] = true
-            end
-    
-            maxHeight = maxHeight + 1
-        end
-    
-        return maxWidth, maxHeight
-    end
-
-    local itterated = {}
-    local newPixels = {}
-    local sortedKeys = {}
-    local keyIndex = 0
-
-    for index, effectData in pairs(pixels) do
-        local effect = effectData[1]
-        local effectId = effect.id
-
-        if not itterated[effectId] then
-            itterated[effectId] = true
-
-            stoppedIndex = stoppedIndex + 1
-            stoppedEffects[stoppedIndex] = effect
-            
-            effect_setOffsetPosition(effect, rePos)
-        end
-        
+    local function meshBuffer(index, color)
+        local mSx = 1
         local x, y = (index - 1) % width + 1, math_floor((index - 1) / width) + 1
 
-        keyIndex = keyIndex + 1
-        sortedKeys[keyIndex] = {index, effectData, x, y}
-    end
+        processed[index] = true
 
-    table_sort(sortedKeys, function(a, b)
-        local ay = a[4]
-        local by = b[4]
+        for x1 = 1, width - x do
+            local testIndex = index + x1
+            local originIndex = indexToOrigin[testIndex]
+            local arrayPointer = originIndex and originToArray[originIndex]
 
-        if ay == by then
-            return a[3] < b[3]
-        else
-            return ay < by
-        end
-    end)
-
-    for _, keyData in pairs(sortedKeys) do
-        local index, color = keyData[1], keyData[2][6]
-
-        if color and not processed[index] then
-            local sx, sy = findMaxDimensions(index, color)
-
-            local x, y = (index - 1) % width + 1, math_floor((index - 1) / width) + 1
-            local newData = {
-                createEffect(),
-                sx,
-                sy,
-                x,
-                y,
-                color,
-                index
-            }
-
-            local x1, y1 = x, y
-            local mx = x + sx - 1
-
-            for _ = 1, sx * sy do
-                newPixels[(y1 - 1) * width + x1] = newData
-
-                x1 = x1 + 1
-
-                if x1 > mx then
-                    x1 = x
-                    y1 = y1 + 1
-                end
+            if processed[testIndex] or not arrayPointer or not areColorsSimilar(colorArray[arrayPointer], color, threshold) then
+                break
             end
 
-            setEffectParameters(newData)
+            processed[testIndex] = true
+            mSx = mSx + 1
+        end
+
+        local x1, y1, mx = x, y + 1, x + mSx - 1 
+
+        for _ = 1, mSx * (height - y) do
+            local testIndex = (y1 - 1) * width + x1
+            local originIndex = indexToOrigin[testIndex]
+            local arrayPointer = originIndex and originToArray[originIndex]
+
+            if processed[testIndex] or not arrayPointer or not areColorsSimilar(colorArray[arrayPointer], color, threshold) then
+                return mSx, y1 - y 
+            end
+
+            x1 = x1 + 1
+
+            if x1 > mx then
+                local rowIndex = (y1 - 1) * width + x
+                for i = 0, mSx - 1 do
+                    processed[rowIndex + i] = true
+                end
+
+                x1 = x
+                y1 = y1 + 1
+            end
+        end
+
+        return mSx, y1 - y 
+    end
+
+    for i = 1, arrayIndex do
+        local effect = effectArray[i]
+
+        stoppedIndex = stoppedIndex + 1
+        stoppedEffects[stoppedIndex] = effect
+        --effect_setOffsetPosition(effect, rePos)
+        effect_stop(effect)
+    end
+
+    local newArrayIndex = 0
+    local newEffectArray = {}
+    local newScaleXArray = {}
+    local newScaleYArray = {}
+    local newCoordXArray = {}
+    local newCoordYArray = {}
+    local newColorArray = {}
+    local newIndexArray = {}
+    local newOriginToArray = {}
+    local newIndexToOrigin = {}
+
+    local totalPixels = width * height
+    for testIndex = 1, totalPixels do
+        if not processed[testIndex] then
+            local originIndex = indexToOrigin[testIndex]
+            local arrayPointer = originIndex and originToArray[originIndex]
+
+            if arrayPointer then
+                local color = colorArray[arrayPointer]
+                local sx, sy = meshBuffer(testIndex, color)
+
+                local effect = createEffect()
+                local x, y = (testIndex - 1) % width + 1, math_floor((testIndex - 1) / width) + 1
+
+                newArrayIndex = newArrayIndex + 1
+                newEffectArray[newArrayIndex] = effect
+                newScaleXArray[newArrayIndex] = sx
+                newScaleYArray[newArrayIndex] = sy
+                newCoordXArray[newArrayIndex] = x
+                newCoordYArray[newArrayIndex] = y
+                newColorArray[newArrayIndex] = color
+                newIndexArray[newArrayIndex] = testIndex
+                newOriginToArray[testIndex] = newArrayIndex
+
+                if sx == 1 and sy == 1 then
+                    newIndexToOrigin[testIndex] = testIndex
+                else
+                    local x1, y1, mx = x, y, x + sx - 1
+                    for _ = 1, sx * sy do
+                        newIndexToOrigin[(y1 - 1) * width + x1] = testIndex
+                        x1 = x1 + 1
+                        if x1 > mx then
+                            x1 = x
+                            y1 = y1 + 1
+                        end
+                    end
+                end
+
+                setEffectParameters(effect, sx, sy, x, y, color)
+            end
         end
     end
 
@@ -2586,10 +2734,18 @@ function DisplayClass:cl_optimiseDisplay()
         stoppedIndex = 500
     end
 
-    self_cl.pixels = newPixels
+    self_cl.effectArray = newEffectArray
+    self_cl.scaleXArray = newScaleXArray
+    self_cl.scaleYArray = newScaleYArray
+    self_cl.coordXArray = newCoordXArray
+    self_cl.coordYArray = newCoordYArray
+    self_cl.colorArray = newColorArray
+    self_cl.indexArray = newIndexArray
+    self_cl.originToArray = newOriginToArray
+    self_cl.indexToOrigin = newIndexToOrigin
+
+    self_cl.arrayIndex = newArrayIndex
     self_cl.stoppedIndex = stoppedIndex
-    self_cl.offsetBuffer = {}
-    self_cl_pixel.stoppedEffects = stoppedEffects
 end
 
 function DisplayClass:cl_setVisibility(setHidden)
@@ -2598,12 +2754,8 @@ function DisplayClass:cl_setVisibility(setHidden)
     if setHidden ~= self_cl.display.isHidden then
         self_cl.display.isHidden = setHidden
 
-        local itterated = {}
-        for _, effectData in pairs(self_cl.pixels) do
-            local effect = effectData[1]
-            local id = effect.id
-
-            if sm_exists(effect) and not itterated[id] then
+        for _, effect in pairs(self_cl.effectArray) do
+            if sm_exists(effect) then
                 if setHidden then
                     if effect_isPlaying(effect) then
                         effect_stop(effect)
@@ -2614,19 +2766,17 @@ function DisplayClass:cl_setVisibility(setHidden)
                     end
                 end
             end
-
-            itterated[id] = true
         end
 
-        if setHidden then
-            for _, effect in pairs(self_cl.pixel.stoppedEffects) do
-                if effect_isPlaying(effect) then
-                    effect_stop(effect)
-                end
-            end
+        -- if setHidden then
+        --     for _, effect in pairs(self_cl.pixel.stoppedEffects) do
+        --         if effect_isPlaying(effect) then
+        --             effect_stop(effect)
+        --         end
+        --     end
 
-            self_cl.offsetBuffer = {}
-        end
+        --     --self_cl.offsetBuffer = {}
+        -- end
     end
 end
 

@@ -78,11 +78,7 @@ function SpeakerClass:sv_createData()
         SC_PRIVATE_fastPlaySound = function (name, params, durationTicks)
             self.sv.buffer[#self.sv.buffer+1] = {"ScrapComputers - " .. name, durationTicks, params}
         end,
-
-        getId = function ()
-            return self.shape.id
-        end,
-
+        
         stopAllAudio = function ()
             self.sv.killAll = true
         end
@@ -109,7 +105,7 @@ function SpeakerClass:server_onFixedUpdate()
     end
 
     if self.sv.killAll then
-        self.network:sendToClients("cl_kilEmlAll")
+        self.network:sendToClients("cl_killAllEffects")
         self.sv.killAll = false
     end
 end
@@ -123,7 +119,7 @@ function SpeakerClass:client_onCreate()
     }
 end
 
-function SpeakerClass:cl_kilEmlAll() -- 🔥🔥🔥 10/10 function name 💯💯💯
+function SpeakerClass:cl_killAllEffects()
     for effectId, _ in pairs(self.cl.effectBuffer) do
         if sm.exists(self.cl.effects[effectId]) then
             self.cl.effects[effectId]:destroy()

@@ -49,39 +49,8 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
             self.network:sendToClients("cl_chatMessage", "[#3A96DDS#3b78ffC#eeeeee]: " .. message)
         end,
 
-        ---@param message string
-        ---@param duration number?
-        ---@param player Player?
-        alert = function(message, duration, player)
-            duration = duration or 5
-
-            sm.scrapcomputers.errorHandler.assertArgument(message, 1, {"string"})
-            sm.scrapcomputers.errorHandler.assertArgument(duration, 2, {"number", "nil"})
-            sm.scrapcomputers.errorHandler.assertArgument(player, 3, {"Player", "nil"})
-
-            if not isUnsafeENV and player then
-                error("Cannot use Player argument in safe-env!")
-            end
-
-            if player then
-                self.network:sendToClient(player, "cl_alert", {message, duration})
-            else
-                self.network:sendToClients("cl_alert", {message, duration})
-            end
-        end,
-
         debug = function(...)
             print("[SC]:", ...)
-        end,
-
-        ---@param seconds number
-        sleep = function (seconds)
-            sm.scrapcomputers.errorHandler.assertArgument(seconds, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(seconds <= 5, nil, "Too long to wait! (Max is 5 secconds!)")
-
-            local endClock = tonumber(os.clock() + seconds)
-
-            while os.clock() < endClock do end
         end,
 
         tostring = sm.scrapcomputers.toString,
@@ -175,13 +144,18 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
         unpack = unpack,
         class = class,
 
-        setmetatable = sm.scrapcomputers.util.setmetatable,
-        getmetatable = sm.scrapcomputers.util.getmetatable,
+        setmetatable = sm.scrapcomputers.metatable.setmetatable,
+        getmetatable = sm.scrapcomputers.metatable.getmetatable,
+
+        rawget = sm.scrapcomputers.metatable.rawget,
+        rawset = sm.scrapcomputers.metatable.rawset,
+        rawlen = sm.scrapcomputers.metatable.rawlen,
+        rawequal = sm.scrapcomputers.metatable.rawequal,
 
         ---Loads a string and lets you execute it
         ---@param code string The code to execute
         ---@param env table The environment variables it can use
-        ---@param bytecodeMode boolean? If it should execute bytecode or not. You must have unsafe env enabled to use bytecode!
+        ---@param bytecodeMode boolean? If it should execute bytecode or not.
         ---@return function?
         ---@return string?
         loadstring = function (code, env, bytecodeMode)
@@ -192,9 +166,6 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
             sm.scrapcomputers.errorHandler.assert(luaVM, nil, "This enviroment has no assigned LuaVM, cannot execute code!")
 
             if bytecodeMode then
-                local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
-                sm.scrapcomputers.errorHandler.assert(isUnsafeENV, nil, "Cannot execute bytecode in safe env!")
-
                 return luaVM:loadstringBytecode(code, env)
             end
 
@@ -202,29 +173,60 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
         end,
 
         sc = {
-            getDisplays = function () return sm.scrapcomputers.componentManager.getComponents("Displays", self.interactable, true) end,
-            getDrives = function () return sm.scrapcomputers.componentManager.getComponents("Harddrives", self.interactable, true) end,
-            getHolograms = function () return sm.scrapcomputers.componentManager.getComponents("Holograms", self.interactable, true) end,
-            getTerminals = function () return sm.scrapcomputers.componentManager.getComponents("Terminals", self.interactable, true) end,
-            getRadars = function () return sm.scrapcomputers.componentManager.getComponents("Radars", self.interactable, true) end,
-            getNetworkPorts = function () return sm.scrapcomputers.componentManager.getComponents("NetworkPorts", self.interactable, true) end,
-            getCameras = function () return sm.scrapcomputers.componentManager.getComponents("Cameras", self.interactable, true) end,
-            getSpeakers = function () return sm.scrapcomputers.componentManager.getComponents("Speakers", self.interactable, true) end,
-            getKeyboards = function () return sm.scrapcomputers.componentManager.getComponents("Keyboards", self.interactable, true) end,
-            getMotors = function () return sm.scrapcomputers.componentManager.getComponents("Motors", self.interactable, true) end,
-            getLasers = function () return sm.scrapcomputers.componentManager.getComponents("Lasers", self.interactable, true) end,
-            getGPSs = function () return sm.scrapcomputers.componentManager.getComponents("GPSs", self.interactable, true) end,
-            getSeatControllers = function () return sm.scrapcomputers.componentManager.getComponents("SeatControllers", self.interactable, false) end,
-            getLights = function () return sm.scrapcomputers.componentManager.getComponents("Lights", self.interactable, true) end,
-            getGravityControllers = function () return sm.scrapcomputers.componentManager.getComponents("GravityControllers", self.interactable, true) end,
-            getRadarWarningReceivers = function () return sm.scrapcomputers.componentManager.getComponents("RadarWarningReceivers", self.interactable, true) end,
-            getCollisionDetectors = function () return sm.scrapcomputers.componentManager.getComponents("CollisionDetectors", self.interactable, true) end,
-            getPowerSources = function () return sm.scrapcomputers.componentManager.getComponents("PowerComponents", self.interactable, false, sm.interactable.connectionType.computerIO) end,
+            getDisplays = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Displays", self.interactable) end,
+            getDrives = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Harddrives", self.interactable) end,
+            getHolograms = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Holograms", self.interactable) end,
+            getTerminals = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Terminals", self.interactable) end,
+            getRadars = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Radars", self.interactable) end,
+            getNetworkPorts = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("NetworkPorts", self.interactable) end,
+            getCameras = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Cameras", self.interactable) end,
+            getSpeakers = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Speakers", self.interactable) end,
+            getKeyboards = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Keyboards", self.interactable) end,
+            getMotors = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Motors", self.interactable) end,
+            getLasers = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Lasers", self.interactable) end,
+            getGPSs = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("GPSs", self.interactable) end,
+            getSeatControllers = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("SeatControllers", self.interactable) end,
+            getLights = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("Lights", self.interactable) end,
+            getGravityControllers = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("GravityControllers", self.interactable) end,
+            getRadarWarningReceivers = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("RadarWarningReceivers", self.interactable) end,
+            getCollisionDetectors = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("CollisionDetectors", self.interactable) end,
+            getPowerSources = function () return sm.scrapcomputers.componentManager.getComponentsSimplified("PowerComponents", self.interactable) end,
+
+            getComponents = function (componentType)
+                sm.scrapcomputers.errorHandler.assertArgument(componentType, 1, {"string"})
+                sm.scrapcomputers.errorHandler.assert(sm.scrapcomputers.componentManager.isComponentTypeAvaliable(componentType), nil, "Component type '" .. componentType .. "' is not available!")
+
+                return sm.scrapcomputers.componentManager.getComponentsSimplified(componentType, self.interactable)
+            end,
+
+            getAllComponents = function ()
+                local output = {}
+                for _, componentType in pairs(sm.scrapcomputers.componentManager.getRegisteredComponentTypes()) do
+                    if not sm.scrapcomputers.componentManager.isComponentTypeAvaliable(componentType) then
+                        goto continue
+                    end
+                    
+                    do
+                        local data = {}
+
+                        local components = sm.scrapcomputers.componentManager.getComponentsSimplified(componentType, self.interactable)
+                        for _, component in pairs(components) do
+                            table.insert(data, component)
+                        end
+
+                        output[componentType] = data
+                    end
+
+                    ::continue::
+                end
+
+                return output
+            end,
 
             getReg = function (registerName)
                 sm.scrapcomputers.errorHandler.assertArgument(registerName, nil, {"string"})
 
-                local readers = sm.scrapcomputers.componentManager.getComponents("InputRegisters", self.interactable, false)
+                local readers = sm.scrapcomputers.componentManager.getComponentsSimplified("InputRegisters", self.interactable, true)
 
                 for _, reader in pairs(readers) do
                     if reader.name == registerName then
@@ -243,7 +245,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
                     power = power and 1 or 0
                 end
                 
-                local writers = sm.scrapcomputers.componentManager.getComponents("OutputRegisters", self.interactable, true, nil, true)
+                local writers = sm.scrapcomputers.componentManager.getComponentsSimplified("OutputRegisters", self.interactable, true)
 
                 for _, writer in pairs(writers) do
                     if writer.name == registerName then
@@ -334,7 +336,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
                 getConfigNames = function ()
                     local list = {}
                     for _, config in pairs(sm.scrapcomputers.config.configurations) do
-                        table.insert(config.id)
+                        table.insert(list, config.id)
                     end
 
                     return list
@@ -363,12 +365,17 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
                 end
             },
 
+            component = {
+                getAvaliableComponentTypes = sm.scrapcomputers.componentManager.getRegisteredComponentTypes,
+            },
+
             isUnsafeEnvEnabled = function ()
                 return isUnsafeENV
             end
         },
 
         sm = {
+            version = sm.version,            
             types = sm.scrapcomputers.table.clone(sm.scrapcomputers.types),
             vec3 = sm.scrapcomputers.table.clone(sm.vec3),
             util = {
@@ -377,7 +384,10 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
                 bezier2 = sm.util.bezier2,
                 bezier3 = sm.util.bezier3,
                 clamp = sm.util.clamp,
+                clampUtf8String = sm.util.clampUtf8String,
                 easing = sm.util.easing,
+                geometricMedian = sm.util.geometricMedian,
+                hash = sm.util.hash,
                 lerp = sm.util.lerp,
                 positiveModulo = sm.scrapcomputers.util.positiveModulo,
                 smootherstep = sm.util.smootherstep,
@@ -387,12 +397,54 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
             noise = sm.scrapcomputers.table.clone(sm.noise),
             color = sm.scrapcomputers.table.clone(sm.color),
             uuid = sm.scrapcomputers.table.clone(sm.uuid),
+            item = {
+                getBuoyancyRating = sm.item.getBuoyancyRating,
+                getCharacterShape = sm.item.getCharacterShape,
+                getDensityRating = sm.item.getDensityRating,
+                getDurabilityRating = sm.item.getDurabilityRating,
+                getEdible = sm.item.getEdible,
+                getFeatureData = sm.item.getFeatureData,
+                getFrictionRating = sm.item.getFrictionRating,
+                getMaterial = sm.item.getMaterial,
+                getMaterialId = sm.item.getMaterialId,
+                getPlantable = sm.item.getPlantable,
+                getQualityLevel = sm.item.getQualityLevel,
+                getShapeDefaultColor = sm.item.getShapeDefaultColor,
+                getShapeOffset = sm.item.getShapeOffset,
+                getShapeRotation = sm.item.getShapeRotation,
+                getShapeSize = sm.item.getShapeSize,
+                getStackSize = sm.item.getStackSize,
+                isBlock = sm.item.isBlock,
+                isFlammable = sm.item.isFlammable,
+                isHarvestablePart = sm.item.isHarvestablePart,
+                isJoint = sm.item.isJoint,
+                isPart = sm.item.isPart,
+                isTool = sm.item.isTool,
+                isMultiShape = sm.item.isMultiShape,
+            },
+            game = {
+                getDifficulty = sm.game.getDifficulty,
+                getEnableAggro = sm.game.getEnableAggro,
+                getEnableAmmoConsumption = sm.game.getEnableAmmoConsumption,
+                getEnableFuelConsumption = sm.game.getEnableFuelConsumption,
+                getLimitedInventory = sm.game.getLimitedInventory,
+                getRecipesEnabled = sm.game.getRecipesEnabled,
+                getTick = sm.game.getServerTick,
+                getTimeOfDay = sm.game.getTimeOfDay,
+            },
             json = {
-                open = sm.json.open,
+                open = function (path)
+                    return sm.json.open(path, false)
+                end,
 
                 parseJsonString = sm.json.parseJsonString,
-                writeJsonString = function(root)
-                    return sm.scrapcomputers.json.toString(root, true, false)
+                writeJsonString = function(root, prettified)
+                    sm.scrapcomputers.errorHandler.assertArgument(root, 1, {"table", "string", "number", "boolean", "nil"})
+                    sm.scrapcomputers.errorHandler.assertArgument(prettified, 2, {"boolean", "nil"})
+                    
+                    assert(sm.scrapcomputers.json.isSafe(root), "Cannot write unsafe json data!")
+
+                    return sm.json.writeJsonString(root, prettified)
                 end
             },
             projectile = {
@@ -403,6 +455,14 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
             }
         },
     }
+
+    environmentVariables.sleep = function (...)
+        environmentVariables.sc.console.warn("sleep() is deprecated and will be removed in future updates.")
+    end
+
+    environmentVariables.alert = function (...)
+        environmentVariables.sc.console.warn("alert() is deprecated and will be removed in future updates.")
+    end
 
     environmentVariables._ENV = environmentVariables
     environmentVariables._G = environmentVariables

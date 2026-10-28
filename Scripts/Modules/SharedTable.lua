@@ -96,7 +96,8 @@ function sm.scrapcomputers.sharedTable:new(classInstance, clientPath)
         end
     }
 
-    local proxy = sm.scrapcomputers.util.setmetatable(proxyData.data, metatable)
+    -- The proxy must start empty. All reads and writes are forwarded to proxyData.data by the metatable.
+    local proxy = sm.scrapcomputers.metatable.setmetatable({}, metatable)
     table.insert(classInstance.sv_sc_st_storedSharedTables, proxyData)
 
     return proxy
@@ -232,7 +233,7 @@ function sm.scrapcomputers.sharedTable:initClient(classInstance)
             end
         }
 
-        local proxy = sm.scrapcomputers.util.setmetatable(proxyData.data, metatable)
+        local proxy = sm.scrapcomputers.metatable.setmetatable({}, metatable)
         currentTbl[variableName] = proxy
 
         table.insert(classInstance.cl_sc_st_storedSharedTables, proxyData)
@@ -433,7 +434,7 @@ end
 ---Use forceSyncProperty if you are just modifing 1 variable
 ---@param sharedTable SharedTable The shared table to sync
 function sm.scrapcomputers.sharedTable:forceSync(sharedTable)
-    local metatable = sm.scrapcomputers.util.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
+    local metatable = sm.scrapcomputers.metatable.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
     local proxyData = metatable.__sc_st_proxyData
 
     for key, value in pairs(proxyData.data) do
@@ -445,7 +446,7 @@ end
 ---@param sharedTable SharedTable The shared table to sync
 ---@param propertyIndex string The property to snyc
 function sm.scrapcomputers.sharedTable:forceSyncProperty(sharedTable, propertyIndex)
-    local metatable = sm.scrapcomputers.util.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
+    local metatable = sm.scrapcomputers.metatable.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
     local proxyData = metatable.__sc_st_proxyData
     
     proxyData.replicationTable[propertyIndex] = proxyData.data[propertyIndex]
@@ -455,7 +456,7 @@ end
 ---@param sharedTable SharedTable The shared table to sync
 ---@return integer id The id of the table
 function sm.scrapcomputers.sharedTable:getSharedTableId(sharedTable)
-    local metatable = sm.scrapcomputers.util.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
+    local metatable = sm.scrapcomputers.metatable.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
     return metatable.__sc_st_proxyData.id
 end
 
@@ -465,7 +466,7 @@ end
 ---@param sharedTable SharedTable The shared table
 ---@return table rawContents The raw contents of the shared table.
 function sm.scrapcomputers.sharedTable:getRawContents(sharedTable)
-    local metatable = sm.scrapcomputers.util.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
+    local metatable = sm.scrapcomputers.metatable.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
     return unpack({metatable.__sc_st_proxyData.data})
 end
 

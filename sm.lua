@@ -1,8 +1,47 @@
 ---@meta
 ---@diagnostic disable
 
+---@alias type
+---| "nil"
+---| "number"
+---| "string"
+---| "boolean"
+---| "table"
+---| "function"
+---| "thread"
+---| "userdata"
+---| "Shape"
+---| "Body"
+---| "Character"
+---| "Joint"
+---| "Harvestable"
+---| "AreaTrigger"
+---| "Vec3"
+---| "Quat"
+---| "Container"
+---| "RaycastResult"
+---| "Interactable"
+---| "Network"
+---| "Player"
+---| "World"
+---| "GuiInterface"
+---| "Tool"
+---| "Portal"
+---| "BlueprintVisualization"
+---| "PathNode"
+---| "AiState"
+---| "Unit"
+---| "Storage"
+---| "Effect"
+---| "CullSphereGroup"
+---| "BuilderGuide"
+---| "Lift"
+---| "ScriptableObject"
+---| "Uuid"
+
+
+
 ---@class Vec3
----A userdata object representing a 3D <strong>vector</strong>.  
 ---@operator add(Vec3): Vec3
 ---@operator add(number): Vec3
 ---@operator div(Vec3): Vec3
@@ -13,7 +52,8 @@
 ---@operator mul(number): Vec3
 ---@operator sub(Vec3): Vec3
 ---@operator sub(number): Vec3
----@operator unm(): Vec3
+---@operator unm(): Vec3 
+---A userdata object representing a 3D <strong>vector</strong>.  
 local Vec3 = {}
 
 ---**Get**:
@@ -114,6 +154,7 @@ function Vec3:safeNormalize(fallback) end
 ---@operator eq(Quat): boolean
 ---@operator mul(Quat): Quat
 ---@operator mul(Vec3): Vec3
+---A userdata object representing a <strong>quaternion</strong>.  
 local Quat = {}
 
 ---**Get**:
@@ -173,10 +214,9 @@ function Quat:round90() end
 ---@return Quat # The normalized quaternion.
 function Quat:safeNormalize(fallback) end
 
-
 ---@class Uuid
 ---A userdata object representing a <strong>uuid</strong>.  
----@operator eq(Uuid): boolean
+---@operator eq(Uuid): boolean 
 local Uuid = {}
 
 ---Checks if the uuid is nil {00000000-0000-0000-0000-000000000000}  
@@ -185,7 +225,6 @@ function Uuid:isNil() end
 
 
 ---@class Color
----A userdata object representing a <strong>color</strong>.  
 ---@operator add(Color): Color
 ---@operator div(Color): Color
 ---@operator div(number): Color
@@ -193,6 +232,7 @@ function Uuid:isNil() end
 ---@operator mul(Color): Color
 ---@operator mul(number): Color
 ---@operator sub(Color): Color
+---A userdata object representing a <strong>color</strong>.  
 local Color = {}
 
 ---**Get**:
@@ -235,6 +275,23 @@ function Color:getHexStr() end
 ---@return integer # color value.
 function Color:getUintRgba() end
 
+
+
+---@alias RaycastResultTypes
+---| "limiter"
+---| "terrainSurface"
+---| "terrainAsset"
+---| "body"
+---| "joint"
+---| "lift"
+---| "character"
+---| "joint"
+---| "harvestable"
+---| "ragdoll"
+---| "areaTrigger"
+---| "vision"
+---| "voxelTerrain"
+---| "tunnelCatcher"
 
 ---@class RaycastResult
 ---A userdata object representing a <strong>raycast result</strong>.  
@@ -279,7 +336,7 @@ RaycastResult.pointWorld = {}
 
 ---**Get**:
 ---Returns the physics type of the target that was hit. (See [sm.physics.types])  
----@type string
+---@type RaycastResultTypes
 RaycastResult.type = {}
 
 ---**Get**:
@@ -288,7 +345,7 @@ RaycastResult.type = {}
 RaycastResult.valid = {}
 
 ---Returns the [AreaTrigger] hit during the raycast. This is only possible if [RaycastResult.type] is equal to "areaTrigger", otherwise this will return nil.  
----@return AreaTrigger # The areaTrigger target.
+---@return AreaTrigger # The areaTrigger target
 function RaycastResult:getAreaTrigger() end
 
 ---Returns the [Body] hit during the raycast. This is only possible if [RaycastResult.type] is equal to "body", otherwise this will return nil.  
@@ -304,11 +361,11 @@ function RaycastResult:getCharacter() end
 function RaycastResult:getHarvestable() end
 
 ---Returns the [Joint] hit during the raycast. This is only possible if [RaycastResult.type] is equal to "joint", otherwise this will return nil.  
----@return Joint # The joint target.
+---@return Joint # The joint target
 function RaycastResult:getJoint() end
 
 ---Returns the [Lift] hit during the raycast. This is only possible if [RaycastResult.type] is equal to "lift", otherwise this will return nil.  
----@return Lift, boolean						The lift; True if the lift is top
+---@return Lift, boolean isTop; The lift; True if the lift is top
 function RaycastResult:getLiftData() end
 
 ---Returns the [Shape] hit during the raycast. This is only possible if [RaycastResult.type] is equal to "body", otherwise this will return nil.  
@@ -317,7 +374,7 @@ function RaycastResult:getShape() end
 
 ---Returns the material hit during the raycast. This is only possible if [RaycastResult.type] is equal to "terrainAsset", otherwise this will return empty.  
 ---@return string # The material name.
-function RaycastResult:getTerrainAssetMaterialName() end
+function RaycastResult:getTerrainAssetMaterialName() end 
 
 
 ---@class LoadCellHandle
@@ -325,13 +382,14 @@ function RaycastResult:getTerrainAssetMaterialName() end
 ---@operator eq(LoadCellHandle): boolean
 local LoadCellHandle = {}
 
----@return boolean # True if succesful 
+---*Server only*  
+---@return boolean # True if succesful
 function LoadCellHandle:release() end
 
 
 ---@class Shape
----A userdata object representing a <strong>shape</strong> in the game.  
 ---@operator eq(Shape): boolean
+---A userdata object representing a <strong>shape</strong> in the game.  
 local Shape = {}
 
 ---**Get**:
@@ -394,7 +452,7 @@ Shape.id = {}
 Shape.interactable = {}
 
 ---**Get**:
----Return true if a shape is a basicmaterial  
+---Return true if a shape is a basicmaterial
 ---@type boolean
 Shape.isBlock = {}
 
@@ -445,11 +503,6 @@ Shape.paintable = {}
 Shape.right = {}
 
 ---**Get**:
----Returns the uuid unique to a shape/block type.  
----@type Uuid
-Shape.shapeUuid = {}
-
----**Get**:
 ---Return the amount that is stacked in the shape  
 ---**Set**:
 ---*Server only*  
@@ -477,7 +530,12 @@ Shape.up = {}
 Shape.usable = {}
 
 ---**Get**:
----Returns the uuid unique to a shape/block type.  
+---Returns the uuid string unique to a shape/block type.  
+---@type Uuid
+Shape.shapeUuid = {}
+
+---**Get**:
+---Returns the uuid string unique to a shape/block type.  
 ---@type Uuid
 Shape.uuid = {}
 
@@ -518,10 +576,10 @@ function Shape:applyShakeImpulse(shake) end
 
 ---*Server only*  
 ---Create a new joint  
----@param uuid Uuid # The uuid of the joint.
----@param position Vec3 # The joint's grid position.
----@param direction Vec3 # The joint's normal direction.
----@return Joint					The created joint.
+---@param uuid Uuid The uuid of the joint.
+---@param position Vec3 The joint's grid position.
+---@param direction Vec3 The joint's normal direction.
+---@return Joint joint The created joint.
 function Shape:createJoint(uuid, position, direction) end
 
 ---*Server only*  
@@ -537,7 +595,7 @@ function Shape:destroyBlock(position, size, attackLevel, destructionType, destru
 ---*Server only*  
 ---@deprecated use [Shape.destroyShape]
 ---Destroy a part  
----@param attackLevel integer # Determines which quality level of parts the attack can destroy. Setting it to 0 (default) will destroy any part.
+---@param attackLevel? integer # Determines which quality level of parts the attack can destroy. Setting it to 0 (default) will destroy any part.
 ---@param destructionType? integer # The type of destruction (Optional). (See[sm.shape.destructionType). (Defaults to sm.shape.destructionType.none)
 ---@param destructionPosition? Vec3 # The position of the destruction would hit the part (Optional)
 ---@param destructionNormal? Vec3 # The normal direction of where the destruction would hit the part (Optional)
@@ -545,7 +603,7 @@ function Shape:destroyPart(attackLevel, destructionType, destructionPosition, de
 
 ---*Server only*  
 ---Destroy a shape  
----@param attackLevel integer # Determines which quality level of shape the attack can destroy. Setting it to 0 (default) will destroy any shape.
+---@param attackLevel? integer # Determines which quality level of shape the attack can destroy. Setting it to 0 (default) will destroy any shape.
 ---@param destructionType? integer # The type of destruction (Optional). (See[sm.shape.destructionType). (Defaults to sm.shape.destructionType.none)
 ---@param destructionPosition? Vec3 # The position of the destruction would hit the shape (Optional)
 ---@param destructionNormal? Vec3 # The normal direction of where the destruction would hit the shape (Optional)
@@ -623,7 +681,7 @@ function Shape:getIsStackable() end
 ---Returns a table of all [Joint, joints] that are attached to the shape.  
 ---Will return all attached joints when onlyChildJoints is set to false.  
 ---@param onlyChildJoints? boolean # Filters what joints to return. Defaults to true (Optional)
----@return table # The table of joints attached to the shape. {[Joint], ..}
+---@return Joints[] # The table of joints attached to the shape. {[Joint], ..}
 function Shape:getJoints(onlyChildJoints) end
 
 ---Get the local aabb of the shape.  
@@ -650,25 +708,25 @@ function Shape:getMaterial() end
 ---@return integer # The shape's material id.
 function Shape:getMaterialId() end
 
----@return table # A table of joints contained in the multishape (returns nil if shape wasn't a multishape)
+---@return Joint[] # A table of joints contained in the multishape (returns nil if shape wasn't a multishape)
 function Shape:getMultiShapeJoints() end
 
----@return table # A table of shapes contained in the multishape (returns nil if shape wasn't a multishape)
+---@return Shape[] # A table of shapes contained in the multishape (returns nil if shape wasn't a multishape)
 function Shape:getMultiShapeShapes() end
 
 ---*Server only*  
 ---Returns a table of shapes which are neighbours to the shape  
----@return table # table of shapes. {[Shape], ..}
+---@return Shape[] # table of shapes. {[Shape], ..}
 function Shape:getNeighbours() end
 
 ---Returns a table offsets for the pipe connections of the shape. Can specify direction using sm.pipeGraph.direction.  
 ---@param direction? integer # The direction to fetch in. Defaults to [sm.pipeGraph.direction, sm.pipeGraph.direction.any] (Optional)
----@return table # table of local offset positions. {[Vec3], ..}
+---@return Vec3[] # table of local offset positions. {[Vec3], ..}
 function Shape:getPipeOffsets(direction) end
 
 ---*Server only*  
 ---Returns a table of shapes which are neighbours connected with pipes to the shape  
----@return table # table of shapes. {[Shape], ..}
+---@return Shape[] # table of shapes. {[Shape], ..}
 function Shape:getPipedNeighbours() end
 
 ---Returns the direction of a shape's right side.  
@@ -685,7 +743,7 @@ function Shape:getShapeUuid() end
 
 ---Returns the sticky directions of the shape for positive xyz and negative xyz.  
 ---A value of 1 means that the direction is sticky and a value of 0 means that the direction is not sticky.  
----@return table # The negative xyz sticky and the positive xyz sticky.
+---@return Vec3[] # The negative xyz sticky and the positive xyz sticky.
 function Shape:getSticky() end
 
 ---Returns the direction of a shape's top side.  
@@ -914,11 +972,11 @@ function Body:createBlock(uuid, size, position, forceAccept) end
 ---Create a part on body  
 ---@param uuid Uuid # The uuid of the shape.
 ---@param position Vec3 # The shape's local position.
----@param zaxis Vec3 # The shape's local z direction.
----@param xaxis Vec3 # The shape's local x direction.
+---@param z_axis Vec3 # The shape's local z direction.
+---@param x_axis Vec3 # The shape's local x direction.
 ---@param forceAccept? boolean # Set true to force the body to accept the shape. (Defaults to true)
 ---@return Shape # The created part
-function Body:createPart(uuid, position, zaxis, xaxis, forceAccept) end
+function Body:createPart(uuid, position, z_axis, x_axis, forceAccept) end
 
 ---*Server only*  
 ---Creates a wedge attached to a body. The wedge is oriented with one   
@@ -927,10 +985,10 @@ function Body:createPart(uuid, position, zaxis, xaxis, forceAccept) end
 ---@param uuid Uuid # The uuid of the shape.
 ---@param size Vec3 # The shape's size.
 ---@param position Vec3 # The shape's local position.
----@param zaxis Vec3 # The shape's local z direction.
----@param xaxis Vec3 # The shape's local x direction.
+---@param z_axis Vec3 # The shape's local z direction.
+---@param x_axis Vec3 # The shape's local x direction.
 ---@param forceAccept? boolean # Set true to force the body to accept the shape. (Defaults to true)
-function Body:createWedge(uuid, size, position, zaxis, xaxis, forceAccept) end
+function Body:createWedge(uuid, size, position, z_axis, x_axis, forceAccept) end
 
 ---*Server only*  
 ---Destroys the entire creation connected to this body  
@@ -938,7 +996,7 @@ function Body:destroyCreation() end
 
 ---*Server only*  
 ---Returns a table with all characters seated in this body  
----@return table # The table of all seated characters. {[Character], ...}
+---@return Character[] # The table of all seated characters. {[Character], ...}
 function Body:getAllSeatedCharacter() end
 
 ---Returns the angular velocity of a body.  
@@ -951,23 +1009,22 @@ function Body:getCenterOfMassPosition() end
 
 ---Returns a table of all bodies in a creation.  
 ---A creation includes all bodies connected by [Joint, joints], etc.  
----@return table # An array table of all bodies in a creation. {[Body], ...}
+---@return Body[] # An array table of all bodies in a creation. {[Body], ...}
 function Body:getCreationBodies() end
 
----Returns the local id of the creation  
----**Note:**
----*Server and client ids will not match*
+---*Server only*  
+---Returns the id of the creation  
 ---@return integer # The creation's local id
 function Body:getCreationId() end
 
 ---Returns a table of all [Joint, joints] that are part of a creation.  
 ---A creation includes all bodies connected by [Joint, joints], etc.  
----@return table # The table of joints in a creation. {[Joint], ...}
+---@return Joint[] # The table of joints in a creation. {[Joint], ...}
 function Body:getCreationJoints() end
 
 ---Returns a table of all [Shape, shapes] that are part of a creation.  
 ---A creation includes all bodies connected by [Joint, joints], etc.  
----@return table # The table of shapes in a creation. {[Shape], ...}
+---@return Shape[] # The table of shapes in a creation. {[Shape], ...}
 function Body:getCreationShapes() end
 
 ---Returns the id of a body.  
@@ -976,12 +1033,12 @@ function Body:getId() end
 
 ---Returns a table of all [Interactable, interactables] that are part of a body.  
 ---This will <strong>not</strong> return interactables in neighbouring bodies connected by [Joint, joints], etc.  
----@return table # The table of interactables in a body. {[Interactable], ...}
+---@return Interactable[] # The table of interactables in a body. {[Interactable], ...}
 function Body:getInteractables() end
 
 ---Returns a table of all [Joint, joints] that are part of a body.  
 ---This will <strong>not</strong> return joints in neighbouring bodies.  
----@return table # The table of joints in a body. {[Joint], ...}
+---@return Joint[] # The table of joints in a body. {[Joint], ...}
 function Body:getJoints() end
 
 ---Get the local aabb of the body.  
@@ -989,7 +1046,7 @@ function Body:getJoints() end
 function Body:getLocalAabb() end
 
 ---Returns the mass of a body.  
----@return number # The body's mass.
+---@return number# The body's mass.
 function Body:getMass() end
 
 ---Returns a shape that is part of a body by index.  
@@ -1003,13 +1060,13 @@ function Body:getShapeCount() end
 
 ---Returns a table of all [Shape, shapes] that are part of a body.  
 ---This will <strong>not</strong> return shapes in neighbouring bodies connected by [Joint, joints], etc.  
----@return table # The table of shapes in a body. {[Shape], ...}
+---@return Shape[] # The table of shapes in a body. {[Shape], ...}
 function Body:getShapes() end
 
 ---Returns a table of all [Shape, shapes] that are part of a body and have a specified uuid.  
 ---This will <strong>not</strong> return shapes in neighbouring bodies connected by [Joint, joints], etc.  
 ---@param uuid Uuid # The uuid to look for.
----@return table # The table of shapes in a body. {[Shape], ...}
+---@return Shape[] # The table of shapes in a body. {[Shape], ...}
 function Body:getShapesByUuid(uuid) end
 
 ---Returns the linear velocity of a body.  
@@ -1029,12 +1086,12 @@ function Body:getWorldAabb() end
 function Body:getWorldPosition() end
 
 ---Returns true if the given tick is lower than the tick the body was last changed.  
----@param tick integer # The tick.
+---@param tick integer The tick.
 ---@return boolean # Returns true if the body has been changed.
 function Body:hasChanged(tick) end
 
 ---Check if a body is buildable  
----@return boolean # Return true if the body is buildable.
+---@return boolean  # Return true if the body is buildable.
 function Body:isBuildable() end
 
 ---Check if a body is connectable  
@@ -1062,37 +1119,37 @@ function Body:isErasable() end
 function Body:isGhost() end
 
 ---Check if a body is liftable  
----@return boolean # Return true if the body is liftable.
+---@return boolean
 function Body:isLiftable() end
 
 ---Check if a body is on a lift  
----@return boolean # Return true if the body is on a lift
+---@return boolean
 function Body:isOnLift() end
 
 ---Check if a body is on a virtual lift  
----@return boolean # Return true if the body is on a lift
+---@return boolean
 function Body:isOnVirtualLift() end
 
 ---Check if a body is paintable  
----@return boolean # Return true if the body is paintable.
+---@return boolean
 function Body:isPaintable() end
 
 ---Check if a body is static  
----@return boolean # Return true if the body is static.
+---@return boolean
 function Body:isStatic() end
 
 ---Check if a body is interactable  
----@return boolean # Return true if the body is interactable.
+---@return boolean
 function Body:isUsable() end
 
 ---*Server only*  
 ---Controls whether a body is buildable  
----@param value boolean # Whether the body is buildable.
+---@param value boolean Whether the body is buildable.
 function Body:setBuildable(value) end
 
 ---*Server only*  
 ---Controls whether a body is connectable  
----@param value boolean # Whether the body is connectable.
+---@param value boolean Whether the body is connectable.
 function Body:setConnectable(value) end
 
 ---*Server only*  
@@ -1130,15 +1187,15 @@ function Body:setUsable(value) end
 ---@return Vec3 # The point in world space.
 function Body:transformLocalPoint(point) end
 
----Transforms a point from local space to world space.  
----@param point Vec3 # The point in local space.
----@return Vec3 # The point in world space.
-function Body:transformPoint(point) end
-
 ---Transforms a point from world space to local space.  
 ---@param point Vec3 # The point in world space.
 ---@return Vec3 # The point in local space.
 function Body:transformWorldPoint(point) end
+
+---Transforms a point from world space to local space.  
+---@param point Vec3 # The point in world space.
+---@return Vec3 # The point in local space.
+function Body:transformPoint(point) end
 
 
 ---@class Interactable
@@ -1197,14 +1254,14 @@ Interactable.shape = {}
 
 ---**Get**:
 ---Returns the interactable type of an interactable.  
----@type string
+---@type InteractableType
 Interactable.type = {}
 
 ---*Server only*  
 ---Creates and stores a container in the given index inside the controller  
----@param index integer # The index of the container [0-15].
----@param size integer # The number of slots in the container.
----@param stackSize? integer # The stack size. Defaults to maximum possible stack size(65535).
+---@param index integer The index of the container [0-15].
+---@param size integer The number of slots in the container.
+---@param stackSize? integer The stack size. Defaults to maximum possible stack size(65535).
 ---@return Container # The created container.
 function Interactable:addContainer(index, size, stackSize) end
 
@@ -1219,29 +1276,29 @@ function Interactable:clearLightOverrideColor() end
 
 ---*Server only*  
 ---Connects two interactables. Similar to using the Connect Tool.  
----@param child Interactable # The receiver of a connection.
+---@param child Interactable The receiver of a connection.
 ---@return boolean # Returns true if the connection attempt was successful.
 function Interactable:connect(child) end
 
 ---*Server only*  
 ---Connects interactable with joint.  
----@param child Joint # The receiver of a connection.
+---@param child Joint The receiver of a connection.
 function Interactable:connectToJoint(child) end
 
 ---*Server only*  
 ---Disconnects two interactables. Similar to using the Connect Tool.  
----@param child Interactable # The receiver of a connection.
----@return boolean # Returns true if the disconnect attempt was successful.
+---@param child Interactable The receiver of a connection.
+---@return boolean # The receiver of a connection.
 function Interactable:disconnect(child) end
 
 ---*Client only*  
 ---Returns animation duration in seconds.  
----@param name string # The name of the animation.
----@return number # The animation duration.
+---@param name string The name of the animation.
+---@return number
 function Interactable:getAnimDuration(name) end
 
 ---Returns a table of [Joint, bearings] that an interactable is connected to.  
----@return table # A table of the connected [Joint, bearings] {[Joint], ..}.
+---@return Joint[] # A table of the connected [Joint, bearings] {[Joint], ..}.
 function Interactable:getBearings() end
 
 ---Returns the [Body] an interactable's [Shape] is part of.  
@@ -1254,8 +1311,8 @@ function Interactable:getBody() end
 function Interactable:getCarryData() end
 
 ---Returns a table of child [Interactable, interactables] that an interactable is connected to. The children listen to the interactable's output.  
----@param flags integer # Connection type flags filter. (defaults to all types except for sm.interactable.connectionType.bearing and sm.interactable.connectionType.steering (for backwards compability))
----@return table # A table of the connected child [Interactable, interactables] {[Interactable], ..}.
+---@param flags? integer Connection type flags filter. (defaults to all types except for sm.interactable.connectionType.bearing (for backwards compability))
+---@return (Interactable|Joint)[]  # A table of the connected child [Interactable, interactables] {[Interactable], ..}.
 function Interactable:getChildren(flags) end
 
 ---*Client only*  
@@ -1264,7 +1321,7 @@ function Interactable:getChildren(flags) end
 function Interactable:getClientPublicData() end
 
 ---Returns the connection-point highlight color of an interactable. The point is shown when using the <em>Connect Tool</em>.  
----@return Color # The connection-point highlight color.
+---@return Color  # The connection-point highlight color.
 function Interactable:getColorHighlight() end
 
 ---Returns the connection-point color of an interactable. The point is shown when using the <em>Connect Tool</em>.  
@@ -1280,7 +1337,7 @@ function Interactable:getConnectionInputType() end
 function Interactable:getConnectionOutputType() end
 
 ---Returns the container stored in the given index inside the controller  
----@param index? integer # The index of the container (default: 0).
+---@param index? integer The index of the container (default: 0).
 ---@return Container # The container.
 function Interactable:getContainer(index) end
 
@@ -1290,7 +1347,7 @@ function Interactable:getContainer(index) end
 function Interactable:getGlowMultiplier() end
 
 ---Returns the id of an interactable.  
----@return integer # The interactable's id.
+---@return integer
 function Interactable:getId() end
 
 ---Returns custom joint script data.  
@@ -1299,11 +1356,11 @@ function Interactable:getId() end
 function Interactable:getJointCustomData(joint) end
 
 ---Returns a table of all [Joint, joints] that an interactable is connected to. Joints include <strong>bearings</strong> and <strong>pistons</strong>.  
----@return table # A table of the connected [Joint, joints] {[Joint], ..}.
+---@return Joint[] # A table of the connected [Joint, joints] {[Joint], ..}.
 function Interactable:getJoints() end
 
 ---Return the position of the bone  
----@param name string # The bone name.
+---@param name string The bone name.
 ---@return Vec3 # The position.
 function Interactable:getLocalBonePosition(name) end
 
@@ -1316,17 +1373,17 @@ function Interactable:getMaxChildCount() end
 function Interactable:getMaxParentCount() end
 
 ---Returns a table of parent [Interactable, interactables] that are connected to an interactable. The parents act as the interactable's input.  
----@param flags integer # Connection type flags filter. (default to all types)
----@return table # A table of the connected parent [Interactable, interactables] {[Interactable], ..}.
+---@param flags? integer Connection type flags filter. (default to all types)
+---@return Interactable[] # A table of the connected parent [Interactable, interactables] {[Interactable], ..}.
 function Interactable:getParents(flags) end
 
 ---Returns a table of [Joint, pistons] that an interactable is connected to.  
----@return table # A table of the connected [Joint, pistons] {[Joint], ..}.
+---@return Joint[] # A table of the connected [Joint, pistons] {[Joint], ..}.
 function Interactable:getPistons() end
 
 ---*Client only*  
 ---Returns the pose weight of the pose in the given index.  
----@param index integer # The index.
+---@param index integer The index.
 ---@return number # The pose weight.
 function Interactable:getPoseWeight(index) end
 
@@ -1344,7 +1401,7 @@ function Interactable:getPublicData() end
 function Interactable:getSeatCharacter() end
 
 ---Retrieves the list of [Interactable] connected to the seat.  
----@return table # The list of connected [Interactable, interactables] {[Interactable], ..}.
+---@return Interactable[]
 function Interactable:getSeatInteractables() end
 
 ---Returns the [Shape] of an interactable.  
@@ -1357,27 +1414,27 @@ function Interactable:getShape() end
 ---@return Interactable # The connected parent interactable.
 function Interactable:getSingleParent() end
 
----Returns the steering angle of an steering interactable.  
+---Returns the steering direction of a seat. (A = -1, D = 1)
 ---@return number # The steering angle
 function Interactable:getSteeringAngle() end
 
 ---Returns the left angle limit of a [Joint] connected to a steering [Interactable].  
----@param joint Joint # The joint.
+---@param joint Joint The joint.
 ---@return number # The left angle limit.
 function Interactable:getSteeringJointLeftAngleLimit(joint) end
 
 ---Returns the left angle speed of a [Joint] connected to a steering [Interactable].  
----@param joint Joint # The joint.
+---@param joint Joint The joint.
 ---@return number # The left angle speed.
 function Interactable:getSteeringJointLeftAngleSpeed(joint) end
 
 ---Returns the right angle limit of a [Joint] connected to a steering [Interactable].  
----@param joint Joint # The joint.
+---@param joint Joint The joint.
 ---@return number # The right angle limit.
 function Interactable:getSteeringJointRightAngleLimit(joint) end
 
 ---Returns the right angle speed of a [Joint] connected to a steering [Interactable].  
----@param joint Joint # The joint.
+---@param joint Joint The joint.
 ---@return number # The right angle speed.
 function Interactable:getSteeringJointRightAngleSpeed(joint) end
 
@@ -1391,8 +1448,8 @@ function Interactable:getSteeringJointSettings(joint) end
 ---@return boolean # True if the joint is unlocked
 function Interactable:getSteeringJointUnlocked(joint) end
 
----Returns the [Character] that is locking the controller.  
----@return Character # The character.
+---Returns the throttle direction of a seat. (W = 1, S = -1)
+---@return number # The power.
 function Interactable:getSteeringPower() end
 
 ---Returns the sprint value of an steering interactable.  
@@ -1666,11 +1723,6 @@ Joint.shapeA = {}
 Joint.shapeB = {}
 
 ---**Get**:
----Returns the uuid string unique to a joint type.  
----@type Uuid
-Joint.shapeUuid = {}
-
----**Get**:
 ---Returns the joint type of a joint.  
 ---@type string
 Joint.type = {}
@@ -1763,10 +1815,10 @@ function Joint:getLocalPosition() end
 ---@return Quat # The joint's local rotation.
 function Joint:getLocalRotation() end
 
----@return table # A table of joints contained in the multishape (returns nil if joint wasn't a multishape)
+---@return Joint[] # A table of joints contained in the multishape (returns nil if joint wasn't a multishape)
 function Joint:getMultiShapeJoints() end
 
----@return table # A table of shapes contained in the multishape (returns nil if joint wasn't a multishape)
+---@return Shape[] # A table of shapes contained in the multishape (returns nil if joint wasn't a multishape)
 function Joint:getMultiShapeShapes() end
 
 ---Returns the [Shape] a joint is attached to. This shape does always exist.  
@@ -1904,7 +1956,7 @@ function Network:sendToServer(callbackMethod, args) end
 ---```
 ----- Example:
 ---function MyEngine.server_onCreate( self )
----	self.network:setClientData( { "gear" = 1 } )
+---	self.network:setClientData( { gear = 1 } )
 ---end
 ---function MyEngine.client_onClientDataUpdate( self, data, channel )
 ---	if channel == 1 then
@@ -1913,8 +1965,14 @@ function Network:sendToServer(callbackMethod, args) end
 ---end
 ---```
 ---@param data any # Persistent data to be synchronized with existing and new clients.
----@param channel? integer # Client data channel, 1 to 4 (Optional) (Defaults to 1)
+---@param channel? 1|2 # Client data channel, 1 to 4 (Optional) (Defaults to 1)
 function Network:setClientData(data, channel) end
+
+
+---@class Item
+---@field uuid Uuid The UUID of the item.
+---@field instance number The instance ID, if the item is a tool.
+---@field quantity number The item amount.
 
 
 ---@class Container
@@ -1963,8 +2021,8 @@ function Container:bindOnTransaction(callback, object) end
 function Container:canCollect(itemUuid, quantity) end
 
 ---Checks if the container can collect a set of items.  
----@param uuids table # The uuids of items to check.
----@param quantities table # The number of items of each uuid. Needs to match the number of uuids.
+---@param uuids Uuid[] # The uuids of items to check.
+---@param quantities number[] # The number of items of each uuid. Needs to match the number of uuids.
 ---@return boolean # Indicates if the action is possible.
 function Container:canCollectAll(uuids, quantities) end
 
@@ -1998,7 +2056,7 @@ function Container:getAllowSpend() end
 
 ---Returns a table containing item uuid, quantity (and instance id for tools) at given slot.  
 ---@param slot integer # The slot.
----@return table # Table containg item {uuid = [Uuid], instance = integer, quantity = integer}.
+---@return Item # Table containg item {uuid = [Uuid], instance = integer, quantity = integer}.
 function Container:getItem(slot) end
 
 ---Returns the max stack size in the container.  
@@ -2045,7 +2103,7 @@ function Container:setAllowSpend(allow) end
 
 ---*Server only*  
 ---Set item filter.  
----@param filter table # A table of the item uuid's {[Uuid], ...} allowed to be stored in the container.
+---@param filter Uuid[] # A table of the item uuid's {[Uuid], ...} allowed to be stored in the container.
 function Container:setFilters(filter) end
 
 ---*Server only*  
@@ -2060,7 +2118,6 @@ function Container:setItem(slot, itemUuid, quantity, instance) end
 
 ---@class Character
 ---A userdata object representing a <strong>character</strong> in the game.  
----@operator eq(Character): boolean
 local Character = {}
 
 ---**Get**:
@@ -2150,13 +2207,22 @@ function Character:applyTumblingImpulse(impulse, offset) end
 ---@param callback string # The name of the Lua function to bind.
 function Character:bindAnimationCallback(animationName, triggerTime, callback) end
 
+---@class ActiveAnimationInfo
+---@field name string
+---@field weight number 
+
 ---Returns the set of active animations.  
----@return table # The set of active animations { { name = string, weight = number }, ...}
+---@return ActiveAnimationInfo[] # The set of active animations { { name = string, weight = number }, ...}
 function Character:getActiveAnimations() end
+
+---@class AnimationInfo
+---@field looping boolean
+---@field name string
+---@field duration number
 
 ---*Client only*  
 ---@param name string # The name.
----@return table # The animation info { name = string, duration = number, looping = boolean }.
+---@return AnimationInfo # The animation info { name = string, duration = number, looping = boolean }.
 function Character:getAnimationInfo(name) end
 
 ---Returns whether the character will float or sink in liquid.  
@@ -2383,7 +2449,7 @@ function Character:isVisible() end
 
 ---*Client only*  
 ---Overrides a non player character's third person renderable list with a new list of renderables. Will trigger a rebuild of the character's graphics.  
----@param renderables table # An array of renderable file paths to override with.
+---@param renderables string[] # An array of renderable file paths to override with.
 function Character:overrideRenderableList(renderables) end
 
 ---Removes all of a character's animation callbacks.  
@@ -2574,8 +2640,7 @@ function Player:getCarry() end
 function Player:getCarryColor() end
 
 ---*Server only*  
----Get the carry data on a player.  
----@return table # The carry data.
+---get the carry data on a player.  
 function Player:getCarryData() end
 
 ---Returns the character the player is controlling.  
@@ -2593,9 +2658,9 @@ function Player:getCurrentToolUuid() end
 
 ---*Server only*  
 ---Get uuid of customization from index  
----@param categoryIndex integer # The index of the customization category to get the uuid for.
----@return Uuid # uuid
-function Player:getCustomizationUuid(categoryIndex) end
+---@param customization integer # index
+---@return uuid # uuid
+function Player:getCustomizationUuid(customization) end
 
 ---Returns the hotbar container of the player.  
 ---@return Container # The player's hotbar.
@@ -2632,7 +2697,7 @@ function Player:isMale() end
 
 ---*Server only*  
 ---Place down a lift game object  
----@param creation table # The bodies to place on the lift. {[Body], ..}
+---@param creation Body[] # The bodies to place on the lift. {[Body], ..}
 ---@param position Vec3 # The lift position.
 ---@param level integer # The lift level.
 ---@param rotation integer # The rotation of the creation on the lift.
@@ -2648,8 +2713,8 @@ function Player:removeLift() end
 function Player:sendCharacterEvent(event) end
 
 ---*Server only*  
----Set the carry data on a player.  
----@param data table # The carry data.
+---Set the carry data on a player.
+---@param data table  
 function Player:setCarryData(data) end
 
 ---*Server only*  
@@ -2775,16 +2840,16 @@ function AreaTrigger:bindOnStay(callback, object) end
 function AreaTrigger:destroy() end
 
 ---Gets the trigger collisions for characters inside the area trigger  
----@return table # A table of character trigger collisions.
+---@return Character[] # A table of character trigger collisions.
 function AreaTrigger:getCharacters() end
 
 ---Gets the contents of the area trigger.  
 ---Returns a table of [Character, characters] and/or [Body, bodies] and/or [Harvestable, harvestables] and/or [Lift, lifts] and/or [AreaTrigger, areaTriggers].  
----@return table # The table with the content.
+---@return (Character|Body|Harvestable|Lift|Areatrigger)[] # The table with the content.
 function AreaTrigger:getContents() end
 
 ---Gets the trigger collisions for harvestables inside the area trigger  
----@return table # A table of harvestable trigger collisions.
+---@return Harvestable[] # A table of harvestable trigger collisions.
 function AreaTrigger:getHarvestables() end
 
 ---Returns the attached host [sm.interactable, interactable].  
@@ -2795,9 +2860,16 @@ function AreaTrigger:getHostInteractable() end
 ---@return integer # The area trigger's id.
 function AreaTrigger:getId() end
 
+---@class AreaTriggerShape
+---@field shape Shape
+---@field triggerWorldPosition Vec3
+---@field triggerLocalPosition Vec3
+---@field shapeWorldPosition Vec3
+---@field shapeLocalPosition Vec3
+
 ---Gets the trigger collisions for shapes inside the area trigger  
 ---Will only return one [Shape] for each [Body] that is colliding with the [AreaTrigger].  
----@return table # A table of shape trigger collisions.
+---@return AreaTriggerShape[] # A table of shape trigger collisions.
 function AreaTrigger:getShapes() end
 
 ---Returns the size of an area trigger.  
@@ -2882,7 +2954,6 @@ function AreaTrigger:setWorldPosition(position) end
 ---@param rotation Quat # The area trigger's new world rotation.
 function AreaTrigger:setWorldRotation(rotation) end
 
-
 ---@class World
 ---A userdata object representing a <strong>world</strong> in the game.  
 ---@operator eq(World): boolean
@@ -2962,7 +3033,7 @@ function World:getWeightedVoxelDensityInWorldPoint(point) end
 
 ---Returns the zone id from a position.  
 ---@param position Vec3 # The position.
----@return table # The Zone id. (nil if position is invalid)
+---@return table? # The Zone id. (nil if position is invalid)
 function World:getZoneId(position) end
 
 ---Checks if the given cell coordinates are within the bounds of the world.  
@@ -2997,10 +3068,10 @@ function World:isVoxelTerrainPointClear(referencePosition, testPosition) end
 ---Load a cell for player. The cell will stay loaded until the player steps into the cell.  
 ---@param x integer # Cell X position.
 ---@param y integer # Cell Y Position.
----@param player Player # A player to load for, can be nil.
+---@param player? Player # A player to load for, can be nil.
 ---@param callback? string # Lua function to call when cell is loaded. Callback parameters are ( world, x, y, player, params )
 ---@param params? any # Parameter object passed to the callback.
----@param ref? ref # Script ref to callback object.
+---@param ref? table # Script ref to callback object.
 function World:loadCell(x, y, player, callback, params, ref) end
 
 ---Load a cell. The cell will stay loaded until the cell is released with [LoadCellHandle].release()  
@@ -3009,7 +3080,7 @@ function World:loadCell(x, y, player, callback, params, ref) end
 ---@param y integer # Cell Y Position.
 ---@param callback? string # Lua function to call when cell is loaded. Callback parameters are ( world, x, y, params )
 ---@param params? any # Parameter object passed to the callback.
----@param ref? ref # Script ref to callback object.
+---@param ref? table # Script ref to callback object.
 ---@return LoadCellHandle # Handle to releasing cell.
 function World:loadCellWithHandle(x, y, callback, params, ref) end
 
@@ -3020,7 +3091,7 @@ function World:loadCellWithHandle(x, y, callback, params, ref) end
 ---@param y integer # Cell Y Position.
 ---@param callback? string # Lua function to call when cell nav mesh is created. Callback parameters are ( world, x, y, params )
 ---@param params? any # Parameter object passed to the callback.
----@param ref? ref # Script ref to callback object.
+---@param ref? table # Script ref to callback object.
 ---@return LoadCellHandle # Handle to releasing cell.
 function World:loadNavMeshWithHandle(x, y, callback, params, ref) end
 
@@ -3028,7 +3099,7 @@ function World:loadNavMeshWithHandle(x, y, callback, params, ref) end
 ---@param x integer # Cell X position.
 ---@param y integer # Cell Y Position.
 ---@param callback? string # Lua function to call when cell is reloaded. Callback parameters are ( world, x, y, result ) (Optional)
----@param ref? ref # Script ref to callback object. (Optional)
+---@param ref? table # Script ref to callback object. (Optional)
 ---@param params? any # Parameter passed to the callback. (Optional)
 function World:reloadCell(x, y, callback, ref, params) end
 
@@ -3037,10 +3108,21 @@ function World:reloadCell(x, y, callback, ref, params) end
 ---@param color Color # The override color.
 function World:setLightColorOverride(color) end
 
+---@class VoxelMaterialMiningConfig
+---@field sizeX number
+---@field sizeY number
+---@field sizeZ number
+---@field seed number
+---@field spawnId number
+---@field tunnelType? string
+---@field maxDist? number
+
+---@alias MiningConfig [ VoxelMaterialMiningConfig, VoxelMaterialMiningConfig, VoxelMaterialMiningConfig, VoxelMaterialMiningConfig, VoxelMaterialMiningConfig, VoxelMaterialMiningConfig, VoxelMaterialMiningConfig, VoxelMaterialMiningConfig ]
+
 ---*Server only*  
 ---Configures the mining loot population. Matched candidates are sent to the  
 ---world script via the server_onMining callback whenever voxels are removed.  
----@param config table # Spawn rules keyed by voxel material index (1-8). Each value is an array of rule tables: { sizeX, sizeY, sizeZ, seed, spawnId = integers, tunnelType = string (optional), maxDist = number (optional) }.
+---@param config MiningConfig # Spawn rules keyed by voxel material index (1-8). Each value is an array of rule tables: { sizeX, sizeY, sizeZ, seed, spawnId = integers, tunnelType = string (optional), maxDist = number (optional) }.
 function World:setMiningConfig(config) end
 
 ---Set data to pass on to the terrain generation script. If no data is set the terrain generation script receives the same data as the world script.  
@@ -3093,7 +3175,7 @@ function World:voxelDensitySubtraction(position, direction, radius, targetDensit
 ---@param position Vec3 # The world position a of the modification.
 ---@param direction Vec3 # The world direction of the modification. Non normalized direction that defines the center line of modification.
 ---@param radius number # The maximum distance from positions in the line defined by position and direction that can be modified.
----@param targetDensities table # A table of target densities to remove per material type {[1] = integer, .., [8] = integer}.
+---@param targetDensities [number, number, number, number, number, number, number, number] # A table of target densities to remove per material type {[1] = integer, .., [8] = integer}.
 ---@param filter? integer # The materials the shape can modify. (See [sm.world.voxelFilter]). (Defaults to sm.world.voxelFilter.all)
 ---@param enableDestructionEffect? boolean # Whether to enable destruction effect. (Defaults to true)
 ---@param callback? string # Lua function to call when cell is loaded. Callback parameters are a table of destruction data { remDensities = {integer, ..}, avgPositions = {[Vec3], ..} } and (optional) pass-through params passed to this function.
@@ -3112,12 +3194,12 @@ Portal.id = {}
 
 ---*Server only*  
 ---Gets the contents of opening A  
----@return table # A table of contents of type [Character] and [Body].
+---@return (Character|Body)[] # A table of contents of type [Character] and [Body].
 function Portal:getContentsA() end
 
 ---*Server only*  
 ---Gets the contents of opening B  
----@return table # A table of contents of type [Character] and [Body].
+---@return (Character|Body)[] # A table of contents of type [Character] and [Body].
 function Portal:getContentsB() end
 
 ---Returns the id of a portal.  
@@ -3453,6 +3535,7 @@ function Harvestable:setParams(data) end
 function Harvestable:setPoseWeight(index, value) end
 
 ---Set the world coordinates of a harvestable. Can only be used on kinematic harvestables.  
+---Can be used on both the client and the server, but using it on the server only affects the host.
 ---@param position Vec3 # The position.
 function Harvestable:setPosition(position) end
 
@@ -3462,6 +3545,7 @@ function Harvestable:setPosition(position) end
 function Harvestable:setPublicData(data) end
 
 ---Set the quaternion rotation of a harvestable. Can only be used on kinematic harvestables.  
+---Can be used on both the client and the server, but using it on the server only affects the host.
 ---@param rotation Quat # The rotation.
 function Harvestable:setRotation(rotation) end
 
@@ -3686,16 +3770,29 @@ function BuilderGuide:destroy() end
 ---@return integer # The stage index.
 function BuilderGuide:getCurrentStageIndex() end
 
+---@class BuilderGuideErrors
+---@field blocks number
+---@field joints number
+---@field parts number
+---@field connections number
+---@field connectionsReversed number
+
 ---Returns error information of the builder guide.  
----@return table # Table of errors { blocks = number, joints = number, parts = number, connections = number, connectionsReversed = number },
+---@return BuilderGuideErrors # Table of errors { blocks = number, joints = number, parts = number, connections = number, connectionsReversed = number },
 function BuilderGuide:getErrorInfo() end
 
 ---Returns the id of a guide.  
 ---@return integer # The guide's id.
 function BuilderGuide:getId() end
 
+---@class BuilderGuideStageInfo
+---@field blocksLeft number
+---@field jointsLeft number
+---@field partsLeft number
+---@field connectionsLeft number
+
 ---Returns information about the current stage.  
----@return table # Table of stage info { blocksLeft = number, jointsLeft = number, partsLeft = number, connectionsLeft = number }, 
+---@return BuilderGuideStageInfo # Table of stage info { blocksLeft = number, jointsLeft = number, partsLeft = number, connectionsLeft = number }, 
 function BuilderGuide:getStageInfo() end
 
 ---Returns the completion status of a guide.  
@@ -3726,7 +3823,7 @@ function CullSphereGroup:addSphere(id, position, radius) end
 ---@param position Vec3 # Position to query sphere.
 ---@param innerRadius number # Radius for inner sphere.
 ---@param outerRadius number # Radius for outer sphere.
----@return table, table # Arrays of removed, added ids {integer, ...}.
+---@return number[], number[] # Arrays of removed, added ids {integer, ...}.
 function CullSphereGroup:getDelta(position, innerRadius, outerRadius) end
 
 ---Query for overlapping spheres.  
@@ -3735,7 +3832,7 @@ function CullSphereGroup:getDelta(position, innerRadius, outerRadius) end
 function CullSphereGroup:getOverlaps(position, radius) end
 
 ---Query all currently active spheres and leave them.  
----@return table # An array of previously active ids {integer, ...}.
+---@return number[] # An array of previously active ids {integer, ...}.
 function CullSphereGroup:leave() end
 
 ---Removes a sphere from the sphere group.  
@@ -3912,10 +4009,18 @@ function Effect:destroy() end
 ---Detaches the effect from its host object.  
 function Effect:detach() end
 
+---@class EffectCameraData
+---@field hasBlendIn boolean
+---@field hasBlendOut boolean
+---@field active boolean
+---@field cameraPosition Vec3]
+---@field cameraRotation Quat
+---@field cameraFov number
+
 ---*Client only*  
 ---Get a table of camera effect data.  
 ---Returns nil if the effect is not a camera effect.  
----@return table # The settings. { hasBlendIn = boolean, hasBlendOut = boolean, active = boolean, cameraPosition = [Vec3], cameraRotation = [Quat], cameraFov = number }
+---@return EffectCameraData # The settings. { hasBlendIn = boolean, hasBlendOut = boolean, active = boolean, cameraPosition = [Vec3], cameraRotation = [Quat], cameraFov = number }
 function Effect:getCameraData() end
 
 ---Returns the id of an effect.  
@@ -3924,7 +4029,7 @@ function Effect:getId() end
 
 ---*Client only*  
 ---Gets the current world position  
----@return Vec3								The world position.
+---@return Vec3	position The world position.
 function Effect:getWorldPosition() end
 
 ---*Client only*  
@@ -4034,19 +4139,21 @@ function Effect:setRotation(rotation) end
 ---@param scale Vec3 # The scale.
 function Effect:setScale(scale) end
 
----*Client only*  
----Sets an effect to stop and restart depending on distance to the player.  
----@param startDistance number # The distance when effect will start
----@param stopDistance number # The distance when effect will stop
+
+---The effect will:  
+---* Start when your distance is less than the startDistance.  
+---* End when your distance is over the stopDistance.  
+---@param startDistance number Distance at which to start the effect. Must be < than stopDistance and over 0.
+---@param stopDistance number Distance at which to stop the effect. Must be > than startDistance and over 0. 
 function Effect:setStartStopDistance(startDistance, stopDistance) end
 
 ---*Client only*  
 ---Sets an effect to be active during specific period of the day / night cycle.  
 ---@param enabled boolean # Time of day enabled.
----@param start number # Start normalized time of day.
----@param end number # End normalized time of day.
+---@param startTime number # Start normalized time of day.
+---@param endTime number # End normalized time of day.
 ---@param inversed boolean # If true, period between start-end becomes inactive time.
-function Effect:setTimeOfDay(enabled, start, ed, inversed) end
+function Effect:setTimeOfDay(enabled, startTime, endTime, inversed) end
 
 ---*Client only*  
 ---Sets the velocity of an effect. The effect will move along at the set velocity until it receives a new position.  
@@ -4080,7 +4187,6 @@ function Effect:stopBreakSustain() end
 ---*Client only*  
 ---Immediately stop playing an effect, sound effects ended immediately.  
 function Effect:stopImmediate() end
-
 
 ---@class Storage
 ---A userdata object representing a <strong>storage</strong> object.  
@@ -4158,7 +4264,7 @@ function Unit:addContainer(index, size, stackSize) end
 ---*Server only*  
 ---Creates a Ai State from a name (See [AiState])  
 ---@param stateName string # Name of predefined ai state.
----@return AiState					The ai state.
+---@return AiState state The ai state.
 function Unit:createState(stateName) end
 
 ---*Server only*  
@@ -4255,6 +4361,310 @@ function Unit:setWhiskerData(whiskerCount, maxAngle, startLength, endLength) end
 ---@operator eq(AiState): boolean
 local AiState = {}
 
+---**Get**:
+---*Server only*
+---Gets the debug name of the state.  
+---**Set**:
+---*Server only*  
+---Sets the debug name of the state.  
+---@type string
+AiState.debugName = {}
+
+---**Get**:
+---*Server only*
+---Gets the timeout of the state.  
+---**Set**:
+---*Server only*  
+---Sets the timeout of the state.  
+---@type number
+AiState.timeout = {}
+
+---**Get**:
+---*Server only*
+---Gets the tolerance of the state.  
+---**Set**:
+---*Server only*  
+---Sets the tolerance of the state.  
+---@type number
+AiState.tolerance = {}
+
+---**Get**:
+---*Server only*
+---Gets whether the state has avoidance.  
+---**Set**:
+---*Server only*  
+---Sets whether the state has avoidance.  
+---@type boolean
+AiState.avoidance = {}
+
+---**Get**:
+---*Server only*
+---Gets the movement type of the state.  
+---**Set**:
+---*Server only*  
+---Sets the movement type of the state.  
+---@type string
+AiState.movementType = {}
+
+---**Get**:
+---*Server only*
+---Gets the melee type of the state.  
+---**Set**:
+---*Server only*  
+---Sets the melee type of the state.  
+---@type Uuid
+AiState.meleeType = {}
+
+---**Get**:
+---*Server only*
+---Gets the event name of the state.  
+---**Set**:
+---*Server only*  
+---Sets the event name of the state.  
+---@type string
+AiState.event = {}
+
+---**Get**:
+---*Server only*
+---Gets the damage of the state.  
+---**Set**:
+---*Server only*  
+---Sets the damage of the state.  
+---@type number
+AiState.damage = {}
+
+---**Get**:
+---*Server only*
+---Gets the attack range of the state.  
+---**Set**:
+---*Server only*  
+---Sets the attack range of the state.  
+---@type number
+AiState.attackRange = {}
+
+---**Get**:
+---*Server only*
+---Gets the animation cooldown of the state.  
+---**Set**:
+---*Server only*  
+---Sets the animation cooldown of the state.  
+---@type number
+AiState.animationCooldown = {}
+
+---**Get**:
+---*Server only*
+---Gets the attack cooldown of the state.  
+---**Set**:
+---*Server only*  
+---Sets the attack cooldown of the state.  
+---@type number
+AiState.attackCooldown = {}
+
+---**Get**:
+---*Server only*
+---Gets the global cooldown of the state.  
+---**Set**:
+---*Server only*  
+---Sets the global cooldown of the state.  
+---@type number
+AiState.globalCooldown = {}
+
+---**Get**:
+---*Server only*
+---Gets the attack delay of the state.  
+---**Set**:
+---*Server only*  
+---Sets the attack delay of the state.  
+---@type number
+AiState.attackDelay = {}
+
+---**Get**:
+---*Server only*
+---Gets the power of the state.  
+---**Set**:
+---*Server only*  
+---Sets the power of the state.  
+---@type number
+AiState.power = {}
+
+---**Get**:
+---*Server only*
+---Gets the movement angle threshold of the state.  
+---**Set**:
+---*Server only*  
+---Sets the movement angle threshold of the state.  
+---@type number
+AiState.movementAngleThreshold = {}
+
+---**Get**:
+---*Server only*
+---Gets the maximum flee time of the state.  
+---**Set**:
+---*Server only*  
+---Sets the maximum flee time of the state.  
+---@type number
+AiState.maxFleeTime = {}
+
+---**Get**:
+---*Server only*
+---Gets the maximum deviation of the state.  
+---**Set**:
+---*Server only*  
+---Sets the maximum deviation of the state.  
+---@type number
+AiState.maxDeviation = {}
+
+---**Get**:
+---*Server only*
+---Gets the time of the state.  
+---**Set**:
+---*Server only*  
+---Sets the time of the state.  
+---@type number
+AiState.time = {}
+
+---**Get**:
+---*Server only*
+---Gets whether the state is interruptible.  
+---**Set**:
+---*Server only*  
+---Sets whether the state is interruptible.  
+---@type boolean
+AiState.interruptible = {}
+
+---**Get**:
+---*Server only*
+---Gets the name of the state.  
+---**Set**:
+---*Server only*  
+---Sets the name of the state.  
+---@type string
+AiState.name = {}
+
+---**Get**:
+---*Server only*
+---Gets the spread angle of the state.  
+---**Set**:
+---*Server only*  
+---Sets the spread angle of the state.  
+---@type number
+AiState.spreadAngle = {}
+
+---**Get**:
+---*Server only*
+---Gets the cooldown of the state.  
+---**Set**:
+---*Server only*  
+---Sets the cooldown of the state.  
+---@type number
+AiState.cooldown = {}
+
+---**Get**:
+---*Server only*
+---Gets the aim time of the state.  
+---**Set**:
+---*Server only*  
+---Sets the aim time of the state.  
+---@type number
+AiState.aimTime = {}
+
+---**Get**:
+---*Server only*
+---Gets the projectile of the state.  
+---**Set**:
+---*Server only*  
+---Sets the projectile of the state.  
+---@type Uuid
+AiState.projectile = {}
+
+---**Get**:
+---*Server only*
+---Gets the offset of the state.  
+---**Set**:
+---*Server only*  
+---Sets the offset of the state.  
+---@type Vec3
+AiState.offset = {}
+
+---**Get**:
+---*Server only*
+---Gets the velocity of the state.  
+---**Set**:
+---*Server only*  
+---Sets the velocity of the state.  
+---@type number
+AiState.velocity = {}
+
+---**Get**:
+---*Server only*
+---Gets whether the states prefers high angle shots.  
+---**Set**:
+---*Server only*  
+---Setsthe whether the state prefers high angle shots.  
+---@type boolean
+AiState.preferHighAngle = {}
+
+---**Get**:
+---*Server only*
+---Gets the delay of the state.  
+---**Set**:
+---*Server only*  
+---Sets the delay of the state.  
+---@type number
+AiState.delay = {}
+
+---**Get**:
+---*Server only*
+---Gets the tether position of the state.  
+---**Set**:
+---*Server only*  
+---Sets the tether position of the state.  
+---@type Vec3
+AiState.tetherPosition = {}
+
+---**Get**:
+---*Server only*
+---Gets the roam center offset of the state.  
+---**Set**:
+---*Server only*  
+---Sets the roam center offset of the state.  
+---@type number
+AiState.roamCenterOffset = {}
+
+---**Get**:
+---*Server only*
+---Gets the minimum random event cooldown  of the state.  
+---**Set**:
+---*Server only*  
+---Sets the minimum random event cooldown  of the state.  
+---@type number
+AiState.randomEventCooldownMin = {}
+
+---**Get**:
+---*Server only*
+---Gets the maximum random event cooldown  of the state.  
+---**Set**:
+---*Server only*  
+---Sets the maximum random event cooldown  of the state.  
+---@type number
+AiState.randomEventCooldownMax = {}
+
+---@class AiStateEvent
+---@field name string
+---@field time number
+---@field interruptible boolean
+---@field chance number
+
+---**Get**:
+---*Server only*
+---Gets the random events of the state.  
+---**Set**:
+---*Server only*  
+---Sets the random events of the state.  
+---@type AiStateEvent[]
+AiState.randomEvents = {}
+
+
 ---*Server only*  
 ---Returns the state's facing direction.  
 ---@return Vec3 # The direction.
@@ -4310,6 +4720,7 @@ function AiState:stop() end
 
 
 ---@class PathNode
+---@field toNode PathNode
 ---A userdata object representing a PathNode in the game.  
 ---@operator eq(PathNode): boolean
 local PathNode = {}
@@ -4345,13 +4756,13 @@ Tool.uuid = {}
 
 ---*Client only*  
 ---Returns general information for a third person view animation.  
----@param name string # The name.
----@return table # A table containing "name", "duration" and "looping".
+---@param name string The name.
+---@return AnimationInfo # The animation information
 function Tool:getAnimationInfo(name) end
 
 ---*Client only*  
 ---Get the current weights for the tool's local camera settings.  
----@return table # The third-person weight and the first-person weight
+---@return number, number # The third-person weight and the first-person weight
 function Tool:getCameraWeights() end
 
 ---*Client only*  
@@ -4362,7 +4773,7 @@ function Tool:getDirection() end
 ---*Client only*  
 ---Returns general information for a first person view animation.  
 ---@param name string # The name.
----@return table # A table containing "name", "duration" and "looping".
+---@return AnimationInfo # A table containing "name", "duration" and "looping".
 function Tool:getFpAnimationInfo(name) end
 
 ---*Client only*  
@@ -4509,12 +4920,13 @@ function Tool:setFpColor(color) end
 
 ---*Client only*  
 ---Sets the renderables (files containing model data) to be used for the character in first person view.  
----@param renderables table # The table of renderables names {string, ..}
+---@param renderables string[] # The table of renderables names {string, ..}
 function Tool:setFpRenderables(renderables) end
 
 ---@deprecated Deprecated function. Kept for compability with old scripts.
 ---Does nothing.  
-function Tool:setInteractionTextSuppressed() end
+---@param suppressed boolean Whether interaction texts are suppressed.
+function Tool:setInteractionTextSuppressed(suppressed) end
 
 ---*Client only*  
 ---Sets the current third person view movement animation to be used by the tool.  
@@ -4534,7 +4946,7 @@ function Tool:setTpColor(color) end
 
 ---*Client only*  
 ---Sets the renderables (files containing model data) to be used for the character in third person view.  
----@param renderables table # The table of renderables names. {string, ..}
+---@param renderables string[] # The table of renderables names. {string, ..}
 function Tool:setTpRenderables(renderables) end
 
 ---*Client only*  
@@ -4581,6 +4993,91 @@ function Tool:updateJoint(name, rotation, weight) end
 ---@param weight? number # The weight. (Defaults to -1.0)
 function Tool:updateMovementAnimation(time, weight) end
 
+---@alias MovementAnimation string
+---| "idle"
+---| "idleRelaxed"
+---| "sprint"
+---| "runFwd"
+---| "runBwd"
+---| "jump"
+---| "jumpUp"
+---| "jumpDown"
+---| "land"
+---| "landFwd"
+---| "landBwd"
+---| "crouchIdle"
+---| "crouchFwd"
+---| "crouchBwd"
+---| "swimIdle"
+---| "swimFwd"
+---| "swimBwd"
+
+
+---*Client only*  
+---Sets the current third person view movement animation to be used by the tool.  
+---@param name MovementAnimation The name.
+---@param animation string The animation.
+function Tool:setMovementAnimation(name, animation) end
+
+---*Client only*  
+---Sets whether the player is slowed down. This is similar to crouching and normally occurs when the player is aiming.  
+---@param slowDown boolean Whether the player movement is slowed down.
+function Tool:setMovementSlowDown(slowDown) end
+
+---*Client only*  
+---Sets the color to be used for the tool in third person view.  
+---@param color Color The color.
+function Tool:setTpColor(color) end
+
+---*Client only*  
+---Sets the renderables (files containing model data) to be used for the character in third person view.  
+---@param renderables string[] The table of renderables names. {string, ..}
+function Tool:setTpRenderables(renderables) end
+
+---*Client only*  
+---Updates a third person view animation.  
+---@param name string The animation name.
+---@param time number The time.
+---@param weight? number The weight.
+function Tool:updateAnimation(name, time, weight) end
+
+---*Client only*  
+---Updates the third person view camera for the tool.  
+---@param distance number The distance.
+---@param fov number The fov.
+---@param offset Vec3 The offset.
+---@param weight number The weight.
+function Tool:updateCamera(distance, fov, offset, weight) end
+
+---*Client only*  
+---Updates a first person view animation.  
+---@param name string The name.
+---@param time number The time.
+---@param weight? number The weight.
+---@param looping? boolean The looping.
+function Tool:updateFpAnimation(name, time, weight, looping) end
+
+---*Client only*  
+---Updates the first person view camera for the tool.  
+---@param fov number The fov.
+---@param offset Vec3 The offset.
+---@param weight number The weight.
+---@param bobbing number The bobbing.
+function Tool:updateFpCamera(fov, offset, weight, bobbing) end
+
+---*Client only*  
+---Sets the rotation and weight for a bone in the animation skeleton.  
+---@param name string The name.
+---@param rotation Vec3 The rotation.
+---@param weight? number The weight.
+function Tool:updateJoint(name, rotation, weight) end
+
+---*Client only*  
+---Updates the currently set third person view movement animation for the tool.  
+---@param time number The time.
+---@param weight? number The weight.
+function Tool:updateMovementAnimation(time, weight) end
+
 
 ---@class Widget
 ---Removed! Don't use.  
@@ -4590,6 +5087,7 @@ local Widget = {}
 ---**Get**:
 ---@deprecated Use [GuiInterface]
 ---Removed!  
+---@type integer
 Widget.id = {}
 
 ---**Get**:
@@ -4598,6 +5096,7 @@ Widget.id = {}
 ---**Set**:
 ---@deprecated Use [GuiInterface]
 ---Removed!  
+---@type Vec3
 Widget.position = {}
 
 ---**Get**:
@@ -4606,6 +5105,7 @@ Widget.position = {}
 ---**Set**:
 ---@deprecated Use [GuiInterface]
 ---Removed!  
+---@type table
 Widget.size = {}
 
 ---**Get**:
@@ -4614,6 +5114,7 @@ Widget.size = {}
 ---**Set**:
 ---@deprecated Use [GuiInterface]
 ---Removed!  
+---@type boolean
 Widget.visible = {}
 
 ---@deprecated Use [GuiInterface]
@@ -4755,13 +5256,17 @@ function GuiInterface:close() end
 ---Add an icon to the compass.  
 ---@param iconName string # Name of the new compass icon.
 ---@param image? string # The name or path of the image. (Optional)
----@param showDistance? string # If the icon should display distance. (Optional)
----@param width? string # The width of the icon, defaults to 22. (Optional)
----@param height? string # The height of the icon, defaults to 22. (Optional)
+---@param showDistance? boolean # If the icon should display distance. (Optional)
+---@param width? integer # The width of the icon, defaults to 22. (Optional)
+---@param height? integer # The height of the icon, defaults to 22. (Optional)
 function GuiInterface:compassAddIcon(iconName, image, showDistance, width, height) end
 
 ---*Client only*  
-function GuiInterface:compassPingMarker() end
+---Plays an effect on an icon on the compass.  
+---@param iconName string # Name of the compass icon.
+---@param effectName string # The name of the effect
+---@param color Color? # The color of the effect
+function GuiInterface:compassPingMarker(iconName, effectName, color) end
 
 ---*Client only*  
 ---Remove an icon from the compass.  
@@ -4801,10 +5306,17 @@ function GuiInterface:compassSetIconWorldPosition(iconName, worldPosition, world
 ---@param options table # The options in the dropdown menu
 function GuiInterface:createDropDown(widgetName, functionName, options) end
 
+---@class GridData
+---@field type string
+---@field layout string
+---@field itemWidth integer
+---@field itemHeight integer
+---@field itemCount integer
+
 ---*Client only*  
 ---Creats a grid from a table/json  
 ---@param gridName string # The name of the grid
----@param index table # Grid data table { type=string, layout=string, itemWidth=integer, itemHeight=integer, itemCount=integer }
+---@param index GridData # Grid data table { type=string, layout=string, itemWidth=integer, itemHeight=integer, itemCount=integer }
 function GuiInterface:createGridFromJson(gridName, index) end
 
 ---*Client only*  
@@ -4898,20 +5410,19 @@ function GuiInterface:setContainer(gridName, container) end
 ---*Client only*  
 ---Sets multiple containers to a grid  
 ---@param gridName string # The name of the grid
----@param containers table # Table of containers. {[Container], ..}
+---@param containers Container[] # Table of containers. {[Container], ..}
 function GuiInterface:setContainers(gridName, containers) end
 
 ---*Client only*  
 ---Sets data to a widget  
 ---@param widgetName string # The name of the widget
----@param data table # The data
+---@param data? table # The data
 function GuiInterface:setData(widgetName, data) end
 
 ---*Client only*  
 ---Sets the Lua callback for when the DressbotGui unlocks something. The callback will receive the uuid of the unlocked customization item.  
----/  
----@param func string # The name function.
-function GuiInterface:setDressbotUnlockCallback(func) end
+---@param functionName string # The name function.
+function GuiInterface:setDressbotUnlockCallback(functionName) end
 
 ---*Client only*  
 ---Sets the fade range for a world gui  
@@ -4933,7 +5444,7 @@ function GuiInterface:setGridButtonCallback(buttonName, callback) end
 ---Sets an item in a grid  
 ---@param gridName string # The name of the grid
 ---@param index integer # The item index
----@param item table # The item
+---@param item? table # The item
 function GuiInterface:setGridItem(gridName, index, item) end
 
 ---*Client only*  
@@ -5031,7 +5542,10 @@ function GuiInterface:setOpenCloseEffect(openEffectName, closEffectName) end
 function GuiInterface:setRequireLineOfSight(required) end
 
 ---*Client only*  
-function GuiInterface:setSelectedDropDownItem() end
+---Sets the selected item in a dropdown widget
+---@param widget string The dropdown widget
+---@param item string The item to be selected in the dropdown
+function GuiInterface:setSelectedDropDownItem(widget, item) end
 
 ---*Client only*  
 ---Selects an item in a list  
@@ -5048,8 +5562,8 @@ function GuiInterface:setSliderCallback(sliderName, callback) end
 ---*Client only*  
 ---Sets the position and range of a slider  
 ---@param sliderName string # The name of the slider
----@param range unsigned # The slider range
----@param position unsigned # The slider position
+---@param range number # The slider range
+---@param position number # The slider position
 function GuiInterface:setSliderData(sliderName, range, position) end
 
 ---*Client only*  
@@ -5121,18 +5635,24 @@ function GuiInterface:stopEffect(widgetName, effectName, immediate, useHistory) 
 ---@param effectName string # The name of the effect
 function GuiInterface:stopGridEffect(gridName, index, effectName) end
 
+---@class QuestTask
+---@field name string
+---@field text string
+---@field count number
+---@field target number
+---@field complete boolean
+
 ---*Client only*  
 ---Adds a quest to the quest tracker  
 ---@param name string # The name of quest
 ---@param title string # The quest title to be displayed in the tracker
 ---@param mainQuest boolean # If the quest is a main quest (Displayed on top in the tracker)
----@param questTasks table # The table of quest tasks to display in the log Task{ name = string, text = string, count = number, target = number, complete = boolean }
+---@param questTasks QuestTask[] # The table of quest tasks to display in the log Task{ name = string, text = string, count = number, target = number, complete = boolean }
 ---@param icon? string # The icon to display in the tracker (Optional)
 function GuiInterface:trackQuest(name, title, mainQuest, questTasks, icon) end
 
 ---*Client only*  
 ---Removes a quest from the quest tracker  
----/  
 ---@param questName string # The name of quest
 function GuiInterface:untrackQuest(questName) end
 
@@ -5148,15 +5668,15 @@ local Garage = {}
 Garage.id = {}
 
 ---Checks if the tracked creation fits into the garage returns nil if no creation is tracked.  
----@return bool				true if the creation fits otherwise false.
+---@return bool fits true if the creation fits otherwise false.
 function Garage:creationFits() end
 
 ---Returns the bounds of the body of the actively tracked blueprint in the garage. Returns nil if there is no actively tracked blueprint.  
----@return table # The table of { min, max }
+---@return [Vec3, Vec3] # The table of { min, max }
 function Garage:getBlueprintBounds() end
 
 ---Returns the bounds of the garage staging area.  
----@return table # The table of { min, max }
+---@return [Vec3, Vec3] # The table of { min, max }
 function Garage:getGarageBounds() end
 
 ---Imports a actively tracked blueprint using the garage returns nil if the blueprint is not initialized yet.  
@@ -5164,12 +5684,12 @@ function Garage:getGarageBounds() end
 function Garage:getPlacement() end
 
 ---Returns the position of the garage.  
----@return Vec3 # position
+---@return vec3 # position
 function Garage:getPosition() end
 
 ---Gets the tracked creation Name and JsonTable from the garage.  
----@return string					Name
----@return table					jsonData
+---@return string Name
+---@return table jsonData
 function Garage:getTrackedBlueprint() end
 
 ---Returns the tracking revision counter, incremented each time the tracked blueprint changes.  
@@ -5185,7 +5705,8 @@ function Garage:importBlueprint() end
 
 ---*Client only*  
 ---Tracks a blueprint from a garage and synchronizes it to all other clients.  
-function Garage:trackBlueprint() end
+---@param pathString string # The blueprint path.
+function Garage:trackBlueprint(pathString) end
 
 ---Untrack a blueprint from a garage and synchronizes it to all other clients.  
 function Garage:untrackBlueprint() end
@@ -5212,7 +5733,7 @@ function enumType(object) end
 function print(...) end
 
 ---Returns the type of an object as a string. This includes standard Lua types and userdata types specific to this API.  
----@param object any # The object instance.
+---@param object any The object instance.
 ---@return string # The object type.
 function type(object) end
 
@@ -5225,60 +5746,102 @@ sm = {}
 sm.isHost = {}
 
 ---Lua types  
----nil  
----boolean  
----number  
----string  
----function  
----userdata  
----thread  
----table  
----uuid  
----vec3  
----quat  
----color  
----raycastResult  
----loadCellHandle  
----effect  
----shape  
----body  
----interactable  
----container  
----harvestable  
----network  
----world  
----unit  
----storage  
----player  
----character  
----joint  
----aiState  
----quest  
----areaTrigger  
----portal  
----pathNode  
----lift  
----scriptableObject  
----builderGuide  
----cullSphereGroup  
----voxelTerrain  
----jsonGui  
----jsonWidget  
----clientScriptableObject  
----@type table
-sm.types = {}
+---nil
+---boolean
+---lightUserdata
+---number
+---string
+---table
+---function
+---userdata
+---thread
+---quest
+---areaTrigger
+---portal
+---pathNode
+---lift
+---scriptableObject
+---builderGuide
+---cullSphereGroup
+---voxelTerrain
+---jsonGui
+---jsonWidget
+---clientScriptableObject
+---uuid
+---vec3
+---quat
+---color
+---raycastResult
+---loadCellHandle
+---effect
+---shape
+---body
+---interactable
+---container
+---harvestable
+---network
+---world
+---unit
+---storage
+---player
+---character
+---joint
+---aiState
+sm.types = {
+    ["nil"] = 0,
+    boolean = 1,
+    lightUserdata = 2,
+    number = 3,
+    string = 4,
+    table = 5,
+    ["function"] = 6,
+    userdata = 7,
+    thread = 8,
+    quest = 10034,
+    areaTrigger = 10035,
+    portal = 10036,
+    pathNode = 10037,
+    lift = 10038,
+    scriptableObject = 10039,
+    builderGuide = 10040,
+    cullSphereGroup = 10041,
+    voxelTerrain = 10042,
+    jsonGui = 10043,
+    jsonWidget = 10044,
+    clientScriptableObject = 10045,
+    uuid = 10001,
+    vec3 = 10003,
+    quat = 10004,
+    color = 10005,
+    raycastResult = 10006,
+    loadCellHandle = 10007,
+    effect = 10008,
+    shape = 10021,
+    body = 10022,
+    interactable = 10023,
+    container = 10024,
+    harvestable = 10025,
+    network = 10026,
+    world = 10027,
+    unit = 10028,
+    storage = 10029,
+    player = 10030,
+    character = 10031,
+    joint = 10032,
+    aiState = 10033,
+}
 
 ---Returns the current version of the game as a string.  
 ---@type string
 sm.version = {}
 
 ---Returns whether an object exists in the game. This is useful for checking whether a reference to an object is valid.  
----@param object any # The object instance.
----@return boolean # Whether the object exists.
+---@param object any The object instance.
+---@return boolean
 function sm.exists(object) end
 
 ---Returns whether the script is currently running in <a href="index.html#server">server mode</a>. Otherwise, it is running in <a href="index.html#client">client mode</a>. Server mode only occurs when [sm.isHost] is true.  
----@return boolean # Whether the script is running in server mode.
+---@return boolean
 function sm.isServerMode() end
 
 
@@ -5292,8 +5855,9 @@ function sm.json.fileExists(path) end
 
 ---Opens a json file and parses to Lua table.  
 ---@param path string # The json file path.
+---@param ignoreCache boolean? # Whether to ignore the cache.
 ---@return table # The table.
-function sm.json.open(path) end
+function sm.json.open(path, ignoreCache) end
 
 ---Parses a json string to lua table.  
 ---@param json string # The json string.
@@ -5426,8 +5990,39 @@ sm.util = {}
 --- - <strong>easeInBounce</strong>
 --- - <strong>easeOutBounce</strong>
 --- - <strong>easeInOutBounce</strong>
----@type table
-sm.util.easingFunctionIds = {}
+sm.util.easingFunctionIds = {
+    linear           = 1,
+    easeInQuad       = 2,
+    easeOutQuad      = 3,
+    easeInOutQuad    = 4,
+    easeInCubic      = 5,
+    easeOutCubic     = 6,
+    easeInOutCubic   = 7,
+    easeInQuart      = 8,
+    easeOutQuart     = 9,
+    easeInOutQuart   = 10,
+    easeInQuint      = 11,
+    easeOutQuint     = 12,
+    easeInOutQuint   = 13,
+    easeInSine       = 14,
+    easeOutSine      = 15,
+    easeInOutSine    = 16,
+    easeInCirc       = 17,
+    easeOutCirc      = 18,
+    easeInOutCirc    = 19,
+    easeInExpo       = 20,
+    easeOutExpo      = 21,
+    easeInOutExpo    = 22,
+    easeInElastic    = 23,
+    easeOutElastic   = 24,
+    easeInOutElastic = 25,
+    easeInBack       = 26,
+    easeOutBack      = 27,
+    easeInOutBack    = 28,
+    easeInBounce     = 29,
+    easeOutBounce    = 30,
+    easeInOutBounce  = 31,
+}
 
 ---Constructs a quaternion from a X and Z axis  
 ---@param xAxis Vec3 # The X axis.
@@ -5471,6 +6066,39 @@ function sm.util.clampUtf8String(string, maxLength) end
 ---@return number # The output.
 function sm.util.easing(easingFunctionId, p) end
 
+---@alias EasingFunction string
+---| "linear"  
+---| "easeInQuad"  
+---| "easeOutQuad"  
+---| "easeInOutQuad"  
+---| "easeInCubic"  
+---| "easeOutCubic"  
+---| "easeInOutCubic"  
+---| "easeInQuart"  
+---| "easeOutQuart"  
+---| "easeInOutQuart"  
+---| "easeInQuint"  
+---| "easeOutQuint"  
+---| "easeInOutQuint"  
+---| "easeInSine"  
+---| "easeOutSine"  
+---| "easeInOutSine"  
+---| "easeInCirc"  
+---| "easeOutCirc"  
+---| "easeInOutCirc"  
+---| "easeInExpo"  
+---| "easeOutExpo"  
+---| "easeInOutExpo"  
+---| "easeInElastic"  
+---| "easeOutElastic"  
+---| "easeInOutElastic"  
+---| "easeInBack"  
+---| "easeOutBack"  
+---| "easeInOutBack"  
+---| "easeInBounce"  
+---| "easeOutBounce"  
+---| "easeInOutBounce"  
+
 ---Applies an easing function to a given input.  
 ---Easing function names:  
 ---<em>linear</em>  
@@ -5504,14 +6132,14 @@ function sm.util.easing(easingFunctionId, p) end
 ---<em>easeInBounce</em>  
 ---<em>easeOutBounce</em>  
 ---<em>easeInOutBounce</em>  
----@param easing string # The easing function name.
+---@param easing EasingFunction # The easing function name.
 ---@param p number # The easing function input.
 ---@return number # The output.
 function sm.util.easing(easing, p) end
 
 ---Numerically approximates the geometric median from a table of points.  
 ---If no initial guess is made, the mean position of all the points will be used as a guess.  
----@param points table # The table of points. { [Vec3], ... }.
+---@param points Vec3[] # The table of points. { [Vec3], ... }.
 ---@param initialGuess? Vec3 # A guessed position to start searching from. (Optional)
 ---@param iterations? integer # The number of iterations. (Defaults to 1)
 ---@return Vec3 # The estimated geometric median.
@@ -5554,7 +6182,6 @@ function sm.util.smoothstep(edge0, edge1, x) end
 ---@return integer # The number of UTF-8 characters.
 function sm.util.utf8StringLength(string) end
 
-
 ---Used for logging information from scripts to the game log.  
 sm.log = {}
 
@@ -5584,12 +6211,12 @@ sm.vec3 = {}
 function sm.vec3.bezier2(c0, c1, c2, t) end
 
 ---Cubic Bezier interpolation. Three dimensional bezier curve.  
----@param c0 number # The start point.
----@param c1 number # The first control point.
----@param c2 number # The second control point.
----@param c3 number # The end point.
+---@param c0 Vec3 # The start point.
+---@param c1 Vec3 # The first control point.
+---@param c2 Vec3 # The second control point.
+---@param c3 Vec3 # The end point.
 ---@param t number # The interpolation step.
----@return number # The interpolated value between two values.
+---@return Vec3 # The interpolated value between two values.
 function sm.vec3.bezier3(c0, c1, c2, c3, t) end
 
 ---Finds the closest axis-aligned vector from the given vector  
@@ -5660,6 +6287,7 @@ function sm.vec3.one() end
 function sm.vec3.zero() end
 
 
+
 ---A <strong>quaternion</strong> is used to represent rotation as a <a target="_blank" href="https://en.wikipedia.org/wiki/Quaternion">generalization of complex numbers</a>.  
 ---To create one, use [sm.quat.new].  
 ---**Warning:**
@@ -5667,38 +6295,63 @@ function sm.vec3.zero() end
 sm.quat = {}
 
 ---Creates a new quaternion from angle and axis.  
----@param angle number # The rotation angle in radians.
----@param axis Vec3 # The axis vector to rotate around.
+---@param angle number The rotation angle in radians.
+---@param axis Vec3 The axis vector to rotate around.
 ---@return Quat # The quaternion for rotating angle radians around axis.
 function sm.quat.angleAxis(angle, axis) end
 
 ---Create a new quaternion from an euler angle vector.  
----@param euler Vec3 # The euler angle vector.
+---@param euler Vec3 The euler angle vector.
 ---@return Quat # The quaternion.
 function sm.quat.fromEuler(euler) end
 
+---Returns the quaternions at vector.  
+---@param quaternion Quat The quaternion.
+---@return Vec3
+function sm.quat.getAt(quaternion) end
+
+---Returns the quaternions right vector.  
+---@param quaternion Quat The quaternion.
+---@return Vec3
+function sm.quat.getRight(quaternion) end
+
+---Returns the quaternions up vector.  
+---@param quaternion Quat The quaternion.
+---@return Vec3
+function sm.quat.getUp(quaternion) end
+
 ---Creates a new identity quaternion.  
----@return Quat # The created quaternion.
+---@return Quat
 function sm.quat.identity() end
 
+---Inverts the quaternion.  
+---@param quaternion Quat The quaternion.
+---@return Quat
+function sm.quat.inverse(quaternion) end
+
 ---Create a new quaternion from direction vectors. DEPRECATED  
----@param at Vec3 # The forward vector.
----@param up Vec3 # The up vector.
+---@param at Vec3 The forward vector.
+---@param up Vec3 The up vector.
 ---@return Quat # The quaternion.
 function sm.quat.lookRotation(at, up) end
 
 ---Creates a new quaternion.  
----@param quaternion Quat # The original quaternion.
----@return Quat # The created quaternion.
-function sm.quat.new(quaternion) end
-
----Creates a new quaternion.  
----@param x number # The X value.
----@param y number # The Y value.
----@param z number # The Z value.
----@param w number # The W value.
+---@param x number The X value.
+---@param y number The Y value.
+---@param z number The Z value.
+---@param w number The W value.
 ---@return Quat # The created quaternion.
 function sm.quat.new(x, y, z, w) end
+
+---Creates a new quaternion
+---@param quat Quat
+---@return Quat
+function sm.quat.new(quat) end
+
+---Rounds the quaternion rotation into 90 degree steps  
+---@param quaternion Quat The quaternion.
+---@return Quat # The created quaternion.
+function sm.quat.round90(quaternion) end
 
 ---Returns the rotation constant for rotating -90 degrees around the X-axis.  
 ---@return Quat # The rotation quaternion.
@@ -5737,9 +6390,9 @@ function sm.quat.rotZ180() end
 function sm.quat.rotZ90() end
 
 ---Performs a spherical linear interpolation between two quaternion.  
----@param quaternion1 Quat # The first quaternion.
----@param quaternion2 Quat # The second quaternion.
----@param t number # Interpolation amount between the two inputs.
+---@param quaternion1 Quat The first quaternion.
+---@param quaternion2 Quat The second quaternion.
+---@param t number Interpolation amount between the two inputs.
 ---@return Quat # The interpolated quaternion.
 function sm.quat.slerp(quaternion1, quaternion2, t) end
 
@@ -5809,39 +6462,62 @@ function sm.color.new(hexStr) end
 ---@return Color # The created color.
 function sm.color.new(hexInt) end
 
-
 ---Contains functions regarding the physics engine.  
 sm.physics = {}
 
----Collision filter types  
----dynamicBody  
----staticBody  
----character  
----areaTrigger  
----joints  
----terrainSurface  
----terrainAsset  
----harvestable  
----areaTrigger  
----static  
----default  
----all  
----allTerrain  
----@type table
-sm.physics.filter = {}
+---Collision filter types
+sm.physics.filter = {
+    all = -1,
+    dynamicBody = 1,
+    staticBody = 2,
+    character = 4,
+    areaTrigger = 8,
+    waterArea = 16,
+    terrainSurface = 128,
+    terrainAsset = 256,
+    harvestable = 512,
+    joints = 4096,
+    voxelTerrain = 32768,
+    allTerrain = 33152,
+    static = 558978,
+    default = 563079,
+    portalArea = 2097152,
+}
 
 ---Physics types are used to define an object's characteristics is in the physics world. Upon a raycast or collision detection, these types are used to find out what object was intersected.  
 ---"invalid"	No object.  
----"terrainSurface"	The ground.  
----"terrainAsset"	Trees and boulders.  
----"lift"	A [Lift].  
----"body"	A [Body].  
----"character"	A [Character].  
----"joint"	A [Joint].  
----"harvestable"	A [Harvestable].  
----"vision"	A collision area used by sensors.  
----@type table
-sm.physics.types = {}
+---"limiter" The world border.
+---"terrainSurface" The ground.  
+---"terrainAsset" Terrain assets.  
+---"body" A [Body].  
+---"joint" A [Joint].  
+---"lift" A [Lift].  
+---"character" A [Character].  
+---"joint" A [Joint].  
+---"harvestable" A [Harvestable].  
+---"ragdoll" A ragdolled character.  
+---"areaTrigger" An [AreaTrigger].
+---"vision" A collision area used by sensors.
+---"voxelTerrain" A voxel terrain grid.
+---"tunnelCatcher" The trigger that teleports things when they fall off the world.
+---"debris" Visual objects that have no impact on any other object.
+sm.physics.types = {
+    "limiter",
+    "terrainSurface",
+    "terrainAsset",
+    "body",
+    "joint",
+    "lift",
+    "character",
+    "joint",
+    "harvestable",
+    "ragdoll",
+    "areaTrigger",
+    "vision",
+    "voxelTerrain",
+    "tunnelCatcher",
+    "debris",
+}
 
 ---Applies an impulse to a [Shape], changing its velocity immediately. The impulse is applied to the shape's centerpoint with an optional offset.  
 ---@param target Shape # The object on which the impulse is exerted on.
@@ -5890,16 +6566,16 @@ function sm.physics.capsuleHasContact(from, to, radius, mask) end
 ---Performs a capsule <a target="_blank" href="https://en.wikipedia.org/wiki/Ray_casting">ray cast</a> (Z-axis aligned) between two positions.  
 ---The returned [RaycastResult] contains information about any object intersected by the ray.  
 ---If the ray cast is called from within a shape (e.g. a Sensor), a [Body] may be provided which the ray will not intersect.  
----@param start Vec3 # The start position.
----@param end Vec3 # The end position.
+---@param startPosition Vec3 # The start position.
+---@param endPosition Vec3 # The end position.
 ---@param radius number # The radius of the capsule.
 ---@param height number # The height of the cylindrical part of the capsule.
 ---@param ignore? Body|Shape|Harvestable|Character|AreaTrigger # An object to be ignored. (Optional)
 ---@param mask? integer # The collision mask. Defaults to [sm.physics.filter, sm.physics.filter.default] (Optional)
 ---@param world? World # The world to perform the cast in. (Optional)
----@param ignoreUuids? table # A table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored. (Optional)
+---@param ignoreUuids? Uuid[] # A table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored. (Optional)
 ---@return boolean,	RaycastResult # True if raycast was successful; The raycast result data.
-function sm.physics.capsulecast(start, ed, radius, height, ignore, mask, world, ignoreUuids) end
+function sm.physics.capsulecast(startPosition, endPosition, radius, height, ignore, mask, world, ignoreUuids) end
 
 ---Performs a distance <a target="_blank" href="https://en.wikipedia.org/wiki/Ray_casting">ray cast</a> from a position with a given direction.  
 ---**Note:**
@@ -5926,17 +6602,23 @@ function sm.physics.distanceRaycast(start, direction) end
 ---@param parameters? table # The table containing the parameters for the effect. (Optional)
 ---@param world? World # The world to cause the explosion in. (Optional)
 ---@param damage? integer # The damage of the explosion. Defaults to 2 * destruction level (Optional)
----@param source? userdata # The source of the explosion. Defaults to none (Optional)
+---@param source? Harvestable|Player|Shape|Unit # The source of the explosion. Defaults to none (Optional)
 ---@param type? Uuid # The explosionType. Defaults to nil uuid (Optional)
 function sm.physics.explode(position, level, destructionRadius, impulseRadius, magnitude, effectName, ignoreShape, parameters, world, damage, source, type) end
+
+---@class SphereContacts
+---@field bodies Body[]
+---@field characters Character[]
+---@field harvestables Harvestable[]
+---@field lifts Lift[]
 
 ---Returns a table of the game objects that are found inside the given box  
 ---@param pos Vec3 # The world position of the box center.
 ---@param rotation Quat # The rotation of the box.
 ---@param halfExtents Vec3 # The half extents of the box.
----@param world World # The world to search in. (optional)
+---@param world? World # The world to search in. (optional)
 ---@param mask? integer # The collision mask. Defaults to [sm.physics.filter, sm.physics.filter.static] and [sm.physics.filter, sm.physics.filter.dynamicBody] and [sm.physics.filter, sm.physics.filter.character] (Optional)
----@return table # The table with tables of objects found inside the box. { bodies={[Body], ..}, characters={[Character], ..}, harvestables={[Harvestable], ..}, lifts={[Lift], ..} }
+---@return SphereContacts # The table with tables of objects found inside the box. { bodies={[Body], ..}, characters={[Character], ..}, harvestables={[Harvestable], ..}, lifts={[Lift], ..} }
 function sm.physics.getBoxContacts(pos, rotation, halfExtents, world, mask) end
 
 ---*Server only*  
@@ -5954,19 +6636,21 @@ function sm.physics.getGroundMaterial(worldPosition) end
 ---@return integer # The id of the material.
 function sm.physics.getMaterialId(materialName) end
 
+---@alias ShapeContacts {shape: Shape, contactWorldPosition: Vec3}[]
+
 ---Returns a table of all shapes colliding with a given box.  
 ---@param position Vec3 # The center position of the box.
 ---@param rotation Quat # The rotation of the box.
 ---@param halfExtents Vec3 # The halved size of the box.
----@param world World # The world to search in. (optional)
----@return table # The table of found shapes. {{shape=[Shape], contactWorldPosition=[Vec3] }, ..}
+---@param world? World # The world to search in. (optional)
+---@return ShapeContacts # The table of found shapes. {{shape=[Shape], contactWorldPosition=[Vec3] }, ..}
 function sm.physics.getShapeContactsInBox(position, rotation, halfExtents, world) end
 
 ---Returns a table of all shapes colliding with a given sphere.  
 ---@param center Vec3 # The center position of the sphere.
 ---@param radius number # The radius of the sphere.
----@param world World # The world to search in. (optional)
----@return table # The table of found shapes. {{shape=[Shape], contactWorldPosition=[Vec3] }, ..}
+---@param world World? # The world to search in. (optional)
+---@return ShapeContacts # The table of found shapes. {{shape=[Shape], contactWorldPosition=[Vec3] }, ..}
 function sm.physics.getShapeContactsInSphere(center, radius, world) end
 
 ---Returns a table of the game objects that are found inside the given sphere  
@@ -5974,7 +6658,7 @@ function sm.physics.getShapeContactsInSphere(center, radius, world) end
 ---@param radius number # The radius of the sphere.
 ---@param world? World # The world to search in. Defaults to current world (Optional)
 ---@param mask? integer # The collision mask. Defaults to [sm.physics.filter, sm.physics.filter.static] and [sm.physics.filter, sm.physics.filter.dynamicBody] and [sm.physics.filter, sm.physics.filter.character] (Optional)
----@return table # The table with tables of objects found inside the sphere. { bodies={[Body], ..}, characters={[Character], ..}, harvestables={[Harvestable], ..}, lifts={[Lift], ..} }
+---@return SphereContacts # The table with tables of objects found inside the sphere. { bodies={[Body], ..}, characters={[Character], ..}, harvestables={[Harvestable], ..}, lifts={[Lift], ..} }
 function sm.physics.getSphereContacts(pos, radius, world, mask) end
 
 ---Returns whether a point is in a liquid or not.  
@@ -5985,41 +6669,49 @@ function sm.physics.isPointInLiquid(position, world) end
 
 ---Returns whether a sphere is hitting a liquid or not.  
 ---@param position Vec3 # The world position to check.
----@param world? World # The world to check in.
 ---@param radius number # The radius of the sphere.
+---@param world? World # The world to check in.
 ---@return boolean # Whether the sphere is hitting a liquid or not
-function sm.physics.isSphereHittingLiquid(position, world, radius) end
+function sm.physics.isSphereHittingLiquid(position, radius, world) end
+
+---@class MulticastData
+---@field type string
+---@field startPoint Vec3
+---@field endPoint Vec3
+---@field radius number
+---@field mask? number
+---@field ignoreUuids? Uuid[]
 
 ---Performs multiple sphere and/or raycasts given a table of parameters.  
 ---Type can be "sphere" or "ray". Radius is ignored for rays.  
 ---ignoreUuids option is a table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored.  
----@param casts table # Table of casts. { type=string, startPoint=[Vec3], endPoint=[Vec3], radius=number, mask=[sm.physics.filter], ignoreUuids=table }
+---@param casts MulticastData[] # Table of casts. { type=string, startPoint=[Vec3], endPoint=[Vec3], radius=number, mask=[sm.physics.filter], ignoreUuids=table }
 ---@param world? World # The world to perform the cast in. (Optional)
----@return table # Array of pairs of boolean and [RaycastResult]. {{boolean,  [RaycastResult]}, ..}
+---@return RaycastResult[] # Array of pairs of boolean and [RaycastResult]. {{boolean,  [RaycastResult]}, ..}
 function sm.physics.multicast(casts, world) end
 
 ---Performs a <a target="_blank" href="https://en.wikipedia.org/wiki/Ray_casting">ray cast</a> between two positions.  
 ---The returned [RaycastResult] contains information about any object intersected by the ray.  
 ---If the ray cast is called from within a shape (e.g. a Sensor), a [Body] may be provided which the ray will not intersect.  
----@param start Vec3 # The start position.
----@param end Vec3 # The end position.
----@param body? Body # The body to be ignored. (Optional)
+---@param startPosition Vec3 # The start position.
+---@param endPosition Vec3 # The end position.
+---@param ignoredObject? Body|Character|Shape|Harvestable|AreaTrigger # The body to be ignored. (Optional)
 ---@param mask? integer # The collision mask. Defaults to [sm.physics.filter, sm.physics.filter.default] (Optional)
 ---@param world? World # The world to perform the raycast in. (Optional)
----@param ignoreUuids? table # A table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored. (Optional)
+---@param ignoreUuids? Uuid[] # A table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored. (Optional)
 ---@return boolean,	RaycastResult # True if raycast was successful; The raycast result data.
-function sm.physics.raycast(start, ed, body, mask, world, ignoreUuids) end
+function sm.physics.raycast(startPosition, endPosition, ignoredObject, mask, world, ignoreUuids) end
 
 ---Performs a <a target="_blank" href="https://en.wikipedia.org/wiki/Ray_casting">ray cast</a> between two positions to find a specific target.  
 ---a [Body] must be provided as a target.  
 ---The returned [RaycastResult] contains information about any object intersected by the ray.  
----@param start Vec3 # The start position.
----@param end Vec3 # The end position.
----@param body Body # The body to be exclusively checked.
+---@param startPosition Vec3 # The start position.
+---@param endPosition Vec3 # The end position.
+---@param ignoredObject Body|Character|Shape|Harvestable # The body to be exclusively checked.
 ---@param world? World # The world to perform the raycast in. (Optional)
----@param ignoreUuids? table # A table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored. (Optional)
+---@param ignoreUuids? Uuid[] # A table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored. (Optional)
 ---@return boolean,	RaycastResult # True if raycast was successful; The raycast result data.
-function sm.physics.raycastTarget(start, ed, body, world, ignoreUuids) end
+function sm.physics.raycastTarget(startPosition, endPosition, ignoredObject, world, ignoreUuids) end
 
 ---*Server only*  
 ---Sets the gravitational acceleration affecting [Shape, shapes] and [Body, bodies].  
@@ -6048,100 +6740,119 @@ function sm.physics.sphereHasContact(worldPosition, radius, includeTerrain, coun
 ---Performs a spherical <a target="_blank" href="https://en.wikipedia.org/wiki/Ray_casting">ray cast</a> between two positions.  
 ---The returned [RaycastResult] contains information about any object intersected by the ray.  
 ---If the ray cast is called from within a shape (e.g. a Sensor), a [Body] may be provided which the ray will not intersect.  
----@param start Vec3 # The start position.
----@param end Vec3 # The end position.
+---@param startPosition Vec3 # The start position.
+---@param endPosition Vec3 # The end position.
 ---@param radius number # The radius of the sphere.
----@param ignore? Body|Shape|Harvestable|Character|AreaTrigger # An object to be ignored. (Optional)
+---@param ignoredObject? Body|Shape|Harvestable|Character|AreaTrigger # An object to be ignored. (Optional)
 ---@param mask? integer # The collision mask. Defaults to [sm.physics.filter, sm.physics.filter.default] (Optional)
 ---@param world? World # The world to perform the cast in. (Optional)
----@param ignoreUuids? table # A table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored. (Optional)
+---@param ignoreUuids? Uuid[] # A table of uuids {[Uuid], ...} of [Shape], [Harvestable] or [Character] type to be ignored. (Optional)
 ---@return boolean,	RaycastResult # True if raycast was successful; The raycast result data.
-function sm.physics.spherecast(start, ed, radius, ignore, mask, world, ignoreUuids) end
+function sm.physics.spherecast(startPosition, endPosition, radius, ignoredObject, mask, world, ignoreUuids) end
+
 
 
 ---A <strong>shape</strong> is any block, part or basic material that can be built by a player. Shapes are always connected to a [sm.body, body], which is a collection of shapes.  
 ---For more information about creating your own scripted shapes, see [ShapeClass, ShapeClass].  
 sm.shape = {}
 
----Shape destruction types. Using these will handle the destruction as if it was caused by the specified type.  
----None  
----Melee  
----Projectile  
----Explosion  
----@type table
-sm.shape.destructionType = {}
+---Shape destruction types. Using these will handle the destruction as if it was caused by the specified type.          
+sm.shape.destructionType = {
+    none = 0,
+    projectile = 1,
+    melee = 2,
+    explosion = 3,
+}
 
----Shape physics materials  
----None  
----Default  
----Grass  
----Dirt  
----Sand  
----Gravel  
----Rock  
----Wood  
----Plastic  
----Metal  
----Glass  
----Fence  
----Fabric  
----Cardboard  
----Foliage  
----Tape  
----Water  
----WaterSubmerged  
----RagdollHuman  
----Mechanical  
----Fruit  
----RagdollAnimal  
----Electronics  
----Sticky  
----Ice  
----Bubblewrap  
----Scrapmetal  
----Rewardlocker  
----Chili   
----VoxelBlueRock  
----VoxelPurpleRock  
----VoxelRedRock  
----VoxelBlueMineral  
----VoxelPurpleMineral  
----VoxelRedMineral  
----@type table
-sm.shape.material = {}
+---Shape physics materials                                                                         
+sm.shape.material = {
+    grass = 2,
+    gravel = 5,
+    hvs_disconite = 36,
+    hvs_matrixium = 35,
+    ice = 24,
+    matrixium = 37,
+    mechanical = 19,
+    metal = 9,
+    metalslippery = 34,
+    none = 0,
+    plastic = 8,
+    popcorn = 33,
+    ragdollanimal = 21,
+    ragdollhuman = 18,
+    rewardlocker = 27,
+    rock = 6,
+    rubber = 29,
+    sand = 4,
+    scrapmetal = 26,
+    slime = 30,
+    slimeslippery = 32,
+    sticky = 23,
+    tape = 15,
+    voxel_bedrock = 100,
+    voxel_clay = 111,
+    voxel_crimsonite = 108,
+    voxel_dirt = 112,
+    voxel_goopite = 107,
+    voxel_ice = 113,
+    voxel_junk = 110,
+    voxel_orerich = 106,
+    voxel_rock1_a = 101,
+    voxel_rock1_b = 102,
+    voxel_rock1_c = 103,
+    voxel_rock2 = 104,
+    default = 1,
+    voxel_thornite = 109,
+    water = 16,
+    watersubmerged = 17,
+    wood = 7,
+    voxel_rock3 = 105,
+    bots = 31,
+    bubblewrap = 25,
+    cardboard = 13,
+    chili = 28,
+    dirt = 3,
+    disconite = 38,
+    electronics = 22,
+    fabric = 12,
+    fence = 11,
+    foilage = 14,
+    fruit = 20,
+    glass = 10,
+}
 
 ---*Server only*  
 ---Create a new block  
----@param uuid Uuid # The uuid of the shape.
----@param size Vec3 # The size of the block.
----@param position Vec3 # The shape's world position.
----@param rotation? Quat # The shape's world rotation. Defaults to no rotation (Optional)
----@param dynamic? boolean # Set true if the shape is dynamic or false if the shape is static. Defaults to true (Optional)
----@param forceSpawn? boolean # Set true to force spawn the shape even if it will cause collision. Defaults to true (Optional)
----@return Shape							The created block
+---@param uuid Uuid The uuid of the shape.
+---@param size Vec3 The size of the block.
+---@param position Vec3 The shape's world position.
+---@param rotation? Quat The shape's world rotation. Defaults to no rotation (Optional)
+---@param dynamic? boolean Set true if the shape is dynamic or false if the shape is static. Defaults to true (Optional)
+---@param forceSpawn? boolean Set true to force spawn the shape even if it will cause collision. Defaults to true (Optional)
+---@return Shape block The created block
 function sm.shape.createBlock(uuid, size, position, rotation, dynamic, forceSpawn) end
 
 ---*Server only*  
 ---Create a new part  
----@param uuid Uuid # The uuid of the shape.
----@param position Vec3 # The shape's world position.
----@param rotation Quat # The shape's world rotation. Defaults to no rotation (Optional)
----@param dynamic? boolean # Set true if the shape is dynamic or false if the shape is static. Defaults to true (Optional)
----@param forceSpawn? boolean # Set true to force spawn the shape even if it will cause collision. Defaults to true (Optional)
+---@param uuid Uuid The uuid of the shape.
+---@param position Vec3 The shape's world position.
+---@param rotation? Quat The shape's world rotation. Defaults to no rotation (Optional)
+---@param dynamic? boolean Set true if the shape is dynamic or false if the shape is static. Defaults to true (Optional)
+---@param forceSpawn? boolean Set true to force spawn the shape even if it will cause collision. Defaults to true (Optional)
 ---@param world? World # The world to create the part in. Uses the script's world by default. (Optional)
----@return Shape							The created part
+---@return Shape part The created part
 function sm.shape.createPart(uuid, position, rotation, dynamic, forceSpawn, world) end
 
 ---*Server only*  
 ---Creates a wedge. The wedge is oriented with one   
 ---cathetus along the Y-axis and the other along the Z-axis, forming a right angle.   
----@param uuid Uuid # The uuid of the shape.
----@param size Vec3 # The size of the wedge.
----@param position Vec3 # The shape's world position.
----@param rotation? Quat # The shape's world rotation. Defaults to no rotation (Optional)
----@param dynamic? boolean # Set true if the shape is dynamic or false if the shape is static. Defaults to true (Optional)
----@param forceSpawn? boolean # Set true to force spawn the shape even if it will cause collision. Defaults to true (Optional)
----@return Shape							The created wedge
+---@param uuid Uuid The uuid of the shape.
+---@param size Vec3 The size of the wedge.
+---@param position Vec3 The shape's world position.
+---@param rotation? Quat The shape's world rotation. Defaults to no rotation (Optional)
+---@param dynamic? boolean Set true if the shape is dynamic or false if the shape is static. Defaults to true (Optional)
+---@param forceSpawn? boolean Set true to force spawn the shape even if it will cause collision. Defaults to true (Optional)
+---@return Shape wedge The created wedge
 function sm.shape.createWedge(uuid, size, position, rotation, dynamic, forceSpawn) end
 
 ---Return whether the shape uuid belongs to a harvest shape  
@@ -6181,14 +6892,13 @@ function sm.shape.getShapeUpperCaseTitle(uuid) end
 ---Returns a table of all shapes colliding with a given sphere.  
 ---@param center Vec3 # The center position of the sphere.
 ---@param radius number # The radius of the sphere.
----@return table # The table of found shapes. {[Shape], ..}
+---@return Shape[] # The table of found shapes. {[Shape], ..}
 function sm.shape.shapesInSphere(center, radius) end
 
 ---Return whether the shape uuid exists  
 ---@param uuid Uuid # The shape uuid.
 ---@return boolean # exists.
 function sm.shape.uuidExists(uuid) end
-
 
 ---A <strong>body</strong> is a collection of [Shape, shapes] that are built together. Bodies can be connected to other bodies using [Joint, joints] such as the bearing.  
 sm.body = {}
@@ -6203,13 +6913,13 @@ function sm.body.createBody(position, rotation, isDynamic) end
 
 ---Returns a table with all the bodies in the world.  
 ---@param world? World # The world, will default to the script's world. (optional)
----@return table # The table of all bodies. {[Body], ...}
+---@return Body[] # The table of all bodies. {[Body], ...}
 function sm.body.getAllBodies(world) end
 
 ---Returns a table of tables, which is an array of tables containing bodies grouped by creation.  
 ---A creation includes all bodies connected by [Joint, joints], etc.  
 ---@param bodies table # The bodies to find all creation bodies from. {[Body], ...}
----@return table # The table array containing tables of all the bodies, grouped by creation. { {[Body], ...}, ... }
+---@return Body[][] # The table array containing tables of all the bodies, grouped by creation. { {[Body], ...}, ... }
 function sm.body.getCreationsFromBodies(bodies) end
 
 ---Get the lift a body is on.  
@@ -6218,11 +6928,34 @@ function sm.body.getCreationsFromBodies(bodies) end
 function sm.body.getLift(body) end
 
 
+---An <strong>interactable shape</strong> is any part that has additional functionality or abilities. The player can interact with an interactable shape by pressing `E` on it, or connect it to other interactables with the <em>Connect Tool</em>.  
 sm.interactable = {}
 
 ---Actions are used to specify what inputs types an [Interactable] is able to detect.  
----@type table
-sm.interactable.actions = {}
+sm.interactable.actions = {
+    none = 0,
+    left = 1,
+    right = 2,
+    forward = 3,
+    backward = 4,
+    item0 = 5,
+    item1 = 6,
+    item2 = 7,
+    item3 = 8,
+    item4 = 9,
+    item5 = 10,
+    item6 = 11,
+    item8 = 13,
+    item7 = 12,
+    item9 = 14,
+    use = 15,
+    jump = 16,
+    exit = 17,
+    attack = 18,
+    create = 19,
+    zoomIn = 20,
+    zoomOut = 21
+}
 
 ---<h3>Logic</h3>  
 ---The interactable sends or reads a boolean signal to signal it's current state. ([Interactable.isActive, isActive]) to signal its output.  
@@ -6230,48 +6963,95 @@ sm.interactable.actions = {}
 ---<h3>Power</h3>  
 ---Out: The controller uses a float ([Interactable.getPower, getPower]) to signal strength output (steering only).  
 ---In: The controller reads a float ([Interactable.getPower, getPower]) from its parent as input for strength.  
----none	0  
----logic	1  
----power	2  
----bearing	4  
----seated	8  
----piston	16  
----gasoline	256  
----electricity	512  
----water	1024  
----ammo	2048  
----chemical	4096  
----@type table
-sm.interactable.connectionType = {}
+sm.interactable.connectionType = {
+    none = 0,
+    logic = 1,
+    power = 2,
+    bearing = 4,
+    seated = 8,
+    piston = 16,
+    gasoline = 256,
+    electricity = 512,
+    water = 1024,
+    ammo = 2048,
+    chemical = 4096,
+    all = 4294967295,
+}
 
 ---Flags to be used with the steering component.  
----@type table
-sm.interactable.steering = {}
+sm.interactable.steering = {
+    left = 1,
+    right = 2,
+    forward = 4,
+    backward = 8
+}
 
----"electricEngine"  
----"gasEngine"  
----"steering"  
----"seat"  
----"controller"  
----"button"  
----"lever"  
----"sensor"  
----"thruster"  
----"radio"  
----"horn"  
----"tone"  
----"logic"  
----"timer"  
----"particlePreview"  
----"spring"  
----"pointLight"  
----"spotLight"  
----"chest"  
----"scripted"  
----"piston"  
----"simpleInteractive"  
----@type table
-sm.interactable.types = {}
+---@alias InteractableType string
+---| "electricEngine"
+---| "gasEngine"
+---| "steering"
+---| "seat"
+---| "controller"
+---| "button"
+---| "lever"
+---| "sensor"
+---| "thruster"
+---| "radio"
+---| "horn"
+---| "tone"
+---| "logic"
+---| "timer"
+---| "particlePreview"
+---| "audioPreview"
+---| "spring"
+---| "pointLight"
+---| "spotLight"
+---| "chest"
+---| "itemStack"
+---| "scripted"
+---| "piston"
+---| "simpleInteractive"
+---| "camera"
+---| "waypoint"
+---| "survivalThruster"
+---| "survivalPiston"
+---| "survivalSpring"
+---| "survivalSequence"
+---| "survivalSensor"
+
+sm.interactable.types = {
+    "electricEngine",
+    "gasEngine",
+    "steering",
+    "seat",
+    "controller",
+    "button",
+    "lever",
+    "sensor",
+    "thruster",
+    "radio",
+    "horn",
+    "tone",
+    "logic",
+    "timer",
+    "particlePreview",
+    "audioPreview",
+    "spring",
+    "pointLight",
+    "spotLight",
+    "chest",
+    "itemStack",
+    "scripted",
+    "piston",
+    "simpleInteractive",
+    "camera",
+    "waypoint",
+    "survivalThruster",
+    "survivalPiston",
+    "survivalSpring",
+    "survivalSequence",
+    "survivalSensor"
+}
 
 
 ---A <strong>joint</strong> is a part that can be built by a player that is used to connect [Body, bodies]. There are multiple scriptable joint types:  
@@ -6279,11 +7059,13 @@ sm.interactable.types = {}
 --- - The <strong>piston</strong> extends and contracts to change the distance between two bodies. (See [Interactable.getPistons])
 sm.joint = {}
 
----"bearing"	A bearing part.  
----"spring"	A spring part.  
----"piston"	A piston part.  
----@type table
-sm.joint.types = {}
+---"bearing"A bearing part.  
+---"piston"A piston part.  
+sm.joint.types = {
+    "bearing",
+    "spring",
+    "piston"
+}
 
 
 ---Information about projectiles are located in `/Data/Projectiles/ProjectileSets/projectiles.json`.  
@@ -6297,21 +7079,7 @@ sm.projectile = {}
 ---@param damage integer # The damage the projectile will inflict.
 ---@param position Vec3 # The start position in world space.
 ---@param velocity Vec3 # The direction and velocity.
----@param source Player # The player that is the source of the projectile.
----@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
----@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
----@param delay? integer # The number of ticks before firing. (Defaults to 0)
-function sm.projectile.customProjectileAttack(userdata, name, damage, position, velocity, source, fakePosThird, fakePosFirst, delay) end
-
----*Server only*  
----@deprecated Name is deprecated, use uuid instead
----Perform a customized projectile attack  
----@param userdata table # The custom user data
----@param name string # The projectile's name.
----@param damage integer # The damage the projectile will inflict.
----@param position Vec3 # The start position in world space.
----@param velocity Vec3 # The direction and velocity.
----@param source Unit # The Unit that is the source of the projectile.
+---@param source Player|Unit # The Unit that is the source of the projectile.
 ---@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
 ---@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
 ---@param delay? integer # The number of ticks before firing. (Defaults to 0)
@@ -6324,37 +7092,7 @@ function sm.projectile.customProjectileAttack(userdata, name, damage, position, 
 ---@param damage integer # The damage the projectile will inflict.
 ---@param position Vec3 # The start position in world space.
 ---@param velocity Vec3 # The direction and velocity.
----@param source World # The world that is the source of the projectile.
----@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
----@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
----@param delay? integer # The number of ticks before firing. (Defaults to 0)
----@param acceleration? number # The acceleration of the projectile. (Defaults to 0)
----@param lifetime? integer # The max lifetime of the projectile in ticks. (Defaults to 400)
-function sm.projectile.customProjectileAttack(userdata, uuid, damage, position, velocity, source, fakePosThird, fakePosFirst, delay, acceleration, lifetime) end
-
----*Server only*  
----Perform a customized projectile attack  
----@param userdata table # The custom user data
----@param uuid Uuid # The projectile's uuid.
----@param damage integer # The damage the projectile will inflict.
----@param position Vec3 # The start position in world space.
----@param velocity Vec3 # The direction and velocity.
----@param source Player # The player that is the source of the projectile.
----@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
----@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
----@param delay? integer # The number of ticks before firing. (Defaults to 0)
----@param acceleration? number # The acceleration of the projectile. (Defaults to 0)
----@param lifetime? integer # The max lifetime of the projectile in ticks. (Defaults to 400)
-function sm.projectile.customProjectileAttack(userdata, uuid, damage, position, velocity, source, fakePosThird, fakePosFirst, delay, acceleration, lifetime) end
-
----*Server only*  
----Perform a customized projectile attack  
----@param userdata table # The custom user data
----@param uuid Uuid # The projectile's uuid.
----@param damage integer # The damage the projectile will inflict.
----@param position Vec3 # The start position in world space.
----@param velocity Vec3 # The direction and velocity.
----@param source Unit # The Unit that is the source of the projectile.
+---@param source Player|Unit|World # The world that is the source of the projectile.
 ---@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
 ---@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
 ---@param delay? integer # The number of ticks before firing. (Defaults to 0)
@@ -6453,19 +7191,7 @@ function sm.projectile.playerFire(uuid, position, velocity, fakePosThird, fakePo
 ---@param damage integer # The damage the projectile will inflict.
 ---@param position Vec3 # The start position.
 ---@param velocity Vec3 # The direction and velocity.
----@param source Player # The player that is the source of the projectile.
----@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
----@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
----@param delay? integer # The number of ticks before firing. (Defaults to 0)
-function sm.projectile.projectileAttack(name, damage, position, velocity, source, fakePosThird, fakePosFirst, delay) end
-
----@deprecated Name is deprecated, use uuid instead
----Perform a projectile attack  
----@param name string # The projectile's name.
----@param damage integer # The damage the projectile will inflict.
----@param position Vec3 # The start position.
----@param velocity Vec3 # The direction and velocity.
----@param source Unit # The Unit that is the source of the projectile.
+---@param source Player|Unit # The player that is the source of the projectile.
 ---@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
 ---@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
 ---@param delay? integer # The number of ticks before firing. (Defaults to 0)
@@ -6476,20 +7202,7 @@ function sm.projectile.projectileAttack(name, damage, position, velocity, source
 ---@param damage integer # The damage the projectile will inflict.
 ---@param position Vec3 # The start position.
 ---@param velocity Vec3 # The direction and velocity.
----@param source Player # The player that is the source of the projectile.
----@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
----@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
----@param delay? integer # The number of ticks before firing. (Defaults to 0)
----@param acceleration? number # The acceleration of the projectile. (Defaults to 0)
----@param lifetime? integer # The max lifetime of the projectile in ticks. (Defaults to 400)
-function sm.projectile.projectileAttack(uuid, damage, position, velocity, source, fakePosThird, fakePosFirst, delay, acceleration, lifetime) end
-
----Perform a projectile attack  
----@param uuid Uuid # The projectile's uuid.
----@param damage integer # The damage the projectile will inflict.
----@param position Vec3 # The start position.
----@param velocity Vec3 # The direction and velocity.
----@param source Unit # The Unit that is the source of the projectile.
+---@param source Player|Unit # The player that is the source of the projectile.
 ---@param fakePosThird? Vec3 # The visual start position in third-person. (Defaults to position)
 ---@param fakePosFirst? Vec3 # The visual start position in first-person. (Defaults to position)
 ---@param delay? integer # The number of ticks before firing. (Defaults to 0)
@@ -6591,7 +7304,6 @@ function sm.projectile.shapeProjectileAttack(uuid, damage, position, velocity, s
 ---@return Vec3, Vec3 # The low angle solution; The high angle solution.
 function sm.projectile.solveBallisticArc(firePos, targetPos, velocity, gravity) end
 
-
 ---Information about melee attacks are located in `/Data/Melee/attacks.json`.  
 sm.melee = {}
 
@@ -6600,7 +7312,7 @@ sm.melee = {}
 ---@param origin Vec3 # The source position of the attack.
 ---@param directionRange Vec3 # The direction and reach of the attack.
 ---@param source Unit # The unit that is the source of the attack.
----@return table # RaycastResult		A table containing [RaycastResult] data.
+---@return RaycastResult[] # RaycastResult		A table containing [RaycastResult] data.
 function sm.melee.getMeleeAttackHits(uuid, origin, directionRange, source) end
 
 ---@deprecated Name is deprecated, use uuid instead
@@ -6609,22 +7321,10 @@ function sm.melee.getMeleeAttackHits(uuid, origin, directionRange, source) end
 ---@param damage integer # The damage the attack will inflict.
 ---@param origin Vec3 # The source position of the attack.
 ---@param directionRange Vec3 # The direction and reach of the attack.
----@param source Player # The player that is the source of the attack.
+---@param source Player|Unit # The player that is the source of the attack.
 ---@param delay? integer # The number of ticks before performing the attack. (Defaults to 0)
 ---@param power? number # The strength of the knockback power. (Defaults to 5000)
----@param ignoreCharacters table # A table of characters to ignore in the attack. (optional)
-function sm.melee.meleeAttack(name, damage, origin, directionRange, source, delay, power, ignoreCharacters) end
-
----@deprecated Name is deprecated, use uuid instead
----Perform a melee attack  
----@param name string # The name of the melee attack.
----@param damage integer # The damage the attack will inflict.
----@param origin Vec3 # The source position of the attack.
----@param directionRange Vec3 # The direction and reach of the attack.
----@param source Unit # The unit that is the source of the attack.
----@param delay? integer # The number of ticks before performing the attack. (Defaults to 0)
----@param power? number # The strength of the knockback power. (Defaults to 5000)
----@param ignoreCharacters table # A table of characters to ignore in the attack. (optional)
+---@param ignoreCharacters? Character[] # A table of characters to ignore in the attack. (optional)
 function sm.melee.meleeAttack(name, damage, origin, directionRange, source, delay, power, ignoreCharacters) end
 
 ---Perform a melee attack  
@@ -6632,23 +7332,11 @@ function sm.melee.meleeAttack(name, damage, origin, directionRange, source, dela
 ---@param damage integer # The damage the attack will inflict.
 ---@param origin Vec3 # The source position of the attack.
 ---@param directionRange Vec3 # The direction and reach of the attack.
----@param source Player # The player that is the source of the attack.
+---@param source Player|Unit # The player that is the source of the attack.
 ---@param delay? integer # The number of ticks before performing the attack. (Defaults to 0)
 ---@param power? number # The strength of the knockback power. (Defaults to 5000)
----@param ignoreCharacters table # A table of characters to ignore in the attack. (optional)
+---@param ignoreCharacters? Characteer[] # A table of characters to ignore in the attack. (optional)
 function sm.melee.meleeAttack(uuid, damage, origin, directionRange, source, delay, power, ignoreCharacters) end
-
----Perform a melee attack  
----@param uuid Uuid # The uuid of the melee attack.
----@param damage integer # The damage the attack will inflict.
----@param origin Vec3 # The source position of the attack.
----@param directionRange Vec3 # The direction and reach of the attack.
----@param source Unit # The unit that is the source of the attack.
----@param delay? integer # The number of ticks before performing the attack. (Defaults to 0)
----@param power? number # The strength of the knockback power. (Defaults to 5000)
----@param ignoreCharacters table # A table of characters to ignore in the attack. (optional)
-function sm.melee.meleeAttack(uuid, damage, origin, directionRange, source, delay, power, ignoreCharacters) end
-
 
 ---A <strong>Creation</strong> represent a collection of [sm.body, bodies] linked together by [sm.joint, joints].  
 sm.creation = {}
@@ -6658,8 +7346,8 @@ sm.creation = {}
 ---@param shape Uuid # The uuid of shape to build.
 ---@param worldPosition Vec3 # World position of shape.
 ---@param worldRotation Quat # World rotation of shape.
----@param localPosition Vec3 # Local position of shape.
----@param localRotation Quat # Local rotation of shape.
+---@param localPosition? Vec3 # Local position of shape.
+---@param localRotation? Quat # Local rotation of shape.
 function sm.creation.buildMultiShape(shape, worldPosition, worldRotation, localPosition, localRotation) end
 
 ---*Server only*  
@@ -6681,26 +7369,26 @@ function sm.creation.exportToTable(body, exportTransforms, forceDynamic) end
 ---Returns a table with uuid's and quantity. A body can be sent in to remove from blueprint cost.  
 ---@param filePath string # The file path for the blueprint.
 ---@param bodyId? integer # The id of a body.(Optional)
----@return table # The table of { [Uuid], quantity }
+---@return {uuid: Uuid, quantity: number}[] # The table of {uuid: Uuid, quantity: number}
 function sm.creation.getBlueprintCost(filePath, bodyId) end
 
 ---Returns a table with uuid's and quantity. A body can be sent in to remove from blueprint cost.  
 ---@param table table # The lua table for the blueprint.
 ---@param bodyId? integer # The id of a body.(Optional)
----@return table # The table of { [Uuid], quantity }
+---@return {uuid: Uuid, quantity: number}[] # The table of {uuid: Uuid, quantity: number}
 function sm.creation.getBlueprintCost(table, bodyId) end
 
 ---*Server only*  
 ---Imports blueprint json file to world.  
 ---**Warning:**
 ---*If the blueprint was not exported with transforms the importer will treat it as if importTransforms was disabled.*
----@param world World # The world to import to.
+---@param world? World # The world to import to.
 ---@param pathString string # The blueprint path.
 ---@param worldPosition? Vec3 # World position of import. If importTransforms is enabled position is applied to the imported transform. (Defaults to vec3.zero().)
 ---@param worldRotation? Quat # World rotation of import. If importTransforms is enabled rotation is applied to the imported transform. (Defaults to quat.identity().)
 ---@param importTransforms? boolean # Import world transforms from bodies. (Defaults to false.)
 ---@param indestructible? boolean # (DEPRECATED) Ignored, use setDestructable(false) on each body in creation. (Defaults to false)
----@return table # The table {[Body], ...} of bodies created from the blueprint.
+---@return Body[] # The table {[Body], ...} of bodies created from the blueprint.
 function sm.creation.importFromFile(world, pathString, worldPosition, worldRotation, importTransforms, indestructible) end
 
 ---*Server only*  
@@ -6713,9 +7401,8 @@ function sm.creation.importFromFile(world, pathString, worldPosition, worldRotat
 ---@param worldRotation? Quat # World rotation of import. If importTransforms is enabled rotation is applied to the imported transform. (Defaults to quat.identity().)
 ---@param importTransforms? boolean # Import world transforms from bodies. (Defaults to false.)
 ---@param forceInactive? boolean # Import interactables in an inactive state. (Defaults to false.)
----@return table # The table {[Body], ...} of bodies created from the blueprint.
+---@return Body[] # The table {[Body], ...} of bodies created from the blueprint.
 function sm.creation.importFromString(world, jsonString, worldPosition, worldRotation, importTransforms, forceInactive) end
-
 
 ---The <strong>cell</strong> api exposes and expands on parts of the world loading process.  
 ---These methods are commonly called from cell loading callbacks in World type scripts.  
@@ -6730,8 +7417,8 @@ sm.cell = {}
 ---3: Large - large trees, visible at a very long distance.  
 ---@param x integer # The X-coordinate.
 ---@param y integer # The Y-coordinate.
----@param size integer # Size of harvestable (defaults to any size).
----@return table # A table {[sm.harvestable, harvestable], ...} of harvestables.
+---@param size? integer # Size of harvestable (defaults to any size).
+---@return Harvestable[] # A table {[sm.harvestable, harvestable], ...} of harvestables.
 function sm.cell.getHarvestables(x, y, size) end
 
 ---*Server only*  
@@ -6744,8 +7431,8 @@ function sm.cell.getHarvestables(x, y, size) end
 ---@param x integer # The X-coordinate.
 ---@param y integer # The Y-coordinate.
 ---@param uuid Uuid # The uuid of the harvestable(s)
----@param size integer # Size of harvestable (defaults to any size).
----@return table # A table {[sm.harvestable, harvestable], ...} of harvestables.
+---@param size? integer # Size of harvestable (defaults to any size).
+---@return Harvestable[] # A table {[sm.harvestable, harvestable], ...} of harvestables.
 function sm.cell.getHarvestablesByUuid(x, y, uuid, size) end
 
 ---*Server only*  
@@ -6755,7 +7442,7 @@ function sm.cell.getHarvestablesByUuid(x, y, uuid, size) end
 ---@param x integer # The X-coordinate.
 ---@param y integer # The Y-coordinate.
 ---@param uuids table # A table {[Uuid], ...} of uuids to match interactables against.
----@return table # A table {[sm.interactable, interactable]} of found interactables with matching uuid.
+---@return Interactables[] # A table {[sm.interactable, interactable]} of found interactables with matching uuid.
 function sm.cell.getInteractablesByAnyUuid(x, y, uuids) end
 
 ---*Server only*  
@@ -6765,7 +7452,7 @@ function sm.cell.getInteractablesByAnyUuid(x, y, uuids) end
 ---@param x integer # The X-coordinate.
 ---@param y integer # The Y-coordinate.
 ---@param tag string # A tag to match with.
----@return table # A table {[sm.interactable, interactable], ...} of found interactables with matching tag.
+---@return Interactable[] # A table {[sm.interactable, interactable], ...} of found interactables with matching tag.
 function sm.cell.getInteractablesByTag(x, y, tag) end
 
 ---*Server only*  
@@ -6775,8 +7462,8 @@ function sm.cell.getInteractablesByTag(x, y, tag) end
 ---*Can only be used in a server_onCellLoaded callback*
 ---@param x integer # The X-coordinate
 ---@param y integer # The Y-coordinate
----@param tags table # A table {string, ...} of tags to match with.
----@return table # A table {[sm.interactable, interactable], ...} of found interactables with matching tags
+---@param tags string[] # A table {string, ...} of tags to match with.
+---@return Interactable[] # A table {[sm.interactable, interactable], ...} of found interactables with matching tags
 function sm.cell.getInteractablesByTags(x, y, tags) end
 
 ---*Server only*  
@@ -6786,31 +7473,44 @@ function sm.cell.getInteractablesByTags(x, y, tags) end
 ---@param x integer # The X-coordinate.
 ---@param y integer # The Y-coordinate.
 ---@param uuid Uuid # The uuid of the interactable(s)
----@return table # A table {[sm.interactable, interactable], ...} of found interactables with matching uuid.
+---@return Interactable[] # A table {[sm.interactable, interactable], ...} of found interactables with matching uuid.
 function sm.cell.getInteractablesByUuid(x, y, uuid) end
+
+---@class NodeParams : table
+---@field name string
+---@field connections table
+
+---@class Node
+---@field position Vec3
+---@field rotation Quat 
+---@field scale Vec3
+---@field tags string[]
+---@field params NodeParams
+---@field world? World
 
 ---Returns a table of nodes which contains the given tag for a cell coordinate.  
 ---@param x integer # X-coordinate.
 ---@param y integer # Y-coordinate.
 ---@param tag string # Tag to match with.
 ---@param world? world # The world we are searching in. (Optional, defaults to current world)
----@return table # Table containing { position = [Vec3], rotation = [Quat], scale = [Vec3], tags = {string, ...}, params = table } for each node.
+---@return Node[] # Table containing { position = [Vec3], rotation = [Quat], scale = [Vec3], tags = {string, ...}, params = table } for each node.
 function sm.cell.getNodesByTag(x, y, tag, world) end
 
 ---Returns a table of nodes which contain all of the given tags for a cell coordinate.  
 ---@param x integer # X-coordinate.
 ---@param y integer # Y-coordinate.
----@param tags table # A table {string, ...} of tags to match with.
+---@param tags string[] # A table {string, ...} of tags to match with.
 ---@param world? world # The world we are searching in (Optional, defaults to current world)
----@return table # Table containing { position = [Vec3], rotation = [Quat], scale = [Vec3], tags = {string, ...}, params = table } for each node.
+---@return Node[] # Table containing { position = [Vec3], rotation = [Quat], scale = [Vec3], tags = {string, ...}, params = table } for each node.
 function sm.cell.getNodesByTags(x, y, tags, world) end
 
 ---Returns a table of tags for a cell coordinate.  
 ---@param x integer # X-coordinate
 ---@param y integer # Y-coordinate
 ---@param world? world # The world we are searching in. (Optional, defaults to current world)
----@return table # Table {string, ...} of tags.
+---@return string[] # Table {string, ...} of tags.
 function sm.cell.getTags(x, y, world) end
+
 
 
 sm.container = {}
@@ -6831,7 +7531,7 @@ function sm.container.beginTransaction() end
 ---@param slot integer # The container slot.
 ---@param itemUuid Uuid # The uuid of the item to be added.
 ---@param quantity integer # The number of items to be added.
----@param mustCollectAll boolean # If true, only add items if there is enough room. If false, add as many items as possible. Defaults to true. (Optional)
+---@param mustCollectAll? boolean # If true, only add items if there is enough room. If false, add as many items as possible. Defaults to true. (Optional)
 ---@return integer # The number of items successfully added.
 function sm.container.collectToSlot(container, slot, itemUuid, quantity, mustCollectAll) end
 
@@ -6842,12 +7542,12 @@ function sm.container.endTransaction() end
 
 ---Returns a table containing item uuid, quantity (and instance id for tools) at first available slot  
 ---@param container Container # The container.
----@return table # Table containg item {uuid  = [Uuid], instance = integer, quantity = integer}.
+---@return Item # Table containg item {uuid  = [Uuid], instance = integer, quantity = integer}.
 function sm.container.getFirstItem(container) end
 
 ---Returns a table containing all item uuids in a container.  
 ---@param container Container # The container.
----@return table # The table of item uuids {[Uuid], ..}.
+---@return Uuid[] # The table of item uuids {[Uuid], ..}.
 function sm.container.itemUuid(container) end
 
 ---*Server only*  
@@ -6866,7 +7566,7 @@ function sm.container.moveAllToCarryContainer(container, player, color) end
 
 ---Returns a table containing all item quantities in a container.  
 ---@param container Container # The container.
----@return table # The table of item quantities {integer, ..}.
+---@return number[] # The table of item quantities {integer, ..}.
 function sm.container.quantity(container) end
 
 ---*Server only*  
@@ -6906,7 +7606,7 @@ function sm.container.totalQuantity(container, itemUuid) end
 
 ---Returns a table containing all item uuids in a container.  
 ---@param container Container # The container.
----@return table # The table of item uuids {[Uuid], ..}.
+---@return Uuid[] # The table of item uuids {[Uuid], ..}.
 function sm.container.uniqueItemUuids(container) end
 
 
@@ -6920,36 +7620,23 @@ sm.ai = {}
 ---@return boolean # Returns true if the position is available directly.
 function sm.ai.directPathAvailable(unit, position, range) end
 
----Returns true if the character can fire at the target harvestable within a given fire lane.  
----Also returns the aim position that allows the character to succeed.  
----@param self Character # The firing character.
----@param target Harvestable # The target harvestable.
----@param range number # The maximum firing distance.
----@param width number # The width of the fire lane.
----@return boolean,Vec3 # The result.
-function sm.ai.getAimPosition(self, target, range, width) end
-
 ---Returns true if the character can fire at the target character within a given fire lane.  
 ---Also returns the aim position that allows the character to succeed.  
 ---Any obstacle shape that blocks the target, but can be destroyed by the projectile, will be targeted instead.  
----@param self Character # The firing character.
----@param target Character # The target character.
+---@param character Character # The firing character.
+---@param target Harvestable|Character # The target character.
 ---@param range number # The maximum firing distance.
 ---@param width number # The width of the fire lane.
----@param attack integer # The attack level of the projectile. (Defaults to 5)
+---@param attack? integer # The attack level of the projectile. (Defaults to 5)
 ---@return boolean,Vec3 # The result.
-function sm.ai.getAimPosition(self, target, range, width, attack) end
+function sm.ai.getAimPosition(character, target, range, width, attack) end
 
 ---Check if there's an attackable object between the unit and a position.  
 ---@param unit Unit # The unit.
 ---@param position Vec3 # The target position.
 ---@param range number # The distance.
 ---@param attack integer # The possible attack level from the breacher.
----@return boolean,Vec3,Shape # Returns true if a breachable object is found, an attackable position, and an attackable shape.
----@return boolean,Vec3,Harvestable # Returns true if a breachable object is found, an attackable position, and an attackable harvestable.
----@return boolean,Vec3,Lift # Returns true if a breachable object is found, an attackable position, and an attackable lift.
----@return boolean,Vec3 # Returns false if the object is unbreachable and an attackable position.
----@return boolean # Returns true when nothing is found.
+---@return boolean, Vec3|nil, Shape|Harvestable|Lift|nil # Returns true if a breachable object is found, an attackable position, and an attackable shape.
 function sm.ai.getBreachablePosition(unit, position, range, attack) end
 
 ---Find the closest harvestable of 'tree' type in a world.  
@@ -7006,23 +7693,31 @@ sm.character = {}
 ---@return Character # The created character.
 function sm.character.createCharacter(player, world, position, yaw, pitch, visible) end
 
----*Client only*  
----Pre-loads renderable data to be used by the character. This eliminates excessive loading during run time.  
----@param renderables table # The table of renderables { name = string, ... }.
-function sm.character.preloadRenderables(renderables) end
-
-
 ---A <strong>player</strong> is a user playing the game. Every player controls a [Character] in the world.  
 sm.player = {}
 
 ---Returns a table of all [Player, players] that are currently in the game.  
 ---@param getInactive? boolean # Include getting inactive players. Defaults to false. (Optional)
----@return table # Table of all players in the game. {[Player], ..}
+---@return Player[] # Table of all players in the game. {[Player], ..}
 function sm.player.getAllPlayers(getInactive) end
 
 ---Returns the player of the game host.  
 ---@return Player # The host player.
 function sm.player.getHostPlayer() end
+
+---*Server only*  
+---Place down a lift game object  
+---@param player Player # The player that owns the lift.
+---@param creation Body[] # The bodies to place on the lift. {[Body], ..}
+---@param position Vec3 # The lift position.
+---@param level integer # The lift level.
+---@param rotation integer # The rotation of the creation on the lift.
+function sm.player.placeLift(player, creation, position, level, rotation) end
+
+---*Server only*  
+---Remove the player's lift, if the lift exists.  
+---@param player Player # The player that owns the lift.
+function sm.player.removeLift(player) end
 
 
 ---An <strong>area trigger</strong> is an invisible collider in the world that can trigger events when objects move in or out of it. This allows the script to, for instance, detect when a character enters a door, or count the number of shapes there are in a room.  
@@ -7070,33 +7765,34 @@ sm.areaTrigger = {}
 --- - <strong>interactable</strong> &ndash; Can be interacted with if implementing bindCanInteract, bindOnInteract, bindCanErase and bindOnDestroy.
 --- - <strong>ladder</strong> &ndash; Attach colliding players to the trigger.
 --- - <strong>melee</strong> &ndash; Can react to melee attack callbacks if implementing bindOnMelee.
----default	0  
----water	1  
----interactable	2  
----ladder	3  
----@type table
-sm.areaTrigger.areaTriggerProxyType = {}
+sm.areaTrigger.areaTriggerProxyType = {
+    default      = 0,  
+    water        = 1,  
+    interactable = 2,  
+    ladder       = 3,  
+    melee        = 4,  
+}
 
 ---Filters are used to specify what object types an area trigger is able to detect. If an area trigger is created with a filter, it will <strong>only</strong> react to objects of that type. Filters can be combined by adding them.  
 ---The filters are:  
 --- - <strong>dynamicBody</strong> &ndash; Detects [Body, bodies] that are free to move around in the world.
 --- - <strong>staticBody</strong> &ndash; Detects [Body, bodies] that are built on the ground or on the lift.
 --- - <strong>character</strong> &ndash; Detects [Character, characters] such as players.
---- - <strong>areatrigger</strong> &ndash; Detects [AreaTrigger, areatriggers] such as water areas.
+--- - <strong>areaTrigger</strong> &ndash; Detects [AreaTrigger, areatriggers] such as water areas.
 --- - <strong>harvestable</strong> &ndash; Detects [Harvestable, harvestables] such as planted objects.
 --- - <strong>lift</strong> &ndash; Detects [Lift, lifts].
 --- - <strong>voxelTerrain</strong> &ndash; Detects destructible terrain.
 --- - <strong>all</strong> &ndash; Detects all of the object types above. (Default)
----dynamicBody	1  
----staticBody	2  
----character	4  
----areatrigger	8  
----harvestable	512  
----lift	1024  
----voxelTerrain	32768  
----all	34319  
----@type table
-sm.areaTrigger.filter = {}
+sm.areaTrigger.filter = {
+    dynamicBody = 1,
+    staticBody = 2,
+    character = 4,
+    areaTrigger = 8,
+    harvestable = 512,
+    lift = 1024,
+    voxelTerrain = 32768,
+    all = 50703
+}
 
 ---Defines the liquid type of an area trigger.  
 ---Only has an effect on area triggers with the <strong>water</strong> proxy type; setting it on any other proxy type has no effect.  
@@ -7105,12 +7801,16 @@ sm.areaTrigger.filter = {}
 --- - <strong>chemical</strong> &ndash; Chemical. No special behavior beyond the water proxy buoyancy.
 --- - <strong>oil</strong> &ndash; Oil. No special behavior beyond the water proxy buoyancy.
 --- - <strong>lava</strong> &ndash; Lava. Occasionally destroys submerged shapes. Requires [AreaTrigger]: setIncludeShapesInContent.
----@type table
-sm.areaTrigger.liquidType = {}
+sm.areaTrigger.liquidType = {
+    water = 0,
+    chemical = 1,
+    oil = 2,
+    lava = 3,
+}
 
 ---Creates an area trigger box with a given size that stays attached to an [sm.character, character]  
 ---If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param character Character # The host character.
+---@param character Character|Harvestable|Shape|Interactable # The host character.
 ---@param dimension Vec3 # The size of the box
 ---@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
 ---@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
@@ -7121,47 +7821,9 @@ sm.areaTrigger.liquidType = {}
 ---@return AreaTrigger # The created area trigger.
 function sm.areaTrigger.createAttachedBox(character, dimension, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
 
----Creates an area trigger box with a given size that stays attached to an [sm.harvestable, harvestable]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param harvestable Harvestable # The host harvestable.
----@param dimension Vec3 # The size of the box
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedBox(harvestable, dimension, position, rotation, filter, userdata, areaTriggerProxyType) end
-
----Creates an area trigger box with a given size that stays attached to an [sm.shape, shape]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param shape Shape # The host shape
----@param dimension Vec3 # The size of the box
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@param boneName? string # The bone name of the shape to attach the area trigger to. (optional)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedBox(shape, dimension, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
-
----Creates an area trigger box with a given size that stays attached to an [sm.interactable, interactable]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param interactable Interactable # The host interactable
----@param dimension Vec3 # The size of the box
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@param boneName? string # The bone name of the interactable to attach the area trigger to. (optional)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedBox(interactable, dimension, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
-
 ---Creates an area trigger cylinder with a given size that stays attached to a [sm.character, character]  
 ---If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param character Character # The host character.
+---@param character Character|Harvestable|Shape|Interactable # The host character.
 ---@param radius number # The radius of the cylinder.
 ---@param halfLength number # The lengthwise extent of the cylinder (i.e. half the length of the cylinder).
 ---@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
@@ -7173,50 +7835,9 @@ function sm.areaTrigger.createAttachedBox(interactable, dimension, position, rot
 ---@return AreaTrigger # The created area trigger.
 function sm.areaTrigger.createAttachedCylinder(character, radius, halfLength, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
 
----Creates an area trigger cylinder with a given size that stays attached to an [sm.harvestable, harvestable]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param harvestable Harvestable # The host harvestable.
----@param radius number # The radius of the cylinder.
----@param halfLength number # The lengthwise extent of the cylinder (i.e. half the length of the cylinder).
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedCylinder(harvestable, radius, halfLength, position, rotation, filter, userdata, areaTriggerProxyType) end
-
----Creates an area trigger cylinder with a given size that stays attached to an [sm.shape, shape]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param shape Shape # The host shape
----@param radius number # The radius of the cylinder.
----@param halfLength number # The lengthwise extent of the cylinder (i.e. half the length of the cylinder).
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@param boneName? string # The bone name of the shape to attach the area trigger to. (optional)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedCylinder(shape, radius, halfLength, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
-
----Creates an area trigger cylinder with a given size that stays attached to an [sm.interactable, interactable]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param interactable Interactable # The host interactable
----@param radius number # The radius of the cylinder.
----@param halfLength number # The lengthwise extent of the cylinder (i.e. half the length of the cylinder).
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@param boneName? string # The bone name of the interactable to attach the area trigger to. (optional)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedCylinder(interactable, radius, halfLength, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
-
 ---Creates an area trigger hull with a given size that stays attached to a [sm.character, character]  
 ---If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param character Character # The host character.
+---@param character Character|Harvestable|Shape|Interactable # The host character.
 ---@param hull string # The path to the hull file.
 ---@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
 ---@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
@@ -7227,47 +7848,9 @@ function sm.areaTrigger.createAttachedCylinder(interactable, radius, halfLength,
 ---@return AreaTrigger # The created area trigger.
 function sm.areaTrigger.createAttachedHull(character, hull, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
 
----Creates an area trigger hull with a given size that stays attached to an [sm.harvestable, harvestable]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param harvestable Harvestable # The host harvestable.
----@param hull string # The path to the hull file.
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedHull(harvestable, hull, position, rotation, filter, userdata, areaTriggerProxyType) end
-
----Creates an area trigger hull with a given size that stays attached to an [sm.shape, shape]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param shape Shape # The host shape
----@param hull string # The path to the hull file.
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@param boneName? string # The bone name of the shape to attach the area trigger to. (optional)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedHull(shape, hull, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
-
----Creates an area trigger hull with a given size that stays attached to an [sm.interactable, interactable]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param interactable Interactable # The host interactable
----@param hull string # The path to the hull file.
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@param boneName? string # The bone name of the interactable to attach the area trigger to. (optional)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedHull(interactable, hull, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
-
 ---Creates an area trigger sphere with a given size that stays attached to a [sm.character, character]  
 ---If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param character Character # The host character.
+---@param character Character|Harvestable|Shape|Interactable # The host character.
 ---@param radius number # The radius of the sphere.
 ---@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
 ---@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
@@ -7277,44 +7860,6 @@ function sm.areaTrigger.createAttachedHull(interactable, hull, position, rotatio
 ---@param boneName? string # The bone name of the character to attach the area trigger to. (optional)
 ---@return AreaTrigger # The created area trigger.
 function sm.areaTrigger.createAttachedSphere(character, radius, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
-
----Creates an area trigger sphere with a given size that stays attached to an [sm.harvestable, harvestable]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param harvestable Harvestable # The host harvestable.
----@param radius number # The radius of the sphere.
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedSphere(harvestable, radius, position, rotation, filter, userdata, areaTriggerProxyType) end
-
----Creates an area trigger sphere with a given size that stays attached to an [sm.shape, shape]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param shape Shape # The host shape
----@param radius number # The radius of the sphere.
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@param boneName? string # The bone name of the shape to attach the area trigger to. (optional)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedSphere(shape, radius, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
-
----Creates an area trigger sphere with a given size that stays attached to an [sm.interactable, interactable]  
----If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
----@param interactable Interactable # The host interactable
----@param radius number # The radius of the sphere.
----@param position? Vec3 # The position offset (Defaults to [sm.vec3.zero])
----@param rotation? Quat # The rotation offset (Defaults to [sm.quat.identity])
----@param filter? integer # The object types the area trigger may detect. (See [sm.areaTrigger.filter]). (Defaults to sm.areaTrigger.filter.all)
----@param userdata? table # An optional table of user data
----@param areaTriggerProxyType? integer # The proxy type of the area trigger. (See [sm.areaTrigger.areaTriggerProxyType]) (Defaults to sm.areaTrigger.areaTriggerProxyType.default)
----@param boneName? string # The bone name of the interactable to attach the area trigger to. (optional)
----@return AreaTrigger # The created area trigger.
-function sm.areaTrigger.createAttachedSphere(interactable, radius, position, rotation, filter, userdata, areaTriggerProxyType, boneName) end
 
 ---Creates a new box area trigger at a given position with a given size.  
 ---If a filter is specified, the trigger area will only be able to detects objects of that certain type. See [sm.areaTrigger.filter] for more information about filters.  
@@ -7376,7 +7921,6 @@ function sm.areaTrigger.createHull(hull, position, rotation, filter, userdata, w
 ---@return AreaTrigger # The created area trigger.
 function sm.areaTrigger.createSphere(radius, position, rotation, filter, userdata, world, areaTriggerProxyType) end
 
-
 ---The <strong>world</strong> api handles the creation and destruction of worlds.  
 ---A world contains the terrain and simulates the physics environment in which other game objects can exist.  
 sm.world = {}
@@ -7397,18 +7941,18 @@ sm.world.ids = {}
 --- - <strong>material6</strong> &ndash; Allows destruction of material 6 in the voxel material set.
 --- - <strong>material7</strong> &ndash; Allows destruction of material 7 in the voxel material set.
 --- - <strong>all</strong> &ndash; Allows destruction of all materials in the voxel material set.
----none	0  
----material0	1  
----material1	2  
----material2	4  
----material3	8  
----material4	16  
----material5	32  
----material6	64  
----material7	128  
----all	255  
----@type table
-sm.world.voxelFilter = {}
+sm.world.voxelFilter = {
+    none      = 0,  
+    material0 = 1,  
+    material1 = 2,  
+    material2 = 4,  
+    material3 = 8,  
+    material4 = 16,  
+    material5 = 32,  
+    material6 = 64,  
+    material7 = 128,  
+    all       = 255,  
+}
 
 ---*Server only*  
 ---Creates a new world object.  
@@ -7423,11 +7967,15 @@ function sm.world.createWorld(filename, classname, terrainParams, seed) end
 ---@return World # The world
 function sm.world.getCurrentWorld() end
 
+---@class DirtySphere
+---@field center Vec3
+---@field radius number
+
 ---Returns an array of tables representing spheres where something has changed in the world.  
 ---The optional position and radius parameters will construct a sphere, and use it as a filter to only show results that intersect that sphere.  
 ---@param position? Vec3 # The world position of the sphere. (Optional)
 ---@param radius? number # The radius of the sphere. (Optional)
----@return table # The table of tables. { {center=[Vec3], radius=number}, ..}
+---@return DirtySphere[] # The table of tables. { {center=[Vec3], radius=number}, ..}
 function sm.world.getDirtySpheres(position, radius) end
 
 ---*Server only*  
@@ -7441,24 +7989,19 @@ function sm.world.getLegacyCreativeWorld() end
 ---@return boolean # Return true if the world was loaded.
 function sm.world.loadWorld(world) end
 
+
 ---Events for communicating between scripts by running callbacks.  
 sm.event = {}
 
--- SCRAPCOMPUTERS MODIFIED START --
-
----Event types
-sm.event.types = {}
-
----Will make sure script instance exists, and that the callback is declared on the receiving end, before queuing the event. This is the default type.
-sm.event.types.validate = 0
-
----Will blindly queue the event without making any validation checks. Can be useful for sending events to objects that are being destroyed, or for sending events to objects that are not guaranteed to have a script instance.
-sm.event.types.blind = 1
-
----Same as blind event, but sent immediately.
-sm.event.types.instant = 2
-
--- SCRAPCOMPUTERS MODIFIED END --
+---Event types  
+---validate	Will make sure script instance exists, and that the callback is declared on the receiving end, before queuing the event. This is the default type.  
+---blind	Will blindly queue the event without making any validation checks. Can be useful for sending events to script we know will come alive the next tick.  
+---instant	Same as blind event, but sent immediately.  
+sm.event.types = {
+    validate = 0,
+    blind = 1,
+    instant = 2,
+}
 
 ---Sends an event to a specified [Character].  
 ---@param character Character # The character.
@@ -7555,16 +8098,15 @@ function sm.message.send(messageKey, data) end
 ---@param callbackName string # The name of the callback function to invoke.
 function sm.message.subscribe(messageKey, callbackName) end
 
-
 ---Allows checking for static infortmation about items.  
 sm.item = {}
 
----Item tracking filter types  
----mainQuest  
----sideQuest  
----researchable  
----@type table
-sm.item.trackingType = {}
+---Item tracking filter types 
+sm.item.trackingType = {
+    mainQuest = 0,
+    sideQuest = 1,
+    researchable = 2,
+}
 
 ---*Client only*  
 ---Adds a shape uuid to be a tracked item.  
@@ -7577,9 +8119,13 @@ function sm.item.addTrackedItem(uuid, type) end
 ---@return integer # The buoyancy.
 function sm.item.getBuoyancyRating(uuid) end
 
+---@class CharacterShape
+---@field placementSphereRadius number
+---@field characterUuid string UUID string of the character
+
 ---Return the data for the character [Shape].  
 ---@param uuid Uuid # The shape uuid.
----@return table # The character shape data.
+---@return CharacterShape # The character shape data.
 function sm.item.getCharacterShape(uuid) end
 
 ---Returns the density rating of an item.  
@@ -7592,14 +8138,30 @@ function sm.item.getDensityRating(uuid) end
 ---@return integer # The durability.
 function sm.item.getDurabilityRating(uuid) end
 
+---@class Edible
+---@field hpGain? number
+---@field foodGain? number
+---@field waterGain? number 
+
 ---Return the data for the edible [Shape].  
 ---@param uuid Uuid # The shape uuid.
----@return table # The edible data.
+---@return Edible # The edible data.
 function sm.item.getEdible(uuid) end
+
+---@class GyroData
+---@field yawSensitivityModifier number
+---@field pitchSensitivityModifier number
+
+---@class FeatureData : table
+---@field filename string
+---@field classname string
+---@field gyro? GyroData
+---@field data table
+---@field tag string 
 
 ---Returns the shapes feature data.  
 ---@param uuid Uuid # The item uuid.
----@return table # The feature data table
+---@return FeatureData # The feature data table
 function sm.item.getFeatureData(uuid) end
 
 ---Returns the friction rating of an item.  
@@ -7609,7 +8171,7 @@ function sm.item.getFrictionRating(uuid) end
 
 ---Returns a table of all [Interactable, interactable] [Uuid, uuids] of a interactable type  
 ---@param interactableType string # The interactable type name
----@return table # table of interactable [Uuid, uuids] {[Uuid], ..}
+---@return Uuid[] # table of interactable [Uuid, uuids] {[Uuid], ..}
 function sm.item.getInteractablesUuidsOfType(interactableType) end
 
 ---Returns the material of a shape uuid.  
@@ -7622,13 +8184,18 @@ function sm.item.getMaterial(uuid) end
 ---@return integer # The shape's material id.
 function sm.item.getMaterialId(uuid) end
 
+---@class Plantable
+---@field harvestable string UUID string of the planted harvestable 
+---@field allowInGrowbed boolean Whethe the crop can be planted in the growbed
+---@field growbed Uuid The UUID string of the growbed shape version of the plantable
+
 ---Return the data for the plantable [Shape].  
 ---@param uuid Uuid # The shape uuid.
----@return table # The plantable data.
+---@return Plantable # The plantable data.
 function sm.item.getPlantable(uuid) end
 
 ---Returns a table of all plantable [Uuid, uuids].  
----@return table # table of all plantable [Uuid, uuids] {[Uuid], ..}.
+---@return Uuid[] # table of all plantable [Uuid, uuids] {[Uuid], ..}.
 function sm.item.getPlantableUuids() end
 
 ---Return the quality level for the [Shape].  
@@ -7693,6 +8260,11 @@ function sm.item.isPart(uuid) end
 ---@return boolean # True if the item uuid belongs to a tool.
 function sm.item.isTool(uuid) end
 
+---Return whether the [Shape] uuid belongs to a multi shape.  
+---@param uuid Uuid # The uuid.
+---@return boolean # True if shape is a multi shape.
+function sm.item.isMultiShape(uuid) end
+
 ---*Client only*  
 ---Removes a shape uuid from the tracked items.  
 ---@param uuid Uuid # The uuid of the shape.
@@ -7740,7 +8312,8 @@ function sm.challenge.resolveContentPath(path) end
 
 ---*Server only*  
 ---Starts challenge.  
-function sm.challenge.start() end
+---@param world World
+function sm.challenge.start(world) end
 
 ---*Server only*  
 ---Stops challenge.  
@@ -7754,10 +8327,8 @@ function sm.challenge.stop() end
 function sm.challenge.takePicture(width, height, rotation) end
 
 ---*Server only*  
----Takes pictures of the challenge level to use as icon and preview.  
----@param rotation integer # Rotation step.
-function sm.challenge.takePicturesForMenu(rotation) end
-
+---Takes pictures of the challenge level to use as icon and preview.
+function sm.challenge.takePicturesForMenu() end
 
 ---Used to save and load blueprints displayed in the menu.  
 sm.menuCreation = {}
@@ -7768,8 +8339,9 @@ sm.menuCreation = {}
 function sm.menuCreation.load() end
 
 ---*Server only*  
----Saves the users menu creation blueprint.  
-function sm.menuCreation.save() end
+---Saves the users menu creation blueprint.
+---@param blueprints string[]  
+function sm.menuCreation.save(blueprints) end
 
 
 ---A <strong>portal</strong> moves objects inside a box to another box in another place.  
@@ -7842,12 +8414,12 @@ function sm.harvestable.createHarvestable(uuid, position, rotation, slopeNormal,
 
 ---Returns a table with all the harvestables in the world.  
 ---@param world? World # The world, will default to the script's world. (optional)
----@return table # The table of all harvestables. {[Harvestable], ..}
+---@return Harvestable[] # The table of all harvestables. {[Harvestable], ..}
 function sm.harvestable.getAllHarvestables(world) end
 
 ---Gets a kinematic matching the provided initial hash if it exists.  
 ---@param initialHash number # The initial hash to search for.
----@return Harvestable					The kinematic if it exists.
+---@return Harvestable kinematic The kinematic if it exists.
 function sm.harvestable.getKinematicByInitialHash(initialHash) end
 
 
@@ -7883,59 +8455,28 @@ sm.construction = {}
 ---subdivideRatio_2	0.125  
 ---subdivisions	4  
 ---shapeSpacing	0.004	  
----@type table
-sm.construction.constants = {}
+sm.construction.constants = {
+    shapeSpacing = 0.004,
+    subdivideRatio = 0.25,
+    subdivideRatio_2 = 0.125,
+    subdivisions = 4
+}
 
 ---*Server only*  
----Builds a block on a shape.  
+---Builds a block on an object.  
 ---@param uuid Uuid # The uuid of the block to build.
 ---@param localPosition Vec3 # The position to build the block on.
----@param shape Shape # The shape to build on.
-function sm.construction.buildBlock(uuid, localPosition, shape) end
+---@param object? Lift|Shape|Joint
+function sm.construction.buildBlock(uuid, localPosition, object) end
 
----*Server only*  
----Builds a block on a joint.  
----@param uuid Uuid # The uuid of the block to build.
----@param localPosition Vec3 # The position to build the block on.
----@param joint Joint # The joint to build on.
-function sm.construction.buildBlock(uuid, localPosition, joint) end
 
----*Server only*  
----Builds a block a lift.  
----@param uuid Uuid # The uuid of the block to build.
----@param localPosition Vec3 # The position to build the block on.
----@param lift Lift # The lift to build on.
-function sm.construction.buildBlock(uuid, localPosition, lift) end
-
----*Server only*  
----Builds a block on terrain.  
----@param uuid Uuid # The uuid of the block to build.
----@param localPosition Vec3 # The position to build the block on.
-function sm.construction.buildBlock(uuid, localPosition) end
-
----Validates if a shape can be built on another shape.  
+---Validates if an object can be built on another object.  
 ---@param uuid Uuid # The uuid of the shape to validate.
 ---@param localPosition Vec3 # The position local to the body.
 ---@param localNormal Vec3 # The normal of the surface to validate placement.
----@param shape Shape # The shape to build on.
+---@param object? Lift|Shape|Joint # The object to build on.
 ---@return boolean # True if position is valid.
-function sm.construction.validateLocalPosition(uuid, localPosition, localNormal, shape) end
-
----Validates if a shape can be built on another joint.  
----@param uuid Uuid # The uuid of the shape to validate.
----@param localPosition Vec3 # The position local to the body.
----@param localNormal Vec3 # The normal of the surface to validate placement.
----@param joint Joint # The joint to build on.
----@return boolean # True if position is valid.
-function sm.construction.validateLocalPosition(uuid, localPosition, localNormal, joint) end
-
----Validates if a shape can be built on terrain.  
----@param uuid Uuid # The uuid of the shape to validate.
----@param localPosition Vec3 # The position local to the body.
----@param localNormal Vec3 # The normal of the surface to validate placement.
----@return boolean # True if position is valid.
-function sm.construction.validateLocalPosition(uuid, localPosition, localNormal) end
-
+function sm.construction.validateLocalPosition(uuid, localPosition, localNormal, object) end
 
 ---ScriptableObject creation  
 sm.scriptableObject = {}
@@ -7985,7 +8526,7 @@ function sm.cullSphereGroup.newCullSphereGroup() end
 sm.jsonGui = {}
 
 ---Creates a new gui.  
----@param settings? table # Table with bool settings for: isHud, isInteractive, needsCursor, hidesHotbar, isOverlapped, backgroundAlpha, handleKeySetup, name, layer
+---@param settings? GuiSettings # Table with bool settings for: isHud, isInteractive, needsCursor, hidesHotbar, isOverlapped, backgroundAlpha, handleKeySetup, name, layer
 ---@return JsonGui # gui		The gui
 function sm.jsonGui.createGui(settings) end
 
@@ -8000,68 +8541,720 @@ function sm.jsonGui.getViewSize() end
 ---For more information on how to setup effects please take a look in the Effects/Database/EffectSets folder in the game data.  
 sm.effect = {}
 
----Rotation axis removal types for hosted effects. Not combinable  
----xaxis  
----yaxis  
----zaxis  
----all  
----none  
----@type table
-sm.effect.axis = {}
+---Rotation axis removal types for hosted effects. Not combinable
+sm.effect.axis = {
+    none = 0,
+    xaxis = 1,
+    yaxis = 2,
+    zaxis = 3,
+    all = 4,
+}
+
+---All of the vanilla effect names that can be used with sm.effect functions. If the effect doesnt play, then the effect isnt present in the current gamemode. (Can be fixed by adding it to your effect set)
+---@alias EffectName
+---| "DestructableTape - TapeRoll"
+---| "DestructableTape - TapeRollBig"
+---| "DestructableTape - cocoon01"
+---| "DestructableTape - cocoon02"
+---| "Explosion - Debris"
+---| "PropaneTank - SingleActivate"
+---| "Resourcecollector - PutIn"
+---| "MountedPotatoRifle - Shoot"
+---| "Resourcecollector - TakeOut"
+---| "Beacon - Idle"
+---| "PropaneTank - ActivateSmall"
+---| "PropaneTank - ExplosionBig"
+---| "BubbleBath"
+---| "PropaneTank - ExplosionSmall"
+---| "NoteTerminal - Interact"
+---| "PropaneTank - ActivateBig"
+---| "PistonExhaust"
+---| "PowerSocket - Activate"
+---| "DestructableTape - Tape"
+---| "NoteTerminal - Active"
+---| "DestructableTape - TapeCorner"
+---| "Mountedwatercanon - Shoot"
+---| "DestructableTape - TapeCornerBig"
+---| "DestructableTape - DoorwayDestruction"
+---| "SledgehammerHit - Default"
+---| "Collision - Impact"
+---| "Collision - SlidingA"
+---| "Collision - SlidingB"
+---| "Projectile - Destroy"
+---| "Collision - RollingA"
+---| "Collision - RollingB"
+---| "Projectile - Hit"
+---| "Character - Hit"
+---| "Weapon - Impact"
+---| "Sledgehammer - NoProgress"
+---| "Sledgehammer - Hit"
+---| "Sledgehammer - Destroy"
+---| "Projectile - HitWater"
+---| "Eat - Drink"
+---| "Eat - DrinkFinish"
+---| "Multiknife - Use"
+---| "Eat - DrinkSound"
+---| "Eat - EatFinish"
+---| "Eat - Munch"
+---| "Eat - MunchFP"
+---| "PaintTool - Close"
+---| "Itemtool - FPFertilizerUse"
+---| "PaintTool - Open"
+---| "Itemtool - FertilizerUse"
+---| "Mechanic - ReciveBaguette"
+---| "Multiknife - Complete"
+---| "Multiknife - Hit"
+---| "PaintTool - Paint"
+---| "PaintTool - NoAmmo"
+---| "Mechanic - EatBaguette"
+---| "BearingDrill - Use"
+---| "Eat - MunchSound"
+---| "Critter - Fly"
+---| "Critter - NightMoth"
+---| "Critter - Rottingsmoke"
+---| "AtmosphericDust"
+---| "ChallengeAmbience"
+---| "Forest - LeafsBlowing"
+---| "Forest - MassiveFog"
+---| "Forest - SmallFog"
+---| "Hideout - Smoke"
+---| "Lakes - Floatingdebri"
+---| "Lakes - bubbles"
+---| "OutdoorAmbience"
+---| "Water - Waterleak02"
+---| "Water - Waterleak01"
+---| "ChemicalLakes - SurfaceBubblesSmall"
+---| "ChemicalLakes - SurfaceBubblesBig"
+---| "Critter - Butterfly01"
+---| "Forest - Fireflies"
+---| "Critter - Butterfly02"
+---| "Forest - Grassblowing"
+---| "flies01"
+---| "flies02"
+---| "butterfly"
+---| "Tree - CrownCollapse"
+---| "Tree - CrownCollapse Pine"
+---| "Tree - CrownCollapse Spurce"
+---| "Tree - BreakTrunk Pine"
+---| "Tree - BreakTrunk PineHalf"
+---| "Tree - BreakTrunk PineQuarter"
+---| "Tree - BreakTrunk Spruce"
+---| "Tree - BreakTrunk SpruceHalf"
+---| "Tree - BreakTrunk Birch"
+---| "Stone - BreakChunk small"
+---| "Stone - BreakChunk"
+---| "Stone - CrackRock"
+---| "FreshLight"
+---| "HeadLight"
+---| "PackingtableLight"
+---| "PosterLight"
+---| "ShackLight"
+---| "AreaLight"
+---| "ConstructionLight"
+---| "EncryptorLight"
+---| "EnvironmentAmbientLight_Large"
+---| "EnvironmentSpotLight_Static_Large"
+---| "EnvironmentAmbientLight_Medium"
+---| "EnvironmentAmbientLight_Small"
+---| "EnvironmentPointLight_Static_Medium"
+---| "EnvironmentSpotLight_Dynamic_Medium"
+---| "EnvironmentSpotLight_Dynamic_Small"
+---| "FactoryLight"
+---| "EnvironmentSpotLight_Static_Medium"
+---| "EnvironmentSpotLight_Static_Small"
+---| "FloodLight"
+---| "FluorescentLight"
+---| "Fire -medium01"
+---| "Fire -medium01_putout"
+---| "Fire- Smoke Medium01"
+---| "FireColorTest"
+---| "Smoke - GroundSmokeMassive"
+---| "Fire - large01"
+---| "Smoke - ash"
+---| "Smoke - blowing01"
+---| "Smoke - blowing02"
+---| "Smoke - blowing03"
+---| "Smoke - embers"
+---| "Fire - gradual"
+---| "Smoke - pillar01"
+---| "Smoke - pillar02"
+---| "Fire - large01_putout"
+---| "Steam - quench"
+---| "Fire - lowburn"
+---| "Smoke - pillar03"
+---| "Fire - Shipwreck"
+---| "Fire - small01"
+---| "Fire - vertical"
+---| "Water - HitWaterMassive"
+---| "Water - HitWaterBig"
+---| "Water - HitWaterSmall"
+---| "Water - HitWaterTiny"
+---| "Water - splash02"
+---| "Water - BucketGetWater"
+---| "Water - WaterProjectileTrail"
+---| "Water - splash01"
+---| "GasEngine - Level 3"
+---| "GasEngine - Level 4"
+---| "GasEngine - Level 1"
+---| "GasEngine - Level 5"
+---| "GasEngine - Scrap"
+---| "GasEngine - Level 2"
+---| "Thruster - Level 1"
+---| "Thruster - Level 4"
+---| "Thruster - Level 3"
+---| "Thruster - Level 5"
+---| "Thruster - Ground effect"
+---| "Thruster - Level 2"
+---| "ElectricEngine - Level 1"
+---| "ElectricEngine - Level 2"
+---| "ElectricEngine - Level 3"
+---| "ElectricEngine - Level 5"
+---| "ElectricEngine - Level 4"
+---| "Suspension - Level 3"
+---| "Suspension - Level 4"
+---| "Suspension - Level 5"
+---| "Suspension"
+---| "Suspension - Level 1"
+---| "Suspension - Level 2"
+---| "Sensor on - Level 3"
+---| "Sensor on - Level 4"
+---| "Sensor on - Level 5"
+---| "Sensor off"
+---| "Sensor on"
+---| "Sensor off - Level 1"
+---| "Sensor off - Level 2"
+---| "Sensor off - Level 3"
+---| "Sensor off - Level 4"
+---| "Sensor off - Level 5"
+---| "Sensor on - Level 1"
+---| "Sensor on - Level 2"
+---| "Mechanic - Swimforeward"
+---| "Mechanic - HurtDrown"
+---| "Mechanic crouch"
+---| "Mechanic - Hurthunger"
+---| "Mechanic - Hurtshock"
+---| "Mechanic - KoLoop"
+---| "Mechanic - HurtFire"
+---| "Mechanic land"
+---| "Mechanic - Hurtpoision"
+---| "Mechanic walk"
+---| "Mechanic - JetpackBurstThruster"
+---| "Mechanic - JetpackThruster"
+---| "Mechanic underwater"
+---| "Mechanic jump"
+---| "Mechanic getUp"
+---| "Mechanic - MeleeHit"
+---| "Mechanic - StatusHungry"
+---| "Mechanic crouch walk"
+---| "Mechanic - StatusThirsty"
+---| "Mechanic - StatusUnderwater"
+---| "Mechanic - Ko"
+---| "Mechanic - Swimbackward"
+---| "Mechanic - Hurt"
+---| "Controller - Level 5"
+---| "Controller - Default"
+---| "Controller - Level 1"
+---| "Controller - Level 2"
+---| "Controller - Level 3"
+---| "Controller - Level 4"
+---| "TomatoProjectile - Hit"
+---| "GlowstickProjectile - Bounce"
+---| "WaterProjectile - Hit"
+---| "GlowstickProjectile - Hit"
+---| "OrangeProjectile - Hit"
+---| "BananaProjectile - Hit"
+---| "PesticideProjectile - Attached"
+---| "BlueberryProjectile - Hit"
+---| "Pesticide - Cloud"
+---| "BroccoliProjectile - Hit"
+---| "CarrotProjectile - Hit"
+---| "TapeProjectile - Hit"
+---| "PineappleProjectile - Hit"
+---| "TapeProjectile - Attached"
+---| "ChemicalProjectile - Hit"
+---| "RedbeetProjectile - Hit"
+---| "FertilizerProjectile - Attached"
+---| "PotatoProjectile - Hit"
+---| "FertilizerProjectile - Hit"
+---| "ChemicalProjectile - Attached"
+---| "GlowstickProjectile - Attached"
+---| "PesticideProjectile - Hit"
+---| "Piston - Level 1"
+---| "Piston - Level 2"
+---| "Piston - Level 3"
+---| "Piston - Level 4"
+---| "Piston - Level 5"
+---| "Piston - Default"
+---| "Shipwreck - sparks03"
+---| "ShipFire - large01"
+---| "ShipFire - lowburn"
+---| "ShipFire - medium01"
+---| "Shipwreck - AmbianceSound"
+---| "Shipwreck - sparks02"
+---| "Shipwreck - sparks01"
+---| "Fence - PlankCornerDestruction"
+---| "Fence - PlankLongDestruction"
+---| "Fence - FarmPlank04Destruction"
+---| "Fence - FarmPlank01Destruction"
+---| "Fence - FarmPlank03Destruction"
+---| "Fence - FarmPlank02Destruction"
+---| "Sign - HideoutSign07 Destruction"
+---| "Fence - HideoutFence02 Destruction"
+---| "Sign - HideoutSign04 Destruction"
+---| "Fence - HideoutFence04 Destruction"
+---| "Sign - HideoutSign03 Destruction"
+---| "Fence - HideoutFence05 Destruction"
+---| "Fence - PlankShortDestruction"
+---| "Fence - HideoutFence06 Destruction"
+---| "Fence - HideoutFence01 Destruction"
+---| "EpicLootProjectile - Hit"
+---| "LootCrate - Destroy"
+---| "Loot - AudioLogfiles"
+---| "Loot - GlowItem"
+---| "Loot - Pickup"
+---| "LootProjectile - Hit"
+---| "Loot - Logentry"
+---| "Loot - Logentryactivate"
+---| "Loot - LogfilesPickup"
+---| "Loot - OutfitCommonGlowItem"
+---| "Loot - OutfitCommonPickup"
+---| "LootProjectile - Attached"
+---| "Loot - OutfitEpicGlowItem"
+---| "LootCrate - EpicDestroy"
+---| "Loot - OutfitEpicPickup"
+---| "LootCrate - DestroyGlow"
+---| "Loot - OutfitRareGlowItem"
+---| "Loot - Logbook"
+---| "Loot - OutfitRarePickup"
+---| "EpicLootProjectile - Attached"
+---| "EpicLoot - GlowItem"
+---| "Loot - PictureLogfiles"
+---| "Plants - Picked"
+---| "Plants - Destroyed"
+---| "Plants - Planted"
+---| "Plants - Done"
+---| "Plants - SoilbagUse"
+---| "Plants - Fertilizer"
+---| "Packingstation - Load"
+---| "Packingstation - Orange"
+---| "Packingstation - Activate"
+---| "Packingstation - Pineapplecrate"
+---| "Packingstation - ActivateSound"
+---| "Packingstation - Redbeetcrate"
+---| "Packingstation - Bananacrate"
+---| "Packingstation - Tomatocrate"
+---| "Packingstation - Blueberrycrate"
+---| "Packingstation - Shoot"
+---| "Packingstation - Brocolicrate"
+---| "Packingstation - Roller"
+---| "Packingstation - Carrotcrate"
+---| "Craftbot - Unpack"
+---| "Refinery - WorkMetal"
+---| "Craftbot - Work"
+---| "Craftbot - Work01"
+---| "Refinery - WorkWood"
+---| "Craftbot - Work02"
+---| "Workbench - Idle"
+---| "Craftbot - Work02Torch"
+---| "Dispenserbot - Work01"
+---| "DispenserbotSpawner - Spawn"
+---| "Dressbot - Finish"
+---| "Dressbot - HeadWork01"
+---| "Dressbot - Idle"
+---| "Dressbot - Opendoors"
+---| "Workbench - Work01"
+---| "Dressbot - Start"
+---| "Workbench - Finish"
+---| "Dressbot - Work01"
+---| "Refinery - WorkStone"
+---| "Refinery - WoodBlockLog"
+---| "Cookbot - Idle"
+---| "Refinery - WoodBlock"
+---| "Refinary - Area"
+---| "Refinery - Unpack"
+---| "Refinery - Finish"
+---| "Cookbot - Finish"
+---| "Cookbot - Start"
+---| "Refinery - MetalBlock"
+---| "Cookbot - IdleSpecial01"
+---| "Cookbot - Unpack"
+---| "Refinery - ScrapWoodBlockLog"
+---| "Cookbot - Work"
+---| "Refinery - ScrapWoodBlock"
+---| "Cookbot - Work01"
+---| "Refinery - ScrapStoneBlockLog"
+---| "Cookbot - Work02"
+---| "Refinery - ScrapStoneBlock"
+---| "Cookbot - Work03"
+---| "Refinery - ScrapMetalBlockLog"
+---| "Cookbot - Work03Salt"
+---| "Refinery - ScrapMetalBlock"
+---| "Craftbot - Finish"
+---| "Refinery - MetalBlockLog"
+---| "Refinery - Start"
+---| "Craftbot - Idle"
+---| "Refinery - SuckStart"
+---| "Craftbot - IdleSpecial01"
+---| "Cookbot - IdleSpecial02"
+---| "Craftbot - IdleSpecial02"
+---| "Dressbot - Work02"
+---| "Craftbot - Start"
+---| "Treeparts - pine02_p010"
+---| "Treeparts - pine02_p07"
+---| "Treeparts - pine02_p08"
+---| "Treeparts - pine02_p09"
+---| "Treeparts - pine03_p010"
+---| "Treeparts - pine03_p08"
+---| "Treeparts - pine03_p09"
+---| "Treeparts - spruce01_p05"
+---| "Treeparts - spruce02_p05"
+---| "Treeparts - spruce03_p05"
+---| "Treeparts - birch01_p05"
+---| "Treeparts - birch02_p04"
+---| "Treeparts - birch02_p05"
+---| "Treeparts - birch02_p06"
+---| "Treeparts - birch03_p02"
+---| "Treeparts - birch03_p03"
+---| "Treeparts - birch03_p04"
+---| "Treeparts - birch03_p05"
+---| "Treeparts - birch03_p06"
+---| "Treeparts - leafy01_p02"
+---| "Treeparts - leafy01_p04"
+---| "Treeparts - leafy02_p02"
+---| "Treeparts - leafy02_p03"
+---| "Treeparts - leafy02_p04"
+---| "Treeparts - leafy02_p05"
+---| "Treeparts - leafy02_p06"
+---| "Treeparts - leafy02_p07"
+---| "Treeparts - leafy03_p02"
+---| "Treeparts - leafy03_p03"
+---| "Treeparts - leafy03_p05"
+---| "Treeparts - leafy03_p06"
+---| "Treeparts - leafy03_p07"
+---| "Treeparts - leafy03_p08"
+---| "Treeparts - leafy03_p09"
+---| "Treeparts - pine01_p010"
+---| "Treeparts - pine01_p011"
+---| "Treeparts - pine01_p06"
+---| "Treeparts - pine01_p07"
+---| "Treeparts - pine01_p08"
+---| "Treeparts - pine01_p09"
+---| "Treeparts_burntforest - spruce04"
+---| "Treeparts_burntforest - spruce05"
+---| "Treeparts_burntforest - spruce03"
+---| "Treeparts_burntforest - spiketree01"
+---| "Treeparts_burntforest - birch01"
+---| "Treeparts_burntforest - spiketree02"
+---| "Treeparts_burntforest - spruce01"
+---| "Treeparts_burntforest - spruce02"
+---| "Glowgorp - Idlesound"
+---| "Glowgorp - Jump"
+---| "Glowgorp - Pickup"
+---| "Glowgorp - Hit"
+---| "Glowgorp - Destruct"
+---| "Glowgorp - Cardboardmunch"
+---| "Glowgorp - Walk"
+---| "Saw - SawBlade"
+---| "Drill - Debris"
+---| "Saw - Debris"
+---| "Drill - StoneDrill"
+---| "Vacuumpipe - Suction"
+---| "Vacuumpipe - Blowout"
+---| "Leafpile - Destruction"
+---| "Haypile - Destruction"
+---| "Part - Upgrade"
+---| "Part - Electricity"
+---| "Part - Removed"
+---| "SpudgunSpinner - SpinnerMuzzel"
+---| "SpudgunSpinner - FPSpinnerMuzzel"
+---| "SpudgunSpinner - Windup"
+---| "SpudgunBasic - DefaultImpact01"
+---| "SpudgunBasic - BasicMuzzel"
+---| "SpudgunFrier - FrierMuzzel"
+---| "SpudgunFrier - FPFrierMuzzel"
+---| "SpudgunBasic - FPBasicMuzzel"
+---| "Hideout - PumpSuction"
+---| "Encryptor - Deactivation"
+---| "Barrier - ShieldImpact"
+---| "Barrier - Activation"
+---| "Encryptor - Activation"
+---| "Barrier - SledgeHammerHit"
+---| "Barrier - Deactivation"
+---| "Watercannon - Impact"
+---| "Watercannon - Muzzeflash"
+---| "Gui - PlayButtonShine"
+---| "Gui - DressbotCollect"
+---| "Gui - DressbotDone"
+---| "Gui - DressbotUnboxCommon"
+---| "Gui - Test"
+---| "Gui - UnboxItem"
+---| "Gui - DressbotUnboxEpic"
+---| "Gui - Upgrade"
+---| "Gui - UpgradeIcon"
+---| "Gui - CraftingDone"
+---| "Gui - CraftingDoneCollectButton"
+---| "Gui - DressbotUnboxGarmentButton"
+---| "Gui - Setwaypoint Loop"
+---| "Gui - DressbotUnboxGarmentButtonActivate"
+---| "Gui - Setwaypoint Flash"
+---| "Gui - DressbotUnboxRare"
+---| "Gui - CustomizationRewardItem"
+---| "Gui - LogbookIcon Flash"
+---| "Gui - DressbotBackground"
+---| "Gui - LogbookNotification"
+---| "Gui - DressbotBox"
+---| "Gui - LogbookPhotograph Flash"
+---| "Gui - CuztomizeMainMenuShine"
+---| "Unbox - glowworm01"
+---| "Unbox - Tapebot01"
+---| "Unbox - woc01"
+---| "Unbox - Totebot01"
+---| "Unbox - Haybot01"
+---| "Unbox - Farmbot01"
+---| "Paintcharacter - Large"
+---| "Paintcharacter - Small"
+---| "Paintcharacter - Erase"
+---| "Paintcharacter - Medium"
+---| "Arrow"
+---| "Robotparts - FarmbotHead"
+---| "Robotparts - HaybotHead"
+---| "Robotparts - FarmbotCannonarm"
+---| "Robotparts - HaybotBody"
+---| "Robotparts - FarmbotDrill"
+---| "Robotparts - HaybotPelvis"
+---| "Robotparts - FarmbotScyth"
+---| "Robotparts - HaybotFork"
+---| "Robotparts - TapebotLeftarm"
+---| "Robotparts - RedtapebotHead"
+---| "Robotparts - TapebotTorso"
+---| "Robotparts - TotebotBody"
+---| "Robotparts - TapebotHead"
+---| "Robotparts - TotebotLeg"
+---| "Builderguide - Active"
+---| "Builderguide - Deactivate"
+---| "Builderguide - Background"
+---| "Builderguide - Stagecomplete"
+---| "Builderguide - Buildcomplete"
+---| "Horn - Honk"
+---| "TapeBot - AlertedServo"
+---| "TapeBot - ChasingFotStep"
+---| "TapeBot - ChasingGunRattle"
+---| "TapeBot - ChasingScissor"
+---| "TapeBot - ChasingServo"
+---| "TapeBot - FotStep"
+---| "TapeBot - Hit"
+---| "TapeBot - Scissor"
+---| "TapeBot - Servo"
+---| "RedTapeBot - ExplosivesHit"
+---| "TapeBot - Alerted"
+---| "TapeBot - AlertedFotStep"
+---| "TapeBot - Shoot"
+---| "TapeBot - AlertedGunRattle"
+---| "TapeBot - Destroyed"
+---| "TapeBot - AlertedScissor"
+---| "TapeBot - HeadShot"
+---| "Woc - Run"
+---| "Woc - Walk"
+---| "Woc - Eating"
+---| "Woc - Destruct"
+---| "Woc - Moo"
+---| "Woc - Panic"
+---| "SurvivalMusic"
+---| "WarehouseAmbiance"
+---| "UnderwaterAmbiance"
+---| "ElevatorAmbiance"
+---| "Elevator - MoveOutside"
+---| "ElevatorMusic"
+---| "Elevator - Opendoor"
+---| "ElevatorWall"
+---| "Elevator - Closedoor"
+---| "Elevator Button"
+---| "Elevator - Keycarduse"
+---| "Corn - Destruct"
+---| "Harvestable - Marker"
+---| "beehive - beeswarm"
+---| "beehive - destruct"
+---| "Harvestable - Burnttree"
+---| "Oilgeyser - OilgeyserPickedLoop"
+---| "Tree - BirchHit"
+---| "SlimyClam - Bubbles"
+---| "Cotton - Picked"
+---| "SlimyClam - BubblesAmbience"
+---| "SlimyClam - Destruct"
+---| "Pigmentflower - Picked"
+---| "Stone - Stress"
+---| "Oilgeyser - Picked"
+---| "Cotton - Fluff"
+---| "Tree - BurnedHit"
+---| "Tree - Ambient Birds"
+---| "Tree - LeafRattle"
+---| "Tree - Falling"
+---| "Tree - DefaultHit"
+---| "Oilgeyser - OilgeyserLoop"
+---| "Tree - Creak"
+---| "Oilgeyser - OilgeyserAmbience"
+---| "Tree - LogAppear"
+---| "ToteBot - Attack"
+---| "ToteBot - Sparks"
+---| "ToteBot - FotStep"
+---| "ToteBot - SparkAttack"
+---| "ToteBot - DestroyedParts"
+---| "ToteBot - ChasePlayer"
+---| "ToteBot - Alerted"
+---| "ToteBot - Hit"
+---| "Haybot - ForkStep"
+---| "Haybot - Alerted"
+---| "Haybot - FotStep"
+---| "Haybot - Attack01"
+---| "Haybot - Hit"
+---| "Haybot - IdleSpecial01"
+---| "Haybot - Attack02"
+---| "Haybot - IdleSpecial02"
+---| "Haybot - Destroyed"
+---| "Haybot - Attack03"
+---| "Haybot - Metal"
+---| "Haybot - Servo"
+---| "Haybot - CaseplayerVoice"
+---| "Haybot - SprintAttack"
+---| "Farmbot - RoamingIdle"
+---| "Farmbot - RunBody"
+---| "Farmbot - DestructionStartup01"
+---| "Farmbot - DestructionStartup02"
+---| "Farmbot - Attack04"
+---| "Farmbot - Attack02"
+---| "Farmbot - Attack05"
+---| "Farmbot - DestructionStartup04"
+---| "Farmbot - Shoot"
+---| "Farmbot - FotStepHeavy"
+---| "Farmbot - Voice"
+---| "Farmbot - FotStepLight"
+---| "Farmbot - SprintBody"
+---| "Farmbot - FotStepMedium"
+---| "Farmbot - Hit"
+---| "Farmbot - Attack03"
+---| "Farmbot - Destroyed"
+---| "Farmbot - MoveHead"
+---| "Farmbot - DestructionStartup03"
+---| "Farmbot - MoveLegs"
+---| "Farmbot - Angry"
+---| "Farmbot - RattleSyth"
+---| "Farmbot - Attack01"
+---| "ShapeRenderable"
+---| "CustomizationRenderable"
+---| "Glowstick - Throw"
+---| "Glowstick - Hold"
+---| "Bucket - Fill"
+---| "Bucket - Throw"
+---| "FarmerBall - Struggle"
+---| "Farmerhideout - Accept"
+---| "FarmerBall - Help"
+---| "Farmerhideout - Open"
+---| "FarmerBall - Rolling"
+---| "Farmerhideout - Close"
+---| "Guiquest - Questupdate"
+---| "Questmarker - Pointmarker"
+---| "Questmarker - Pointmarker_small"
+---| "Guiquest - Newquest"
+---| "Questmarker - Zonearea"
+---| "Questmarker - Pointmarker_large"
+---| "Guiquest - Pausestarterquest"
+---| "Cinematic - Survivalstart02"
+---| "Cinematic - Survivalstart01"
+---| "Supervisor - Generic"
+---| "CelebrationBot - Confetti"
+---| "Celebrationbot - Activate"
+---| "ChallengeCrowd - Jump"
+---| "Characterspawner - Activate"
+---| "Chest - Arrow"
+---| "Goal - Activate"
+---| "Goal - Oncreate"
+---| "Boop - Floor"
+---| "MapInspector - On"
+---| "ObserverBot - Move"
+---| "ObserverBot - Write"
+---| "Balltrigger - Activate"
+---| "PlayerStart - Glow"
+---| "BuildMode - Floor"
+---| "SmallGoal - Activate"
+---| "Ballspawner - Activate"
+---| "Buildarea - Oncreate"
+---| "Soundcube - Activate"
+---| "Supervisor - Cheer"
+---| "Ball"
+---| "Supervisor - Fail"
+---| "CelebrationBot - Audio"
+---| "Builderbot - Thruster"
+---| "Cinematic - Challengemodecomplete"
+---| "Cinematic - Challengemodecomplete_audio"
+---| "Challengecamera - Puzzlelevel_04"
+---| "Challengecamera - Puzzlelevel_05"
+---| "Challengecamera - Puzzlelevel_06"
+---| "Challengecamera - Puzzlelevel_07"
+---| "Challengecamera - Puzzlelevel_08"
+---| "Challengecamera - Puzzlelevel_09"
+---| "Challengecamera - Puzzlelevel_10"
+---| "Challengecamera - TutorialLevel_10"
+---| "Challengecamera - Stuntlevel_01"
+---| "Challengecamera - Stuntlevel_02"
+---| "Challengecamera - TutorialLevel_09"
+---| "Challengecamera - Stuntlevel_03"
+---| "Challengecamera - Stuntlevel_04"
+---| "Challengecamera - Stuntlevel_05"
+---| "Challengecamera - TutorialLevel_08"
+---| "Challengecamera - TutorialLevel_07"
+---| "Challengecamera - Stuntlevel_06"
+---| "Challengecamera - Stuntlevel_07"
+---| "Challengecamera - Stuntlevel_08"
+---| "Challengecamera - Stuntlevel_09"
+---| "Challengecamera - Stuntlevel_10"
+---| "Challengecamera - TutorialLevel_01"
+---| "Challengecamera - TutorialLevel_04"
+---| "Challengecamera - ThrusterLevel_01"
+---| "Challengecamera - ThrusterLevel_02"
+---| "Challengecamera - ThrusterLevel_03"
+---| "Challengecamera - ThrusterLevel_04"
+---| "Challengecamera - ThrusterLevel_05"
+---| "Challengecamera - ThrusterLevel_06"
+---| "Challengecamera - Potatolevel_02"
+---| "Challengecamera - Potatolevel_03"
+---| "Challengecamera - ThrusterLevel_07"
+---| "Challengecamera - ThrusterLevel_08"
+---| "Challengecamera - ThrusterLevel_09"
+---| "Challengecamera - ThrusterLevel_10"
+---| "Challengecamera - Potatolevel_04"
+---| "Challengecamera - TutorialLevel_02"
+---| "Challengecamera - TutorialLevel_03"
+---| "Challengecamera - Potatolevel_05"
+---| "Challengecamera - TutorialLevel_05"
+---| "Challengecamera - TutorialLevel_06"
+---| "Challengecamera - Potatolevel_06"
+---| "Challengecamera - Potatolevel_07"
+---| "Challengecamera - Potatolevel_08"
+---| "Challengecamera - Potatolevel_09"
+---| "Challengecamera - Potatolevel_01"
+---| "Challengecamera - Potatolevel_10"
+---| "Challengecamera - Puzzlelevel_01"
+---| "Challengecamera - Puzzlelevel_02"
+---| "Challengecamera - Puzzlelevel_03"
+---| "Gui - Challengemode Stuntmanbackgroundshine"
+---| "Gui - Challengemode Approvedbannershine"
+---| "Gui - Stuntmancollectpressed"
 
 ---*Client only*  
 ---Creates an effect.  
----@param name string # The name.
----@return Effect # The created effect.
-function sm.effect.createEffect(name) end
-
----*Client only*  
----Creates an effect.  
----If you provide a host interactable to the effect then it will fetch position, velocity and orientation data from the interactable instead of relying on this information being fed to it.  
+---If you provide a host object to the effect then it will fetch position, velocity and orientation data from the interactable instead of relying on this information being fed to it.  
 ---This results in far more accurate positioning of effects that are supposed to stay attached to an object.  
----@param name string # The name.
----@param interactable Interactable # The interactable the effect is attached to.
----@param boneName? string # Bone name to attach effect to. (Defaults to not attached to a bone) (Optional)
+---@param name string|EffectName The name.
+---@param object? Interactable|Shape|Character|Harvestable The object the effect is attached to.
+---@param boneName? string The bone name. (Defaults to not attached to a bone) (Optional)
 ---@param axis? integer # The axis of which the effect will ignore the hosts rotation around. (Defaults to [sm.effect.axis, sm.effect.axis.none]) (Optional)
----@return Effect # The created effect.
-function sm.effect.createEffect(name, interactable, boneName, axis) end
-
----*Client only*  
----Creates an effect.  
----If you provide a host shape to the effect then it will fetch position, velocity and orientation data from the shape instead of relying on this information being fed to it.  
----This results in far more accurate positioning of effects that are supposed to stay attached to an object.  
----@param name string # The name.
----@param shape Shape # The shape the effect is attached to.
----@param boneName? string # Bone name to attach effect to. (Defaults to not attached to a bone) (Optional)
----@param axis? integer # The axis of which the effect will ignore the hosts rotation around. (Defaults to [sm.effect.axis, sm.effect.axis.none]) (Optional)
----@return Effect # The created effect.
-function sm.effect.createEffect(name, shape, boneName, axis) end
-
----*Client only*  
----Creates an effect.  
----If you provide a host harvestable to the effect then it will fetch position, velocity and orientation data from the harvestable instead of relying on this information being fed to it.  
----This results in far more accurate positioning of effects that are supposed to stay attached to an object.  
----@param name string # The name.
----@param harvestable Harvestable # The harvestable the effect is attached to.
----@param axis? integer # The axis of which the effect will ignore the hosts rotation around. (Defaults to [sm.effect.axis, sm.effect.axis.none]) (Optional)
----@return Effect # The created effect.
-function sm.effect.createEffect(name, harvestable, axis) end
-
----*Client only*  
----Creates an effect.  
----If you provide a host character to the effect then it will fetch position, velocity and orientation data from the character instead of relying on this information being fed to it.  
----This results in far more accurate positioning of effects that are supposed to stay attached to an object.  
----@param name string # The name.
----@param character Character # The character the effect is attached to.
----@param boneName? string # Bone name to attach effect to. (Defaults to not attached to a bone) (Optional)
----@param axis? integer # The axis of which the effect will ignore the hosts rotation around. (Defaults to [sm.effect.axis, sm.effect.axis.none]) (Optional)
----@return Effect # The created effect.
-function sm.effect.createEffect(name, character, boneName, axis) end
+---@return Effect
+function sm.effect.createEffect(name, object, boneName, axis) end
 
 ---*Client only*  
 ---Creates an 2d effect.  
----@param name string # The name of the effect.
----@return Effect # The created effect.
+---@param name string|EffectName The name of the effect.
+---@return Effect
 function sm.effect.createEffect2D(name) end
 
 ---*Client only*  
@@ -8078,15 +9271,15 @@ function sm.effect.createEffectSky(name) end
 
 ---*Client only*  
 ---Estimates the radius of influence for an effect and instance parameters  
----@param name string # The name of the effect.
----@param parameters table # Table of params
----@return number # The Range
+---@param name string|EffectName The name of the effect.
+---@param parameters table Table of params
+---@return number
 function sm.effect.estimateSize(name, parameters) end
 
 ---Plays an effect. If this function is called on the server it will play the effect on all clients.  
 ---**Note:**
 ---*If you start a looping effect using this function you will not be able to stop it.<br>Please use [sm.effect.createEffect, createEffect] for looping effects.*
----@param name string # The name.
+---@param name string|EffectName # The name.
 ---@param position? Vec3 # The position. (Defaults to [0,0,0])
 ---@param velocity? Vec3 # The velocity. (Defaults to no velocity)
 ---@param rotation? Quat # The rotation. (Defaults to no rotation)
@@ -8097,11 +9290,11 @@ function sm.effect.estimateSize(name, parameters) end
 function sm.effect.playEffect(name, position, velocity, rotation, scale, parameters, startTime, world) end
 
 ---*Client only*  
----Plays an effect. It will fetch position, velocity and orientation data from the host interactable.  
+---Plays an effect. It will fetch position, velocity and orientation data from the host object.  
 ---**Note:**
 ---*If you start a looping effect using this function you will not be able to stop it.<br>Please use [sm.effect.createEffect, createEffect] for looping effects*
 ---@param name string # The effect name.
----@param interactable Interactable # The interactable the effect is attached to.
+---@param object? Interactable|Shape|Character|Harvestable # The object the effect is attached to.
 ---@param boneName? string # The bone name. (Optional)
 ---@param parameters? table # The table containing the parameters for the effect. (Optional)
 ---@param axis? integer # The axis of which the effect will ignore the hosts rotation around. (Defaults to [sm.effect.axis, sm.effect.axis.none]) (Optional)
@@ -8109,53 +9302,7 @@ function sm.effect.playEffect(name, position, velocity, rotation, scale, paramet
 ---@param offsetPosition? Vec3 # The host object relative offset position. (Defaults to sm.vec3.zero())
 ---@param offsetRotation? Quat # The host object relative offset rotation. (Defaults to sm.quat.identity())
 ---@param scale? Vec3 # The scale, only applied to renderables. (Defaults to sm.vec3.one())
-function sm.effect.playHostedEffect(name, interactable, boneName, parameters, axis, startTime, offsetPosition, offsetRotation, scale) end
-
----*Client only*  
----Plays an effect. It will fetch position, velocity and orientation data from the host shape.  
----**Note:**
----*If you start a looping effect using this function you will not be able to stop it.<br>Please use [sm.effect.createEffect, createEffect] for looping effects*
----@param name string # The effect name.
----@param shape Shape # The shape the effect is attached to.
----@param boneName? string # The bone name. (Optional)
----@param parameters? table # The table containing the parameters for the effect. (Optional)
----@param axis? integer # The axis of which the effect will ignore the hosts rotation around. (Defaults to [sm.effect.axis, sm.effect.axis.none]) (Optional)
----@param startTime? number # The initial time progression of the effect. Can be used to fast forward some effect parts. Can be used to delay effect part activation if negative.
----@param offsetPosition? Vec3 # The host object relative offset position. (Defaults to sm.vec3.zero())
----@param offsetRotation? Quat # The host object relative offset rotation. (Defaults to sm.quat.identity())
----@param scale? Vec3 # The scale, only applied to renderables. (Defaults to sm.vec3.one())
-function sm.effect.playHostedEffect(name, shape, boneName, parameters, axis, startTime, offsetPosition, offsetRotation, scale) end
-
----*Client only*  
----Plays an effect. It will fetch position, velocity and orientation data from the host harvestable.  
----**Note:**
----*If you start a looping effect using this function you will not be able to stop it.<br>Please use [sm.effect.createEffect, createEffect] for looping effects*
----@param name string # The effect name.
----@param harvestable Harvestable # The harvestable the effect is attached to.
----@param boneName? string # The bone name. (Optional)
----@param parameters? table # The table containing the parameters for the effect. (Optional)
----@param axis? integer # The axis of which the effect will ignore the hosts rotation around. (Defaults to [sm.effect.axis, sm.effect.axis.none]) (Optional)
----@param startTime? number # The initial time progression of the effect. Can be used to fast forward some effect parts. Can be used to delay effect part activation if negative.
----@param offsetPosition? Vec3 # The host object relative offset position. (Defaults to sm.vec3.zero())
----@param offsetRotation? Quat # The host object relative offset rotation. (Defaults to sm.quat.identity())
----@param scale? Vec3 # The scale, only applied to renderables. (Defaults to sm.vec3.one())
-function sm.effect.playHostedEffect(name, harvestable, boneName, parameters, axis, startTime, offsetPosition, offsetRotation, scale) end
-
----*Client only*  
----Plays an effect. It will fetch position, velocity and orientation data from the host character.  
----**Note:**
----*If you start a looping effect using this function you will not be able to stop it.<br>Please use [sm.effect.createEffect, createEffect] for looping effects*
----@param name string # The effect name.
----@param character Character # The character the effect is attached to.
----@param boneName? string # The bone name. (Optional)
----@param parameters? table # The table containing the parameters for the effect. (Optional)
----@param axis? integer # The axis of which the effect will ignore the hosts rotation around. (Defaults to [sm.effect.axis, sm.effect.axis.none]) (Optional)
----@param startTime? number # The initial time progression of the effect. Can be used to fast forward some effect parts. Can be used to delay effect part activation if negative.
----@param offsetPosition? Vec3 # The host object relative offset position. (Defaults to sm.vec3.zero())
----@param offsetRotation? Quat # The host object relative offset rotation. (Defaults to sm.quat.identity())
----@param scale? Vec3 # The scale, only applied to renderables. (Defaults to sm.vec3.one())
-function sm.effect.playHostedEffect(name, character, boneName, parameters, axis, startTime, offsetPosition, offsetRotation, scale) end
-
+function sm.effect.playHostedEffect(name, object, boneName, parameters, axis, startTime, offsetPosition, offsetRotation, scale) end
 
 ---<strong>Debris</strong> are visual objects that have no impact on any other object.  
 sm.debris = {}
@@ -8192,25 +9339,25 @@ function sm.debris.createDebris(uuid, position, rotation, velocity, angularVeloc
 ---Pipe utility functions.  
 sm.pipeGraph = {}
 
----Pipe direction types  
----any  
----incoming  
----outgoing  
----@type table
-sm.pipeGraph.direction = {}
+---Pipe direction types      
+sm.pipeGraph.direction = {
+    any = 0,
+    incoming = 1,
+    outgoing = 2,
+}
 
 ---*Client only*  
 ---Returns a table of shapes on the path between the requesting shape and target container shape.  
 ---@param requester Shape # The requesting shape.
 ---@param target Shape # The target container shape.
 ---@param direction? integer # The direction to fetch in. Defaults to [sm.pipeGraph.direction, sm.pipeGraph.direction.any] (Optional)
----@return table # shapes			The shapes on the path between requesting shape to target. Requester not included in table.
+---@return Shape[] # shapes			The shapes on the path between requesting shape to target. Requester not included in table.
 function sm.pipeGraph.getContainerPath(requester, target, direction) end
 
 ---Returns a chest which allows for collection of specified items of the specified quantities.  
 ---@param requester Shape # The shape connected to the pipe graph who requests the information.
----@param items table # The uuids of items to check.
----@param quantities table # The number of items of each uuid. Needs to match the number of uuids.	
+---@param items Uuid[] # The uuids of items to check.
+---@param quantities number[] # The number of items of each uuid. Needs to match the number of uuids.	
 ---@return Shape # container		The shape of the container which was the first one that allows the collection.
 function sm.pipeGraph.getContainerShapeToCollectTo(requester, items, quantities) end
 
@@ -8223,7 +9370,7 @@ function sm.pipeGraph.getContainerShapeToSpendFrom(requester, item, quantities) 
 
 ---Returns a table of all connected input containers sorted by closest first. If the asking shape doesn't have input and output directions it returns all connected containers.  
 ---@param requester Shape # The shape connected to the pipe graph who's connected chests you want.
----@return table # containers		A table of connected container shapes sorted by closest first.
+---@return Shape[] containers # A table of connected container shapes sorted by closest first.
 function sm.pipeGraph.getInputContainers(requester) end
 
 ---*Server only*  
@@ -8234,12 +9381,12 @@ function sm.pipeGraph.getInteractableConditionTicks(requester) end
 
 ---Returns the containers of all chests connected to the given shape through the pipe connections. Will only return containers from shapes of the same type as the original.  
 ---@param originInteractable Interactable # The interactable where the search will start from.
----@return table # containers				The container of the originInteractable as well as those of the same type connected through pipes.
+---@return Container[] # containers				The container of the originInteractable as well as those of the same type connected through pipes.
 function sm.pipeGraph.getMatchingPipedContainers(originInteractable) end
 
 ---Returns a table of all connected output containers sorted by closest first. If the asking shape doesn't have input and output directions it returns all connected containers.  
 ---@param requester Shape # The shape connected to the pipe graph who's connected chests you want.
----@return table # containers		A table of connected container shapes sorted by closest first.
+---@return Shape[] # containers		A table of connected container shapes sorted by closest first.
 function sm.pipeGraph.getOutputContainers(requester) end
 
 ---*Client only*  
@@ -8266,17 +9413,34 @@ function sm.pipeGraph.removeAutomatedTasks(requester) end
 ---@param glow number # The glow multiplier of the pipes.
 function sm.pipeGraph.requestLightingOverride(requester, target, uvIndex, glow) end
 
+---@class Recipe
+---@field craftTime number
+---@field quantity number
+---@field itemId string
+---@field externalContainers? Container[] (containers targeted outside pipe graph for consumption, example: refinery)
+---@field selfOutputContainer? Container (if the shape has it's own collection container)
+---@field ingredientList? table
+---@field randomCraftList? table random weighted crafts (see prospector)
+---@field specialCrafting? table used to target specific container slots with custom information (see ore crusher).
+
 ---*Server only*  
 ---Sets an automated task to be performed by the pipe graph when the body is unloaded.  
 ---@param requester Shape # The shape which requests the automated process.
----@param recipe table # A table with information on the recipe. Uses the crafter recipe format. Can have "craftTime", "quantity", "itemId", "externalContainers"(containers targeted outside pipe graph for consumption, example: refinery), "selfOutputContainer"(if the shape has it's own collection container), "ingredientList", "randomCraftList" random weighted crafts (see prospector), "specialCrafting" used to target specific container slots with custom information (see ore crusher).
+---@param recipe Recipe # A table with information on the recipe. Uses the crafter recipe format. Can have "craftTime", "quantity", "itemId", "externalContainers"(containers targeted outside pipe graph for consumption, example: refinery), "selfOutputContainer"(if the shape has it's own collection container), "ingredientList", "randomCraftList" random weighted crafts (see prospector), "specialCrafting" used to target specific container slots with custom information (see ore crusher).
 ---@param parallel? boolean # Whether the craft tasks should be carried out in parallel or not, off by default. A parallel task will be carried out independently of other automated tasks on this shape. (Optional)
 function sm.pipeGraph.setAutomatedTask(requester, recipe, parallel) end
+
+---@class PipeGraphCondition
+---@field uuid Uuid
+---@field tickFrequency number
+---@field remainingTicks? number
+---@field consumptionCount number
+---@field onlyExternal boolean
 
 ---*Server only*  
 ---Sets special conditions for allowing an interactable to craft.  
 ---@param requester Shape # The requesting shape.
----@param condition table # Values for special conditions to allow crafting. Uses "uuid", "tickFrequency", "remainingTicks"(optional), "consumptionCount", "onlyExternal". See Prospector.lua for example.
+---@param condition PipeGraphCondition # Values for special conditions to allow crafting. Uses "uuid", "tickFrequency", "remainingTicks"(optional), "consumptionCount", "onlyExternal". See Prospector.lua for example.
 function sm.pipeGraph.setInteractableCondition(requester, condition) end
 
 ---*Server only*  
@@ -8284,7 +9448,6 @@ function sm.pipeGraph.setInteractableCondition(requester, condition) end
 ---@param requester Shape # The requesting shape.
 ---@param amount integer # The number of parallel crafts allowed to be done at once.
 function sm.pipeGraph.setParallelLimit(requester, amount) end
-
 
 ---The <strong>Debug Draw</strong> api can be used for drawing geometric primitives for debug purposes.  
 sm.debugDraw = {}
@@ -8471,7 +9634,6 @@ function sm.debugDraw.removeTransform(name) end
 
 sm.debugGui = {}
 
-
 ---<strong>Storage</strong> is used for saving and loading any Lua data into the world's database. This allows for data to be retrieved after closing and reloading the world.  
 ---Storage can only be used on the <a href="index.html#server">server</a>.  
 ---**Warning:**
@@ -8510,9 +9672,56 @@ function sm.storage.saveAndSync(key, data) end
 ---Unit creation and management  
 sm.unit = {}
 
+-- unit_mechanic         = sm.uuid.new( "00000000-0000-0000-0000-000000000000" )
+-- unit_challengebuilder = sm.uuid.new( "b6cafd3e-970b-4974-bb9f-ba7184b02797" )
+-- unit_tapebot          = sm.uuid.new( "04761b4a-a83e-4736-b565-120bc776edb2" )
+-- unit_tapebot_taped_1  = sm.uuid.new( "9dbbd2fb-7726-4e8f-8eb4-0dab228a561d" )
+-- unit_tapebot_taped_2  = sm.uuid.new( "fcb2e8ce-ca94-45e4-a54b-b5acc156170b" )
+-- unit_tapebot_taped_3  = sm.uuid.new( "68d3b2f3-ed4b-4967-9d22-8ee6f555df63" )
+-- unit_tapebot_red      = sm.uuid.new( "c3d31c47-0c9b-4b07-9bd4-8f022dc4333e" )
+-- unit_totebot_green    = sm.uuid.new( "8984bdbf-521e-4eed-b3c4-2b5e287eb879" )
+-- unit_haybot           = sm.uuid.new( "c8bfb8f3-7efc-49ac-875a-eb85ac0614db" )
+-- unit_farmbot          = sm.uuid.new( "9f4fde94-312f-4417-b13b-84029c5d6b52" )
+-- unit_woc              = sm.uuid.new( "264a563a-e304-430f-a462-9963c77624e9" )
+-- unit_worm             = sm.uuid.new( "48c03f69-3ec8-454c-8d1a-fa09083363b1" )
+
+--Removed from CharacterUUID because the game doesn't define it.
+--| `unit_challengebuilder`
+
+---All of the vanilla character UUIDs that can be used with sm.unit.createUnit.
+---Use if you have imported survival_items.lua in your mod environment.
+---@alias CharacterUUID
+---| `unit_mechanic`
+---| `unit_tapebot`
+---| `unit_tapebot_taped_1`
+---| `unit_tapebot_taped_2`
+---| `unit_tapebot_taped_3`
+---| `unit_tapebot_red`
+---| `unit_totebot_green`
+---| `unit_haybot`
+---| `unit_farmbot`
+---| `unit_woc`
+---| `unit_worm`
+
+---All of the vanilla character UUIDs that can be used with sm.unit.createUnit.
+---Use if you haven't imported survival_items.lua in your mod environment.
+---@alias CharacterUUID
+---| `sm.uuid.new('00000000-0000-0000-0000-000000000000')` # MechanicCharacter
+---| `sm.uuid.new('b6cafd3e-970b-4974-bb9f-ba7184b02797')` # BuilderbotCharacter
+---| `sm.uuid.new('04761b4a-a83e-4736-b565-120bc776edb2')` # TapeBotCharacter
+---| `sm.uuid.new('9dbbd2fb-7726-4e8f-8eb4-0dab228a561d')` # TapeBotCharacter
+---| `sm.uuid.new('fcb2e8ce-ca94-45e4-a54b-b5acc156170b')` # TapeBotCharacter
+---| `sm.uuid.new('68d3b2f3-ed4b-4967-9d22-8ee6f555df63')` # TapeBotCharacter
+---| `sm.uuid.new('c3d31c47-0c9b-4b07-9bd4-8f022dc4333e')` # TapeBotCharacter
+---| `sm.uuid.new('8984bdbf-521e-4eed-b3c4-2b5e287eb879')` # TotebotCharacter
+---| `sm.uuid.new('c8bfb8f3-7efc-49ac-875a-eb85ac0614db')` # HaybotCharacter
+---| `sm.uuid.new('9f4fde94-312f-4417-b13b-84029c5d6b52')` # FarmbotCharacter
+---| `sm.uuid.new('264a563a-e304-430f-a462-9963c77624e9')` # WocCharacter
+---| `sm.uuid.new('48c03f69-3ec8-454c-8d1a-fa09083363b1')` # GlobCharacter
+
 ---*Server only*  
 ---Creates a new unit of type from an [Uuid]  
----@param uuid Uuid # The character type uuid.
+---@param uuid Uuid|CharacterUUID # The character type uuid.
 ---@param feetPos Vec3 # The feet position in world where unit should spawn.
 ---@param yaw? number # The initial yaw. Defaults to 0 (Optional)
 ---@param data? any # The param data. (Optional)
@@ -8530,7 +9739,7 @@ function sm.unit.forceDestroy(unit) end
 ---*Server only*  
 ---Returns a table with all the units in the world.  
 ---@param world? World # The world to get units from. Defaults to the world of the script (Optional)
----@return table # The table of all units. {[Unit], ..}
+---@return Unit[] # The table of all units. {[Unit], ..}
 function sm.unit.getAllUnits(world) end
 
 ---*Server only*  
@@ -8539,7 +9748,37 @@ function sm.unit.getAllUnits(world) end
 ---@param position Vec3 # The position to check from.
 ---@param range number # The range to check.
 ---@param heightModifier? number # A value to modify the height of the range check. Defaults to 1. Higher values makes enemy elevation difference deemed as greater distance.
+---@return Unit[] units The units
 function sm.unit.getUnitsInRange(world, position, range, heightModifier) end
+
+
+---Achievement events will not be processed with edited core files or mods enabled.  
+sm.achievement = {}
+
+---@param uuidString string
+---@param value number
+---@param playerIds integer[]?
+function sm.achievement.addf(uuidString, value, playerIds) end
+
+---@param uuidString string
+---@param value integer
+---@param playerIds integer[]?
+function sm.achievement.addi(uuidString, value, playerIds) end
+
+---@param uuidString string
+---@param value number
+---@param playerIds integer[]?
+function sm.achievement.setf(uuidString, value, playerIds) end
+
+---@param uuidString string
+---@param value integer
+---@param playerIds integer[]?
+function sm.achievement.seti(uuidString, value, playerIds) end
+
+---@param name string
+---@param data table
+---@param playerIds integer[]?
+function sm.achievement.pushToContext(name, data, playerIds) end
 
 
 ---Pathfinder  
@@ -8548,25 +9787,43 @@ sm.pathfinder = {}
 ---Condition link types  
 ---height  
 ---target  
----none  
-sm.pathfinder.conditionProperty = {}
+---none  S
+sm.pathfinder.conditionProperty = {
+    height = 0,
+    target = 1,
+    none = 2
+}
+
+---@class PathfinderAbilities 
+---@field canWalk? boolean
+---@field canSwim? boolean
+
+---@class PathfinderCosts
+---@field ground? number
+---@field water? number
+---@field chemicals? number
+---@field oil? number
+---@field lava? number
 
 ---*Server only*  
 ---Constrain a point to nav mesh. Returns original point if no nav mesh is found.  
 ---@param world World # The world to look in.
 ---@param point Vec3 # The point.
----@param abilities? table # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to all abilities.
+---@param abilities? PathfinderAbilities # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to all abilities.
 ---@return Vec3 # The modified point.
 function sm.pathfinder.constrainPointToNavMesh(world, point, abilities) end
+
+---@class NodePathElement
+---@field toNode PathNode
 
 ---*Server only*  
 ---Find a path  
 ---@param character Character # The character to find path for
 ---@param destination Vec3 # The path destination
 ---@param groundPos? boolean # If the destination is ground level (ignored if nav mesh is used) (Defaults to true)
----@param abilities? table # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to character abilities.
----@param costs? table # Table of traverse area costs [1-10] { ground=number, water=number, chemicals=number, oil=number, lava=number }. Defaults to default costs.
----@return table # The path as table of PathNodes
+---@param abilities? PathfinderAbilities # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to character abilities.
+---@param costs? PathfinderCosts # Table of traverse area costs [1-10] { ground=number, water=number, chemicals=number, oil=number, lava=number }. Defaults to default costs.
+---@return NodePathElement[] # The path as table of PathNodes
 function sm.pathfinder.getPath(character, destination, groundPos, abilities, costs) end
 
 ---*Server only*  
@@ -8574,7 +9831,7 @@ function sm.pathfinder.getPath(character, destination, groundPos, abilities, cos
 ---@param world World # The world to look in.
 ---@param point Vec3 # The point.
 ---@param radius number # The radius to search in.
----@param abilities? table # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to all abilities.
+---@param abilities? PathfinderAbilities # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to all abilities.
 ---@return Vec3 # The new random point. (returns original point in case of failure)
 function sm.pathfinder.getRandomPoint(world, point, radius, abilities) end
 
@@ -8583,7 +9840,15 @@ function sm.pathfinder.getRandomPoint(world, point, radius, abilities) end
 ---@param worldPosition Vec3 # The position to look in
 ---@param minDist number # Minimum distance around pos
 ---@param maxDist number # Maximum distance around pos
----@return table # Table of PathNodes sorted closest to farthest
+---@return PathNode[] # Table of PathNodes sorted closest to farthest
+function sm.pathfinder.getSortedNodes(worldPosition, minDist, maxDist) end
+
+---*Server only*  
+---Find all nearby path nodes  
+---@param worldPosition Vec3 # The position to look in
+---@param minDist number # Minimum distance around pos
+---@param maxDist number # Maximum distance around pos
+---@return PathNode[] # Table of PathNodes sorted closest to farthest
 function sm.pathfinder.getSortedNodes(worldPosition, minDist, maxDist) end
 
 ---*Server only*  
@@ -8591,9 +9856,9 @@ function sm.pathfinder.getSortedNodes(worldPosition, minDist, maxDist) end
 ---@param world World # The world to look in
 ---@param start Vec3 # The path start
 ---@param destination Vec3 # The path destination
----@param abilities? table # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to all abilities.
----@param costs? table # Table of traverse area costs [1-10] { ground=number, water=number, chemicals=number, oil=number, lava=number }. Defaults to default costs.
----@return table # The path as table of PathNodes
+---@param abilities? PathfinderAbilities # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to all abilities.
+---@param costs? PathfinderCosts # Table of traverse area costs [1-10] { ground=number, water=number, chemicals=number, oil=number, lava=number }. Defaults to default costs.
+---@return PathNode[] # The path as table of PathNodes
 function sm.pathfinder.getWorldPath(world, start, destination, abilities, costs) end
 
 ---*Server only*  
@@ -8602,7 +9867,7 @@ function sm.pathfinder.getWorldPath(world, start, destination, abilities, costs)
 ---@param world World # The world to look in.
 ---@param start Vec3 # The path start
 ---@param destination Vec3 # The path destination
----@param abilities? table # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to all abilities.
+---@param abilities? PathfinderAbilities # Table of actor abilities { canWalk=boolean, canSwim=boolean }. Defaults to all abilities.
 ---@return boolean,number # True if fully traversable, and a traversable distance when not fully traversable. (distance becomes FLT_MAX when fully traversable)
 function sm.pathfinder.traversableRaycast(world, start, destination, abilities) end
 
@@ -8618,7 +9883,6 @@ sm.pathNode = {}
 ---@return PathNode # The path node
 function sm.pathNode.createPathNode(worldPosition, radius, temporary) end
 
-
 ---Used to check the state of the game.  
 sm.game = {}
 
@@ -8626,6 +9890,9 @@ sm.game = {}
 ---Ban a player from the server.  
 ---@param player Player # The player to be banned.
 function sm.game.banPlayer(player) end
+
+---{ type, name (, optional, autocomplete ) }
+---@alias ChatCommandParam { [1]: "string"|"int"|"number"|"bool", [2]: string, [3]: boolean?, [4]: any[]? }
 
 ---Binds a chat command to a callback function. The callback function receives an array of parameters. The first parameter is the command itself.  
 ---Example:  
@@ -8643,7 +9910,7 @@ function sm.game.banPlayer(player) end
 ---end
 ---```
 ---@param command string # The command.
----@param params table # An array of parameters the callback function expects in the form of { { type, name (, optional, autocomplete ) }, ... }. The first is the <strong>type</strong> name of the parameter as a string. Valid types are "bool", "int", "number" and "string". The second is the <strong>name</strong> in the help text. Defaults to automatic naming ("p1", "p2", "p3", ...). The third is a bool value where true means that this parameter is <strong>optional</strong> (Optional, defaults to false). The fourth is a list of values that can be auto-completed to by pressing tab (Optional).
+---@param params ChatCommandParam[] # An array of parameters the callback function expects in the form of { { type, name (, optional, autocomplete ) }, ... }. The first is the <strong>type</strong> name of the parameter as a string. Valid types are "bool", "int", "number" and "string". The second is the <strong>name</strong> in the help text. Defaults to automatic naming ("p1", "p2", "p3", ...). The third is a bool value where true means that this parameter is <strong>optional</strong> (Optional, defaults to false). The fourth is a list of values that can be auto-completed to by pressing tab (Optional).
 ---@param callback string # The name of the Lua function to bind.
 ---@param help string # Help text.
 function sm.game.bindChatCommand(command, params, callback, help) end
@@ -8781,6 +10048,60 @@ function sm.game.setLimitedInventory(isLimited) end
 function sm.game.setTimeOfDay(time) end
 
 
+---Library for <strong>compromised</strong> shape management.  
+---See CablebotManager.lua  
+sm.compromised = {}
+
+---*Server only*  
+---Compromises a [Shape, shape] within the sphere.  
+---@param position Vec3 # The center position of the sphere.  
+---@param radius number # The radius of the sphere.  
+---@return boolean # True if a shape has been compromised.  
+function sm.compromised.compromiseShapeInSphere(position, radius) end
+
+---*Server only*  
+---Returns a table of all compromised [Shape, shapes].  
+---@param world World? # The world to check for compromised shapes in. (Optional, defaults to world from script context)  
+---@return Shape[] # The table of compromised shapes. {[Shape], ..}  
+function sm.compromised.getCompromisedShapes(world) end
+
+---*Server only*  
+---Returns whether there are any compromised [Shape, shapes].  
+---@param world World # The world to check for compromised shapes in.
+---@return boolean # True if there are compromised shapes.  
+function sm.compromised.hasCompromisedShapes(world) end
+
+
+---Library for <strong>fire</strong> management.  
+sm.fire = {}
+
+---*Server only*  
+---Returns whether there is any fire in the sphere.  
+---@param position Vec3 # The position of the sphere.  
+---@param radius number # The radius of the sphere.  
+---@param world World # The world to check for fire in.  
+---@return boolean # True if there is fire in the sphere.  
+function sm.fire.isAreaBurning(position, radius, world) end
+
+---*Server only*  
+---Sets the limit of fire instances.  
+---@param limit integer # The limit of fire instances.  
+function sm.fire.setFireLimit(limit) end
+
+---*Server only*  
+---Ignites everything in the sphere.  
+---@param position Vec3 # The position of the sphere.  
+---@param radius number # The radius of the sphere.  
+---@param bool boolean? # Undocumented. Optional.  
+---@param world World? # The world to ignite fire in. (Optional, defaults to world from script context)  
+function sm.fire.igniteSphere(position, radius, bool, world) end
+
+---*Server only*  
+---Returns a table of all burning [Shape, shapes].  
+---@return Shape[] # The table of burning shapes. {[Shape], ..}  
+function sm.fire.getBurningShapes() end
+
+
 ---A <strong>tool</strong> is a scripted tool a player holds in their hand. The tool object is focused on handling animations for first and third person view.  
 ---For more information about creating your own scripted tools, see [ToolClass, ToolClass].  
 sm.tool = {}
@@ -8791,22 +10112,26 @@ sm.tool = {}
 --- - <strong>start</strong> &ndash; The key was just pressed.
 --- - <strong>hold</strong> &ndash; The key is held down.
 --- - <strong>stop</strong> &ndash; The key was just released.
----null	0  
----start	1  
----hold	2  
----stop	3  
----@type table
-sm.tool.interactState = {}
+---null0  
+---start1  
+---hold2  
+---stop3  
+sm.tool.interactState = {
+    null = 0,
+    start = 1,
+    hold = 2,
+    stop = 3
+}
 
 ---Used to check collisions between the lift and the world.  
----@param creation table # A table of all the bodies belonging to the creation placed on the lift.
----@param position Vec3 # The lift position.
----@param rotation integer # The rotation of the creation on the lift.
----@return boolean, integer					True if the lift collides with the world; The lift level.
+---@param creation Body[] A table of all the bodies belonging to the creation placed on the lift.
+---@param position Vec3 The lift position.
+---@param rotation integer The rotation of the creation on the lift.
+---@return boolean, integer # True if the lift collides with the world; The lift level.
 function sm.tool.checkLiftCollision(creation, position, rotation) end
 
 ---Checks whether a specific lift level is valid (no collision) for a creation at the given position and rotation.  
----@param creation table # A table of all the bodies belonging to the creation placed on the lift.
+---@param creation Body[] # A table of all the bodies belonging to the creation placed on the lift.
 ---@param position Vec3 # The lift position.
 ---@param rotation integer # The rotation of the creation on the lift.
 ---@param level integer # The specific lift level to test.
@@ -8814,13 +10139,14 @@ function sm.tool.checkLiftCollision(creation, position, rotation) end
 ---@return boolean								True if the level is valid (no collision).
 function sm.tool.checkLiftCollisionAtLevel(creation, position, rotation, level, timeStamp) end
 
----Find index of column of shades that best matches given color.  
+---Find index of column of shades that best matches given color.
+---@param uintRgba integer # The UintRgba version of the color (Color:getUnitRgba()).  
 ---@return integer # Palette column index.
-function sm.tool.findPaintToolPaletteColumnIndex() end
+function sm.tool.findPaintToolPaletteColumnIndex( uintRgba ) end
 
 ---*Client only*  
 ---Force equip a tool for the local player. Pass nil to unforce an already forced tool.  
----@param tool Tool # The tool.
+---@param tool Tool|nil The tool.
 function sm.tool.forceTool(tool) end
 
 ---Returns the maximum number of lift levels.  
@@ -8829,11 +10155,11 @@ function sm.tool.getLiftMaxLevel() end
 
 ---*Client only*  
 ---Pre-loads renderable data to be used by the tool. This eliminates excessive loading during run time.  
----@param renderables table # The table of renderables names. {string, ..}
+---@param renderables string[] The table of renderables names. {string, ..}
 function sm.tool.preloadRenderables(renderables) end
 
 ---Return whether the tool uuid exists  
----@param uuid Uuid # The shape uuid.
+---@param uuid Uuid # The tool uuid.
 ---@return boolean # exists.
 function sm.tool.uuidExists(uuid) end
 
@@ -8844,9 +10170,8 @@ function sm.tool.uuidExists(uuid) end
 ---*For more information about sound and particle effects that affect all players, see [sm.effect].*
 sm.audio = {}
 
----@deprecated Audio is deprecated, use Effect instead
 ---A table with all the names of available sounds in the game.  
----@type table
+---@deprecated Audio is deprecated, use Effect instead
 sm.audio.soundList = {}
 
 ---*Client only*  
@@ -8855,12 +10180,132 @@ sm.audio.soundList = {}
 ---@return number # The parameter value.
 function sm.audio.getGlobalParameter(name) end
 
+---All of the audio names that can be used with sm.audio.play.
+---@alias AudioName
+---| "Ambient - Birds"
+---| "Ambient - Challenge"
+---| "Ambient - Field"
+---| "Blueprint - Build"
+---| "Blueprint - Camera"
+---| "Blueprint - Close"
+---| "Blueprint - Delete"
+---| "Blueprint - Open"
+---| "Blueprint - Save"
+---| "Blueprint - Select"
+---| "Blueprint - Share"
+---| "Brake"
+---| "Button off"
+---| "Button on"
+---| "Challenge - Fall"
+---| "Challenge - Start"
+---| "Challenge - Supervisor generic"
+---| "Character crouch"
+---| "Character get up"
+---| "Character hit"
+---| "Character jump"
+---| "Character land"
+---| "Character movement"
+---| "Character movement crouched"
+---| "Character wind"
+---| "Collision - Debris"
+---| "Collision - Multiple"
+---| "Collision - Rolling"
+---| "Collision - Single"
+---| "Collision - Sliding"
+---| "Collision - Vehicle"
+---| "ConnectTool"
+---| "ConnectTool - Equip"
+---| "ConnectTool - Idle"
+---| "ConnectTool - Released"
+---| "ConnectTool - Rotate"
+---| "ConnectTool - Selected"
+---| "ConnectTool - Unequip"
+---| "Construction - Block attached to joint"
+---| "Construction - Block placed"
+---| "Construction - Resize"
+---| "Dancebass"
+---| "Dancedrum"
+---| "Dancepad"
+---| "Dancevoice"
+---| "Destruction - Block destroyed"
+---| "Destruction - Resize"
+---| "ElectricEngine"
+---| "GUI Backpack closed"
+---| "GUI Backpack opened"
+---| "GUI Inventory highlight"
+---| "GUI Item drag"
+---| "GUI Item released"
+---| "GUI Quickbar highlight"
+---| "GUI Shape rotate"
+---| "Gas Explosion"
+---| "Gas Leak"
+---| "GasEngine"
+---| "Handbook - Close"
+---| "Handbook - Equip"
+---| "Handbook - Highlight"
+---| "Handbook - Open"
+---| "Handbook - Turn page"
+---| "Handbook - Unequip"
+---| "Horn"
+---| "Lever off"
+---| "Lever on"
+---| "Lift - Pickup object"
+---| "Lift placed"
+---| "Lift usage"
+---| "Music"
+---| "PaintTool - Close"
+---| "PaintTool - ColorPick"
+---| "PaintTool - Equip"
+---| "PaintTool - Erase"
+---| "PaintTool - Open"
+---| "PaintTool - Paint"
+---| "PaintTool - Reload"
+---| "PaintTool - Unequip"
+---| "Phaser"
+---| "Piston"
+---| "PotatoRifle - Equip"
+---| "PotatoRifle - NoAmmo"
+---| "PotatoRifle - Reload"
+---| "PotatoRifle - Shoot"
+---| "PotatoRifle - Unequip"
+---| "Radio"
+---| "RaftShark"
+---| "Retrobass"
+---| "Retrodrum"
+---| "Retrofmblip"
+---| "Retrovoice"
+---| "Retrowildblip"
+---| "Reverb - Challenge"
+---| "Reverb - Field"
+---| "Seat seated"
+---| "Seat unseated"
+---| "Sensor off"
+---| "Sensor on"
+---| "SequenceController"
+---| "SequenceController change rotation"
+---| "Sledgehammer - Equip"
+---| "Sledgehammer - Swing"
+---| "Sledgehammer - Unequip"
+---| "Suspension"
+---| "Thruster"
+---| "Thruster dust"
+---| "Toilet seated"
+---| "Toilet unseated"
+---| "Weapon - Hit"
+---| "WeldTool - Case 1"
+---| "WeldTool - Case 2"
+---| "WeldTool - Equip"
+---| "WeldTool - Error"
+---| "WeldTool - Sparks"
+---| "WeldTool - Unequip"
+---| "WeldTool - Weld"
+
 ---*Client only*  
 ---Plays a sound.  
 ---If position is specified, the sound will play at the given coordinates in the world. Otherwise, the sound will play normally.  
 ---For a list of available sounds to play, see [sm.audio.soundList].  
----@param sound string # The sound to play.
----@param position? Vec3 # The world position of the sound. (Optional)
+---@param sound string|AudioName The sound to play.
+---@param position? Vec3 The world position of the sound. (Optional)
 function sm.audio.play(sound, position) end
 
 ---*Client only*  
@@ -8868,6 +10313,11 @@ function sm.audio.play(sound, position) end
 ---@param name string # The name.
 ---@param value number # The parameter value.
 function sm.audio.setGlobalParameter(name, value) end
+
+
+---The <strong>particle</strong> api allows you to create particle effects at a position.  
+---If you require more control or complexity, please see the [sm.effect, effect] api.  
+sm.particle = {}
 
 
 ---The <strong>particle</strong> api allows you to create particle effects at a position.  
@@ -8927,13 +10377,13 @@ function sm.localPlayer.getDirection() end
 ---*Client only*  
 ---Returns general information for a first person view animation.  
 ---@param name string # The name.
----@return table # A table containing name, duration and looping.
+---@return AnimationInfo # A table containing name, duration and looping.
 function sm.localPlayer.getFpAnimationInfo(name) end
 
 ---*Client only*  
 ---Returns the world position for a bone in the first person view animation skeleton.  
----@param jointName string # The joint name.
----@return Vec3 # The joint position.
+---@param jointName string The joint name.
+---@return Vec3
 function sm.localPlayer.getFpBonePos(jointName) end
 
 ---*Client only*  
@@ -8950,17 +10400,17 @@ function sm.localPlayer.getGarmentUpperCaseTitle(uuid) end
 
 ---*Client only*  
 ---Returns the hotbar container of the player.  
----@return Container # The player's hotbar.
+---@return Container
 function sm.localPlayer.getHotbar() end
 
 ---*Client only*  
 ---Returns the unique player id of the local player.  
----@return integer # The player's id.
+---@return integer
 function sm.localPlayer.getId() end
 
 ---*Client only*  
 ---Returns the inventory container of the local player.  
----@return Container # The player's inventory.
+---@return Container
 function sm.localPlayer.getInventory() end
 
 ---*Client only*  
@@ -9065,7 +10515,7 @@ function sm.localPlayer.setDirection(direction) end
 
 ---*Client only*  
 ---Sets whether the player's in-game controls are locked.  
----@param locked boolean # The lock state.
+---@param locked boolean The lock state.
 function sm.localPlayer.setLockedControls(locked) end
 
 ---*Client only*  
@@ -9092,16 +10542,16 @@ sm.camera = {}
 --- - <strong>gyroSeatTP</strong> &ndash; Third-person camera for the gyro seat.
 --- - <strong>scriptedTP</strong> &ndash; Third-person camera with position, rotation, and FOV fully overridden by script. Used for interactable cutscenes.
 --- - <strong>seatLockedCamera</strong> &ndash; The camera direction and position are locked to the seat's local space. The view is first-person unless a pullback is set, which produces a third-person view.
----default	1  
----cutsceneFP	2  
----cutsceneTP	3  
----forcedTP	4  
----gyroSeatFP	5  
----gyroSeatTP	6  
----scriptedTP	7  
----seatLockedCamera	8  
----@type table
-sm.camera.state = {}
+sm.camera.state = {   
+    default = 1,
+    cutsceneFP = 2,
+    cutsceneTP = 3,
+    forcedTP = 4,
+    gyroSeatFP = 5,
+    gyroSeatTP = 6,
+    scriptedTP = 7,
+    seatLockedCamera = 8
+}
 
 ---*Client only*  
 ---Performs a distance convex sweep with the shape of a sphere, from a position with a given direction.  
@@ -9237,17 +10687,17 @@ function sm.camera.setUnseatDirection(worldDirection) end
 ---This library can only be used on the <a href="index.html#client">client</a>.  
 sm.gui = {}
 
----Widget states  
----disabled,  
----normal,  
----highlighted,  
----pushed,  
----disabled_checked,  
----normal_checked,  
----highlighted_checked,  
----pushed_checked  
----@type table
-sm.gui.widgetStates = {}
+---Widget states
+sm.gui.widgetStates = {
+    disabled = 0,
+    normal = 1,
+    highlighted = 2,
+    pushed = 3,
+    disabled_checked = 4,
+    normal_checked = 5,
+    highlighted_checked = 6,
+    pushed_checked = 7,
+}
 
 ---*Client only*  
 ---Sets a target callback for generic notification popups  
@@ -9272,7 +10722,7 @@ function sm.gui.chatMessage(message) end
 ---@param align string # The text alignment.
 ---@param maxWidth? number # The maximum desired widget width before wrapping (optional) (Defaults to -1)
 ---@param replaceTags? boolean # Should tags be replaced before calculating? (optional) (Defaults to true)
----@return table # The calculated width and height.
+---@return number, number # The calculated width and height.
 function sm.gui.computeTextSize(text, font, align, maxWidth, replaceTags) end
 
 ---*Client only*  
@@ -9377,11 +10827,22 @@ function sm.gui.createGasContainerGui(destroyOnClose) end
 ---@return GuiInterface # The gui interface to the created gui.
 function sm.gui.createGlowstickContainerGui(destroyOnClose) end
 
+---@class GuiSettings
+---@field isHud? boolean Whether the gui is part of the HUD or not
+---@field isInteractive? boolean Whether the gui is interactive or not
+---@field needsCursor? boolean Whether the gui makes use of the mouse cursor or not
+---@field hidesHotbar? boolean Whether the gui hides the hotbar or not
+---@field isOverlapped? boolean Unknown
+---@field backgroundAlpha? number The alpha of the background(0 - transparent | 1 - opaque, black background)
+---@field handleKeySetup? string Unknown
+---@field name? string Unknown
+---@field layer? string Unknown
+
 ---*Client only*  
 ---Create a GUI from a layout file.  
 ---@param layout string # Path to the layout file
 ---@param destroyOnClose? boolean # If true the gui is destroyed when closed, otherwise the gui can be reused. (Defaults to false)
----@param settings? table # Table with bool settings for: isHud, isInteractive, needsCursor
+---@param settings? GuiSettings # Table with bool settings for: isHud, isInteractive, needsCursor
 ---@return GuiInterface # The gui interface to the created gui.
 function sm.gui.createGuiFromLayout(layout, destroyOnClose, settings) end
 
@@ -9417,7 +10878,7 @@ function sm.gui.createNameTagGui(destroyOnClose) end
 
 ---*Client only*  
 ---Create a ore crusher container GUI.  
----@param destroyOnClose? boolean # If true the gui is destroyed when closed, otherwise the gui can be reused.
+---@param destroyOnClose boolean # If true the gui is destroyed when closed, otherwise the gui can be reused.
 ---@return GuiInterface # The gui interface to the created gui.
 function sm.gui.createOreCrusherContainerGui(destroyOnClose) end
 
@@ -9441,7 +10902,7 @@ function sm.gui.createQuestTrackerGui(destroyOnClose) end
 
 ---*Client only*  
 ---Create a refinery container GUI.  
----@param destroyOnClose? boolean # If true the gui is destroyed when closed, otherwise the gui can be reused.
+---@param destroyOnClose boolean # If true the gui is destroyed when closed, otherwise the gui can be reused.
 ---@return GuiInterface # The gui interface to the created gui.
 function sm.gui.createRefineryContainerGui(destroyOnClose) end
 
@@ -9537,9 +10998,16 @@ function sm.gui.exitToMenu() end
 ---@return string # The language setting ex. "English".
 function sm.gui.getCurrentLanguage() end
 
+---@class ItemIcon
+---@field itemResource string
+---@field group string
+---@field name string
+---@field trackingType string
+---@field shapeType string
+
 ---Gets the item resource, group and name for an item icon from a uuid  
 ---@param uuid Uuid # The uuid.
----@return table	The item resource, group, name, trackingType and shapeType.
+---@return ItemIcon icon The item resource, group, name, trackingType and shapeType.
 function sm.gui.getItemIconFromUuid(uuid) end
 
 ---*Client only*  
@@ -9575,7 +11043,9 @@ function sm.gui.openGarageImportGui() end
 
 ---@deprecated Use [sm.gui.setInteractionText]
 ---Removed! Does nothing.  
-function sm.gui.setCenterIcon() end
+---Set the icon displayed at the center.  
+---@param iconName string The icon.
+function sm.gui.setCenterIcon(iconName) end
 
 ---Set a text for the character that will be displayed above its head. Only has effect in dev build.  
 ---@param character Character # The character.
@@ -9678,34 +11148,27 @@ function sm.visualization.createBuilderGuide(path, shape, ignoreBlockUuid, compl
 ---@param color? Color # The color for the line. Defaults to yellow. (Optional)
 function sm.visualization.drawLine(startingPoint, endPoint, color) end
 
+---@class ShapePlacementVisualization
+---@field isLegal boolean
+---@field shapeUuid Uuid
+---@field worldRotation Quat
+---@field worldPosition Vec3
+
 ---*Client only*  
 ---Returns a table containing the current state of the shape placement visualization.  
----@return table # Table containing { worldPosition = [Vec3], worldRotation = [Quat], shapeUuid = [Uuid], isLegal = boolean }.
+---@return ShapePlacementVisualization # Table containing { worldPosition = [Vec3], worldRotation = [Quat], shapeUuid = [Uuid], isLegal = boolean }.
 function sm.visualization.getShapePlacementVisualization() end
 
 ---*Client only*  
----Visualizes a block on a shape  
+---Visualizes a block on an object  
 ---@param position Vec3 # The local space position
 ---@param illegal? boolean # Whether the visualization should render as illegal (Defaults to false)
----@param shape Shape # Shape to visualize on
-function sm.visualization.setBlockVisualization(position, illegal, shape) end
-
----*Client only*  
----Visualizes a block on a joint  
----@param position Vec3 # The local space position
----@param illegal? boolean # Whether the visualization should render as illegal (Defaults to false)
----@param joint Joint # joint to visualize on
-function sm.visualization.setBlockVisualization(position, illegal, joint) end
-
----*Client only*  
----Visualizes a block in world space  
----@param position Vec3 # The world space position
----@param illegal? boolean # Whether the visualization should render as illegal (Defaults to false)
-function sm.visualization.setBlockVisualization(position, illegal) end
+---@param object? Lift|Shape|Joint
+function sm.visualization.setBlockVisualization(position, illegal, object) end
 
 ---*Client only*  
 ---Sets an array of bodies to visualize.  
----@param bodies table # Array of bodies to visualize {[Body], ..}.
+---@param bodies Body[] # Array of bodies to visualize {[Body], ..}.
 function sm.visualization.setCreationBodies(bodies) end
 
 ---*Client only*  
@@ -9895,17 +11358,17 @@ function sm.render.setGI(weight) end
 ---@param horizonColor Color # Color of the horizon of the horizon light.
 ---@param bottomColor Color # Color of the bottom of the horizon light.
 ---@param direction Vec3 # Direction of the horizon light.
----@param start number # Start distance for the horizon light. (Optional)
----@param end number # End distance for the horizon light. (Optional)
+---@param startDistance number # Start distance for the horizon light. (Optional)
+---@param endDistance number # End distance for the horizon light. (Optional)
 ---@param falloff number # Falloff factor for the horizon light. (Optional)
-function sm.render.setHorizonLight(topColor, horizonColor, bottomColor, direction, start, ed, falloff) end
+function sm.render.setHorizonLight(topColor, horizonColor, bottomColor, direction, startDistance, endDistance, falloff) end
 
 ---*Client only*  
 ---Sets the LUT override settings.  
----@param LUTA string # Name of LUT A.
----@param LUTB? string # Name of LUT B.
+---@param LUT-A string # Name of LUT A.
+---@param LUT-B? string # Name of LUT B.
 ---@param blend? number # blend between 0.0 and 1.0 for LUT A and B. (Defaults to 0.0)
-function sm.render.setLUT(LUTA, LUTB, blend) end
+function sm.render.setLUT(LUT_A, LUT_B, blend) end
 
 ---*Client only*  
 ---Sets the lighting cycle fraction.  
@@ -9937,21 +11400,25 @@ function sm.render.setVolumetricFog(min, max, loopSpeed, scrollSpeed, scale, int
 function sm.render.setVoxelLODBoost(boost) end
 
 
+---Empty
+sm.profiler = {}
+
+
 ---The <strong>Garage</strong> library contains various utility functions for handling the garage.  
 sm.garage = {}
 
 ---Creates a new garage.  
 ---The garage is a spawn area for creations defined by a bounding box. The garage can track blueprints and import them into the world.  
 ---The garage is identified by an user specified id.  
----@param garageId int # The id of the garage to create
----@param worldId uint # The world the garage is in
+---@param garageId integer # The id of the garage to create
+---@param world World # The world the garage is in
 ---@param halfextents Vec3 # Half extents of the spawnbox inside the garage
 ---@param position Vec3 # Position of the spawn box inside the garage
 ---@return Garage		Garage					The Garage object
-function sm.garage.createGarage(garageId, worldId, halfextents, position) end
+function sm.garage.createGarage(garageId, world, halfextents, position) end
 
 ---Gets a already existing garage returns nil if it does not exist.  
----@param garageId uint # The id of the garage to get
+---@param garageId integer # The id of the garage to get
 ---@return Garage		Garage					The Garage object
 function sm.garage.getGarage(garageId) end
 
@@ -9998,34 +11465,118 @@ function sm.terrainData.save(data) end
 ---Reads .tile file data  
 sm.terrainTile = {}
 
----Prefab content load flags.  
----creations  
----nodes  
----assets  
----decals  
----harvestables  
----kinematics  
----voxelMeshes  
----all  
----@type table
-sm.terrainTile.loadFlags = {}
+---Prefab content load flags.                
+---@type { [string]: number }
+sm.terrainTile.loadFlags = {
+    creations = 1,
+    nodes = 2,
+    assets = 4,
+    decals = 8,
+    harvestables = 16,
+    kinematics = 32,
+    voxelMeshes = 64,
+    all = 128,
+}
+
+---@class TerrainCreation
+---@field name string
+---@field pathOrJson string
+---@field pos Vec3
+---@field rot Quat
+---@field rootPrefabCenterPosition Vec3
+---@field bodyTransforms? boolean
+---@field mergeCreation? boolean
+---@field restricted? boolean
+---@field erasable? boolean
+---@field buildable? boolean
+---@field paintable? boolean
+---@field connectable? boolean
+---@field liftable? boolean
+---@field usable? boolean
+---@field destructable? boolean
+---@field convertableToDynamic? boolean
+---@field zoneIndex? number
+---@field sortingIndex? number
+---@field tags string[]
+---@field changeColor? Color[]
+---@field debugName? string
+
+---@class TerrainPrefab
+---@field name string
+---@field pos Vec3
+---@field rot Quat
+---@field scale Vec3
+---@field tags string[]
+---@field flags number
+
+---@class TerrainNode
+---@field pos Vec3
+---@field rot Quat
+---@field scale Vec3
+---@field rootPrefabCenterPosition Vec3
+---@field params table
+---@field tags string[]
+
+---@class TerrainAsset
+---@field uuid Uuid
+---@field pos Vec3
+---@field rot Quat
+---@field scale Vec3
+---@field rootPrefabCenterPosition Vec3
+---@field colors { [string] : Color }
+---@field tags string[]
+---@field slopeNormal? Vec3
+
+---@class TerrainDecal
+---@field pos Vec3
+---@field rot Quat
+---@field scale Vec3
+---@field rootPrefabCenterPosition Vec3
+---@field decalId Uuid
+---@field color Color
+---@field layer number
+---@field tags string[]
+
+---@class TerrainHarvestable
+---@field uuid Uuid
+---@field pos Vec3
+---@field rot Quat
+---@field scale Vec3
+---@field rootPrefabCenterPosition Vec3
+---@field color Color
+---@field colors {[string]: Color}
+---@field params? table
+---@field tags string[]
+---@field slopeNormal? Vec3
+---@field removeIfLevitating boolean
+
+---@class TerrainKinematic
+---@field uuid Uuid
+---@field pos Vec3
+---@field rot Quat
+---@field scale Vec3
+---@field rootPrefabCenterPosition Vec3
+---@field color Color
+---@field params table
+---@field tags string[]
+---@field removeIfLevitating boolean
 
 ---Returns a table of all assets in a terrain cell.  
----@param tileUid Uuid # The tile uuid.
----@param cellOffsetX integer # The cell X offset.
----@param cellOffsetY integer # The cell Y offset.
----@param sizeLevel integer # The size level of asset. [0-3]
----@return table # A table { { uuid = [Uuid], pos = [Vec3], rot = [Quat], colors = { string = [Color], ...}, tags = { string, ... } }, ... } of assets in the cell.
-function sm.terrainTile.getAssetsForCell(tileUid, cellOffsetX, cellOffsetY, sizeLevel) end
+---@param tileId Uuid The tile id.
+---@param tileOffsetX integer The tile offset X.
+---@param tileOffsetY integer The tile offset Y.
+---@param sizeLevel integer The size level of asset.
+---@return TerrainAsset[] assets
+function sm.terrainTile.getAssetsForCell(tileId, tileOffsetX, tileOffsetY, sizeLevel) end
 
----Returns the clutter index at position (x,y) in a tile cell.  
+---Returns the clutter index at position (X,Y) in a tile.  
 ---@param tileUid Uuid # The tile uuid.
 ---@param cellOffsetX integer # The cell X offset.
 ---@param cellOffsetY integer # The cell Y offset.
 ---@param x integer # The local X value.
 ---@param y integer # The local Y value.
----@return integer # The clutter index.
-function sm.terrainTile.getClutterIdxAt(tileUid, cellOffsetX, cellOffsetY, x, y) end
+---@return number clutterId
+function sm.terrainTile.getClutterIdxAt(tileId, cellOffsetX, cellOffsetY, x, y) end
 
 ---Returns the terrain color at position (x,y) in a tile cell.  
 ---@param tileUid Uuid # The tile uuid.
@@ -10037,37 +11588,28 @@ function sm.terrainTile.getClutterIdxAt(tileUid, cellOffsetX, cellOffsetY, x, y)
 ---@return number,number,number # The color R, G, B values.
 function sm.terrainTile.getColorAt(tileUid, cellOffsetX, cellOffsetY, lod, x, y) end
 
----Returns the content of a prefab.  
----Return value 1: A table of creations in the prefab. { { name = string, pos = [Vec3], rot = [Quat], sortingIndex = integer, tags = { string, ... } }, ... }  
----Return value 2: A table of prefabs in the prefab. { { name = string, pos = [Vec3], rot = [Vec3], scale = [Vec3], tags = { string, ... }, flags = integer }, ... }  
----Return value 3: A table of nodes in the prefab. { { pos = [Vec3], rot = [Quat], scale = [Vec3], tags = { string, ... }, params = table } }  
----Return value 4: A table of assets in the prefab. { { uuid = [Uuid], pos = [Vec3], rot = [Quat], slopeNormal = [Vec3], colors = { string = [Color], ...}, tags = { string, ... } }, ... }  
----Return value 5: A table of decals in the prefab. { { pos = [Vec3], rot = [Vec3], scale = [Vec3], decalId = integer, color = [Color], layer = integer,  tags = { string, ... } }, ... }  
----Return value 6: A table of harvestables in the prefab. { {uuid = [Uuid], pos = [Vec3], rot = [Quat], color = [Color], params = table, tags = { string, ... } }, ... }  
----Return value 7: A table of kinematics in the prefab. { {uuid = [Uuid], pos = [Vec3], rot = [Quat], scale = [Vec3], color = [Color], params = table, tags = { string, ... } }, .. }  
----Return value 8: A table containing the min and max bounds of the prefab. { min = [Vec3], max = [Vec3] }  
----@param prefabPath string # The path to the prefab file.
----@param loadFlags? integer # A mask of content to load. Defaults to all objects (optional)
----@return table,table,table,table,table,table,table,table # Prefab content tables.
+---Returns the content of prefab.  
+---@param prefabPath string The path to the prefab file.
+---@param loadFlags? integer A mask of content to load
+---@return TerrainCreation[] creations, TerrainPrefab[] prefabs, TerrainNode[] nodes, TerrainAsset[] assets, TerrainDecal[] decals, TerrainHarvestable[] harvestables, TerrainKinematic[] kinematics, prefabMinMax {min: Vec3, max: Vec3}
 function sm.terrainTile.getContentFromPrefab(prefabPath, loadFlags) end
 
 ---Returns a table of all creations in a terrain cell.  
 ---@param tileUid Uuid # The tile uuid.
 ---@param cellOffsetX integer # The cell X offset.
 ---@param cellOffsetY integer # The cell Y offset.
----@return table # A table { { pathOrJson = string, pos = [Vec3], rot = [Quat] }, ... } of creations in the cell.
+---@return TerrainCreation[] creations # The creations .
 function sm.terrainTile.getCreationsForCell(tileUid, cellOffsetX, cellOffsetY) end
 
 ---Returns the id of the tiles creator.  
----@param path string # The tile's path.
----@return string # The creator's id.
+---@param path string The tile's path.
+---@return string
 function sm.terrainTile.getCreatorId(path) end
-
 ---Returns all decals for a cell in a tile.  
 ---@param tileUid Uuid # The tile uuid.
 ---@param cellOffsetX integer # The cell X offset.
 ---@param cellOffsetY integer # The cell Y offset.
----@return table # A table { { pos = [Vec3], rot = [Vec3], scale = [Vec3], decalId = integer, color = [Color], layer = integer,  tags = { string, ... } }, ... } of decals in the cell.
+---@return TerrainDecal[] decals # The decals.
 function sm.terrainTile.getDecalsForCell(tileUid, cellOffsetX, cellOffsetY) end
 
 ---Returns a table of all harvestables in a terrain cell.  
@@ -10075,8 +11617,8 @@ function sm.terrainTile.getDecalsForCell(tileUid, cellOffsetX, cellOffsetY) end
 ---@param cellOffsetX integer # The cell X offset.
 ---@param cellOffsetY integer # The cell Y offset.
 ---@param sizeLevel integer # The size level of harvestables. [0-3]
----@return table # A table { {uuid = [Uuid], pos = [Vec3], rot = [Quat], color = [Color], params = table, tags = { string, ... } }, ... } of harvestables in the cell.
-function sm.terrainTile.getHarvestablesForCell(tileUid, cellOffsetX, cellOffsetY, sizeLevel) end
+---@return TerrainHarvestable[] harvestables
+function sm.terrainTile.getHarvestablesForCell(tileId, cellOffsetX, cellOffsetY, sizeLevel) end
 
 ---Returns the terrain height at position (x,y) in a tile cell.  
 ---@param tileUid Uuid # The tile uuid.
@@ -10093,7 +11635,7 @@ function sm.terrainTile.getHeightAt(tileUid, cellOffsetX, cellOffsetY, lod, x, y
 ---@param cellOffsetX integer # The cell X offset.
 ---@param cellOffsetY integer # The cell Y offset.
 ---@param sizeLevel integer # The size level of kinematics. [0-3]
----@return table # A table { {uuid = [Uuid], pos = [Vec3], rot = [Quat], scale = [Vec3], color = [Color], params = table, tags = { string, ... } }, .. } of kinematics in the cell.
+---@return TerrainKinematic[] kinematics
 function sm.terrainTile.getKinematicsForCell(tileUid, cellOffsetX, cellOffsetY, sizeLevel) end
 
 ---Returns the terrain material at position (x,y) in a tile cell.  
@@ -10103,21 +11645,21 @@ function sm.terrainTile.getKinematicsForCell(tileUid, cellOffsetX, cellOffsetY, 
 ---@param lod integer # The level of detail. [0-5]
 ---@param x integer # The local X value.
 ---@param y integer # The local Y value.
----@return number,number,number,number,number,number,number,number # Material weights 1-8.
+---@return number material_1_weight, number material_2_weight, number material_3_weight, number material_4_weight, number material_5_weight, number material_6_weight, number material_7_weight, number material_8_weight
 function sm.terrainTile.getMaterialAt(tileUid, cellOffsetX, cellOffsetY, lod, x, y) end
 
 ---Returns all nodes for a cell in a tile.  
 ---@param tileUid Uuid # The tile uuid.
 ---@param cellOffsetX integer # The cell X offset.
 ---@param cellOffsetY integer # The cell Y offset.
----@return table # A table { { pos = [Vec3], rot = [Quat], scale = [Vec3], tags = { string, ... }, params = table } } of nodes in the cell.
+---@return TerrainNode[] nodes
 function sm.terrainTile.getNodesForCell(tileUid, cellOffsetX, cellOffsetY) end
 
 ---Returns all prefabs in a cell.  
 ---@param tileUid Uuid # The tile uuid.
 ---@param cellOffsetX integer # The cell X offset.
 ---@param cellOffsetY integer # The cell Y offset.
----@return table # A table { { name = string, pos = [Vec3], rot = [Vec3], scale = [Vec3], tags = { string, ... }, flags = integer }, ... } of prefabs in the cell.
+---@return TerrainPrefab[] prefabs
 function sm.terrainTile.getPrefabsForCell(tileUid, cellOffsetX, cellOffsetY) end
 
 ---Returns the size of a tile as the number of cells along one of the axises.  
@@ -10177,19 +11719,19 @@ function sm.terrainGeneration.setTempData(key, data) end
 ---Voxel grid  
 sm.voxelTerrainCell = {}
 
----Filters are used to specify what materials an action should modify.  
----none	0  
----material0	1  
----material1	2  
----material2	4  
----material3	8  
----material4	16  
----material5	32  
----material6	64  
----material7	128  
----all	255  
----@type table
-sm.voxelTerrainCell.voxelFilter = {}
+---Filters are used to specify what materials an action should modify.
+sm.voxelTerrainCell.voxelFilter = {
+    none      = 0,
+    material0 = 1,
+    material1 = 2,
+    material2 = 4,
+    material3 = 8,
+    material4 = 16,
+    material5 = 32,
+    material6 = 64,
+    material7 = 128,
+    all       = 255,
+}
 
 ---Copies a custom amount of voxel data from a tile to the voxel grid.  
 ---@param tileUid Uuid # The tile uuid.
@@ -10233,7 +11775,7 @@ function sm.voxelTerrainCell.copyTileCellVoxelsOnlyAirAndMasked(tileUid, cellOff
 function sm.voxelTerrainCell.copyTileCellVoxelsOnlyFilled(tileUid, cellOffsetX, cellOffsetY, rotationStep, srcPos, dstPos, srcSize) end
 
 ---Sets empty voxel (below threshold) material and density in convex hull shape in the cell's voxel grid.  
----@param vertices table # Table of vertices {[Vec3], ...} that make up the convex hull.
+---@param vertices Vec3[] # Table of vertices {[Vec3], ...} that make up the convex hull.
 ---@param margin number # Hull margin added outside the hull.
 ---@param densityThreshold number # Existing normalized density must be below threshold for fill to happen.
 ---@param material integer # New material to set in convex hull.
@@ -10243,7 +11785,7 @@ function sm.voxelTerrainCell.copyTileCellVoxelsOnlyFilled(tileUid, cellOffsetX, 
 function sm.voxelTerrainCell.fillEmptyConvexHull(vertices, margin, densityThreshold, material, density, noiseFrequency, noiseIntensity) end
 
 ---Sets density in convex hull shape to the cell's voxel grid.  
----@param vertices table # Table of vertices {[Vec3], ...} that make up the convex hull.
+---@param vertices Vec3[] # Table of vertices {[Vec3], ...} that make up the convex hull.
 ---@param margin number # Hull margin added outside the hull.
 ---@param density number # New normalized density.
 ---@param voxelFilter? integer # The voxel material filter to overwrite. (Defaults to [sm.voxelTerrainCell.voxelFilter, sm.voxelTerrainCell.voxelFilter.all])
@@ -10252,7 +11794,7 @@ function sm.voxelTerrainCell.fillEmptyConvexHull(vertices, margin, densityThresh
 function sm.voxelTerrainCell.setDensityConvexHull(vertices, margin, density, voxelFilter, noiseFrequency, noiseIntensity) end
 
 ---Sets material in convex hull shape in the cell's voxel grid.  
----@param vertices table # Table of vertices {[Vec3], ...} that make up the convex hull.
+---@param vertices Vec3[] # Table of vertices {[Vec3], ...} that make up the convex hull.
 ---@param margin number # Hull margin added outside the hull.
 ---@param material integer # New material in convex hull.
 ---@param density number # New normalized density.
@@ -10262,7 +11804,7 @@ function sm.voxelTerrainCell.setDensityConvexHull(vertices, margin, density, vox
 function sm.voxelTerrainCell.setMaterialAndDensityConvexHull(vertices, margin, material, density, voxelFilter, noiseFrequency, noiseIntensity) end
 
 ---Sets material in convex hull shape in the cell's voxel grid.  
----@param vertices table # Table of vertices {[Vec3], ...} that make up the convex hull.
+---@param vertices Vec3[] # Table of vertices {[Vec3], ...} that make up the convex hull.
 ---@param margin number # Hull margin added outside the hull.
 ---@param material integer # New material in convex hull.
 ---@param voxelFilter? integer # The voxel material filter to overwrite. (Defaults to [sm.voxelTerrainCell.voxelFilter, sm.voxelTerrainCell.voxelFilter.all])
@@ -10289,19 +11831,40 @@ sm.terrainHarvestable = {}
 ---@return number # The calculated unsalted initial hash.
 function sm.terrainHarvestable.calculateInitialHash(uuid, world, position, rotation) end
 
-
 ---Use to generate cell data for producing tunnels through voxels.  
 sm.tunnelGenerator = {}
 
----Returns an array table of pathing results. Each element consisting of a table {positions={[Vec3],...}} of position arrays.  
+---@class TunnelPathingSettings
+---@field costNoiseFrequency number
+---@field costNoiseIntensity number
+---@field costZPenalty number
+
+---@class TunnelRequest
+---@field posA Vec3
+---@field posB Vec3
+---@field dirA? Vec3
+---@field dirB? Vec3
+---@field pathingSettings string
+
+---@class TunnelBlocker
+---@field mi Vec3
+---@field mx Vec3
+---@field type string
+
+---@class Tunnel
+---@field positions Vec3[]
+---@field tunnelType string
+
+---Returns an array table of pathing results. Each element consisting of a table {{positions={[Vec3],...}} of position arrays.  
 ---@param seed integer # Simplex noise seed.
 ---@param min Vec3 # Grid min x (inclusive).
 ---@param max Vec3 # Grid max x (non inclusive).
----@param pathingSettings table # An table of available pathing settings to be used by tunnel requests. {costNoiseFrequency=number,costNoiseIntensity=number,costZPenalty=number}
----@param tunnelRequests table # An array table of tunnel requests. {{posA=[Vec3], posB=[Vec3](, dirA=[Vec3])(, dirB=[Vec3]), pathingSettings=string},...}
+---@param pathingSettings { [string]: TunnelPathingSettings } # An table of available pathing settings to be used by tunnel requests. {costNoiseFrequency=number,costNoiseIntensity=number,costZPenalty=number}
+---@param tunnelRequests TunnelRequest[] # An array table of tunnel requests. {{posA=[Vec3], posB=[Vec3](, dirA=[Vec3])(, dirB=[Vec3]), pathingSettings=string},...}
+---@param blockers TunnelBlocker[] # An array table of tunnel blockers.  {{mi=[Vec3], mx=[Vec3], type=string},...}
 ---@param gridSize number # Size of each grid cell in world units. (Used for debug draw only.)
----@return table # An array table with one tunnel result per request. {{positions={[Vec3],...}}, ...}
-function sm.tunnelGenerator.generate(seed, min, max, pathingSettings, tunnelRequests, gridSize) end
+---@return Tunnel[] # An array table with one tunnel result per request. {{positions={[Vec3],...}}, ...}
+function sm.tunnelGenerator.generate(seed, min, max, pathingSettings, tunnelRequests, blockers, gridSize) end
 
 
 ---@class CharacterClass
@@ -10340,11 +11903,6 @@ function CharacterClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function CharacterClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [CharacterClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function CharacterClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -10364,12 +11922,8 @@ function CharacterClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [CharacterClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function CharacterClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function CharacterClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when the [Character] is hit by a projectile.  
 ---**Note:**
@@ -10378,7 +11932,7 @@ function CharacterClass:client_onLocalPlayerChangedWorld(world) end
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Shape/Harvestable/nil # The shooter, can be a [Player], [Shape], [Harvestable] or nil if unknown. Projectiles shot by a [Unit] will be nil on the client.
+---@param shooter Player|Shape|Harvestable|nil # The shooter, can be a [Player], [Shape], [Harvestable] or nil if unknown. Projectiles shot by a [Unit] will be nil on the client.
 ---@param damage number # The damage value of the projectile.
 ---@param customData any # A Lua object that can be defined at shoot time using [sm.projectile.customProjectileAttack] or an other custom version. 
 ---@param normal Vec3 # The normal at the point of impact.
@@ -10388,7 +11942,7 @@ function CharacterClass:client_onProjectile(position, airTime, velocity, project
 
 ---Called when the [Character] is hit by a melee hit.  
 ---@param position Vec3 # The position in world space where the [Character] was hit.
----@param attacker Player/nil # The attacker. Can be a [Player] or nil if unknown. Attacks made by a [Unit] will be nil on the client.
+---@param attacker Player|nil # The attacker. Can be a [Player] or nil if unknown. Attacks made by a [Unit] will be nil on the client.
 ---@param damage integer # The damage value of the melee hit.
 ---@param power number # The physical impact impact of the hit.
 ---@param direction Vec3 # The direction that the melee attack was made.
@@ -10396,7 +11950,7 @@ function CharacterClass:client_onProjectile(position, airTime, velocity, project
 function CharacterClass:client_onMelee(position, attacker, damage, power, direction, normal) end
 
 ---Called when the [Character] collides with another object.  
----@param other Shape/Character/Harvestable/Lift/nil # The other object. Nil if terrain.
+---@param other Player|Shape|Harvestable|nil # The other object. Nil if terrain.
 ---@param position Vec3 # The position in world space where the collision occurred.
 ---@param selfPointVelocity Vec3 # The velocity that that the [Character] had at the point of collision.
 ---@param otherPointVelocity Vec3 # The velocity that that the other object had at the point of collision.
@@ -10465,11 +12019,6 @@ function ClientScriptableObjectClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function ClientScriptableObjectClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [ClientScriptableObjectClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function ClientScriptableObjectClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -10489,12 +12038,8 @@ function ClientScriptableObjectClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [ClientScriptableObjectClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function ClientScriptableObjectClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function ClientScriptableObjectClass:client_onLocalPlayerChangedWorld(world) end
 
 
 ---@class GameClass
@@ -10566,11 +12111,6 @@ function GameClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function GameClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [GameClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function GameClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -10590,12 +12130,8 @@ function GameClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [GameClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function GameClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function GameClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when a [Player] joins the game.  
 ---@param player Player # The joining player.
@@ -10688,11 +12224,6 @@ function HarvestableClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function HarvestableClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [HarvestableClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function HarvestableClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -10712,15 +12243,16 @@ function HarvestableClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [HarvestableClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function HarvestableClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function HarvestableClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when the [Harvestable] is unloaded from the game because no [Player]'s [Character] is close enough to it. Also called when exiting the game.  
 function HarvestableClass:server_onUnload() end
+
+---Called occasionally on the [HarvestableClass] to indicate that some time has passed.  
+---For performance reasons; it recommended to use this instead of [HarvestableClass.server_onFixedUpdate] for updates that do not need to happen frequently.  
+---Use [sm.game.getCurrentTick] to calculate the time.  
+function HarvestableClass:server_onReceiveUpdate() end 
 
 ---Called when the [Harvestable] collides with another object.  
 ---@param other Shape/Character # The other object.
@@ -10745,7 +12277,7 @@ function HarvestableClass:server_onCollision(other, position, selfPointVelocity,
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Shape/Harvestable/nil # The shooter, can be a [Player], [Shape], [Harvestable] or nil if unknown. Projectiles shot by a [Unit] will be nil on the client.
+---@param shooter Player|Shape|Harvestable|nil # The shooter, can be a [Player], [Shape], [Harvestable] or nil if unknown. Projectiles shot by a [Unit] will be nil on the client.
 ---@param damage integer # The damage value of the projectile.
 ---@param customData any # A Lua object that can be defined at shoot time using [sm.projectile.customProjectileAttack] or an other custom version. 
 ---@param normal Vec3 # The normal at the point of impact.
@@ -10760,7 +12292,7 @@ function HarvestableClass:client_onProjectile(position, airTime, velocity, proje
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Unit/Shape/Harvestable/nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
+---@param shooter Player|Unit|Shape|Harvestable|nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
 ---@param damage integer # The damage value of the projectile.
 ---@param customData any # A Lua object that can be defined at shoot time using [sm.projectile.customProjectileAttack] or an other custom version. 
 ---@param normal Vec3 # The normal at the point of impact.
@@ -10778,7 +12310,7 @@ function HarvestableClass:server_onExplosion(center, destructionLevel, damage) e
 ---**Note:**
 ---*If the attacker is destroyed before the hit lands, the attacker value will be nil.*
 ---@param position Vec3 # The position in world space where the [Harvestable] was hit.
----@param attacker Player/nil # The attacker. Can be a [Player] or nil if unknown. Attacks made by a [Unit] will be nil on the client.
+---@param attacker Player|nil # The attacker. Can be a [Player] or nil if unknown. Attacks made by a [Unit] will be nil on the client.
 ---@param damage integer # The damage value of the melee hit.
 ---@param power number # The physical impact of the hit.
 ---@param direction Vec3 # The direction that the melee attack was made.
@@ -10789,7 +12321,7 @@ function HarvestableClass:client_onMelee(position, attacker, damage, power, dire
 ---**Note:**
 ---*If the attacker is destroyed before the hit lands, the attacker value will be nil.*
 ---@param position Vec3 # The position in world space where the [Harvestable] was hit.
----@param attacker Player/Unit/nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
+---@param attacker Player|Unit|nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
 ---@param damage integer # The damage value of the melee hit.
 ---@param power number # The physical impact of the hit.
 ---@param direction Vec3 # The direction that the melee attack was made.
@@ -10872,11 +12404,6 @@ function PlayerClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function PlayerClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [PlayerClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function PlayerClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -10896,12 +12423,8 @@ function PlayerClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [PlayerClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function PlayerClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function PlayerClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when the player presses or releases the 'Use' key (default 'E').  
 ---@param character Character # The [Player]'s [Character]'. Same as self.player.character.
@@ -10924,7 +12447,7 @@ function PlayerClass:client_onReload() end
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Unit/Shape/Harvestable/nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
+---@param shooter Player|Unit|Shape|Harvestable|nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
 ---@param damage integer # The damage value of the projectile.
 ---@param customData any # A Lua object that can be defined at shoot time using [sm.projectile.customProjectileAttack] or an other custom version. 
 ---@param normal Vec3 # The normal at the point of impact.
@@ -10942,7 +12465,7 @@ function PlayerClass:server_onExplosion(center, destructionLevel, damage) end
 ---**Note:**
 ---*If the attacker is destroyed before the projectile hits, the attacker value will be nil.*
 ---@param position Vec3 # The position in world space where the [Player]'s [Character] was hit.
----@param attacker Player/Unit/nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
+---@param attacker Player|Unit|nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
 ---@param damage integer # The damage value of the melee hit.
 ---@param power number # The physical impact impact of the hit.
 ---@param direction Vec3 # The direction that the melee attack was made.
@@ -10950,7 +12473,7 @@ function PlayerClass:server_onExplosion(center, destructionLevel, damage) end
 function PlayerClass:server_onMelee(position, attacker, damage, power, direction, normal) end
 
 ---Called when the [Player]'s [Character] collides with another object.  
----@param other Shape/Character/Harvestable/Lift/nil # The other object. Nil if terrain.
+---@param other Shape|Character|Harvestable|Lift|nil # The other object. Nil if terrain.
 ---@param position Vec3 # The position in world space where the collision occurred.
 ---@param selfPointVelocity Vec3 # The velocity that that the [Player]'s [Character] had at the point of collision.
 ---@param otherPointVelocity Vec3 # The velocity that that the other object had at the point of collision.
@@ -10960,14 +12483,24 @@ function PlayerClass:server_onCollision(other, position, selfPointVelocity, othe
 ---Called when the [Player]'s [Character] is crushed.  
 function PlayerClass:server_onCollisionCrush() end
 
+---@class RemovedShape
+---@field uuid Uuid
+---@field amount number
+---@field type "part"|"block"|"joint"
+
 ---Called when the [Player] removed a [Shape] from the [World].  
 ---Will receive a table of tables listing the items removed by this action.  
 ---Element format:   
 ---[Uuid]	uuid	The item uuid.  
 ---integer	amount	The amount of items with this uuid.  
 ---string	type	Type of shape removed. Can be "part", "block" or "joint".  
----@param items table # A table listing the removed items. {{uuid=[Uuid], amount=integer, type=string}, ..}
+---@param items RemovedShape[] # A table listing the removed items. {{uuid=[Uuid], amount=integer, type=string}, ..}
 function PlayerClass:server_onShapeRemoved(items) end
+
+---@class InventoryChange
+---@field uuid Uuid
+---@field difference number
+---@field tool? Tool
 
 ---Called when the [Player] has changes in the inventory [Container].  
 ---Will receive a table listing the changes.  
@@ -10976,7 +12509,7 @@ function PlayerClass:server_onShapeRemoved(items) end
 ---integer	difference	The change in amount. Positive numbers mean item gain, negative item loss.  
 ---[Tool]	tool	(Optional) If the item is a [Tool], this is the tool. Otherwise nil.  
 ---@param inventory Container # The player's inventory [Container].
----@param changes table # A table listing the changes. {{uuid=[Uuid], difference=integer, tool=[Tool]}, ..}
+---@param changes InventoryChange[] # A table listing the changes. {{uuid=[Uuid], difference=integer, tool=[Tool]}, ..}
 function PlayerClass:server_onInventoryChanges(inventory, changes) end
 
 
@@ -11025,11 +12558,6 @@ function ScriptableObjectClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function ScriptableObjectClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [ScriptableObjectClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function ScriptableObjectClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -11049,12 +12577,8 @@ function ScriptableObjectClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [ScriptableObjectClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function ScriptableObjectClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function ScriptableObjectClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when the [ScriptableObject] is unloaded when exiting the game.  
 function ScriptableObjectClass:server_onUnload() end
@@ -11070,6 +12594,7 @@ function ScriptableObjectClass:server_onUnload() end
 ---@field storage Storage (Server side only.) A [Storage] object that can be used to store data for the next time loading this object after being unloaded.
 ---@field data any Data from the "data" json element.
 ---@field params any Parameter set with [Interactable.setParams] when created from a script.
+---@field tags any The tags set on the interactable from the editor.
 local ShapeClass = class()
 
 ---Sets the connection-point highlight color. The connection-point is shown when using the <em>Connect Tool</em> and selecting the interactable. (Defaults to white)  
@@ -11115,6 +12640,10 @@ ShapeClass.maxParentCount = {}
 ---@type integer
 ShapeClass.poseWeightCount = {}
 
+---Sets whether the interactable should remain active when put on a lift. (Defaults to false)  
+---@type boolean
+ShapeClass.keepActiveOnLift = {}
+
 ---Called when the scripted object is created. This occurs when a new object is built, spawned, or loaded from the save file.  
 function ShapeClass:server_onCreate() end
 
@@ -11142,11 +12671,6 @@ function ShapeClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function ShapeClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [ShapeClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function ShapeClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -11166,12 +12690,8 @@ function ShapeClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [ShapeClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function ShapeClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function ShapeClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when the [Interactable] is unloaded from the game because no [Player]'s [Character] is close enough to it. Also called when exiting the game.  
 ---**Note:**
@@ -11224,7 +12744,7 @@ function ShapeClass:client_onAction(action, state) end
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Shape/Harvestable/nil # The shooter, can be a [Player], [Shape], [Harvestable] or nil if unknown. Projectiles shot by a [Unit] will be nil on the client.
+---@param shooter Player|Shape|Harvestable|nil # The shooter, can be a [Player], [Shape], [Harvestable] or nil if unknown. Projectiles shot by a [Unit] will be nil on the client.
 ---@param damage number # The damage value of the projectile.
 ---@param customData any # A Lua object that can be defined at shoot time using [sm.projectile.customProjectileAttack] or an other custom version. 
 ---@param normal Vec3 # The normal at the point of impact.
@@ -11239,7 +12759,7 @@ function ShapeClass:client_onProjectile(position, airTime, velocity, projectileN
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Unit/Shape/Harvestable/nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
+---@param shooter Player|Unit|Shape|Harvestable|nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
 ---@param damage integer # The damage value of the projectile.
 ---@param customData any # A Lua object that can be defined at shoot time using [sm.projectile.customProjectileAttack] or an other custom version. 
 ---@param normal Vec3 # The normal at the point of impact.
@@ -11254,7 +12774,7 @@ function ShapeClass:server_onSledgehammer() end
 ---**Note:**
 ---*If the attacker is destroyed before the hit lands, the attacker value will be nil.*
 ---@param position Vec3 # The position in world space where the [Shape] was hit.
----@param attacker Player/nil # The attacker. Can be a [Player] or nil if unknown. Attacks made by a [Unit] will be nil on the client.
+---@param attacker Player|nil # The attacker. Can be a [Player] or nil if unknown. Attacks made by a [Unit] will be nil on the client.
 ---@param damage integer # The damage value of the melee hit.
 ---@param power number # The physical impact impact of the hit.
 ---@param direction Vec3 # The direction that the melee attack was made.
@@ -11265,7 +12785,7 @@ function ShapeClass:client_onMelee(position, attacker, damage, power, direction,
 ---**Note:**
 ---*If the attacker is destroyed before the hit lands, the attacker value will be nil.*
 ---@param position Vec3 # The position in world space where the [Shape] was hit.
----@param attacker Player/Unit/nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
+---@param attacker Player|Unit|nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
 ---@param damage integer # The damage value of the melee hit.
 ---@param power number # The physical impact impact of the hit.
 ---@param direction Vec3 # The direction that the melee attack was made.
@@ -11280,7 +12800,7 @@ function ShapeClass:server_onMelee(position, attacker, damage, power, direction,
 function ShapeClass:server_onExplosion(center, destructionLevel, damage) end
 
 ---Called when the [Shape] collides with another object.  
----@param other Shape/Character/Harvestable/Lift/nil # The other object. Nil if terrain.
+---@param other Shape|Character|Harvestable|Lift|nil # The other object. Nil if terrain.
 ---@param position Vec3 # The position in world space where the collision occurred.
 ---@param selfPointVelocity Vec3 # The velocity that that the [Shape] had at the point of collision.
 ---@param otherPointVelocity Vec3 # The velocity that that the other object had at the point of collision.
@@ -11288,7 +12808,7 @@ function ShapeClass:server_onExplosion(center, destructionLevel, damage) end
 function ShapeClass:client_onCollision(other, position, selfPointVelocity, otherPointVelocity, normal) end
 
 ---Called when the [Shape] collides with another object.  
----@param other Shape/Character/Harvestable/Lift/nil # The other object. Nil if terrain.
+---@param other Shape|Character|Harvestable|Lift|nil # The other object. Nil if terrain.
 ---@param position Vec3 # The position in world space where the collision occurred.
 ---@param selfPointVelocity Vec3 # The velocity that that the [Shape] had at the point of collision.
 ---@param otherPointVelocity Vec3 # The velocity that that the other object had at the point of collision.
@@ -11435,11 +12955,6 @@ function UnitClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function UnitClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [UnitClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function UnitClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -11459,12 +12974,8 @@ function UnitClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [UnitClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function UnitClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function UnitClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when the [Unit]'s [Character] is hit by a projectile.  
 ---**Note:**
@@ -11473,7 +12984,7 @@ function UnitClass:client_onLocalPlayerChangedWorld(world) end
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Unit/Shape/Harvestable/nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
+---@param shooter Player|Unit|Shape|Harvestable|nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
 ---@param damage integer # The damage value of the projectile.
 ---@param customData any # A Lua object that can be defined at shoot time using [sm.projectile.customProjectileAttack] or an other custom version. 
 ---@param normal Vec3 # The normal at the point of impact.
@@ -11491,7 +13002,7 @@ function UnitClass:server_onExplosion(center, destructionLevel, damage) end
 ---**Note:**
 ---*If the attacker is destroyed before the hit lands, the attacker value will be nil.*
 ---@param position Vec3 # The position in world space where the [Unit]'s [Character] was hit.
----@param attacker Player/Unit/nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
+---@param attacker Player|Unit|nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
 ---@param damage integer # The damage value of the melee hit.
 ---@param power number # The physical impact impact of the hit.
 ---@param direction Vec3 # The direction that the melee attack was made.
@@ -11499,7 +13010,7 @@ function UnitClass:server_onExplosion(center, destructionLevel, damage) end
 function UnitClass:server_onMelee(position, attacker, damage, power, direction, normal) end
 
 ---Called when the [Unit]'s [Character] collides with another object.  
----@param other Shape/Character/Harvestable/Lift/nil # The other object. Nil if terrain.
+---@param other Shape|Character|Harvestable|Lift|nil # The other object. Nil if terrain.
 ---@param position Vec3 # The position in world space where the collision occurred.
 ---@param selfPointVelocity Vec3 # The velocity that that the [Unit]'s [Character] had at the point of collision.
 ---@param otherPointVelocity Vec3 # The velocity that that the other object had at the point of collision.
@@ -11629,7 +13140,7 @@ WorldClass.isIndoor = {}
 WorldClass.isStatic = {}
 
 ---Sets the render mode for this world. (Default "outdoor")  
----Possible values: "outdoor", "challenge", "warehouse"  
+---Possible values: "outdoor", "challenge", "warehouse", "mini_dungeon", "underground"  
 ---@type string
 WorldClass.renderMode = {}
 
@@ -11674,11 +13185,6 @@ function WorldClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function WorldClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [WorldClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function WorldClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -11698,12 +13204,8 @@ function WorldClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [WorldClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function WorldClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function WorldClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when the [World] is unloaded from the game on shutdown.  
 function WorldClass:server_onUnload() end
@@ -11787,11 +13289,11 @@ function WorldClass:server_onInteractableDestroyed(interactable) end
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Unit/Shape/Harvestable/nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
+---@param shooter Player|Unit|Shape|Harvestable|nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
 ---@param damage integer # The damage value of the projectile.
 ---@param customData any # A Lua object that can be defined at shoot time using [sm.projectile.customProjectileAttack] or an other custom version. 
 ---@param normal Vec3 # The normal at the point of impact.
----@param target Character/Shape/Harvestable/Lift/nil # The hit target. Can be a [Character], [Shape], [Harvestable], [Lift] or nil if terrain or unknown.
+---@param target Character|Shape|Harvestable|Lift|nil # The hit target. Can be a [Character], [Shape], [Harvestable], [Lift] or nil if terrain or unknown.
 ---@param uuid Uuid # The uuid of the projectile.
 function WorldClass:server_onProjectile(position, airTime, velocity, projectileName, shooter, damage, customData, normal, target, uuid) end
 
@@ -11805,8 +13307,8 @@ function WorldClass:server_onExplosion(center, destructionLevel, damage) end
 ---**Note:**
 ---*If the attacker is destroyed before the hit lands, the attacker value will be nil.*
 ---@param position Vec3 # The position in world space where the attack hit.
----@param attacker Player/Unit/nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
----@param target Character/Shape/Harvestable/Lift/nil # The hit target. Can be a [Character], [Shape], [Harvestable], [Lift] or nil if terrain or unknown.
+---@param attacker Player|Unit|nil # The attacker. Can be a [Player], [Unit] or nil if unknown.
+---@param target Character|Shape|Harvestable|Lift|nil # The hit target. Can be a [Character], [Shape], [Harvestable], [Lift] or nil if terrain or unknown.
 ---@param damage integer # The damage value of the melee hit.
 ---@param power number # The physical impact impact of the hit.
 ---@param direction Vec3 # The direction that the melee attack was made.
@@ -11817,13 +13319,13 @@ function WorldClass:server_onMelee(position, attacker, target, damage, power, di
 ---@param position Vec3 # The position in world space where projectile was fired from.
 ---@param velocity Vec3 # The fire velocity of the projectile.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Unit/Shape/Harvestable/nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
+---@param shooter Player|Unit|Shape|Harvestable|nil # The shooter. Can be a [Player], [Unit], [Shape], [Harvestable] or nil if unknown.
 ---@param uuid Uuid # The uuid of the projectile.
 function WorldClass:server_onProjectileFire(position, velocity, projectileName, shooter, uuid) end
 
 ---Called when a collision occurs in this world.  
----@param objectA Shape/Character/Harvestable/Lift/nil # The first colliding object. Nil if terrain.
----@param objectB Shape/Character/Harvestable/Lift/nil # The other colliding object. Nil if terrain.
+---@param objectA Shape|Character|Harvestable|Lift|nil # The first colliding object. Nil if terrain.
+---@param objectB Shape|Character|Harvestable|Lift|nil # The other colliding object. Nil if terrain.
 ---@param position Vec3 # The position in world space where the collision occurred.
 ---@param pointVelocityA Vec3 # The velocity that that the first object had at the point of collision.
 ---@param pointVelocityB Vec3 # The velocity that that the other object had at the point of collision.
@@ -11831,8 +13333,8 @@ function WorldClass:server_onProjectileFire(position, velocity, projectileName, 
 function WorldClass:server_onCollision(objectA, objectB, position, pointVelocityA, pointVelocityB, normal) end
 
 ---Called when a collision occurs in this world.  
----@param objectA Shape/Character/Harvestable/Lift/nil # One of the colliding objects. Nil if terrain.
----@param objectB Shape/Character/Harvestable/Lift/nil # The other colliding object. Nil if terrain.
+---@param objectA Shape|Character|Harvestable|Lift|nil # One of the colliding objects. Nil if terrain.
+---@param objectB Shape|Character|Harvestable|Lift|nil # The other colliding object. Nil if terrain.
 ---@param position Vec3 # The position in world space where the collision occurred.
 ---@param pointVelocityA Vec3 # The velocity that that the first object had at the point of collision.
 ---@param pointVelocityB Vec3 # The velocity that that the other object had at the point of collision.
@@ -11846,25 +13348,29 @@ function WorldClass:client_onCollision(objectA, objectB, position, pointVelocity
 ---@param airTime number # The time, in seconds, that the projectile spent flying before the hit.
 ---@param velocity Vec3 # The velocity of the projectile at impact.
 ---@param projectileName string # The name of the projectile. (Legacy, use uuid instead)
----@param shooter Player/Character/Shape/Harvestable/nil # The shooter. Can be a [Player], [Character], [Shape], [Harvestable] or nil if unknown.
+---@param shooter Player|Character|Shape|Harvestable|nil # The shooter. Can be a [Player], [Character], [Shape], [Harvestable] or nil if unknown.
 ---@param damage integer # The damage value of the projectile.
 ---@param normal Vec3 # The normal at the point of impact.
----@param target Character/Shape/Harvestable/Lift/nil # The hit target. Can be a [Character], [Shape], [Harvestable], [Lift] or nil if terrain or unknown.
+---@param target Character|Shape|Harvestable|Lift|nil # The hit target. Can be a [Character], [Shape], [Harvestable], [Lift] or nil if terrain or unknown.
 ---@param uuid Uuid # The uuid of the projectile.
 function WorldClass:client_onProjectile(position, airTime, velocity, projectileName, shooter, damage, normal, target, uuid) end
 
 ---Called when a cluster of voxels are destroyed by a player or creation  
 ---@param densityLoss table # A table containing information about density loss for all materials.
----@param positions table # A table containing all positions where voxels were lost for each material.
+---@param positions Vec3[] # A table containing all positions where voxels were lost for each material.
 function WorldClass:server_onVoxelDestruction(densityLoss, positions) end
 
 ---Called when a cluster of voxels are added by a player  
 ---@param densityGain table # A table containing information about density gain for all materials.
----@param positions table # A table containing all positions where voxels were added for each material.
+---@param positions Vec3[] # A table containing all positions where voxels were added for each material.
 function WorldClass:server_onVoxelConstruction(densityGain, positions) end
 
+---@class MineSpawn
+---@field position Vec3
+---@field spawnId number
+
 ---Called when the mining manager has filtered a batch of voxel loot candidates.  
----@param spawns table # An array of { position = [Vec3], spawnId = integer } describing where and what to spawn.
+---@param spawns MineSpawn[] # An array of { position = [Vec3], spawnId = integer } describing where and what to spawn.
 function WorldClass:server_onMining(spawns) end
 
 
@@ -11877,6 +13383,8 @@ function WorldClass:server_onMining(spawns) end
 ---@field storage Storage (Server side only.) A [Storage] object that can be used to store data for the next time loading this object after being unloaded.
 local ToolClass = class()
 
+---Toggles whether the tool can be equipped while the owner is sitting in a seat.
+---@type boolean
 ToolClass.equipWhileSeated = {}
 
 ---Called when the scripted object is created. This occurs when a new object is built, spawned, or loaded from the save file.  
@@ -11906,11 +13414,6 @@ function ToolClass:client_onRefresh() end
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
 function ToolClass:server_onFixedUpdate(timeStep) end
 
----Called occasionally to indicate that some time has passed.  
----For performance reasons; it recommended to use this instead of [ToolClass.server_onFixedUpdate, server_onFixedUpdate] for updates that do not need to happen frequently.  
----Use [sm.game.getCurrentTick] to calculate the time.  
-function ToolClass:server_onReceiveUpdate() end
-
 ---Called every game tick &ndash; 40 ticks a second. If the frame rate is lower than 40 fps, this event may be called twice.  
 ---During a fixed update, physics and logic between interactables are updated.  
 ---@param timeStep number # The time period of a tick. (Is always 0.025, a 1/40th of a second.)
@@ -11930,12 +13433,8 @@ function ToolClass:client_onUpdate(deltaTime) end
 ---The data will arrive after [ToolClass.client_onCreate, client_onCreate] during the same tick.  
 ---Channel 1 will be received before channel 2 if both are updated.  
 ---@param data any # Any lua object set with [Network.setClientData]
----@param channel integer # Client data channel, 1 or 2. (default: 1)
+---@param channel? 1|2 # Client data channel, 1 or 2. (default: 1)
 function ToolClass:client_onClientDataUpdate(data, channel) end
-
----Called when the client player changes world.  
----@param world World # The entered world.
-function ToolClass:client_onLocalPlayerChangedWorld(world) end
 
 ---Called when a [Player] equips the [Tool].  
 ---@param animate boolean # A boolean indicating whether the event should be animated or not.
@@ -11968,3 +13467,311 @@ function ToolClass:client_onReload() end
 function ToolClass:client_canEquip() end
 
 
+---The <a target="_blank" href="https://bitop.luajit.org/index.html">BitOp library</a> that adds <a target="_blank" href="https://en.wikipedia.org/wiki/Bitwise_operation">bitwise operations</a> on numbers.
+bit = {}
+
+---Normalizes a number to the numeric range for bit operations and returns it.
+---This function is usually not needed since all bit operations already normalize all of their input arguments.     
+---```
+---print(0xffffffff)                --> 4294967295 (*)
+---print(bit.tobit(0xffffffff))     --> -1
+---print(bit.tobit(0xffffffff))     --> 0xffffffff
+---print(bit.tobit(0xffffffff + 1)) --> 0
+---print(bit.tobit(2^40 + 1234))    --> 1234
+---```
+---@param x number
+---@return number y
+function bit.tobit(x) end
+
+---Converts its first argument to a hex string.
+---The number of hex digits is given by the absolute value of the optional second argument.
+---Positive numbers between 1 and 8 generate lowercase hex digits.
+---Negative numbers generate uppercase hex digits.
+---Only the least-significant 4*|n| bits are used. The default is to generate 8 lowercase hex digits.
+---```
+---print(bit.tohex(1))              --> 00000001
+---print(bit.tohex(-1))             --> ffffffff
+---print(bit.tohex(0xffffffff))     --> ffffffff
+---print(bit.tohex(-1, -8))         --> FFFFFFFF
+---print(bit.tohex(0x21, 4))        --> 0021
+---print(bit.tohex(0x87654321, 4))  --> 4321
+---```
+---@param x number
+---@param n? number
+---@return numbr y
+function bit.tohex(x, n) end
+
+---Returns the bitwise not of its argument.
+---```
+---print(bit.bnot(0))            --> -1
+---print(bit.bnot(0))            --> 0xffffffff
+---print(bit.bnot(-1))           --> 0
+---print(bit.bnot(0xffffffff))   --> 0
+---print(bit.bnot(0x12345678))   --> 0xedcba987
+---```
+---@param x number
+---@return number y
+function bit.bnot(x) end
+
+---Returns the bitwise and of all of its arguments. Note that more than two arguments are allowed. 
+---```
+---print(bit.band(0x12345678, 0xff))        --> 0x00000078
+---```
+---@param ... number
+---@return number y
+function bit.band(...) end
+
+---Returns the bitwise or of all of its arguments. Note that more than two arguments are allowed. 
+---```
+---print(bit.bor(1, 2, 4, 8))                --> 15
+---```
+---@param ... number
+---@return number y
+function bit.bor(...) end
+
+---Returns the bitwise xor of all of its arguments. Note that more than two arguments are allowed. 
+---```
+---print(bit.bxor(0xa5a5f0f0, 0xaa55ff00))  --> 0x0ff00ff0
+---```
+---@param ... unknown
+---@return number y
+function bit.bxor(...) end
+
+---Returns the bitwise logical left-shift of its first argument by the number of bits given by the second argument. 
+---Logical shifts treat the first argument as an unsigned number and shift in 0-bits. Arithmetic right-shift treats the most-significant bit as a sign bit and replicates it.
+---Only the lower 5 bits of the shift count are used (reduces to the range [0..31]). 
+---```
+---print(bit.lshift(1, 0))              --> 1
+---print(bit.lshift(1, 8))              --> 256
+---print(bit.lshift(1, 40))             --> 256
+---print(bit.lshift(0x87654321, 12))    --> 0x54321000
+---```
+---@param x number
+---@param n number
+---@return number y
+function bit.lshift(x, n) end
+
+---Returns the bitwise logical right-shift of its first argument by the number of bits given by the second argument. 
+---Logical shifts treat the first argument as an unsigned number and shift in 0-bits. Arithmetic right-shift treats the most-significant bit as a sign bit and replicates it.
+---Only the lower 5 bits of the shift count are used (reduces to the range [0..31]). 
+---```
+---print(bit.rshift(256, 8))            --> 1
+---print(bit.rshift(-256, 8))           --> 16777215
+---print(bit.rshift(0x87654321, 12))    --> 0x00087654
+---```
+---@param x number
+---@param n number
+---@return number y
+function bit.rshift(x, n) end
+
+---Returns the bitwise arithmetic right-shift of its first argument by the number of bits given by the second argument. 
+---Logical shifts treat the first argument as an unsigned number and shift in 0-bits. Arithmetic right-shift treats the most-significant bit as a sign bit and replicates it.
+---Only the lower 5 bits of the shift count are used (reduces to the range [0..31]). 
+---```
+---print(bit.arshift(256, 8))           --> 1
+---print(bit.arshift(-256, 8))          --> -1
+---print(bit.arshift(0x87654321, 12))   --> 0xfff87654
+---```
+---@param x number
+---@param n number
+---@return number y
+function bit.arshift(x, n) end
+
+---Returns the bitwise left rotation of its first argument by the number of bits given by the second argument.
+---Bits shifted out on one side are shifted back in on the other side. 
+---Only the lower 5 bits of the rotate count are used (reduces to the range [0..31]). 
+---```
+---print(bit.rol(0x12345678, 12))   --> 0x45678123
+---```
+---@param x number
+---@param n number
+---@return number y
+function bit.rol(x, n) end
+
+---Returns the bitwise right rotation of its first argument by the number of bits given by the second argument.
+---Bits shifted out on one side are shifted back in on the other side. 
+---Only the lower 5 bits of the rotate count are used (reduces to the range [0..31]). 
+---```
+---print(bit.ror(0x12345678, 12))   --> 0x67812345
+---```
+---@param x number
+---@param n number
+---@return number y
+function bit.ror(x, n) end
+
+---Swaps the bytes of its argument and returns it. This can be used to convert little-endian 32 bit numbers to big-endian 32 bit numbers or vice versa.
+---```
+---print(bit.bswap(0x12345678)) --> 0x78563412
+---print(bit.bswap(0x78563412)) --> 0x12345678
+---```
+---@param x number
+---@return number y
+function bit.bswap(x) end
+
+
+
+---Called on every thread before everything else.
+---@param world World The World object that the terrain script is attached to.
+---@param generatorIndex number The thread id of this instance.
+function Init(world, generatorIndex) end
+
+---Called on every thread after Init.  
+---Return **true** if loading any saved terrain data was successful, return **false** if it wasn't.
+---If **false** is returned, the **Create** function will be called.  
+---@return boolean success Whether loading terrain data was successful.
+function Load() end
+
+---Called after Load.  
+---Only gets called if the **Load** function returns false.  
+---@param xMin number The minimum x size of the world.
+---@param xMax number The maximum x size of the world.
+---@param yMin number The minimum y size of the world.
+---@param yMax number The maximum y size of the world.
+---@param seed number The seed to be used for random number generation.
+---@param data any Some data that the world might provide, for example, the path to a world file.
+function Create( xMin, xMax, yMin, yMax, seed, data ) end
+
+---Called before any of the **Get\<parameter\>At** and **Get\<objects\>ForCell** functions are called.  
+---Generally used to set up data that will be used for those functions later.  
+---
+---The bits of the `loadFlags` mask, from least significant to most significant bit, correspond to:  
+---1. Creations
+---2. Surface
+---3. Assets
+---4. Nodes (broken, always 0)
+---5. Harvestables
+---6. Kinematics
+---@param cellX number The x coordinate of the cell.
+---@param cellY number The y coordinate of the cell.
+---@param loadFlags integer A mask of what should be loaded by the current thread. Usually used for sm.terrainTile.getContentFromPrefab.
+function PrepareCell( cellX, cellY, loadFlags ) end
+
+---Should return the path of the tile with the given uuid.  
+---The game automatically calls this to get the path of tiles.  
+---@param uuid Uuid The UUID of the tile.
+---@return string path The path to the tile.
+function GetTilePath( uuid ) end
+
+---Determines what the terrain surface height is at a given **x** and **y** coordinate.
+---@param x number The x coordinate.
+---@param y number The y coordinate.
+---@param lod number The Level of Detail value. The higher it is, the less fidelity the terrain height is going to have.
+---@return number height The height of the terrain.
+function GetHeightAt( x, y, lod ) end
+
+---Determines the ground color.
+---@param x number The x coordinate.
+---@param y number The y coordinate.
+---@param lod number The Level of Detail value. The higher it is, the less fidelity the terrain colour is going to have.
+---@return number r The red value of the colour.
+---@return number g The green value of the colour.
+---@return number b The blue value of the colour.
+function GetColorAt( x, y, lod ) end
+
+---Determines what material the ground has.
+---Each returned number determines the weight of that specific ground material.
+---The ground material set can be set on the world class.
+---@param x number The x coordinate.
+---@param y number The y coordinate.
+---@param lod number The Level of Detail value. The higher it is, the less fidelity the terrain material is going to have.
+---@return number material_1_weight The weight of the first material.
+---@return number material_2_weight The weight of the second material.
+---@return number material_3_weight The weight of the third material.
+---@return number material_4_weight The weight of the fourth material.
+---@return number material_5_weight The weight of the fifth material.
+---@return number material_6_weight The weight of the sixth material.
+---@return number material_7_weight The weight of the seventh material.
+---@return number material_8_weight The weight of the eighth material.
+function GetMaterialAt( x, y, lod ) end
+
+---Determines what clutter to place in the tile. 
+---The clutter set can be set on the world class.
+---@param x number The x coordinate.
+---@param y number The y coordinate.
+---@return number clutterId The id of the clutter.
+function GetClutterIdxAt( x, y ) end
+
+---Determines what assets to place in the cell.
+---@param cellX number The x coordinate of the cell.
+---@param cellY number The y coordinate of the cell.
+---@param lod number The Level of Detail value. The higher it is, the less fidelity the terrain assets are going to have.
+---@return TerrainAsset[] terrainAssets The terrain assets for the cell.
+function GetAssetsForCell( cellX, cellY, lod ) end
+
+---Determines what nodes to place in the cell.
+---@param cellX number The x coordinate of the cell.
+---@param cellY number The y coordinate of the cell.
+---@return TerrainNode[] nodes The nodes for the cell.
+function GetNodesForCell( cellX, cellY ) end
+
+---Determines what creations to place in the cell.
+---@param cellX number The x coordinate of the cell.
+---@param cellY number The y coordinate of the cell.
+---@return TerrainCreation[] creations The creations for the cell.
+function GetCreationsForCell( cellX, cellY ) end
+
+---Determines what harvestables to place in the cell.
+---@param cellX number The x coordinate of the cell.
+---@param cellY number The y coordinate of the cell.
+---@param lod number The Level of Detail value. The higher it is, the less fidelity the harvestables are going to have.
+---@return TerrainHarvestable[] harvestables The harvestables for the cell.
+function GetHarvestablesForCell( cellX, cellY, lod ) end
+
+---Determines what kinematics to place in the cell.
+---@param cellX number The x coordinate of the cell.
+---@param cellY number The y coordinate of the cell.
+---@param lod number The Level of Detail value. The higher it is, the less fidelity the kinematics are going to have.
+---@return TerrainKinematic[] kinematics The kinematics for the cell.
+function GetKinematicsForCell( cellX, cellY, lod ) end
+
+---Determines what assets to place in the cell.
+---@param cellX number The x coordinate of the cell.
+---@param cellY number The y coordinate of the cell.
+---@param lod number The Level of Detail value. The higher it is, the less fidelity the decals are going to have.
+---@return TerrainDecal[] decals The decals for the cell.
+function GetDecalsForCell( cellX, cellY, lod ) end
+
+---Determines what tags the cell will have.
+---@param cellX number The x coordinate of the cell.
+---@param cellY number The y coordinate of the cell.
+---@return string[] tags The tags.
+function GetTagsForCell(cellX, cellY) end
+
+---Determines what hit effect should be played at this position.
+---@param x number The x coordinate.
+---@param y number The y coordinate.
+---@return string material The name of the material.
+function GetEffectMaterialAt( x, y ) end
+
+---???
+---@return { [1]: integer, [2]: integer }[] cells {{cellX, cellY}, .. }
+function GetOceanCells() end
+
+---???
+---@return { [1]: number, [2]: number, [3]: number, [4]: string }[] cells {{x, y, z, effectName}, ..}
+function GetHLodCells() end
+
+---@class TerrainCullingPortal
+---@field id integer
+---@field maxX number
+---@field maxY number
+---@field maxZ number
+---@field minX number
+---@field minY number
+---@field minZ number
+---@field zoneA number
+---@field zoneB number
+
+---@class TerrainCullingZone
+---@field id integer
+---@field maxX number
+---@field maxY number
+---@field maxZ number
+---@field minX number
+---@field minY number
+---@field minZ number
+
+---???
+---@return TerrainCullingPortal[] portals
+---@return TerrainCullingZone[] zones
+function GetCullingZoneTree() end

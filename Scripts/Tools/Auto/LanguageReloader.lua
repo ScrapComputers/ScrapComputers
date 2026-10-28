@@ -7,12 +7,9 @@ function LanguageReloaderClass:client_onCreate()
 end
 
 function LanguageReloaderClass:client_onFixedUpdate()
-    if sm.game.getCurrentTick() % 40 ~= 0 then return end
-
-    local config = sm.scrapcomputers.config.getConfig("scrapcomputers.global.automaticLanguageReloading")
-    if config.selectedOption ~= 2 then return end
-
-    sm.scrapcomputers.languageManager.reloadLanguages()
+    if sm.game.getCurrentTick() % 40 == 0 then
+        sm.scrapcomputers.languageManager.reloadLanguages()
+    end
 end
 
 function LanguageReloaderClass:client_onRefresh()

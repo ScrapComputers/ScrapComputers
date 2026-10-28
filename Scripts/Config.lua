@@ -5,77 +5,64 @@ sm.interactable.connectionType.computerIO   = 2 ^ 19
 
 if sm.scrapcomputers then return end
 
--- Theres a bug with sm.json.open where if u disable cache, it fucks up sm.json.open
--- on certain edge cases. If you are getting errors related to that then try enabling
--- this and see if it works.
-local CRUDE_CACHE_JSON_FIX = false
-if CRUDE_CACHE_JSON_FIX then
-    local oldSmJsonOpen = sm.json.open
-    sm.json.open = function(path)
-        local output = oldSmJsonOpen(path)
-        if type(output) ~= "string" then
-            return output
-        end
-
-        local success, result = pcall(sm.json.parseJsonString, output)
-        return success and result or output
-    end
-end
-
 -- The scrap computers API (Addon API & Internal API)
 sm.scrapcomputers = {}
 
 -- sm.types is incomplete, this is a more complete version of it.
 sm.scrapcomputers.types = {
-    [0] = "nil", ["nil"] = 0,
-	[1] = "boolean", ["boolean"] = 1,
-	[2] = "lightUserdata", ["lightUserdata"] = 2,
-	[3] = "number", ["number"] = 3,
-	[4] = "string", ["string"] = 4,
-	[5] = "table", ["table"] = 5,
-	[6] = "function", ["function"] = 6,
-	[7] = "userdata", ["userdata"] = 7,
-	[8] = "thread", ["thread"] = 8,
+    [0] = "nil", 
+	[1] = "boolean",
+	[2] = "lightUserdata",
+	[3] = "number",
+	[4] = "string",
+	[5] = "table",
+	[6] = "function",
+	[7] = "userdata",
+	[8] = "thread",
 	
-	[10001] = "Uuid", ["Uuid"] = 10001,
-	[10003] = "Vec3", ["Vec3"] = 10003,
-	[10004] = "Quat", ["Quat"] = 10004,
-	[10005] = "Color", ["Color"] = 10005,
-	[10006] = "RaycastResult", ["RaycastResult"] = 10006,
-	[10007] = "LoadCellHandle", ["LoadCellHandle"] = 10007,
-	[10008] = "Effect", ["Effect"] = 10008,
+	[10001] = "Uuid",
+	[10003] = "Vec3",
+	[10004] = "Quat",
+	[10005] = "Color",
+	[10006] = "RaycastResult",
+	[10007] = "LoadCellHandle",
+	[10008] = "Effect",
 	
-	[10021] = "Shape", ["Shape"] = 10021,
-	[10022] = "Body", ["Body"] = 10022,
-	[10023] = "Interactable", ["Interactable"] = 10023,
-	[10024] = "Container", ["Container"] = 10024,
-	[10025] = "Harvestable", ["Harvestable"] = 10025,
-	[10026] = "Network", ["Network"] = 10026,
-	[10027] = "World", ["World"] = 10027,
-	[10028] = "Unit", ["Unit"] = 10028,
-	[10029] = "Storage", ["Storage"] = 10029,
-	[10030] = "Player", ["Player"] = 10030,
-	[10031] = "Character", ["Character"] = 10031,
-	[10032] = "Joint", ["Joint"] = 10032,
-	[10033] = "AiState", ["AiState"] = 10033,
-	[10034] = "Quest", ["Quest"] = 10034,
-	[10035] = "AreaTrigger", ["AreaTrigger"] = 10035,
-	[10036] = "Portal", ["Portal"] = 10036,
-	[10037] = "PathNode", ["PathNode"] = 10037,
-	[10038] = "Lift", ["Lift"] = 10038,
-	[10039] = "ScriptableObject", ["ScriptableObject"] = 10039,
-	[10040] = "BuilderGuide", ["BuilderGuide"] = 10040,
-	[10041] = "CullSphereGroup", ["CullSphereGroup"] = 10041,
-	[10042] = "VoxelTerrain", ["VoxelTerrain"] = 10042,
-	[10043] = "JsonGui", ["JsonGui"] = 10043,
-	[10044] = "JsonWidget", ["JsonWidget"] = 10044,
-	[10045] = "ClientScriptableObject", ["ClientScriptableObject"] = 10045,
+	[10021] = "Shape",
+	[10022] = "Body",
+	[10023] = "Interactable",
+	[10024] = "Container",
+	[10025] = "Harvestable",
+	[10026] = "Network",
+	[10027] = "World",
+	[10028] = "Unit",
+	[10029] = "Storage",
+	[10030] = "Player",
+	[10031] = "Character",
+	[10032] = "Joint",
+	[10033] = "AiState",
+	[10034] = "Quest",
+	[10035] = "AreaTrigger",
+	[10036] = "Portal",
+	[10037] = "PathNode",
+	[10038] = "Lift",
+	[10039] = "ScriptableObject",
+	[10040] = "BuilderGuide",
+	[10041] = "CullSphereGroup",
+	[10042] = "VoxelTerrain",
+	[10043] = "JsonGui", 
+	[10044] = "JsonWidget",
+	[10045] = "ClientScriptableObject",
 
-	[20002] = "Tool", ["Tool"] = 20002,
-	[20006] = "GuiInterface", ["GuiInterface"] = 20006,
-	[20007] = "BlueprintVisualization", ["BlueprintVisualization"] = 20007,
-	[20008] = "Garage", ["Garage"] = 20008,
+	[20002] = "Tool",
+	[20006] = "GuiInterface",
+	[20007] = "BlueprintVisualization",
+	[20008] = "Garage",
 }
+
+for typeId, typeName in pairs(sm.scrapcomputers.types) do
+    sm.scrapcomputers.types[typeName] = typeId
+end
 
 ---------------------------------------------------------------------------------------
 
@@ -101,7 +88,7 @@ local modules = {
     "Base64", "Base91",
 
     -- Generic libraries
-    "LZ4", "Color", "MD5", "Table", "JSON", "Util", "Gui", "Time", "QRCode",
+    "LZ4", "Color", "MD5", "Table", "JSON", "Metatable", "Util", "Gui", "Time", "QRCode",
 
     -- Helpers
     "FancyInfoLogger",
@@ -129,31 +116,19 @@ for _, module in pairs(modules) do
     sm.scrapcomputers.logger.info("Config.lua", "Loaded Module: " .. modulePath)
 end
 
-
 ---Contains all functions, data (or whatever). Eg: Displays is a list of all displays in ScrapComputers.
-sm.scrapcomputers.dataList = {
-    -- Removing all of these causes all of the components to break. I have no fucking idea why but IDC.
 
-    ["Displays"] = {},
-    ["Harddrives"] = {},
-    ["Holograms"] = {},
-    ["Terminals"] = {},
-    ["Radars"] = {},
-    ["InputRegisters"] = {},
-    ["OutputRegisters"] = {},
-    ["NetworkPorts"] = {},
-    ["Antennas"] = {},
-    ["Cameras"] = {},
-    ["Speakers"] = {},
-    ["Keyboards"] = {},
-    ["Motors"] = {},
-    ["Lasers"] = {},
-    ["GPSs"] = {},
-    ["SeatControllers"] = {},
-    ["GravityControllers"] = {},
+-- Lists are created on first access. This is needed because:
+--   - Non-component lists (e.g. "NetworkInterfaces") are never created by componentManager.toComponent.
+--   - Scripts index lists directly (e.g. "Speakers"), and may run before that component's script has been loaded.
+sm.scrapcomputers.dataList = sm.scrapcomputers.metatable.setmetatable({}, {
+    __index = function (tbl, key)
+        local list = {}
+        tbl[key] = list
 
-    ["NetworkInterfaces"] = {} -- This is not a component and we have a system to make this not needed, but it works so fuck you.
-}
+        return list
+    end
+})
 
 sm.scrapcomputers.logger.info("Config.lua", "Loaded pre-installed components!")
 
@@ -255,7 +230,6 @@ function sm.scrapcomputers.config.createDefaultConfigs(onlyDefaultConfigs)
         options = {"TRANSLATABLE_TEXT_ONLY", "TRANSLATABLE_TEXT_ONLY"}
     })
 
-    createConfig("scrapcomputers.global.automaticLanguageReloading", 1, false, 2)
 
     if onlyDefaultConfigs then return configurations end
 

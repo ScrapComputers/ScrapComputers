@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.89322916666666663 0.86111111111111116" name="BackPanel">
-        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.10752688172043011" align="HStretch Top" name="MainHeader">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.89322916666666663 0.84722222222222221" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.10928961748633879" align="HStretch Top" name="MainHeader">
             <Widget type="TextBox" skin="TextBox" position_real="0 0 1 0.96999999999999997" align="Stretch" name="MainHeaderText">
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_HeaderLarge_Wide"/>
@@ -13,105 +13,105 @@
                 <Property key="TextAlign" value="Center"/>
             </Widget>
         </Widget>
-        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.10752688172043011 1 0.89032258064516134" align="Stretch" name="MainMain">
-            <Widget type="Button" skin="PrimaryButton" position_real="0.83090379008746351 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainOpenFileDirBtn">
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.10928961748633879 1 0.88852459016393448" align="Stretch" name="MainMain">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.83381924198250734 0.90405904059040587 0.15743440233236153 0.07995079950799508" name="MainMainOpenFileDirBtn">
                 <Property key="Caption" value="Open File/Directory"/>
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.67638483965014573 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainRenFileDirBtn">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.67346938775510201 0.90405904059040587 0.15743440233236153 0.07995079950799508" name="MainMainRenFileDirBtn">
                 <Property key="Caption" value="Rename File/Directory"/>
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.52186588921282795 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainDelFileDirBtn">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.51311953352769679 0.90405904059040587 0.15743440233236153 0.07995079950799508" name="MainMainDelFileDirBtn">
                 <Property key="Caption" value="Delete File/Directory"/>
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.36734693877551022 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainNewFileDirBtn">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.35276967930029157 0.90405904059040587 0.15743440233236153 0.07995079950799508" name="MainMainNewFileDirBtn">
                 <Property key="Caption" value="New File/Directory"/>
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.21282798833819241 0.90579710144927539 0.15743440233236153 0.0785024154589372" name="MainMainGoBackBtn">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.1924198250728863 0.90405904059040587 0.15743440233236153 0.07995079950799508" name="MainMainGoBackBtn">
                 <Property key="Caption" value="Go back a Directory"/>
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.82729468599033817 0.9708454810495627 0.060386473429951688" name="13">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.8302583025830258 0.98250728862973757 0.061500615006150061" name="13">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.22946859903381642 0.9708454810495627 0.060386473429951688" name="4">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.22140221402214022 0.98250728862973757 0.061500615006150061" name="4">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.030193236714975844 0.9708454810495627 0.060386473429951688" name="1">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.018450184501845018 0.98250728862973757 0.061500615006150061" name="1">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.096618357487922704 0.9708454810495627 0.060386473429951688" name="2">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.086100861008610086 0.98250728862973757 0.061500615006150061" name="2">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.16304347826086957 0.9708454810495627 0.060386473429951688" name="3">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.15375153751537515 0.98250728862973757 0.061500615006150061" name="3">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.29347826086956524 0.9708454810495627 0.060386473429951688" name="5">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.28905289052890532 0.98250728862973757 0.061500615006150061" name="5">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.36231884057971014 0.9708454810495627 0.060386473429951688" name="6">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.35670356703567035 0.98250728862973757 0.061500615006150061" name="6">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.42874396135265702 0.9708454810495627 0.060386473429951688" name="7">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.42435424354243545 0.98250728862973757 0.061500615006150061" name="7">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.49516908212560384 0.9708454810495627 0.060386473429951688" name="8">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.49200492004920049 0.98250728862973757 0.061500615006150061" name="8">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.56159420289855078 0.9708454810495627 0.060386473429951688" name="9">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.55965559655596553 0.98250728862973757 0.061500615006150061" name="9">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.6280193236714976 0.9708454810495627 0.060386473429951688" name="10">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.62730627306273068 0.98250728862973757 0.061500615006150061" name="10">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.69444444444444442 0.9708454810495627 0.060386473429951688" name="11">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.69495694956949572 0.98250728862973757 0.061500615006150061" name="11">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="SecondaryButton" position_real="0.014577259475218658 0.76086956521739135 0.9708454810495627 0.060386473429951688" name="12">
+            <Widget type="Button" skin="SecondaryButton" position_real="0.0087463556851311956 0.76260762607626076 0.98250728862973757 0.061500615006150061" name="12">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Some Fucking FIle"/>
                 <Property key="TextAlign" value="Left VCenter"/>
             </Widget>
-            <Widget type="Button" skin="DressbotArrowLeft" position_real="0.014577259475218658 0.91183574879227058 0.032069970845481049 0.066425120772946863" name="MainMainNavigationLeftBtn"/>
-            <Widget type="Button" skin="DressbotArrowRight" position_real="0.18367346938775511 0.91183574879227058 0.032069970845481049 0.066425120772946863" name="MainMainNavigationRightBtn"/>
-            <Widget type="TextBox" skin="TextBox" position_real="0.046647230320699708 0.91183574879227058 0.13702623906705538 0.066425120772946863" name="MainMainNavigationText">
+            <Widget type="Button" skin="DressbotArrowLeft" position_real="0.0087463556851311956 0.91020910209102091 0.032069970845481049 0.067650676506765067" name="MainMainNavigationLeftBtn"/>
+            <Widget type="Button" skin="DressbotArrowRight" position_real="0.15451895043731778 0.91020910209102091 0.032069970845481049 0.067650676506765067" name="MainMainNavigationRightBtn"/>
+            <Widget type="TextBox" skin="TextBox" position_real="0.040816326530612242 0.91020910209102091 0.11370262390670553 0.067650676506765067" name="MainMainNavigationText">
                 <Property key="FontName" value="SM_HeaderLarge_Wide"/>
                 <Property key="TextAlign" value="Center"/>
                 <Property key="Caption" value="6969/6969"/>
             </Widget>
-            <Widget type="TextBox" skin="TextBox" position_real="0.014577259475218658 0.030193236714975844 0.9708454810495627 0.85748792270531404" name="MainMainEmptyDirectoryText">
+            <Widget type="TextBox" skin="TextBox" position_real="0 0.41820418204182042 1 0.055350553505535055" name="MainMainEmptyDirectoryText">
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_HeaderLarge_Medium"/>
                 <Property key="Caption" value="THIS DIRECTORY IS EMPTY!"/>

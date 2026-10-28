@@ -64,66 +64,14 @@ function sm.scrapcomputers.util.mapValue(value, fromMin, fromMax, toMin, toMax)
     return toMin + (ratio * (toMax - toMin))
 end
 
----Reimplementation of LUA's set metatable function.
----@param tbl table The table to modify.
----@param metatable table The metatable data to set to the given table.
----@return table
+---@deprecated
 function sm.scrapcomputers.util.setmetatable(tbl, metatable)
-    sm.scrapcomputers.errorHandler.assertArgument(tbl, 1, {"table"})
-    sm.scrapcomputers.errorHandler.assertArgument(metatable, 2, {"table"})
-        
-    for index, value in pairs(metatable) do
-        tbl[index] = value
-    end
-
-    tbl = class(tbl)
-
-    local metatableIndex = metatable.__index
-    if metatableIndex then
-        local metatableIndexType = type(metatableIndex)
-        tbl.__index = function(tbl, key)
-            if key == "__raw_metatable" then
-                return metatable
-            end
-
-            if metatableIndexType == "table" then
-                return metatableIndex[key]
-            elseif metatableIndexType == "function" then
-                return metatableIndex(tbl, key)
-            end
-            
-            return nil
-        end
-    end
-
-    local metatableNewIndexEnabled = false
-    local metatableNewIndex = metatable.__newindex
-    if metatableNewIndex then
-        metatable.__newindex = function (tbl, key, value)
-            if metatableNewIndexEnabled then
-                return metatableNewIndex(tbl, key, value)
-            end
-
-            tbl[key] = value
-        end
-    end
-
-    tbl = tbl()
-
-    for key, _ in pairs(metatable) do
-        tbl[key] = nil
-    end
-
-    metatableNewIndexEnabled = true
-
-    return tbl
+    return sm.scrapcomputers.metatable.setmetatable(tbl, metatable)
 end
 
----Returns the metatable data of a table.
----@param tbl table The table to retreive the data from.
----@return table
+---@deprecated
 function sm.scrapcomputers.util.getmetatable(tbl)
-    return unpack({tbl["__raw_metatable"]}) -- Cant use sm.scrapcomputers.table.clone without a recursive issue
+    return sm.scrapcomputers.metatable.getmetatable(tbl)
 end
 
 ---Applies the rpairs algorithm to a table.

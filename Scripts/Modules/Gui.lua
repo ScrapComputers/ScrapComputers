@@ -16,12 +16,9 @@ end
 ---@param message string The message to alert
 ---@param ... any? Additional arguments to send to the language manager
 function sm.scrapcomputers.gui:alert(message, ...)
-    if select("#", ...) == 0 then
-        sm.gui.displayAlertText("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message))
-        return
-    end
+    local finalMessage = "[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message, ...)
 
-    sm.gui.displayAlertText("[#3A96DDS#3b78ffC#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable(message, ...))
+    sm.event.sendToPlayer(sm.localPlayer.getPlayer(), "cl_n_onMessage", {message = finalMessage, displayTime = 5})
 end
 
 ---Creates a gui from a layout file with translation support
@@ -39,72 +36,72 @@ end
 function sm.scrapcomputers.gui:translationsForGUIInterface(gui)
     sm.scrapcomputers.errorHandler.assertArgument(gui, nil, {"GuiInterface"})
     
-    local function BindFunction(func)
+    local function bindFunction(func)
         return function(_, ...)
             return func(gui, ...)
         end
     end
 
     return {
-        addGridItem                = BindFunction(gui.addGridItem               ),
-        addGridItemsFromFile       = BindFunction(gui.addGridItemsFromFile      ),
-        addToPickupDisplay         = BindFunction(gui.addToPickupDisplay        ),
-        addListItem                = BindFunction(gui.addListItem               ),
-        clearGrid                  = BindFunction(gui.clearGrid                 ),
-        clearList                  = BindFunction(gui.clearList                 ),
-        close                      = BindFunction(gui.close                     ),
-        createDropDown             = BindFunction(gui.createDropDown            ),
-        createGridFromJson         = BindFunction(gui.createGridFromJson        ),
-        createHorizontalSlider     = BindFunction(gui.createHorizontalSlider    ),
-        createVerticalSlider       = BindFunction(gui.createVerticalSlider      ),
-        destroy                    = BindFunction(gui.destroy                   ),
+        addGridItem                = bindFunction(gui.addGridItem               ),
+        addGridItemsFromFile       = bindFunction(gui.addGridItemsFromFile      ),
+        addToPickupDisplay         = bindFunction(gui.addToPickupDisplay        ),
+        addListItem                = bindFunction(gui.addListItem               ),
+        clearGrid                  = bindFunction(gui.clearGrid                 ),
+        clearList                  = bindFunction(gui.clearList                 ),
+        close                      = bindFunction(gui.close                     ),
+        createDropDown             = bindFunction(gui.createDropDown            ),
+        createGridFromJson         = bindFunction(gui.createGridFromJson        ),
+        createHorizontalSlider     = bindFunction(gui.createHorizontalSlider    ),
+        createVerticalSlider       = bindFunction(gui.createVerticalSlider      ),
+        destroy                    = bindFunction(gui.destroy                   ),
         isActive                   = function ()
             return sm.exists(gui) and gui:isActive()
         end,
-        open                       = BindFunction(gui.open                      ),
-        playEffect                 = BindFunction(gui.playEffect                ),
-        playGridEffect             = BindFunction(gui.playGridEffect            ),
-        setButtonCallback          = BindFunction(gui.setButtonCallback         ),
-        setButtonState             = BindFunction(gui.setButtonState            ),
-        setColor                   = BindFunction(gui.setColor                  ),
-        setContainer               = BindFunction(gui.setContainer              ),
-        setContainers              = BindFunction(gui.setContainers             ),
-        setData                    = BindFunction(gui.setData                   ),
-        setFadeRange               = BindFunction(gui.setFadeRange              ),
-        setFocus                   = BindFunction(gui.setFocus                  ),
-        setGridButtonCallback      = BindFunction(gui.setGridButtonCallback     ),
-        setGridItem                = BindFunction(gui.setGridItem               ),
-        setGridItemChangedCallback = BindFunction(gui.setGridItemChangedCallback),
-        setGridMouseFocusCallback  = BindFunction(gui.setGridMouseFocusCallback ),
-        setGridSize                = BindFunction(gui.setGridSize               ),
-        setHost                    = BindFunction(gui.setHost                   ),
-        setIconImage               = BindFunction(gui.setIconImage              ),
-        setImage                   = BindFunction(gui.setImage                  ),
-        setItemIcon                = BindFunction(gui.setItemIcon               ),
-        setListSelectionCallback   = BindFunction(gui.setListSelectionCallback  ),
-        setMaxRenderDistance       = BindFunction(gui.setMaxRenderDistance      ),
-        setMeshPreview             = BindFunction(gui.setMeshPreview            ),
-        setOnCloseCallback         = BindFunction(gui.setOnCloseCallback        ),
-        setRequireLineOfSight      = BindFunction(gui.setRequireLineOfSight     ),
-        setSelectedDropDownItem    = BindFunction(gui.setSelectedDropDownItem   ),
-        setSelectedListItem        = BindFunction(gui.setSelectedListItem       ),
-        setSliderCallback          = BindFunction(gui.setSliderCallback         ),
-        setSliderData              = BindFunction(gui.setSliderData             ),
-        setSliderPosition          = BindFunction(gui.setSliderPosition         ),
-        setSliderRange             = BindFunction(gui.setSliderRange            ),
-        setSliderRangeLimit        = BindFunction(gui.setSliderRangeLimit       ),
+        open                       = bindFunction(gui.open                      ),
+        playEffect                 = bindFunction(gui.playEffect                ),
+        playGridEffect             = bindFunction(gui.playGridEffect            ),
+        setButtonCallback          = bindFunction(gui.setButtonCallback         ),
+        setButtonState             = bindFunction(gui.setButtonState            ),
+        setColor                   = bindFunction(gui.setColor                  ),
+        setContainer               = bindFunction(gui.setContainer              ),
+        setContainers              = bindFunction(gui.setContainers             ),
+        setData                    = bindFunction(gui.setData                   ),
+        setFadeRange               = bindFunction(gui.setFadeRange              ),
+        setFocus                   = bindFunction(gui.setFocus                  ),
+        setGridButtonCallback      = bindFunction(gui.setGridButtonCallback     ),
+        setGridItem                = bindFunction(gui.setGridItem               ),
+        setGridItemChangedCallback = bindFunction(gui.setGridItemChangedCallback),
+        setGridMouseFocusCallback  = bindFunction(gui.setGridMouseFocusCallback ),
+        setGridSize                = bindFunction(gui.setGridSize               ),
+        setHost                    = bindFunction(gui.setHost                   ),
+        setIconImage               = bindFunction(gui.setIconImage              ),
+        setImage                   = bindFunction(gui.setImage                  ),
+        setItemIcon                = bindFunction(gui.setItemIcon               ),
+        setListSelectionCallback   = bindFunction(gui.setListSelectionCallback  ),
+        setMaxRenderDistance       = bindFunction(gui.setMaxRenderDistance      ),
+        setMeshPreview             = bindFunction(gui.setMeshPreview            ),
+        setOnCloseCallback         = bindFunction(gui.setOnCloseCallback        ),
+        setRequireLineOfSight      = bindFunction(gui.setRequireLineOfSight     ),
+        setSelectedDropDownItem    = bindFunction(gui.setSelectedDropDownItem   ),
+        setSelectedListItem        = bindFunction(gui.setSelectedListItem       ),
+        setSliderCallback          = bindFunction(gui.setSliderCallback         ),
+        setSliderData              = bindFunction(gui.setSliderData             ),
+        setSliderPosition          = bindFunction(gui.setSliderPosition         ),
+        setSliderRange             = bindFunction(gui.setSliderRange            ),
+        setSliderRangeLimit        = bindFunction(gui.setSliderRangeLimit       ),
         setText                    = function (self, widgetName, text, ...)
             gui:setText(widgetName, sm.scrapcomputers.languageManager.translatable(text, type(...) == "table" and unpack(...) or ...))
         end,
-        setTextRaw                 = BindFunction(gui.setText),
-        setTextAcceptedCallback    = BindFunction(gui.setTextAcceptedCallback   ),
-        setTextChangedCallback     = BindFunction(gui.setTextChangedCallback    ),
-        setVisible                 = BindFunction(gui.setVisible                ),
-        setWorldPosition           = BindFunction(gui.setWorldPosition          ),
-        stopEffect                 = BindFunction(gui.stopEffect                ),
-        stopGridEffect             = BindFunction(gui.stopGridEffect            ),
-        trackQuest                 = BindFunction(gui.trackQuest                ),
-        untrackQuest               = BindFunction(gui.untrackQuest              ),
+        setTextRaw                 = bindFunction(gui.setText),
+        setTextAcceptedCallback    = bindFunction(gui.setTextAcceptedCallback   ),
+        setTextChangedCallback     = bindFunction(gui.setTextChangedCallback    ),
+        setVisible                 = bindFunction(gui.setVisible                ),
+        setWorldPosition           = bindFunction(gui.setWorldPosition          ),
+        stopEffect                 = bindFunction(gui.stopEffect                ),
+        stopGridEffect             = bindFunction(gui.stopGridEffect            ),
+        trackQuest                 = bindFunction(gui.trackQuest                ),
+        untrackQuest               = bindFunction(gui.untrackQuest              ),
     }
 end
 
@@ -132,6 +129,7 @@ function sm.scrapcomputers.gui:showCustomInteractiveText(top, bottom)
     ---@param tbl string[]
     local function runInteractiveText(tbl)
         local output = ""
+        local counter = 1
 
         for _, text in ipairs(tbl) do
             local parsedText
@@ -141,7 +139,8 @@ function sm.scrapcomputers.gui:showCustomInteractiveText(top, bottom)
                     parsedText = sm.scrapcomputers.languageManager.translatable(unpack(text))
                 else
                     -- fallback if empty table, e.g. empty string or some default
-                    parsedText = ""
+                    parsedText = string.rep(" ", counter)
+                    counter = counter + 1
                 end
             else
                 parsedText = sm.scrapcomputers.languageManager.translatable(text)
@@ -176,6 +175,17 @@ function sm.scrapcomputers.gui:showCustomInteractiveText(top, bottom)
     if bottom and #bottom > 0 then
         runInteractiveText(bottom)
     else
-        sm.gui.setInteractionText("", "")
+        sm.gui.setInteractionText(" ", "")
     end
+end
+
+function sm.scrapcomputers.gui:showInteractTextBasic(shapeUuid)
+    sm.scrapcomputers.errorHandler.assertArgument(shapeUuid, 1, {"Uuid"})
+
+    local shapeTitle = sm.shape.getShapeTitle(shapeUuid)
+    shapeTitle = shapeTitle:gsub("%b[]%s*", "")
+
+    sm.scrapcomputers.gui:showCustomInteractiveText({
+        {"scrapcomputers.other.generic_interaction_text", shapeTitle}
+    })
 end

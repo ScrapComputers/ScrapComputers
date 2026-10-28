@@ -3,8 +3,7 @@ dofile("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/Scripts/Config.lua")
 ---@class PowerManagerClass : ToolClass
 PowerManagerClass = class()
 
-function PowerManagerClass:server_onCreate()
-end
+function PowerManagerClass:server_onCreate() end
 
 local useage = {}
 
@@ -193,7 +192,7 @@ function PowerManagerClass:server_onFixedUpdate()
             if not hasPower and klass.sv.wasPowered then
                 for _, child in pairs(allChilds) do
                     if child:getType() == "scripted" then
-                        sm.event.sendToInteractable(child, "sv_onPowerLoss", nil, sm.event.types.instant)
+                        sm.event.sendToInteractable(child, "sv_onPowerLoss", nil, sm.event.types.validate)
                     end
                 end
 

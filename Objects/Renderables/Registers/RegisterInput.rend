@@ -8,7 +8,7 @@
 					"textureList": [
 						"$CONTENT_DATA/Objects/Textures/Register/Register_Input_DIF.png",
 						"$CONTENT_DATA/Objects/Textures/transparent.png",
-						"$CONTENT_DATA/Objects/Textures/NOR.ppm"
+						"$CONTENT_DATA/Objects/Textures/nor.ppm"
 					]
 				}
 			]

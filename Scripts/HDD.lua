@@ -58,8 +58,10 @@ function HDDClass:sv_createData()
         end,
 
         save = function (data)
-            sm.scrapcomputers.errorHandler.assertArgument(data, nil, {"table"})
-            sm.scrapcomputers.errorHandler.assert(sm.scrapcomputers.json.isSafe(data), nil, "Cannot save data! Data contains invalid value types!")
+            sm.scrapcomputers.errorHandler.assertArgument(data, nil, {"table", "string", "number", "boolean", "nil"})
+            if type(data) == "table" then
+                sm.scrapcomputers.errorHandler.assert(sm.scrapcomputers.json.isSafe(data), nil, "Cannot save data! Data contains invalid value types!")
+            end
 
             self.storage:save(data)
 

@@ -6,7 +6,7 @@ sm.scrapcomputers.exampleManager.addonExamples = sm.scrapcomputers.exampleManage
 
 ---Reloads all the examples.
 function sm.scrapcomputers.exampleManager.reloadExamples()
-    local bultInExamples = sm.json.open("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/examples.json")
+    local bultInExamples = sm.json.open("$CONTENT_632be32f-6ebd-414e-a061-d45906ae4dc6/JSON/examples.json", false)
     local mergedList = sm.scrapcomputers.table.mergeLists(bultInExamples, sm.scrapcomputers.exampleManager.addonExamples)
 
     sm.scrapcomputers.exampleManager.examples = mergedList

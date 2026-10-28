@@ -14,7 +14,7 @@
 					"textureList": [
 						"$CONTENT_DATA/Objects/Textures/Generator/Generator_DIF.png",
 						"$CONTENT_DATA/Objects/Textures/Generator/Generator_ASG.png",
-						"$CONTENT_DATA/Objects/Textures/NOR.ppm"
+						"$CONTENT_DATA/Objects/Textures/nor.ppm"
 					]
 				},
 				{
@@ -22,7 +22,7 @@
 					"textureList": [
 						"$CONTENT_DATA/Objects/Textures/Generator/Generator_DIF.png",
 						"$CONTENT_DATA/Objects/Textures/Generator/Generator_ASG.png",
-						"$CONTENT_DATA/Objects/Textures/NOR.ppm"
+						"$CONTENT_DATA/Objects/Textures/nor.ppm"
 					]
 				}
 			]

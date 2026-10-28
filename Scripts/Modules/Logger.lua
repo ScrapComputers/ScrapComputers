@@ -4,7 +4,7 @@ local function GenerateLogFunction(logFunc, type)
     ---@param identifier string The identifier of where the log came
     ---@param ... any[]|any Parameters
     return function (identifier, ...)
-        logFunc("[" .. type .. "] " .. identifier .. ":", ...)
+        logFunc("[" .. type .. "] " .. identifier .. ": ", ...)
     end
 end
 

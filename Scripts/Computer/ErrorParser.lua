@@ -24,6 +24,8 @@ ErrorParser = {}
 ---@param err string The error message
 ---@return ErrorParser.ErrorData
 function ErrorParser:parseError(err)
+    err = self:fixErrorMessage(err)
+
     local tracePart, errMsg = err:match("^(.*):%s(.+)$")
     if not tracePart or not errMsg then
         return {
@@ -52,12 +54,12 @@ function ErrorParser:parseError(err)
     -- These are all yueliang files which do parsing. See if one of them is in traceback and if so, that
     -- means its a parser error
     local matches = {
-        "Scripts/Computer/LuaVM/LuaK.lua",
-        "Scripts/Computer/LuaVM/LuaP.lua",
-        "Scripts/Computer/LuaVM/LuaU.lua",
-        "Scripts/Computer/LuaVM/LuaX.lua",
-        "Scripts/Computer/LuaVM/LuaY.lua",
-        "Scripts/Computer/LuaVM/LuaZ.lua"
+        "Scripts/Computer/LuaVM/CodeGen.lua",
+        "Scripts/Computer/LuaVM/Opcodes.lua",
+        "Scripts/Computer/LuaVM/Dump.lua",
+        "Scripts/Computer/LuaVM/Lexer.lua",
+        "Scripts/Computer/LuaVM/Parser.lua",
+        "Scripts/Computer/LuaVM/BufferStreams.lua"
     }
 
     local isParserError = false

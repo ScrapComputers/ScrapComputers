@@ -1,21 +1,22 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.42708333333333331 0.27314814814814814" name="BackPanel">
-        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.32881355932203388" name="MainHeader">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.33854166666666669 0.24074074074074073" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.37307692307692308" align="HStretch Top" name="MainHeader">
             <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="MainHeaderText">
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_HeaderLarge_Wide"/>
                 <Property key="Caption" value="TITLE GOES HERE"/>
             </Widget>
         </Widget>
-        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.32881355932203388 1 0.65423728813559323" name="MainMain">
-            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.03048780487804878 0.12953367875647667 0.94512195121951215 0.31088082901554404" name="Input">
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.37307692307692308 1 0.62692307692307692" align="Stretch" name="MainMain">
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.023076923076923078 0.09202453987730061 0.9538461538461539 0.33742331288343558" name="Input">
                 <Property key="FontName" value="SM_Text"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.03048780487804878 0.51813471502590669 0.94512195121951215 0.38860103626943004" name="Button">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.023076923076923078 0.5214723926380368 0.9538461538461539 0.37423312883435583" name="Button">
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="SHIT"/>
             </Widget>
         </Widget>
     </Widget>

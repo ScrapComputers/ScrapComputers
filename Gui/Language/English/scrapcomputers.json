@@ -29,22 +29,9 @@
     "scrapcomputers.computer.interationtext.exception.false"                : "#[CHECKMARK]#(SUCCESS)No exception",
     "scrapcomputers.computer.interationtext.power.true"                     : "#[CHECKMARK]#(SUCCESS)Consuming %s kW",
     "scrapcomputers.computer.interationtext.power.false"                    : "#[MINUS]#(ERROR)Consuming %s kW",
-    "scrapcomputers.computer.interationtext.no_exception"                   : "No Exception",
 
     "scrapcomputers.computer.unsaved_changes.title"                         : "Are you sure?",
     "scrapcomputers.computer.unsaved_changes.text"                          : "You have unsaved changes in this file. Pressing Yes will discard them!",
-
-    "scrapcomputers.computer.info.memory.title"                             : "----- Memory (Frame: %d) -----",
-    "scrapcomputers.computer.info.memory.average_positive"                  : "Average Positive: %.3f",
-    "scrapcomputers.computer.info.memory.average_negative"                  : "Average Negative: %.3f",
-    "scrapcomputers.computer.info.memory.average_difference"                : "Average Difference: %.3f",
-    "scrapcomputers.computer.info.memory.trend.increase"                    : "Trend: %.2f (Usage Increasing)",
-    "scrapcomputers.computer.info.memory.trend.decrease"                    : "Trend: %.2f (Usage Decreasing)",
-    "scrapcomputers.computer.info.memory.growth_streak"                     : "Growth Streak: %d",
-    "scrapcomputers.computer.info.memory.garbage_collector.active"          : "Garbage Collector: Active",
-    "scrapcomputers.computer.info.memory.garbage_collector.inactive"        : "Garbage Collector: Inactive",
-    "scrapcomputers.computer.info.memory.warnings.title"                    : "----- WARNING -----",
-    "scrapcomputers.computer.info.memory.warnings.high_memory_usage"        : "High usage of memory detected!",
     
     "scrapcomputers.computer.toggles.simple_syntax"                         : "SIMPLE SYNTAX: %s",
     "scrapcomputers.computer.toggles.always_on"                             : "ALWAYS ON: %s",
@@ -150,9 +137,8 @@
     "scrapcomputers.drive.unsaved_changes.title"                            : "Are you sure?",
     "scrapcomputers.drive.unsaved_changes.text"                             : "You have unsaved changes in this drive. Pressing Yes will discard them!",
 
-
     // Terminal
-    "scrapcomputers.terminal.title"                                         : "TERMINAL / CONSOLE",
+    "scrapcomputers.terminal.title"                                         : "TERMINAL",
     "scrapcomputers.terminal.send_input_button"                             : "Send Input",
 
     // Input & Output registers
@@ -182,8 +168,8 @@
 
     // Display
     "scrapcomputers.display.failed_to_find_font"                            : "Failed to find the font! Something may be broken! Contact the ScrapComputers Team ASAP!",
-    "scrapcomputers.display.touchscreen_multi"                              : "%s %s Touch",
-    "scrapcomputers.display.touchscreen"                                    : "%s Touch",
+    "scrapcomputers.display.touchscreen_multi"                              : "%s/%sTouch",
+    "scrapcomputers.display.touchscreen"                                    : "%sTouch",
 
     // GENERATOR
     "scrapcomputers.generator.resistance"                                   : "Resistance: #(WARN)%s Nm",
@@ -195,7 +181,10 @@
     "scrapcomputers.battery.charge_delta.true"                              : "Charge Delta: #(SUCCESS)%s / %s kW",
     "scrapcomputers.battery.charge_delta.false"                             : "Charge Delta: #(ERROR)%s / %s kW",
     
-    // BREAKER
+    //BREAKER
+    "scrapcomputers.breaker.status.true"                                    : "Status: #(SUCCESS)Enabled",
+    "scrapcomputers.breaker.status.false"                                   : "Status: #(ERROR)Disabled",
+    
     "scrapcomputers.breaker.power_transfer.true"                            : "Transferring: #(SUCCESS)%s kW",
     "scrapcomputers.breaker.power_transfer.false"                           : "Transferring: #(ERROR)%s kW",
 
@@ -213,8 +202,10 @@
     "scrapcomputers.other.enabled"                                          : "ENABLED",
     "scrapcomputers.other.disabled"                                         : "DISABLED",
     "scrapcomputers.other.generic_use"                                      : "#{Use} Use",
+
+    "scrapcomputers.other.generic_interaction_text"                         : "#{Use} Use %s",
     
-    // Configs
+        // Configs
     // These are optional. They already have all the information in their configs, but if you want to modify them, you can change it here.
     // 
     // How to create translations for configs:
@@ -263,7 +254,7 @@
     "config.scrapcomputers.computer.reset_error_on_restart=option=2"        : "Enabled",
 
     "config.scrapcomputers.computer.show_info_on_computer_hover=name"       : "Show information while hovering over the computer",
-    "config.scrapcomputers.computer.show_info_on_computer_hover=description": "This option allows you to access unsafe functions within the environment. When enabled, you gain access to powerful features like _G, self, the entire sm table, and more. Additionally, some tables may be modified to permit Lua DLL mods, giving you greater control and flexibility, but also increasing the risk of unintended changes or security vulnerabilities.",
+    "config.scrapcomputers.computer.show_info_on_computer_hover=description": "This configuration option allows you to choose whether to display information about the computer when you hover over it. Enabling this option will provide you with details such as the computer ID, whether its running or not or if it has a error. Disable this if you dont need that at all.",
     "config.scrapcomputers.computer.show_info_on_computer_hover=option=1"   : "Show information",
     "config.scrapcomputers.computer.show_info_on_computer_hover=option=2"   : "Hide information",
 
@@ -280,8 +271,6 @@
     "config.scrapcomputers.global.power=option=1"                           : "Disabled",
     "config.scrapcomputers.global.power=option=2"                           : "Enabled",
 
-    // Why the fuck are we suddenly using camelCase????
-
     "config.scrapcomputers.global.survivalBehavior=name"                    : "Survival Behaviors",
     "config.scrapcomputers.global.survivalBehavior=description"             : "This setting toggles survival behavior for survival-affected components. Some components act slightly differently in survival; for example, a GPS's world position has 5 meters of noise in survival. When enabled, this config setting allows the GPS to exhibit that 5-meter noise quirk in creative mode instead of being perfect.",
     "config.scrapcomputers.global.survivalBehavior=option=1"                : "Disabled",
@@ -290,10 +279,5 @@
     "config.scrapcomputers.global.networkTableReferences=name"               : "Network Table References",
     "config.scrapcomputers.global.networkTableReferences=description"        : "When this config setting is enabled, network packets that are tables will send the raw LUA table, resulting in the receiving network port getting the LUA table reference instead of its clone. This means that if a table reference is sent, any modifications to the table on either side of the network will sync without additional networking. Note, however, that tables sent before this option was enabled will still be clones and will not sync, and vice versa.",
     "config.scrapcomputers.global.networkTableReferences=option=1"           : "Disabled",
-    "config.scrapcomputers.global.networkTableReferences=option=2"           : "Enabled",
-
-    "config.scrapcomputers.global.automaticLanguageReloading=name"           : "Automatic Language Reloading",
-    "config.scrapcomputers.global.automaticLanguageReloading=description"    : "When enabled, ScrapComputers will automaticly reload all language files every second. However this can spam the console & logs every time! Only enable this if you need 'hot-reloading' for when ur creating a language",
-    "config.scrapcomputers.global.automaticLanguageReloading=option=1"       : "Disabled",
-    "config.scrapcomputers.global.automaticLanguageReloading=option=2"       : "Enabled"
+    "config.scrapcomputers.global.networkTableReferences=option=2"           : "Enabled"
 }

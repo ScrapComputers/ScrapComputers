@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.68229166666666663 0.65740740740740744" name="BackPanel">
-        <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.28549618320610687 1" name="Config">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.640625 0.65740740740740744" name="BackPanel">
+        <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.30406504065040652 1" name="Config">
             <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.13661971830985917" align="HStretch Top" name="ConfigHeader">
                 <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="ConfigHeaderText">
                     <Property key="TextAlign" value="Center"/>
@@ -10,7 +10,7 @@
                 </Widget>
             </Widget>
             <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.13661971830985917 1 0.86197183098591545" align="Stretch" name="ConfigMain">
-                <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.06684491978609626 0.04084967320261438 0.86898395721925137 0.80882352941176472" name="ConfigsMainList">
+                <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.053475935828877004 0.032679738562091505 0.89572192513368987 0.81699346405228757" name="ConfigsMainList">
                     <Property key="Caption" value="Config A\nConfig B\nConfig Balls"/>
                     <Property key="FontName" value="SM_LabelSmall"/>
                     <Property key="WordWrap" value="true"/>
@@ -20,13 +20,13 @@
                     <Property key="Static" value="true"/>
                     <Property key="NeedKey" value="false"/>
                 </Widget>
-                <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.06684491978609626 0.87418300653594772 0.86898395721925137 0.098039215686274508" name="ConfigMainInput">
+                <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.053475935828877004 0.87418300653594772 0.89572192513368987 0.098039215686274508" name="ConfigMainInput">
                     <Property key="FontName" value="SM_Text"/>
                     <Property key="TextAlign" value="Center"/>
                 </Widget>
             </Widget>
         </Widget>
-        <Widget type="Widget" skin="PanelEmpty" position_real="0.30534351145038169 0 0.69465648854961837 1" name="Info">
+        <Widget type="Widget" skin="PanelEmpty" position_real="0.32520325203252032 0 0.67479674796747968 1" name="Info">
             <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.13661971830985917" align="HStretch Top" name="InfoHeader">
                 <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="InfoHeaderText">
                     <Property key="TextAlign" value="Center"/>
@@ -40,9 +40,8 @@
                 </Widget>
             </Widget>
             <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.13661971830985917 1 0.86197183098591545" align="Stretch" name="InfoMain">
-                <Widget type="EditBox" skin="EditBoxEmpty" position_real="0.027472527472527472 0.049019607843137254 0.94505494505494503 0.80065359477124187" name="ConfigMainDescription">
+                <Widget type="EditBox" skin="EditBoxEmpty" position_real="0.030120481927710843 0.049019607843137254 0.94578313253012047 0.80065359477124187" name="ConfigMainDescription">
                     <Property key="Caption" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer auctor tortor dui, ac viverra orci volutpat eu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas volutpat faucibus iaculis. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Pellentesque erat mi, elementum ut ante in, tristique pharetra velit. Aliquam erat volutpat. Duis gravida orci non consequat convallis. Ut rhoncus, enim ut sollicitudin elementum, nulla augue tempus mauris, vitae hendrerit ante nisl ut libero. Vivamus maximus ultrices risus. Pellentesque a metus sit amet libero sagittis commodo. Suspendisse pulvinar neque sed egestas facilisis. Aliquam varius ante vel magna suscipit porttitor."/>
-                    <Property key="FontName" value="SM_Text"/>
                     <Property key="MaxTextLength" value="999999999"/>
                     <Property key="MultiLine" value="true"/>
                     <Property key="WordWrap" value="true"/>
@@ -50,12 +49,12 @@
                     <Property key="Static" value="true"/>
                     <Property key="NeedKey" value="false"/>
                 </Widget>
-                <Widget type="Button" skin="PrimaryButton" position_real="0.027472527472527472 0.86601307189542487 0.65934065934065933 0.11437908496732026" name="ConfigMainCurrentTextBtn">
+                <Widget type="Button" skin="PrimaryButton" position_real="0.024096385542168676 0.87418300653594772 0.63855421686746983 0.098039215686274508" name="ConfigMainCurrentTextBtn">
                     <Property key="Caption" value="BULLSHIT"/>
                     <Property key="FontName" value="SM_Button"/>
                     <Property key="TextAlign" value="Center"/>
                 </Widget>
-                <Widget type="Button" skin="SecondaryButton" position_real="0.69230769230769229 0.87908496732026142 0.28021978021978022 0.088235294117647065" name="ConfigMainResetBtn">
+                <Widget type="Button" skin="SecondaryButton" position_real="0.66867469879518071 0.87418300653594772 0.30722891566265059 0.098039215686274508" name="ConfigMainResetBtn">
                     <Property key="FontName" value="SM_Button"/>
                     <Property key="TextAlign" value="Center"/>
                     <Property key="Caption" value="Reset Configs"/>

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.29427083333333331 0.41666666666666669" name="BackPanel">
-        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.21555555555555556" align="HStretch Top" name="MainHeader">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.29427083333333331 0.41203703703703703" name="BackPanel">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.21797752808988763" align="HStretch Top" name="MainHeader">
             <Widget type="TextBox" skin="TextBox" position_real="0 0 1 1" align="Stretch" name="MainHeaderText">
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_HeaderLarge_Wide"/>
@@ -13,34 +13,34 @@
                 </Widget>
             </Widget>
         </Widget>
-        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.21555555555555556 1 0.78222222222222226" align="Stretch" name="MainMain">
-            <Widget type="TextBox" skin="TextBox" position_real="0.035398230088495575 0.039772727272727272 0.93805309734513276 0.068181818181818177" name="MainMainText1">
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.21797752808988763 1 0.77977528089887638" align="Stretch" name="MainMain">
+            <Widget type="TextBox" skin="TextBox" position_real="0.026548672566371681 0.043227665706051875 0.94690265486725667 0.069164265129683003" name="MainMainText1">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Enter Password:"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="TextBox" skin="TextBox" position_real="0.035398230088495575 0.3125 0.93805309734513276 0.068181818181818177" name="MainMainText2">
+            <Widget type="TextBox" skin="TextBox" position_real="0.026548672566371681 0.31700288184438041 0.94690265486725667 0.069164265129683003" name="MainMainText2">
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Comfirm Password:"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.035398230088495575 0.12784090909090909 0.93805309734513276 0.15625" name="MainMainInput1">
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.026548672566371681 0.12968299711815562 0.94690265486725667 0.15850144092219021" name="MainMainInput1">
                 <Property key="TextAlign" value="Center"/>
                 <Property key="Password" value="true"/>
                 <Property key="FontName" value="SM_Label"/>
                 <Property key="Caption" value="Test"/>
             </Widget>
-            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.035398230088495575 0.39772727272727271 0.93805309734513276 0.15625" name="MainMainInput2">
+            <Widget type="EditBox" skin="EditBox_LiftInput" position_real="0.026548672566371681 0.40345821325648418 0.94690265486725667 0.15850144092219021" name="MainMainInput2">
                 <Property key="TextAlign" value="Center"/>
                 <Property key="Password" value="true"/>
                 <Property key="FontName" value="SM_Label"/>
             </Widget>
-            <Widget type="Button" skin="PrimaryButton" position_real="0.026548672566371681 0.76704545454545459 0.95575221238938057 0.18465909090909091" name="MainMainSetBtn">
+            <Widget type="Button" skin="PrimaryButton" position_real="0.026548672566371681 0.79250720461095103 0.94690265486725667 0.15850144092219021" name="MainMainSetBtn">
                 <Property key="Caption" value="Set Password"/>
                 <Property key="FontName" value="SM_Button"/>
                 <Property key="TextAlign" value="Center"/>
             </Widget>
-            <Widget type="EditBox" skin="TextBox" position_real="0.035398230088495575 0.58238636363636365 0.92920353982300885 0.15625" name="MainMainWarnText">
+            <Widget type="EditBox" skin="TextBox" position_real="0.026548672566371681 0.59077809798270897 0.94690265486725667 0.15850144092219021" name="MainMainWarnText">
                 <Property key="Caption" value="#ff0000WARNING: DATA IS NOT RECOVERABLE IF YOU FORGET YOUR PASSWORD!"/>
                 <Property key="WordWrap" value="true"/>
                 <Property key="TextAlign" value="Center"/>

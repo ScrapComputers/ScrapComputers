@@ -87,6 +87,7 @@ function PlayerOwnership:init(klass)
 
             stopOwningInteractable = function (self)
                 klass.network:sendToServer("sv_playerOwnership_removeOwner")
+
                 self.owner = false
                 self.hOwner = false
             end,
@@ -106,6 +107,10 @@ function PlayerOwnership:init(klass)
 
             if sm.game.getCurrentTick() % 40 == 0 then
                 local localPlayer = sm.localPlayer.getPlayer()
+                if not localPlayer or not localPlayer.character then
+                    return
+                end
+                
                 local distance = (localPlayer.character.worldPosition - self.shape.worldPosition):length()
 
                 if distance <= 7.5 then

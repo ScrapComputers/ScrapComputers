@@ -75,12 +75,9 @@ end
 
 function KeyboardClass:client_canInteract()
     if self.shape.usable then
-        -- sm.gui.setInteractionText sucks. They can suck my sweaty balls.
-        local translatableText = sm.scrapcomputers.languageManager.translatable("scrapcomputers.keyboard.press_to_type_text", "[TEXT_SPLIT]")
-        local firstPart, secondPart = translatableText:match("^(.-)%[TEXT_SPLIT%](.*)$")
-
-        sm.gui.setInteractionText(firstPart, sm.gui.getKeyBinding("Use", true), secondPart)
-        sm.gui.setInteractionText("")
+        sm.scrapcomputers.gui:showCustomInteractiveText({
+            {"scrapcomputers.keyboard.press_to_type_text", sm.gui.getKeyBinding("Use", true)}
+        })
     end
     
     return self.shape.usable

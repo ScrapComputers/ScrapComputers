@@ -1,7 +1,7 @@
---- ScrapComputers Syntax Highlighting File (This is called a Definition File)
---- This is used so you can have some syntax highlighting making coding easier!
---- 
---- We disable diagnostics because we don't need them here!
+---ScrapComputers Syntax Highlighting File (This is called a Definition File)
+---This is used so you can have some syntax highlighting making coding easier!
+
+---@meta
 ---@diagnostic disable
 
 ------------------------------------------------------------------------------------------------------------------------------
@@ -85,10 +85,13 @@
 ---@field leftLimit integer The max rotation limit on the left side.
 ---@field rightLimit integer The max rotation limit on the right side.
 ---@field bearingLock boolean If the joint is locked or not.
+---@field isReversed boolean Whether the joint's steering direction is reversed.
+---@field bearingType string The type of joint. Either `"bearing"` or `"spring"` (a spring bearing/suspension).
 
 ---@class SeatData Contains data about a connected seat.
----@field wsPower integer Power for forward or backward movement.
----@field adPower integer Power for left or right movement.
+---@field wsPower integer The power for WS. 1 = Forwards, 0 = None, -1 = Backwards
+---@field adPower integer The power for AD. 1 = Left, 0 = None, -1 = Right
+---@field sprint boolean Whether the seated character is holding the sprint key.
 ---@field characterName string The name of the seated player.
 
 ---@class CameraData Contains data about a connected seat.
@@ -264,7 +267,6 @@ function sleep(duration) end
 function tostring(value) end
 
 -- Creates a function that executes the code inside the code argument with the specified environment.
--- You can use bytecode by setting bytecodeMode to true, BUT you need to be in unsafe environment mode for that! Otherwise, an error will be raised!
 ---@param code string The code to run
 ---@param env table The environment variables for the code
 ---@param bytecodeMode boolean Whether to execute bytecode or not.
@@ -347,6 +349,35 @@ function sc.getCollisionDetectors() end
 ---@return PowerSource[] PowerSoruces All connected Power Sources
 function sc.getPowerSources() end
 
+---@enum ComponentType A list of all built-in component types that ScrapComputers can detect (addons can add more)
+---| "Displays"
+---| "Harddrives"
+---| "Holograms"
+---| "Terminals"
+---| "Radars"
+---| "NetworkPorts"
+---| "Cameras"
+---| "Speakers"
+---| "Keyboards"
+---| "Motors"
+---| "Lasers"
+---| "GPSs"
+---| "SeatControllers"
+---| "Lights"
+---| "GravityControllers"
+---| "RadarWarningReceivers"
+---| "CollisionDetectors"
+---| "PowerComponents"
+
+-- Gets all connected components of the given type and returns them. Errors if the type isn't available.
+---@param componentType ComponentType|string The component type to get, use `sc.component.getComponentTypes` to see all available ones
+---@return Component[] components All connected components of that type
+function sc.getComponents(componentType) end
+
+-- Gets every connected component, grouped by component type
+---@return table<ComponentType|string, Component[]> components The key is the component type and the value is a list of its connected components
+function sc.getAllComponents() end
+
 -- Gets the power value of a register
 ---@param registerName string The name of the register to get the power value from
 ---@return number power The power value of the register
@@ -371,6 +402,13 @@ function sc.isUnsafeEnvEnabled() end
 --- ╚═╝     ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝ ╚══════╝╚══════╝╚══════╝  ---
 ---                                                                ---
 ----------------------------------------------------------------------
+
+---The component api for ScrapComputers
+sc.component = {}
+
+---Returns all component types that ScrapComputers can detect (including ones added by addons). Hidden component types (registers, antennas) are not included.
+---@return (ComponentType|string)[] componentTypes A table of all component types
+function sc.component.getComponentTypes() end
 
 ---The example module for ScrapComputers
 sc.example = {}
@@ -415,7 +453,7 @@ function sc.language.getSelectedLanguage() end
 ---@return string translatedText The translated text, or the same as `text` if not found
 function sc.language.translatable(text, ...) end
 
---- The configuration module for ScrapComputers
+---The configuration module for ScrapComputers
 sc.config = {}
 
 ---Converts a name to an id
@@ -1139,7 +1177,7 @@ function sc.power.getConsumtion() end
 function sc.power.getReceivingPower() end
 
 ----------------------------------------------------------------------------------------------------
----                                                                                              --- 
+---                                                                                              ---
 ---   ██████╗ ██████╗ ███╗   ███╗██████╗  ██████╗ ███╗   ██╗███████╗███╗   ██╗████████╗███████╗  ---
 ---  ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██╔═══██╗████╗  ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝  ---
 ---  ██║     ██║   ██║██╔████╔██║██████╔╝██║   ██║██╔██╗ ██║█████╗  ██╔██╗ ██║   ██║   ███████╗  ---
@@ -1149,12 +1187,20 @@ function sc.power.getReceivingPower() end
 ---                                                                                              ---
 ----------------------------------------------------------------------------------------------------
 
+---Base class for all components.
+---@class Component
+local Component = {}
+
+---Returns the shape id of the component.
+---@return integer id The shape id of the component.
+function Component:getId() end
+
 ---The camera allows you to capture frames or even render video from the world to your display! Our camera
 ---performs well without the need for raytracing, using rays in a multicast fashion rather than complex
 ---raytracing techniques.
 ---
 ---The calculations are simple: addition, subtraction, division, and multiplication.
----@class Camera
+---@class Camera : Component
 local Camera = {}
 
 ---Captures a frame and displays it.
@@ -1236,7 +1282,7 @@ function Camera.setOffsetY(yOffset) end
 ---@param raycastFilter integer
 function Camera.setFilter(raycastFilter) end
 
----@class Display The display functions like a monitor in Scrap Mechanic, allowing you to draw anything on it using a computer.
+---@class Display : Component The display functions like a monitor in Scrap Mechanic, allowing you to draw anything on it using a computer.
 local Display = {}
 
 ---Draws a pixel on the screen.
@@ -1386,10 +1432,6 @@ function Display.optimize() end
 ---@param threshold number The new threshold
 function Display.setOptimizationThreshold(threshold) end
 
----Returns the display's ID.
----@return integer id The display's shape ID.
-function Display.getId() end
-
 ---Returns the current optimization threshold (0 - 1).
 ---@return number threshold The current optimization threshold
 function Display.getOptimizationThreshold() end
@@ -1433,22 +1475,22 @@ function Display.takeSnapshot() end
 ---@return Color Color The color of the pixel in the x, y position
 function Display.getPixel(x, y) end
 
----@class GPS A GPS allows you to get rotation, position, velocities, and more!
+---@class GPS : Component A GPS allows you to get rotation, position, velocities, and more!
 local GPS = {}
 
 ---Gets GPS data and returns it.
 ---@return GPSData gpsData The GPS data it has received
 function GPS.getGPSData() end
 
----@class Harddrive A drive allows you to store anything* inside it. You can also interact with it to modify its data directly without using code.
+---@class Harddrive : Component A drive allows you to store anything* inside it. You can also interact with it to modify its data directly without using code.
 local Harddrive = {}
 
 ---Loads data from the hard drive and returns it.
----@return table contents The hard drive's contents
+---@return table|string|number|boolean|nil contents The hard drive's contents
 function Harddrive.load() end
 
 ---Saves data to the hard drive. Must be JSON compatible.
----@param data table The data to save
+---@param data table|string|number|boolean|nil The data to save
 function Harddrive.save(data) end
 
 ---@class HologramObject A 3D hologram object
@@ -1505,7 +1547,7 @@ function HologramObject.delete() end
 ---@return boolean isDeleted If true, the object is deleted. Otherwise, it is not deleted.
 function HologramObject.isDeleted() end
 
----@class Hologram A hologram that lets you show 3D objects!
+---@class Hologram : Component A hologram that lets you show 3D objects!
 local Hologram = {}
 
 ---Creates a cube object.
@@ -1546,7 +1588,7 @@ function Hologram.createBlueprint(blueprintJson, scale, offsetPosition, offsetRo
 ---@return HologramObject? object Returns a table (if the object exists) or nil (if the object does not exist)
 function Hologram.getObject(index) end
 
----@class Keyboard A virtual keyboard that allows you to type. The computer can read one character at a time.
+---@class Keyboard : Component A virtual keyboard that allows you to type. The computer can read one character at a time.
 local Keyboard = {}
 
 ---Returns the latest keystroke that has been pressed. If it returns "backSpace" (capitalization matters!), the user pressed the backspace key.
@@ -1558,7 +1600,7 @@ function Keyboard.getLatestKeystroke() end
 ---@return boolean isPressed Returns true if a key has been pressed, false otherwise
 function Keyboard.isPressed() end
 
----@class Laser A laser is like a sensor in Scrap Mechanic, but it works with a computer and has more features than a normal one.
+---@class Laser : Component A laser is like a sensor in Scrap Mechanic, but it works with a computer and has more features than a normal one.
 local Laser = {}
 
 ---Sets the laser's distance.
@@ -1582,42 +1624,42 @@ function Laser.isBeamEnabled() end
 ---@param bool boolean If true, the laser will ignore the current body
 function Laser.ignoreCurrentBody(bool) end
 
----@class Motor Allows you to control velocities and lengths of bearings and pistons!
+---@class Motor : Component Allows you to control velocities and lengths of bearings and pistons!
 local Motor = {}
 
 ---Sets the speed of the bearing(s).
----@param speed number The speed to set for the bearing(s)
+---@param speed number The speed to set for the bearing(s)), in degrees per second. Cannot be infinite.
 function Motor.setBearingSpeed(speed) end
 
 ---Sets the angle of the bearing(s).
----@param angle number The angle to set for the bearing(s)
+---@param angle number The angle to set to bearing(s), in degrees. Cannot be infinite.
 function Motor.setBearingAngle(angle) end
 
 ---Sets the speed of the piston(s).
----@param speed number The speed to set for the piston(s)
+---@param speed number The speed to set for the piston(s), Negative values are treated as positive. Cannot be infinite.
 function Motor.setPistonSpeed(speed) end
 
 ---Sets the torque of the bearing(s).
----@param torque number The torque to set for the bearing(s)
+---@param torque number The torque to set for the bearing(s). Cannot be negative or infinite, or else an error is thrown.
 function Motor.setTorque(torque) end
 
 ---Sets the length of the piston(s).
----@param length number The length to set for the piston(s)
+---@param length number The length to set for the piston(s). Cannot be negative or infinite, or else an error is thrown.
 function Motor.setLength(length) end
 
 ---Sets the force of the piston(s).
----@param force number The force to set for the piston(s)
+---@param force number The force to set for the piston(s). Negative values are treated as positive. Cannot be infinite.
 function Motor.setForce(force) end
 
----Gets the bearing's current angle. Note that only 1 bearing can be connected!
----@return number angle The current angle
+---Gets the bearing's current angle. Note that only 1 bearing can be connected! (Spring bearings count as bearings too.)
+---@return number angle The current angle, in degrees.
 function Motor.getCurrentAngle() end
 
 ---Gets the pistons's current length. Note that only 1 piston can be connected!
 ---@return number length The current length
 function Motor.getCurrentLength() end
 
----@class Radar The radar allows you to scan objects around it.
+---@class Radar : Component The radar allows you to scan objects around it.
 local Radar = {}
 
 ---Gets its targets and returns them.
@@ -1632,14 +1674,14 @@ function Radar.setVerticalScanAngle(angle) end
 ---@param angle number The horizontal scan angle (range: 10 to 90 degrees)
 function Radar.setHorizontalScanAngle(angle) end
 
----@class RadarWarningReceiver Allows you to detect actively targeting radars
+---@class RadarWarningReceiver : Component Allows you to detect actively targeting radars
 local RadarWarningReceiver = {}
 
 ---Gets the radar positions that are actively targeting the creation
 ---@return RadarPosition[] radarPositions The positions of the targeting radars
 function RadarWarningReceiver.getTargets() end
 
----@class SeatController Allows you to control seats.
+---@class SeatController : Component Allows you to control seats.
 local SeatController = {}
 
 ---Gets the seat data and returns it.
@@ -1664,7 +1706,7 @@ function SeatController.pressButton(index) end
 ---@return boolean? success Whether the button release succeeded. Nil if no seat has been connected
 function SeatController.releaseButton(index) end
 
----@class Speaker The speaker allows you to play any kind of sound, and we mean anything!
+---@class Speaker : Component The speaker allows you to play any kind of sound, and we mean anything!
 local Speaker = {}
 
 ---Plays a beep sound.
@@ -1692,7 +1734,7 @@ function Speaker.getId() end
 ---Stops all currently playing audio.
 function Speaker.stopAllAudio() end
 
----@class Terminal A terminal is like a display but with a keyboard attached. It is an easy method for creating consoles.
+---@class Terminal : Component A terminal is like a display but with a keyboard attached. It is an easy method for creating consoles.
 local Terminal = {}
 
 ---Sends a message to the terminal.
@@ -1713,7 +1755,7 @@ function Terminal.receivedInputs() end
 ---@return string input The user's inputted message.
 function Terminal.getInput() end
 
----@class Antenna The antenna component is connected to a network port. If connected, you can send data to other antennas wirelessly.
+---@class Antenna : Component The antenna component is connected to a network port. If connected, you can send data to other antennas wirelessly.
 local Antenna = {}
 
 ---Gets the name of the antenna.
@@ -1732,7 +1774,7 @@ function Antenna.hasConnection() end
 ---@return string[] discoveredAntennas A list of all discovered antennas.
 function Antenna.scanAntennas() end
 
----@class NetworkPort The network port is used to send and receive data, and can be connected to an antenna.
+---@class NetworkPort : Component The network port is used to send and receive data, and can be connected to an antenna.
 local NetworkPort = {}
 
 ---Gets the connected antenna and returns it.
@@ -1763,7 +1805,7 @@ function NetworkPort.receivePacket() end
 ---Clears all unread packets from the buffer.
 function NetworkPort.clearPackets() end
 
----@class Light A component which lets you set/get the color of it's own component.
+---@class Light : Component A component which lets you set/get the color of it's own component.
 local Light = {}
 
 ---Gets the color
@@ -1774,7 +1816,7 @@ function Light.getColor() end
 ---@param color MultiColorTypeNonNil The new color
 function Light.setColor(color) end
 
----@class GravityController
+---@class GravityController : Component
 ---A component that allows modifying the gravity of the attached creation.
 local GravityController = {}
 
@@ -1798,8 +1840,7 @@ function GravityController.getBodyMass() end
 ---@return number mass The creation mass.
 function GravityController.getCreationMass() end
 
-
----@class CollisionDetector Allows you to see collision and melee event that include the component.
+---@class CollisionDetector : Component Allows you to see collision and melee event that include the component.
 local CollisionDetector = {}
 
 ---Returns the last collision event that occured.
@@ -1829,23 +1870,34 @@ function CollisionDetector.isMeleeing() end
 ---                                                                                                           ---
 -----------------------------------------------------------------------------------------------------------------
 
+---A PowerSource class that serves as the base for all power source types.
+---@class PowerSource : Component
+local PowerSource = {}
 
---- A PowerSource class that serves as the base for all power source types.
----@class PowerSource
-PowerSource = {}
-
---- Retrieves the name of the power source.
+---Retrieves the name of the power source.
 ---@return string name The name of the power source
 function PowerSource.getName() end
 
---- Returns the current power output being produced and supplied to all connected computers.
----@return number power The total power output in kilowatts (kW)
-function PowerSource.getPower() end
+---Returns the statistics of the power source, varies between power sources. Empty table if no stats are available.
+---You can find if a power source has stats by checking if theres a definition of "<PowerSourceType>Stats" in the documentation. For example, a generator has "GeneratorStats" and a battery has "BatteryStats".
+---@return table stats The statistics of the power source
+function PowerSource.getStats() end
 
+---@class GeneratorStats A table containing the statistics of a generator power source.
+---@field efficiency number The efficiency of the generator (0 to 1)
+---@field maxResistance number The maximum resistance the generator can handle
 
 ---A PowerSource component that generates power based on how much RPM a bearing is spinning.
 ---@class Generator : PowerSource
 local Generator = {}
+
+---Returns the total power being generated by the generator.
+---@return number power The total power (kW) being generated by the generator
+function Generator.getPower() end
+
+---Returns the total power being used.
+---@return number power The total power (kW) being used.
+function Generator.getUsedPower() end
 
 ---Sets the handle position. This adjusts how much power the generator produces.
 ---Note: Higher values require more torque to maintain RPM.
@@ -1855,3 +1907,59 @@ function Generator.setHandlePosition(handlePosition) end
 ---Retrieves the current handle position of the generator.
 ---@return number handlePosition A value between 0 and 1 representing the current handle position.
 function Generator.getHandlePosition() end
+
+---A PowerSource component that toggles power output based on its state (on/off).
+---@class Breaker : PowerSource
+local Breaker = {}
+
+---Returns the current state of the breaker.
+---@return boolean isActive True if the breaker is active (on), false if inactive (off).
+function Breaker.isActive() end
+
+---Returns the current power being transfered through
+---@return number power The current power (kW) being transfered through the breaker
+function Breaker.getPower() end
+
+---@class BatteryStats A table containing the statistics of a battery power source.
+---@field dischargeRate number The rate at which the battery discharges (kW)
+---@field chargeRate number The rate at which the battery charges (kW)
+---@field maxCapacity number The maximum capacity of the battery (kWh)
+
+---A PowerSource component that stores power and can be charged or discharged.
+---@class Battery : PowerSource
+local Battery = {}
+
+---Gets the total power currently stored in the battery.
+---@return number power The total power (kWh) currently stored in the battery
+function Battery.getPower() end
+
+---Gets the total power being used.
+---@return number power The total power (kW) being used.
+function Battery.getUsedPower() end
+
+---Gets the current charge
+---@return number charge The current charge of the battery (0 to capacity)
+function Battery.getCharge() end
+
+---Gets the current charge delta
+---@return integer chargeDelta The current charge delta of the battery (kW)
+function Battery.getChargeDelta() end
+
+---@class SolarPanelStats A table containing the statistics of a solar panel power source.
+---@field maxOutput number The maximum power output of the solar panel (kW)
+
+---A PowerSource component that generates power based on sunlight exposure.
+---@class SolarPanel : PowerSource
+local SolarPanel = {}
+
+---Returns the current power output of the solar panel.
+---@return number power The current power output (kW) of the solar panel
+function SolarPanel.getPower() end
+
+---Returns the total power being used.
+---@return number power The total power (kW) being used.
+function SolarPanel.getUsedPower() end
+
+---Gets the current efficency of the solar panel based on sunlight exposure.
+---@return number efficiency The current efficiency (0 to 100%) of the solar panel
+function SolarPanel.getEfficiency() end

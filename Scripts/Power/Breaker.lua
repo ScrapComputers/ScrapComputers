@@ -7,6 +7,8 @@ BreakerClass.connectionOutput = sm.interactable.connectionType.computerIO
 BreakerClass.colorNormal = sm.color.new(0xFFDC82FF)
 BreakerClass.colorHighlight = sm.color.new(0xFCE8B5FF)
 BreakerClass.poseWeightCount = 1
+BreakerClass.connectIcon = "electrical"
+BreakerClass.connectIconScale = 0.75
 
 -- SERVER --
 
@@ -106,7 +108,7 @@ end
 function BreakerClass:client_onCreate()
     self.cl = {
         transferredPower = 0,
-        isActive = false -- Incase needed
+        isActive = false
     }
 end
 
@@ -117,9 +119,8 @@ function BreakerClass:client_onInteract(char, state)
 end
 
 function BreakerClass:client_canInteract()
+    local canInteract = #self.interactable:getParents(sm.interactable.connectionType.logic) == 0
     if self.shape.usable then
-        local canInteract = #self.interactable:getParents(sm.interactable.connectionType.logic) == 0
-
         sm.scrapcomputers.gui:showCustomInteractiveText(
             {
                 {"scrapcomputers.breaker.power_transfer." .. tostring(self.cl.transferredPower > 0), sm.scrapcomputers.util.round(self.cl.transferredPower, 1)},
@@ -136,8 +137,8 @@ function BreakerClass:cl_syncTransferredPower(power)
 end
 
 function BreakerClass:cl_updateActiveState(state)
-    self.cl.isActive = state -- Incase needed
+    self.cl.isActive = state
     self.interactable:setPoseWeight(0, state and 1 or 0)
 end
 
-sm.scrapcomputers.componentManager.toComponent(BreakerClass, "PowerComponents", true, _, true)
+sm.scrapcomputers.componentManager.toComponent(BreakerClass, "PowerComponents", true, nil, true)

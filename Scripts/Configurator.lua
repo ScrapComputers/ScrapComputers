@@ -160,7 +160,7 @@ function ConfiguratorClass:client_onInteract(character, state)
     if not state then return end
 
     if sm.scrapcomputers.config.getConfig("scrapcomputers.configurator.admin_only").selectedOption == 1 and not sm.isHost then
-        sm.gui.displayAlertText("[#3A96DDScrap#3b78ffComputers#eeeeee]: " .. sm.scrapcomputers.languageManager.translatable("scrapcomputers.configurator.cannot_access_object"))
+        sm.scrapcomputers.gui:alert("scrapcomputers.configurator.cannot_access_object")
         return
     end
 

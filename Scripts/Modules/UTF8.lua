@@ -9,6 +9,10 @@ local string_byte = string.byte
 ---@return string The full UTF-8 character at the given byte index.
 ---@return integer byteCount The number of bytes in the character.
 function sm.scrapcomputers.utf8.getCharacterAt(str, index)
+    if index < 1 or index > #str then
+        error("Index out of bounds")
+    end
+
     local byte = string_byte(str, index)
     local byteCount = 0
 
@@ -31,6 +35,10 @@ end
 ---@param str string The UTF-8 encoded string.
 ---@return number size The number of UTF-8 characters in the string.
 function sm.scrapcomputers.utf8.getStringSize(str)
+    if #str == 0 then
+        return 0
+    end
+    
     local length = 0
     local index = 1
 
@@ -61,6 +69,9 @@ end
 function sm.scrapcomputers.utf8.loopCharacters(str)
     local index = 1
     local length = #str
+    if length == 0 then
+        return function() return nil end
+    end
 
     return function()
         if index > length then

@@ -8,7 +8,7 @@
 					"textureList": [
 						"",
 						//"$CONTENT_DATA/Objects/Textures/transparentDebug.png",
-						"$CONTENT_DATA/Objects/Textures/Glow_ASG.png"
+						"$CONTENT_DATA/Objects/Textures/glow_asg.png"
 					]
 				}
 			]

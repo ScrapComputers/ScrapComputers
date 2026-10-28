@@ -268,7 +268,7 @@ function ComputerClass:server_onFixedUpdate()
             if self.sv.luaVM.enviroment.onDestroy then
                 local success, errMsg = pcall(self.sv.luaVM.enviroment.onDestroy)
                 if not success then
-                    self.sv.luaVM:forceSetException(ErrorParser:fixErrorMessage(errMsg, self.sv.luaVM.luaState.currentFunction))
+                    self.sv.luaVM:forceSetException(errMsg)
                 end
             end
 
@@ -317,7 +317,7 @@ function ComputerClass:server_onFixedUpdate()
         if self.sv.luaVM.enviroment.onReload then
             local success, errMsg = pcall(self.sv.luaVM.enviroment.onReload)
             if not success then
-                self.sv.luaVM:forceSetException(ErrorParser:fixErrorMessage(errMsg, self.sv.luaVM.luaState.currentFunction))
+                self.sv.luaVM:forceSetException(errMsg)
             end
         end
     end
@@ -333,7 +333,7 @@ function ComputerClass:server_onFixedUpdate()
                 if self.sv.luaVM.enviroment.onPowerLoss then
                     local success, errMsg = pcall(self.sv.luaVM.enviroment.onPowerLoss)
                     if not success then
-                        self.sv.luaVM:forceSetException(ErrorParser:fixErrorMessage(errMsg, self.sv.luaVM.luaState.currentFunction))
+                        self.sv.luaVM:forceSetException(errMsg)
                     end
                 end
             end
@@ -404,6 +404,7 @@ function ComputerClass:server_onFixedUpdate()
                     -- Load main.lua
                     function ()
                         local success, result = pcall(LuaVM.require, self.sv.luaVM, "/Main.lua", "/")
+
                         if not success then
                             self.sv.luaVM:forceSetException(result:sub(63))
                         end
@@ -415,7 +416,7 @@ function ComputerClass:server_onFixedUpdate()
 
                         local success, errMsg = pcall(self.sv.luaVM.enviroment.onLoad)
                         if not success then
-                            self.sv.luaVM:forceSetException(ErrorParser:fixErrorMessage(errMsg, self.sv.luaVM.luaState.currentFunction))
+                            self.sv.luaVM:forceSetException(errMsg)
                         end
                     end
                 }
@@ -437,7 +438,7 @@ function ComputerClass:server_onFixedUpdate()
                 if self.sv.luaVM.enviroment.onDestroy then
                     local success, errMsg = pcall(self.sv.luaVM.enviroment.onDestroy)
                     if not success then
-                        self.sv.luaVM:forceSetException(ErrorParser:fixErrorMessage(errMsg, self.sv.luaVM.luaState.currentFunction))
+                        self.sv.luaVM:forceSetException(errMsg)
                     end
                 end
 
@@ -463,7 +464,7 @@ function ComputerClass:server_onFixedUpdate()
 
             local success, errMsg = pcall(self.sv.luaVM.enviroment.onUpdate, 0.025)
             if not success then
-                self.sv.luaVM:forceSetException(ErrorParser:fixErrorMessage(errMsg, self.sv.luaVM.luaState.currentFunction))
+                self.sv.luaVM:forceSetException(errMsg)
             end
         end
     end
@@ -994,7 +995,7 @@ function ComputerClass:client_canInteract(character)
                 },
             },
             {
-                self.cl.sharedData.hasException and self.cl.sharedData.exceptionMessage or "scrapcomputers.computer.interationtext.no_exception"
+                self.cl.sharedData.hasException and self.cl.sharedData.exceptionMessage or nil
             }
         )
     end
@@ -1086,46 +1087,6 @@ function ComputerClass:client_onFixedUpdate()
 
             self.cl.main.gui:setTextRaw("MainMainLogsText", text)
         end
-    end
-
-    if sharedData.memoryTrackerData and sm.game.getServerTick() % 10 == 0 then
-        local data = sharedData.memoryTrackerData
-        
-        local translatable = sm.scrapcomputers.languageManager.translatable
-        local prefix = "scrapcomputers.computer.info.memory."
-        local textArray = {
-            translatable(prefix .. "title", data.frameCount),
-        
-            translatable(prefix .. "average_positive", data.averagePositive),
-            translatable(prefix .. "average_negative", data.averageNegative),
-            translatable(prefix .. "average_difference", data.avgDiff),
-        
-            "",
-        
-            translatable(
-                prefix .. (data.trend > 0 and "trend.increase" or "trend.decrease"),
-                data.trend
-            ),
-            translatable(prefix .. "growth_streak", data.growthStreak),
-            translatable(
-                prefix .. (data.lastWasGC and "garbage_collector.active" or "garbage_collector.inactive")
-            )
-        }
-
-        local haywireMessages = {}
-        if data.memoryIsLikelyHigh then
-            table.insert(haywireMessages, translatable(prefix .. "warnings.high_memory_usage"))
-        end
-
-        if #haywireMessages > 0 then
-            table.insert(textArray, "\n" .. translatable(prefix .. "warnings.title"))
-            for _, msg in pairs(haywireMessages) do
-                table.insert(textArray, msg)
-            end
-        end
-
-        local text = table.concat(textArray, "\n")
-        self.cl.main.gui:setTextRaw("OptionsToolsMainInfoText", text)
     end
 
     self:cl_password_onFixedUpdate()
@@ -1541,6 +1502,11 @@ function ComputerClass:cl_fs_open()
 end
 
 function ComputerClass:cl_fs_closeGui()
+    if self.cl.isOtherGuiOpening then
+        self.cl.isOtherGuiOpening = false
+        return
+    end
+
     if not self.cl.filesystem.needsUnsavedGuiToBeOpen then
         self.cl.isOtherGuiOpening = false
         self:cl_openGui()
@@ -2263,10 +2229,4 @@ function ComputerClass:cl_internalChatMessage(msg)
     sm.scrapcomputers.gui:chatMessage(msg)
 end
 
-function ComputerClass:cl_alert(data)
-    if self.cl.storage.flags.allowAlerts then
-        sm.gui.displayAlertText(data[1], data[2])
-    end
-end
-
-sm.scrapcomputers.componentManager.toComponent(ComputerClass, nil, false, true)
+sm.scrapcomputers.componentManager.toComponent(ComputerClass, nil, false, true, false, true)

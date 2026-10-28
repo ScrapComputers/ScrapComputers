@@ -106,6 +106,8 @@ end
 -- SERVER API (NOT FOR COMPUTER!) --
 
 function AntennaClass:server_sendActualPacket(data)
+    -- NetworkInterfaces isn't a registered component (it's a manual dataList), so getComponentsSimplified can't be used here.
+    ---@diagnostic disable-next-line: deprecated
     local networkPort = sm.scrapcomputers.table.getItemAt(sm.scrapcomputers.componentManager.getComponents("NetworkInterfaces", self.interactable, false, sm.interactable.connectionType.networkingIO, true), 1)
     if networkPort then
         networkPort:server_sendPacket(data)
@@ -148,9 +150,7 @@ function AntennaClass:client_onInteract(character, state)
     
     self.cl.gui:setTextChangedCallback("Input", "client_onTextChanged")
     self.cl.gui:setButtonCallback("Button", "client_onAccepted")
-    
-    self.cl.gui:setOnCloseCallback("cl_onGuiClose")
-    
+        
     self.cl.gui:open()
 end
 
@@ -158,7 +158,7 @@ function AntennaClass:client_onFixedUpdate()
     if self.cl.name ~= self.cl.oldName then
         self.cl.oldName = self.cl.name
         
-        if self.cl.gui then
+        if self.cl.gui and self.cl.gui:isActive() then
             self.cl.gui:setTextRaw("Input", self.cl.name)
         end
     end
@@ -182,5 +182,4 @@ function AntennaClass:client_setName(name)
     self.cl.newName = name
 end
 
--- Convert the class to a component
-sm.scrapcomputers.componentManager.toComponent(AntennaClass, "Antennas", true)
+sm.scrapcomputers.componentManager.toComponent(AntennaClass, "Antennas", true, false, false, true)

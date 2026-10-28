@@ -6,6 +6,8 @@ GeneratorClass.connectionInput = sm.interactable.connectionType.none
 GeneratorClass.connectionOutput = sm.interactable.connectionType.computerIO + sm.interactable.connectionType.bearing
 GeneratorClass.colorNormal = sm.color.new(0xFFDC82FF)
 GeneratorClass.colorHighlight = sm.color.new(0xFCE8B5FF)
+GeneratorClass.connectIcon = "electrical"
+GeneratorClass.connectIconScale = 0.75
 
 local xMin, xMax = -0.27777, -0.0644805
 local yMin, yMax = -0.131733, 0.0308426
@@ -199,4 +201,4 @@ function GeneratorClass:cl_receiveUsedPower(usedPower)
     self.cl.usedPower = usedPower
 end
 
-sm.scrapcomputers.componentManager.toComponent(GeneratorClass, "PowerComponents", true, _, true)
+sm.scrapcomputers.componentManager.toComponent(GeneratorClass, "PowerComponents", true, nil, true)

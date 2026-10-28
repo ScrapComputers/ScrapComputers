@@ -7,13 +7,21 @@ NetworkPortClass.connectionOutput = sm.interactable.connectionType.networkingIO
 NetworkPortClass.colorNormal = sm.color.new(0x0c64f2ff)
 NetworkPortClass.colorHighlight = sm.color.new(0x0586ffff)
 
+-- TODO: Packets are currently passed between the NetworkPort and Antenna through the component system.
+--       "NetworkInterfaces" is not a registered component, just a manual dataList, not a good solution.
+--       Replace this with a dedicated messaging system so the deprecated getComponents calls can go away.
+
+---@diagnostic disable: deprecated
+
 -- SERVER --
 
 function NetworkPortClass:sv_createData()
     return {
         -- Gets the connected antenna
         ---@return Antenna? antenna The connected antenna, if connected.
-        getAntenna = function () return sm.scrapcomputers.table.getItemAt(sm.scrapcomputers.componentManager.getComponents("Antennas", self.interactable, true, sm.interactable.connectionType.networkingIO, true), 1) end,
+        getAntenna = function ()
+            return sm.scrapcomputers.table.getItemAt(sm.scrapcomputers.componentManager.getComponents("Antennas", self.interactable, true, sm.interactable.connectionType.networkingIO, true), 1)
+        end,
 
         -- Returns true if theres a connection.
         ---@return boolean hasConnection If it has a connection or not.

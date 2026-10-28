@@ -7,20 +7,6 @@ sm.scrapcomputers.languageManager.languages = {}
 sm.scrapcomputers.languageManager.currentLanguage = sm.scrapcomputers.languageManager.currentLanguage or ""
 sm.scrapcomputers.languageManager.lastLanguageUpdate = sm.game.getCurrentTick()
 
-local function findPath(localid, name)
-    local filePath = "$CONTENT_" .. localid .. "/Gui/Language/" .. name .. "/scrapcomputers"
-    local extentionsToCheck = {".json", ".jsonc", ".txt"}
-
-    for _, extension in pairs(extentionsToCheck) do
-        local fullPath = filePath .. extension
-        if sm.json.fileExists(fullPath) then
-            return fullPath
-        end
-    end
-    
-    return nil
-end
-
 -- Gets all loaded languages and returns them
 function sm.scrapcomputers.languageManager.getLanguages()
     return sm.scrapcomputers.languageManager.languages
@@ -38,15 +24,15 @@ function sm.scrapcomputers.languageManager.reloadLanguages()
 
     local config = sm.scrapcomputers.config.getConfig("scrapcomputers.global.selectedLanguage")
     config.options = {"Automatic"}
-    
     for _, language in pairs(sm.scrapcomputers.languageManager.languageReloadPaths) do
-        local path = findPath(language[1], language[2])
-        if not path then
-            sm.scrapcomputers.logger.warn("LanguageManager.lua", "Cannot find a language!")
+        local path = "$CONTENT_" .. language[1] .. "/Gui/Language/" .. language[2] .. "/scrapcomputers.json"
+
+        if not sm.json.fileExists(path) then
+            sm.scrapcomputers.logger.warning("LanguageManager.lua", "Cannot find a language! Path: \"" .. path .. "\"")
             goto continue
         end
 
-        local success, data = pcall(sm.json.open, path)
+        local success, data = pcall(sm.json.open, path, false)
         if not success then
             sm.scrapcomputers.logger.error("LanguageManager.lua", data)
             goto continue
@@ -67,12 +53,12 @@ function sm.scrapcomputers.languageManager.addLanguage(localid, name)
     sm.scrapcomputers.errorHandler.assertArgument(localid, 1, {"string"})
     sm.scrapcomputers.errorHandler.assertArgument(name, 2, {"string"})
     
-    local path = findPath(localid, name)
-    sm.scrapcomputers.errorHandler.assert(path ~= nil, nil, "Local id \"%s\" with Language Name \"%s\" was NOT found!", localid, name)
+    local path = "$CONTENT_" .. localid .. "/Gui/Language/" .. name .. "/scrapcomputers.json"
+    sm.scrapcomputers.errorHandler.assert(sm.json.fileExists(path), nil, "Local id \"%s\" with Language Name \"%s\" was NOT found!", localid, name)
 
     table.insert(sm.scrapcomputers.languageManager.languageReloadPaths, {localid, name})
 
-    local success, data = pcall(sm.json.open, path)
+    local success, data = pcall(sm.json.open, path, false)
     if not success then
         sm.scrapcomputers.logger.error("LanguageManager.lua", data)
         return false
@@ -130,12 +116,8 @@ function sm.scrapcomputers.languageManager.translatable(text, ...)
     sm.scrapcomputers.errorHandler.assertArgument(text, 1, {"string"})
 
     local data = sm.scrapcomputers.languageManager.languages[sm.scrapcomputers.languageManager.getSelectedLanguage()]
-    if not data then
-        return text
-    end
-
     local value = data[text]
-    if not value then
+    if not data or not value then
         return text
     end
     

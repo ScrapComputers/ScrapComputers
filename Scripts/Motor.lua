@@ -7,6 +7,14 @@ MotorClass.connectionOutput = sm.interactable.connectionType.bearing + sm.intera
 MotorClass.colorNormal = sm.color.new(0xaaaa00ff)
 MotorClass.colorHighlight = sm.color.new(0xffff00ff)
 
+local math = math
+
+local DEG_TO_RAD = math.rad(1)
+local RAD_TO_RPM = 30 / math.pi
+local BEARING_POWER_COEFF = 30000 / math.pi
+local PISTON_POWER_COEFF = BEARING_POWER_COEFF * 6
+local EFFICIENCY = 1 / 0.85
+
 -- SERVER --
 
 function MotorClass:sv_createData()
@@ -15,70 +23,75 @@ function MotorClass:sv_createData()
         ---@param speed number The speed to set to bearing(s)
         setBearingSpeed = function(speed)
             sm.scrapcomputers.errorHandler.assertArgument(speed, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(speed ~= math.huge and speed ~= math.huge, nil, "Cannot set a non-finite bearing speed!")
+            sm.scrapcomputers.errorHandler.assert(math.abs(speed) ~= math.huge, nil, "Cannot set a non-finite bearing speed!")
 
-            self.sv.bearingSpeed = speed
-            self.sv.updateBearingValues = true
+            self.sv.bearingSpeed = math.rad(speed)
+            self.sv.updateBearings = true
         end,
 
         ---Sets the bearing(s) angle
         ---@param angle number The angle to set to bearing(s)
         setBearingAngle = function(angle)
             sm.scrapcomputers.errorHandler.assertArgument(angle, nil, {"number", "nil"})
-            if type(angle) == "number" then
-                sm.scrapcomputers.errorHandler.assert(angle ~= math.huge and angle ~= math.huge, nil, "Cannot set a non-finite bearing angle!")
+
+            if angle then
+                sm.scrapcomputers.errorHandler.assert(math.abs(angle) ~= math.huge, nil, "Cannot set a non-finite bearing angle!")
             end
 
-            self.sv.targetAngle = angle
-            self.sv.updateBearingValues = true
-        end,
-
-        ---Sets the piston(s) speed
-        ---@param speed number The speed to set to piston(s)
-        setPistonSpeed = function(speed)
-            sm.scrapcomputers.errorHandler.assertArgument(speed, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(speed ~= math.huge and speed ~= math.huge, nil, "Cannot set a non-finite piston speed!")
-
-            self.sv.pistonSpeed = speed
-            self.sv.updateBearingValues = true
+            self.sv.targetAngle = angle and math.rad(angle) or nil
+            self.sv.updateBearings = true
         end,
 
         ---Sets the bearing(s) torque
         ---@param torque number The torque to set to bearing(s)
         setTorque = function(torque)
             sm.scrapcomputers.errorHandler.assertArgument(torque, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(force ~= math.huge and force ~= math.huge, nil, "Cannot set a non-finite bearing torque!")
+            sm.scrapcomputers.errorHandler.assert(math.abs(torque) ~= math.huge, nil, "Cannot set a non-finite bearing torque!")
+            sm.scrapcomputers.errorHandler.assert(torque >= 0, nil, "Torque cannot be negative!")
 
             self.sv.torque = torque
-            self.sv.updateBearingValues = true
+            self.sv.updateBearings = true
+        end,
+
+        ---Sets the piston(s) speed
+        ---@param speed number The speed to set to piston(s)
+        setPistonSpeed = function(speed)
+            sm.scrapcomputers.errorHandler.assertArgument(speed, nil, {"number"})
+            sm.scrapcomputers.errorHandler.assert(math.abs(speed) ~= math.huge, nil, "Cannot set a non-finite piston speed!")
+
+            self.sv.pistonSpeed = math.abs(speed)
+            self.sv.updatePistons = true
         end,
 
         ---Sets the piston(s) length
         ---@param length number The length to set to piston(s)
         setLength = function(length)
             sm.scrapcomputers.errorHandler.assertArgument(length, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(length ~= math.huge and length ~= math.huge, nil, "Cannot set a non-finite piston length!")
+            sm.scrapcomputers.errorHandler.assert(math.abs(length) ~= math.huge, nil, "Cannot set a non-finite piston length!")
+            sm.scrapcomputers.errorHandler.assert(length >= 0, nil, "Piston length cannot be negative!")
 
             self.sv.length = length
-            self.sv.updatePistonValues = true
+            self.sv.updatePistons = true
         end,
 
         ---Sets the piston(s) force
         ---@param force number The force to set to
         setForce = function(force)
             sm.scrapcomputers.errorHandler.assertArgument(force, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(force ~= math.huge and force ~= math.huge, nil, "Cannot set a non-finite piston force!")
+            sm.scrapcomputers.errorHandler.assert(math.abs(force) ~= math.huge, nil, "Cannot set a non-finite piston force!")
 
-            self.sv.force = force
-            self.sv.updatePistonValues = true
+            self.sv.force = math.abs(force)
+            self.sv.updatePistons = true
         end,
         
         ---Gets the bearing's current angle. Note that only 1 bearing can be connected!
         ---@return number angle The current angle
         getCurrentAngle = function ()
-            sm.scrapcomputers.errorHandler.assert(#self.sv.bearings == 1, nil, "Only 1 bearing can be connected!")
+            local totalBearings = #self.sv.bearings + #self.sv.springs
+            sm.scrapcomputers.errorHandler.assert(totalBearings == 1, nil, "Only 1 bearing can be connected!")
 
-            return math.deg(self.sv.bearings[1]:getAngle())
+            local joint = self.sv.bearings[1] or self.sv.springs[1]
+            return math.deg(joint:getAngle())
         end,
 
         ---Gets the pistons's current length. Note that only 1 piston can be connected!
@@ -91,136 +104,166 @@ function MotorClass:sv_createData()
     }
 end
 
-function MotorClass:sv_onPowerLoss()
-    self.sv.bearingSpeed = 0
-    self.sv.torque = 0
+function MotorClass:server_onCreate()
+    self.sv = {
+        bearings = {},
+        bearingsReversed = {},
+        springs = {},
+        pistons = {},
 
-    self.sv.pistonSpeed = 0
-    self.sv.length = 0
-    self.sv.force = 0
+        bearingSpeed = 0,
+        torque = 1000,
+        targetAngle = nil,
+        
+        pistonSpeed = 0,
+        force = 1000,
+        length = 0,
 
-    self.sv.updateBearingValues = true
-    self.sv.updatePistonValues = true
+        updateBearings = true,
+        updatePistons = true,
+        wasPowered = true,
+        
+        jointCount = 0,
+    }
 
-    if self.sv.bearings then
-        for _, bearing in pairs(self.sv.bearings) do
-            bearing:setMotorVelocity(0, 0)
-        end 
-    end
-
-    if self.sv.pistons then
-        for _, piston in pairs(self.sv.pistons) do
-            piston:setTargetLength(0, 0, 0)
-        end
-    end
-    
-    self.sv.tickDelay = false
+    self:sv_cacheJoints()
 end
 
 function MotorClass:server_onFixedUpdate()
-    self.sv.bearings = self.interactable:getBearings()
-    self.sv.pistons = self.interactable:getPistons()
+    local joints = self.interactable:getJoints()
 
-    local bearingLen = #self.sv.bearings
-    local pistonLen = #self.sv.pistons
-
-    if bearingLen ~= self.sv.lastBearingCount then
-        self.sv.updateBearingValues = true
-        self.sv.lastBearingCount = bearingLen
+    if #joints ~= self.sv.jointCount then
+        self:sv_cacheJoints(joints)
+    else
+        for _, joint in ipairs(joints) do
+            local id = joint.id
+            local prevReversed = self.sv.bearingsReversed[id]
+        
+            if prevReversed ~= nil then
+                local isReversed = joint:isReversed()
+                if prevReversed ~= isReversed then
+                    self.sv.bearingsReversed[id] = isReversed
+                    self.sv.updateBearings = true
+                end
+            end
+        end
     end
 
-    if pistonLen ~= self.sv.lastPistonCount then
-        self.sv.updatePistonValues = true
-        self.sv.lastPistonCount = pistonLen
-    end
-    
-    local parents = self.interactable:getParents()
-    local needsReset = true
-    for _, parent in pairs(parents) do
+    local hasPower = false
+    for _, parent in ipairs(self.interactable:getParents()) do
         if parent.active then
-            needsReset = false
+            hasPower = true
             break
-        end 
-    end
-
-    if needsReset then
-        if not (self.sv.updateBearingValues or self.sv.updatePistonValues) then
-            self.sv.bearingSpeed = 0
-            self.sv.torque = 0
-
-            self.sv.pistonSpeed = 0
-            self.sv.length = 0
-            self.sv.force = 0
-
-            for _, bearing in pairs(self.sv.bearings) do
-                bearing:setMotorVelocity(0, 0)
-            end
-
-            for _, piston in pairs(self.sv.pistons) do
-                piston:setTargetLength(0, 0, 0)
-            end
         end
     end
 
-    if sm.scrapcomputers.powerManager.isEnabled() and (self.sv.updateBearingValues or self.sv.updatePistonValues) and not self.sv.tickDelay then
-        self.sv.tickDelay = true
-        goto END
+    if not hasPower and self.sv.wasPowered then
+        self:sv_onPowerLoss()
     end
 
-    self.sv.tickDelay = false
+    if hasPower and not self.sv.wasPowered then
+        self.sv.wasPowered = true
+        self.sv.updateBearings = true
+        self.sv.updatePistons = true
+    end
 
-    if self.sv.updateBearingValues then
-        for i, bearing in pairs(self.sv.bearings) do
+    if self.sv.updateBearings then
+        for _, bearing in ipairs(self.sv.bearings) do
             if not self.sv.targetAngle then
-                bearing:setMotorVelocity(math.rad(self.sv.bearingSpeed), self.sv.torque)
+                bearing:setMotorVelocity(self.sv.bearingSpeed, self.sv.torque)
             else
-                bearing:setTargetAngle(math.rad(self.sv.targetAngle), math.rad(self.sv.bearingSpeed), self.sv.torque)
+                bearing:setTargetAngle(self.sv.targetAngle, self.sv.bearingSpeed, self.sv.torque)
             end
         end
 
-        self.sv.updateBearingValues = false
+        self.sv.updateBearings = false
     end
 
-    if self.sv.updatePistonValues then
-        for _, piston in pairs(self.sv.pistons) do
+    if self.sv.updatePistons then
+        for _, piston in ipairs(self.sv.pistons) do
             piston:setTargetLength(self.sv.length, self.sv.pistonSpeed, self.sv.force)
         end
 
-        self.sv.updatePistonValues = false
+        self.sv.updatePistons = false
     end
 
-    ::END::
-    local absSpeed = math.abs(self.sv.bearingSpeed)
-    local absTorque = math.abs(self.sv.torque)
-    local powerSpeed = absSpeed < 1 and 1 or absSpeed
-    local bearingRpm = powerSpeed / 6
-    local bearingPower = (bearingRpm * absTorque / 9550) * (1 / 0.85) -- 85% efficient
+    for _, spring in ipairs(self.sv.springs) do
+        if not self.sv.targetAngle then
+            spring:setMotorVelocity(self.sv.bearingSpeed, self.sv.torque)
+        else
+            local currentAngle = spring:getAngle()
 
-    local absPistonSpeed = math.abs(self.sv.pistonSpeed)
-    local absForce = math.abs(self.sv.force)
-    local pistonPowerSpeed = absPistonSpeed < 1 and 1 or absPistonSpeed
-    local pistonPower = (pistonPowerSpeed * absForce / 50000)
+            if not spring:isReversed() then
+                currentAngle = -currentAngle
+            end
 
-    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, bearingPower * bearingLen + pistonPower * pistonLen)
+            local error = self.sv.targetAngle - currentAngle
+            error = (error + math.pi) % (2 * math.pi) - math.pi
+
+            local absSpeed = math.abs(self.sv.bearingSpeed)
+            local calculatedSpeed = sm.util.clamp(error * 5.0, -absSpeed, absSpeed)
+
+            spring:setMotorVelocity(calculatedSpeed, self.sv.torque)
+        end
+    end
+
+    local totalPower = 0
+
+    if self.sv.torque > 0 then
+        local absSpeed = math.abs(self.sv.bearingSpeed)
+        local powerSpeed = (absSpeed < DEG_TO_RAD) and DEG_TO_RAD or absSpeed
+        local bearingRpm = powerSpeed * RAD_TO_RPM
+        local bearingPower = (bearingRpm * self.sv.torque / BEARING_POWER_COEFF) * EFFICIENCY
+
+        totalPower = totalPower + (bearingPower * (#self.sv.bearings + #self.sv.springs))
+    end
+
+     if self.sv.force > 0 then
+        local pistonPowerSpeed = (self.sv.pistonSpeed < 1) and 1 or self.sv.pistonSpeed
+        local pistonPower = (pistonPowerSpeed * self.sv.force / PISTON_POWER_COEFF) * EFFICIENCY
+
+        totalPower = totalPower + (pistonPower * #self.sv.pistons)
+    end
+
+    sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, totalPower)
 end
 
-function MotorClass:server_onCreate()
-    self.sv = {
-        bearingSpeed = 0,
-        torque = 1000,
+function MotorClass:sv_cacheJoints(joints)
+    joints = joints or self.interactable:getJoints()
 
-        pistonSpeed = 0,
-        length = 0,
-        force = 1000,
+    self.sv.bearings, self.sv.springs, self.sv.pistons = {}, {}, {}
+    self.sv.bearingsReversed = {}
 
-        updateBearingValues = false,
-        updatePistonValues = false,
+    for _, joint in ipairs(joints) do
+        if joint:getBearingEnabled() then
+            self.sv.bearingsReversed[joint.id] = joint:isReversed()
 
-        bearings = self.interactable:getBearings(), ---@type Joint[]
-        lastBearingCount = 0,
-        pistons = self.interactable:getPistons(), ---@type Joint[]
-        lastPistonCount = 0,
-    }
+            if joint.type == "bearing" then
+                table.insert(self.sv.bearings, joint)
+            else
+                table.insert(self.sv.springs, joint)
+            end
+        else
+            table.insert(self.sv.pistons, joint)
+        end
+    end
+
+    self.sv.jointCount = #joints
+    self.sv.updateBearings = true
+    self.sv.updatePistons = true
+end
+
+function MotorClass:sv_onPowerLoss()
+    self.sv.wasPowered = false
+
+    self.sv.bearingSpeed = 0
+    self.sv.torque = 0
+    self.sv.pistonSpeed = 0
+    self.sv.force = 0
+
+    for _, bearing in ipairs(self.sv.bearings) do bearing:setMotorVelocity(0, 0) end
+    for _, spring in ipairs(self.sv.springs) do spring:setMotorVelocity(0, 0) end
+    for _, piston in ipairs(self.sv.pistons) do piston:setTargetLength(0, 0, 0) end
 end
 
 sm.scrapcomputers.componentManager.toComponent(MotorClass, "Motors", true, nil, true)
