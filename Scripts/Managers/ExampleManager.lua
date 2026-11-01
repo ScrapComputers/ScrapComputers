@@ -17,7 +17,7 @@ end
 function sm.scrapcomputers.exampleManager.getExamples()
     sm.scrapcomputers.exampleManager.reloadExamples()
     
-    return sm.scrapcomputers.exampleManager.examples
+    return sm.scrapcomputers.table.clone(sm.scrapcomputers.exampleManager.examples)
 end
 
 ---Gets the total amount of examples currently loaded.
@@ -52,9 +52,11 @@ function sm.scrapcomputers.exampleManager.loadExample(name)
     local examples = sm.scrapcomputers.exampleManager.getExamples()
     for _, example in pairs(examples) do
         if example.name:lower() == lowerName then
-            return example
+            return sm.scrapcomputers.table.clone(example)
         end
     end
+
+    return nil
 end
 
 sm.scrapcomputers.exampleManager.reloadExamples()

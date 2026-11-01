@@ -2219,9 +2219,17 @@ function ComputerClass:cl_reloadTranslations()
     self.cl.filesystem.rename.gui:setText("MainMainApplyBtn", "scrapcomputers.computer.fileexplorer.rename.apply")
 end
 
+-- CLIENT - ENV FUNCTIONS --
+
 function ComputerClass:cl_chatMessage(msg)
     if self.cl and self.cl.storage and self.cl.storage.flags.allowPrinting then
         sm.gui.chatMessage(msg)
+    end
+end
+
+function ComputerClass:cl_alertMessage(data)
+    if self.cl and self.cl.storage and self.cl.storage.flags.allowAlerts then
+        sm.gui.displayAlertText(data[1], data[2])
     end
 end
 

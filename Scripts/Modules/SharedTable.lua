@@ -467,7 +467,7 @@ end
 ---@return table rawContents The raw contents of the shared table.
 function sm.scrapcomputers.sharedTable:getRawContents(sharedTable)
     local metatable = sm.scrapcomputers.metatable.getmetatable(sharedTable) ---@type SharedTable.Internal.Metatable
-    return unpack({metatable.__sc_st_proxyData.data})
+    return sm.scrapcomputers.table.clone(metatable.__sc_st_proxyData.data)
 end
 
 ---Disables syncing for a SharedTable.

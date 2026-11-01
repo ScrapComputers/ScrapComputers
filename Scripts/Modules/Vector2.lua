@@ -8,7 +8,11 @@ sm.scrapcomputers.vector2 = {}
 function sm.scrapcomputers.vector2.new(x, y)
     -- Metatbles don't work for some reason
     ---@class ScVec2 : __DO_NOT_USE__VECTOR_2_CLASS__
-    local self = sm.scrapcomputers.table.clone(sm.scrapcomputers.vector2)
+    local self = {}
+    for k, v in pairs(sm.scrapcomputers.vector2) do
+        self[k] = v
+    end
+    
     self.x = x
     self.y = y
     self.new = nil

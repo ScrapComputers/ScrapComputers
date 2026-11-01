@@ -249,11 +249,9 @@ function print(...) end
 ---@param ... any|any[] The message to send
 function debug(...) end
 
--- Sends an alert message to all players in the world.
----@param message string The message to send
----@param duration number The duration before the alert message fades out
----@param player Player? The player to send to. Cannot be used in Safe-Env
-function alert(message, duration, player) end
+-- Shows an alert message on the screen of all players. Works like `print`: every argument is converted to a string and they are joined with spaces.
+---@param ... any|any[] The message to show
+function alert(...) end
 
 -- Pauses execution for the specified duration.
 -- Note that this will freeze your game during the duration, as Scrap Mechanic is single-threaded!
@@ -410,6 +408,29 @@ sc.component = {}
 ---@return (ComponentType|string)[] componentTypes A table of all component types
 function sc.component.getComponentTypes() end
 
+---A lookup of every component type by its singular, lowercase name. For example `sc.component.types.display` is `"Displays"`, which you can pass into `sc.getComponents`.
+---@enum
+sc.component.types = {
+    gps = "GPSs",
+    camera = "Cameras",
+    motor = "Motors",
+    laser = "Lasers",
+    seatcontroller = "SeatControllers",
+    harddrive = "Harddrives",
+    gravitycontroller = "GravityControllers",
+    radarwarningreceiver = "RadarWarningReceivers",
+    hologram = "Holograms",
+    collisiondetector = "CollisionDetectors",
+    terminal = "Terminals",
+    light = "Lights",
+    powercomponent = "PowerComponents",
+    radar = "Radars",
+    display = "Displays",
+    networkport = "NetworkPorts",
+    speaker = "Speakers",
+    keyboard = "Keyboards",
+}    
+
 ---The example module for ScrapComputers
 sc.example = {}
 
@@ -428,9 +449,22 @@ sc.syntax = {}
 ---You can also mark exception lines, with the first line being where the actual error happened,
 ---and the rest are code that leads to that error. If you don't want this, set the exceptionLines to an empty table.
 ---@param source string The Lua source code to highlight
----@param exceptionLines integer[] A table of line numbers where exceptions occurred (empty table if none)
+---@param exceptionLines integer[]? A table of line numbers where exceptions occurred (empty table or nil if none)
+---@param theme table? A custom theme. Defaults to the built-in theme
+---@param simpleMode boolean? Disables the more expensive highlighting (variable and function tracking). Defaults to true
 ---@return string highlightedCode The source code with syntax highlighting applied
-function sc.syntax.highlightCode(source, exceptionLines) end
+function sc.syntax.highlightCode(source, exceptionLines, theme, simpleMode) end
+
+---Highlights a single Lua comment line, including EmmyLua annotations like `---@param name type description`.
+---@param line string The comment line to highlight
+---@param theme table The theme to use, same format as the `theme` of `sc.syntax.highlightCode`
+---@return string highlightedComment The comment with syntax highlighting applied
+function sc.syntax.highlightComments(line, theme) end
+
+---Splits Lua source code into tokens.
+---@param source string The Lua source code to tokenize
+---@return { type: string, value: string, line: integer }[] tokens The tokens, including whitespace, newlines and comments
+function sc.syntax.tokenize(source) end
 
 ---The language manager module for ScrapComputers
 sc.language = {}

@@ -160,12 +160,9 @@ function sm.scrapcomputers.componentManager.toComponent(classData, componentType
         return
     end
 
-    -- The computer outputs into components that take SC input (its children), and takes output from components that output SC data (its parents).
     local viaChildren = bit_band(classData.connectionInput or 0, SCRAPCOMPUTERS_FLAGS) ~= 0
     local viaParents = bit_band(classData.connectionOutput or 0, SCRAPCOMPUTERS_FLAGS) ~= 0
 
-    -- One entry per component type. Several classes can share a type (e.g. PowerComponents), and this also runs again on script reload,
-    -- so merge into the existing entry instead of adding a new one.
     for _, data in pairs(COMPONENT_MANAGER_REGISTERED_COMPONENTS) do
         if data.componentType == componentType then
             data.isAComponent = data.isAComponent or isAComponent
@@ -309,12 +306,12 @@ function sm.scrapcomputers.componentManager.getComponentsSimplified(componentTyp
     return output
 end
 
----Returns all component type names registered.
----@return string[] componentTypes All component type names registered.
-function sm.scrapcomputers.componentManager.getRegisteredComponentTypes()
+---Returns all component type names.
+---@return string[] componentTypes All component type names.
+function sm.scrapcomputers.componentManager.getComponentTypes()
     local output = {}
     for _, data in pairs(COMPONENT_MANAGER_REGISTERED_COMPONENTS) do
-        if data.componentType then
+        if data.componentType and not data.isInvisible then
             table_insert(output, data.componentType)
         end
     end

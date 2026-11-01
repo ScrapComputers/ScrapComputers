@@ -1,4 +1,3 @@
-local string_format = string.format
 local string_match  = string.match
 local string_byte   = string.byte
 local string_find   = string.find
@@ -30,6 +29,7 @@ local function getNextUtf8Index(inputString, currentIndex)
     if not firstByte then
         return nil
     end
+    
     return currentIndex, getUtf8CharacterLength(firstByte)
 end
 
@@ -109,7 +109,7 @@ local simpleTokenPatterns = {
     { "GE",               "^>="                                        },
     { "EQ",               "^=="                                        },
     { "NEQ",              "^~="                                        },
-    
+
     { "OPERATOR",         "^%+"                                        },
     { "OPERATOR",         "^%-"                                        },
     { "OPERATOR",         "^%*"                                        },
@@ -140,11 +140,10 @@ function sm.scrapcomputers.syntax.tokenize(inputString)
     end
 
     while currentIndex <= inputLength do
-        local remainingString = string_sub(inputString, currentIndex)
         local matchedToken = false
 
         -- Long bracket comment
-        if string_match(remainingString, "^%-%-%[=*%[") then
+        if string_match(inputString, "^%-%-%[=*%[", currentIndex) then
             local commentContent, _ = matchLongBracketString(inputString, currentIndex + 2)
             tokens[#tokens + 1] = {
                 type = "COMMENT",
@@ -156,7 +155,7 @@ function sm.scrapcomputers.syntax.tokenize(inputString)
             currentIndex = currentIndex + #commentContent + 2
             matchedToken = true
         -- Long bracket string
-        elseif string_match(remainingString, "^%[=*%[") then
+        elseif string_match(inputString, "^%[=*%[", currentIndex) then
             local stringContent, stringEndIndex = matchLongBracketString(inputString, currentIndex)
             tokens[#tokens + 1] = {
                 type = "STRING",
@@ -168,9 +167,9 @@ function sm.scrapcomputers.syntax.tokenize(inputString)
             currentIndex = stringEndIndex + 1
             matchedToken = true
         -- Single-line comment
-        elseif string_match(remainingString, "^%-%-") then
-            local _, endPosition = string_find(remainingString, "^[^\n]*")
-            local commentContent = string_sub(remainingString, 1, endPosition)
+        elseif string_match(inputString, "^%-%-", currentIndex) then
+            local _, endPosition = string_find(inputString, "^[^\n]*", currentIndex)
+            local commentContent = string_sub(inputString, currentIndex, endPosition)
             tokens[#tokens + 1] = {
                 type = "COMMENT",
                 value = commentContent,
@@ -182,7 +181,7 @@ function sm.scrapcomputers.syntax.tokenize(inputString)
             currentIndex = currentIndex + #commentContent
             matchedToken = true
         -- Short quoted string
-        elseif string_match(remainingString, "^[\"']") then
+        elseif string_match(inputString, "^[\"']", currentIndex) then
             local stringContent, stringEndIndex = matchShortQuotedString(inputString, currentIndex)
             tokens[#tokens + 1] = {
                 type = "STRING",
@@ -228,9 +227,9 @@ function sm.scrapcomputers.syntax.tokenize(inputString)
         if not matchedToken then
             for _, tokenPattern in ipairs(simpleTokenPatterns) do
                 local tokenType, pattern = tokenPattern[1], tokenPattern[2]
-                local startPosition, endPosition = string_find(remainingString, pattern)
+                local startPosition, endPosition = string_find(inputString, pattern, currentIndex)
                 if startPosition then
-                    local matchedValue = string_sub(remainingString, startPosition, endPosition)
+                    local matchedValue = string_sub(inputString, startPosition, endPosition)
                     if tokenType == "NEWLINE" then
                         tokens[#tokens + 1] = {
                             type = tokenType,
@@ -244,7 +243,7 @@ function sm.scrapcomputers.syntax.tokenize(inputString)
                         if tokenType == "WHITESPACE" then
                             currentLine = currentLine + countNewlines(matchedValue)
                         end
-                        
+
                         tokens[#tokens + 1] = {
                             type = tokenType,
                             value = matchedValue,
@@ -262,7 +261,7 @@ function sm.scrapcomputers.syntax.tokenize(inputString)
         if not matchedToken then
             tokens[#tokens+1] = {
                 type = "UNKNOWN",
-                value = remainingString:sub(1, 1),
+                value = string_sub(inputString, currentIndex, currentIndex),
                 line = currentLine
             }
 

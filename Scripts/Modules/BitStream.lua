@@ -2,7 +2,11 @@ sm.scrapcomputers.bitstream = {}
 
 ---@return BitStream
 function sm.scrapcomputers.bitstream.new(data)
-    local self = unpack({sm.scrapcomputers.bitstream})
+    local self = {}
+    for k, v in pairs(sm.scrapcomputers.bitstream) do
+        self[k] = v
+    end
+
     self.data = {}
 
     if data then

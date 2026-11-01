@@ -155,7 +155,7 @@ function ascfManager.getFontInfo(fontName)
         return nil, "Font is not loaded!"
     end
 
-    return font, nil
+    return sm_scrapcomputers_table_clone(font), nil
 end
 
 ---Loads a font.

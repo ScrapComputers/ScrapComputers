@@ -18,15 +18,17 @@ function sm.scrapcomputers.fontManager.getFont(fontName)
     sm.scrapcomputers.errorHandler.assertArgument(fontName, nil, {"string"})
     
     local font = sm.scrapcomputers.fontManager.fonts[fontName]
+    if not font then
+        return nil, "Font not found!"
+    end
 
-    return font, (font and nil or "Font not found!")
+    return sm.scrapcomputers.table.clone(font), nil
 end
 
 --- Retrieves all font names currently loaded.
 ---@return string[] fontNames A list of all font names currently loaded.
 function sm.scrapcomputers.fontManager.getFontNames()
     local fontNames = {}
-
     for fontName, _ in pairs(sm.scrapcomputers.fontManager.fonts) do
         table.insert(fontNames, fontName)
     end
@@ -43,5 +45,5 @@ end
 --- Retrieves the default font used by ScrapComputers.
 ---@return SCFont font The default font.
 function sm.scrapcomputers.fontManager.getDefaultFont()
-    return sm.scrapcomputers.fontManager.fonts[sm.scrapcomputers.fontManager.getDefaultFontName()]
+    return sm.scrapcomputers.table.clone(sm.scrapcomputers.fontManager.fonts[sm.scrapcomputers.fontManager.getDefaultFontName()])
 end

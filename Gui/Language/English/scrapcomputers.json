@@ -8,7 +8,6 @@
     "scrapcomputers.computer.buttons.rehighlight_code"                      : "REHIGHLIGHT CODE",
     "scrapcomputers.computer.buttons.rename_current_file"                   : "RENAME CURRENT FILE",
     "scrapcomputers.computer.buttons.open_file_explorer"                    : "OPEN FILE EXPLORER",
-
     "scrapcomputers.computer.buttons.load_example"                          : "LOAD EXAMPLE",
     "scrapcomputers.computer.buttons.save"                                  : "SAVE FILE",
     
@@ -21,7 +20,7 @@
 
     "scrapcomputers.computer.currently_editing"                             : "Currently Editing: #ffa000%s",
 
-    "scrapcomputers.computer.interationtext.press_use"                      : "#{Use} to edit computer",
+    "scrapcomputers.computer.interationtext.press_use"                      : "#{Use} Edit computer",
     "scrapcomputers.computer.interationtext.computer_id"                    : "ID: #(WARN)##%d",
     "scrapcomputers.computer.interationtext.is_running.true"                : "#[CHECKMARK]#(SUCCESS)Running",
     "scrapcomputers.computer.interationtext.is_running.false"               : "#[MINUS]#(ERROR)Not running",
@@ -32,7 +31,7 @@
 
     "scrapcomputers.computer.unsaved_changes.title"                         : "Are you sure?",
     "scrapcomputers.computer.unsaved_changes.text"                          : "You have unsaved changes in this file. Pressing Yes will discard them!",
-    
+
     "scrapcomputers.computer.toggles.simple_syntax"                         : "SIMPLE SYNTAX: %s",
     "scrapcomputers.computer.toggles.always_on"                             : "ALWAYS ON: %s",
     "scrapcomputers.computer.toggles.allow_printing"                        : "ALLOW PRINTING: %s",
@@ -136,6 +135,7 @@
     
     "scrapcomputers.drive.unsaved_changes.title"                            : "Are you sure?",
     "scrapcomputers.drive.unsaved_changes.text"                             : "You have unsaved changes in this drive. Pressing Yes will discard them!",
+
 
     // Terminal
     "scrapcomputers.terminal.title"                                         : "TERMINAL",

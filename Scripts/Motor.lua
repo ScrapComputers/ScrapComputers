@@ -7,11 +7,20 @@ MotorClass.connectionOutput = sm.interactable.connectionType.bearing + sm.intera
 MotorClass.colorNormal = sm.color.new(0xaaaa00ff)
 MotorClass.colorHighlight = sm.color.new(0xffff00ff)
 
-local math = math
+-- TODO:    When SM 1.0.7 arives to public, merge the self.sv.springs into self.sv.bearings as they nolonger require
+--          special handling.
 
-local DEG_TO_RAD = math.rad(1)
-local RAD_TO_RPM = 30 / math.pi
-local BEARING_POWER_COEFF = 30000 / math.pi
+local math_abs = math.abs
+local math_rad = math.rad
+local math_deg = math.deg
+local math_huge = math.huge
+local math_pi = math.pi
+
+local sm_util_clamp = sm.util.clamp
+
+local DEG_TO_RAD = math_rad(1)
+local RAD_TO_RPM = 30 / math_pi
+local BEARING_POWER_COEFF = 30000 / math_pi
 local PISTON_POWER_COEFF = BEARING_POWER_COEFF * 6
 local EFFICIENCY = 1 / 0.85
 
@@ -23,9 +32,9 @@ function MotorClass:sv_createData()
         ---@param speed number The speed to set to bearing(s)
         setBearingSpeed = function(speed)
             sm.scrapcomputers.errorHandler.assertArgument(speed, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(math.abs(speed) ~= math.huge, nil, "Cannot set a non-finite bearing speed!")
+            sm.scrapcomputers.errorHandler.assert(math_abs(speed) ~= math_huge, nil, "Cannot set a non-finite bearing speed!")
 
-            self.sv.bearingSpeed = math.rad(speed)
+            self.sv.bearingSpeed = math_rad(speed)
             self.sv.updateBearings = true
         end,
 
@@ -35,10 +44,10 @@ function MotorClass:sv_createData()
             sm.scrapcomputers.errorHandler.assertArgument(angle, nil, {"number", "nil"})
 
             if angle then
-                sm.scrapcomputers.errorHandler.assert(math.abs(angle) ~= math.huge, nil, "Cannot set a non-finite bearing angle!")
+                sm.scrapcomputers.errorHandler.assert(math_abs(angle) ~= math_huge, nil, "Cannot set a non-finite bearing angle!")
             end
 
-            self.sv.targetAngle = angle and math.rad(angle) or nil
+            self.sv.targetAngle = angle and math_rad(angle) or nil
             self.sv.updateBearings = true
         end,
 
@@ -46,7 +55,7 @@ function MotorClass:sv_createData()
         ---@param torque number The torque to set to bearing(s)
         setTorque = function(torque)
             sm.scrapcomputers.errorHandler.assertArgument(torque, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(math.abs(torque) ~= math.huge, nil, "Cannot set a non-finite bearing torque!")
+            sm.scrapcomputers.errorHandler.assert(math_abs(torque) ~= math_huge, nil, "Cannot set a non-finite bearing torque!")
             sm.scrapcomputers.errorHandler.assert(torque >= 0, nil, "Torque cannot be negative!")
 
             self.sv.torque = torque
@@ -57,9 +66,9 @@ function MotorClass:sv_createData()
         ---@param speed number The speed to set to piston(s)
         setPistonSpeed = function(speed)
             sm.scrapcomputers.errorHandler.assertArgument(speed, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(math.abs(speed) ~= math.huge, nil, "Cannot set a non-finite piston speed!")
+            sm.scrapcomputers.errorHandler.assert(math_abs(speed) ~= math_huge, nil, "Cannot set a non-finite piston speed!")
 
-            self.sv.pistonSpeed = math.abs(speed)
+            self.sv.pistonSpeed = math_abs(speed)
             self.sv.updatePistons = true
         end,
 
@@ -67,7 +76,7 @@ function MotorClass:sv_createData()
         ---@param length number The length to set to piston(s)
         setLength = function(length)
             sm.scrapcomputers.errorHandler.assertArgument(length, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(math.abs(length) ~= math.huge, nil, "Cannot set a non-finite piston length!")
+            sm.scrapcomputers.errorHandler.assert(math_abs(length) ~= math_huge, nil, "Cannot set a non-finite piston length!")
             sm.scrapcomputers.errorHandler.assert(length >= 0, nil, "Piston length cannot be negative!")
 
             self.sv.length = length
@@ -78,9 +87,9 @@ function MotorClass:sv_createData()
         ---@param force number The force to set to
         setForce = function(force)
             sm.scrapcomputers.errorHandler.assertArgument(force, nil, {"number"})
-            sm.scrapcomputers.errorHandler.assert(math.abs(force) ~= math.huge, nil, "Cannot set a non-finite piston force!")
+            sm.scrapcomputers.errorHandler.assert(math_abs(force) ~= math_huge, nil, "Cannot set a non-finite piston force!")
 
-            self.sv.force = math.abs(force)
+            self.sv.force = math_abs(force)
             self.sv.updatePistons = true
         end,
         
@@ -91,7 +100,7 @@ function MotorClass:sv_createData()
             sm.scrapcomputers.errorHandler.assert(totalBearings == 1, nil, "Only 1 bearing can be connected!")
 
             local joint = self.sv.bearings[1] or self.sv.springs[1]
-            return math.deg(joint:getAngle())
+            return math_deg(joint:getAngle())
         end,
 
         ---Gets the pistons's current length. Note that only 1 piston can be connected!
@@ -168,10 +177,12 @@ function MotorClass:server_onFixedUpdate()
     end
 
     if self.sv.updateBearings then
-        for _, bearing in ipairs(self.sv.bearings) do
-            if not self.sv.targetAngle then
+        if not self.sv.targetAngle then
+            for _, bearing in ipairs(self.sv.bearings) do
                 bearing:setMotorVelocity(self.sv.bearingSpeed, self.sv.torque)
-            else
+            end
+        else
+            for _, bearing in ipairs(self.sv.bearings) do
                 bearing:setTargetAngle(self.sv.targetAngle, self.sv.bearingSpeed, self.sv.torque)
             end
         end
@@ -198,10 +209,10 @@ function MotorClass:server_onFixedUpdate()
             end
 
             local error = self.sv.targetAngle - currentAngle
-            error = (error + math.pi) % (2 * math.pi) - math.pi
+            error = (error + math_pi) % (2 * math_pi) - math_pi
 
-            local absSpeed = math.abs(self.sv.bearingSpeed)
-            local calculatedSpeed = sm.util.clamp(error * 5.0, -absSpeed, absSpeed)
+            local absSpeed = math_abs(self.sv.bearingSpeed)
+            local calculatedSpeed = sm_util_clamp(error * 5.0, -absSpeed, absSpeed)
 
             spring:setMotorVelocity(calculatedSpeed, self.sv.torque)
         end
@@ -210,7 +221,7 @@ function MotorClass:server_onFixedUpdate()
     local totalPower = 0
 
     if self.sv.torque > 0 then
-        local absSpeed = math.abs(self.sv.bearingSpeed)
+        local absSpeed = math_abs(self.sv.bearingSpeed)
         local powerSpeed = (absSpeed < DEG_TO_RAD) and DEG_TO_RAD or absSpeed
         local bearingRpm = powerSpeed * RAD_TO_RPM
         local bearingPower = (bearingRpm * self.sv.torque / BEARING_POWER_COEFF) * EFFICIENCY
@@ -255,11 +266,6 @@ end
 
 function MotorClass:sv_onPowerLoss()
     self.sv.wasPowered = false
-
-    self.sv.bearingSpeed = 0
-    self.sv.torque = 0
-    self.sv.pistonSpeed = 0
-    self.sv.force = 0
 
     for _, bearing in ipairs(self.sv.bearings) do bearing:setMotorVelocity(0, 0) end
     for _, spring in ipairs(self.sv.springs) do spring:setMotorVelocity(0, 0) end

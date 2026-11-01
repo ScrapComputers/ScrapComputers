@@ -5,6 +5,20 @@ sm.scrapcomputers.environmentManager = {}
 ---@type function[]
 sm.scrapcomputers.environmentManager.environmentHooks = {}
 
+local function singularize(name)
+    name = name:lower()
+
+    if name:sub(-3) == "ies" then
+        return name:sub(1, -4) .. "y"
+    elseif name:match("[sxz]es$") or name:match("[cs]hes$") then
+        return name:sub(1, -2)
+    elseif name:sub(-1) == "s" and (name:sub(-2) ~= "ss" or not name:sub(-3, -3):match("[aeiou]")) then
+        return name:sub(1, -2)
+    else
+        return name
+    end
+end
+
 ---Creates a environment variables table and returns it
 ---@param self ShapeClass This should be the "self" keyword. A.K.A your class
 ---@param luaVM Computer.LuaVM? The Lua virtual machine
@@ -18,6 +32,18 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
     end
 
     local isUnsafeENV = sm.scrapcomputers.config.getConfig("scrapcomputers.computer.safe_or_unsafe_env").selectedOption == 2
+    if isUnsafeENV then
+        local envFlags = SCRAPCOMPUTERS_COMPUTER_CURRENT_ENV_FLAG
+        local safeEnvFlag = envFlags and envFlags["Safe Env"] or 1
+
+        local success, currentEnv = pcall(function ()
+            return self.sv.storage.flags.currentEnv
+        end)
+
+        if success and currentEnv == safeEnvFlag then
+            isUnsafeENV = false
+        end
+    end
 
     local function createpid(processID)
         sm.scrapcomputers.PIDHandler.createProcess(processID)
@@ -51,6 +77,24 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
 
         debug = function(...)
             print("[SC]:", ...)
+        end,
+
+        alert = function(message, duration, player)
+            duration = duration or 5
+
+            sm.scrapcomputers.errorHandler.assertArgument(message, 1, {"string"})
+            sm.scrapcomputers.errorHandler.assertArgument(duration, 2, {"number", "nil"})
+            sm.scrapcomputers.errorHandler.assertArgument(player, 3, {"Player", "nil"})
+
+            if not isUnsafeENV and player then
+                error("Cannot use Player argument in safe-env!")
+            end
+
+            if player then
+                self.network:sendToClient(player, "cl_alertMessage", {message, duration})
+            else
+                self.network:sendToClients("cl_alertMessage", {message, duration})
+            end
         end,
 
         tostring = sm.scrapcomputers.toString,
@@ -201,23 +245,15 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
 
             getAllComponents = function ()
                 local output = {}
-                for _, componentType in pairs(sm.scrapcomputers.componentManager.getRegisteredComponentTypes()) do
-                    if not sm.scrapcomputers.componentManager.isComponentTypeAvaliable(componentType) then
-                        goto continue
-                    end
-                    
-                    do
-                        local data = {}
+                for _, componentType in pairs(sm.scrapcomputers.componentManager.getComponentTypes()) do
+                    local data = {}
 
-                        local components = sm.scrapcomputers.componentManager.getComponentsSimplified(componentType, self.interactable)
-                        for _, component in pairs(components) do
-                            table.insert(data, component)
-                        end
-
-                        output[componentType] = data
+                    local components = sm.scrapcomputers.componentManager.getComponentsSimplified(componentType, self.interactable)
+                    for _, component in pairs(components) do
+                        table.insert(data, component)
                     end
 
-                    ::continue::
+                    output[componentType] = data
                 end
 
                 return output
@@ -276,33 +312,24 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
                 applyDisplayFunctions = sm.scrapcomputers.ascfManager.applyDisplayFunctions,
                 calcTextSize = sm.scrapcomputers.ascfManager.calcTextSize,
                 drawText = sm.scrapcomputers.ascfManager.drawTextSafe,
-                getFontInfo = function (fontName)
-                    local font, errMsg = sm.scrapcomputers.ascfManager.getFontInfo(fontName)
-                    if font then
-                        return sm.scrapcomputers.table.clone(font), nil
-                    end
-
-                    return nil, errMsg
-                end,
+                getFontInfo = sm.scrapcomputers.ascfManager.getFontInfo,
                 getFontNames = sm.scrapcomputers.ascfManager.getFontNames
             },
             example = {
-                getExamples = function ()
-                    return sm.scrapcomputers.table.clone(sm.scrapcomputers.exampleManager.getExamples())
-                end,
-
+                getExamples = sm.scrapcomputers.exampleManager.getExamples,
                 getTotalExamples = sm.scrapcomputers.exampleManager.getTotalExamples,
             },
             language = {
-                getLanguages = function ()
-                    return sm.scrapcomputers.table.clone(sm.scrapcomputers.languageManager.getLanguages())
-                end,
-
+                getLanguages = sm.scrapcomputers.languageManager.getLanguages,
                 getSelectedLanguage = sm.scrapcomputers.languageManager.getSelectedLanguage,
                 getTotalLanguages = sm.scrapcomputers.languageManager.getTotalLanguages,
                 translatable = sm.scrapcomputers.languageManager.translatable
             },
-            syntax = sm.scrapcomputers.table.clone(sm.scrapcomputers.syntax),
+            syntax = {
+                highlightCode = sm.scrapcomputers.syntax.highlightCode,
+                highlightComments = sm.scrapcomputers.syntax.highlightComment,
+                tokenize = sm.scrapcomputers.syntax.tokenize
+            },
 
             -- DO NOT REMVOE CLONING! They prevent you from fucking up the mod from referenced tables!
 
@@ -366,7 +393,19 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
             },
 
             component = {
-                getAvaliableComponentTypes = sm.scrapcomputers.componentManager.getRegisteredComponentTypes,
+                -- discusting? yes. works? yes. do i care? no.
+                types = (function()
+                    local types = sm.scrapcomputers.componentManager.getComponentTypes()
+                    
+                    local output = {}
+                    for _, componentType in pairs(types) do
+                        output[singularize(componentType)] = componentType
+                    end
+
+                    return output
+                end)(),
+                
+                getComponentTypes = sm.scrapcomputers.componentManager.getComponentTypes,
             },
 
             isUnsafeEnvEnabled = function ()
@@ -433,10 +472,7 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
                 getTimeOfDay = sm.game.getTimeOfDay,
             },
             json = {
-                open = function (path)
-                    return sm.json.open(path, false)
-                end,
-
+                open = sm.json.open,
                 parseJsonString = sm.json.parseJsonString,
                 writeJsonString = function(root, prettified)
                     sm.scrapcomputers.errorHandler.assertArgument(root, 1, {"table", "string", "number", "boolean", "nil"})
@@ -460,10 +496,6 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
         environmentVariables.sc.console.warn("sleep() is deprecated and will be removed in future updates.")
     end
 
-    environmentVariables.alert = function (...)
-        environmentVariables.sc.console.warn("alert() is deprecated and will be removed in future updates.")
-    end
-
     environmentVariables._ENV = environmentVariables
     environmentVariables._G = environmentVariables
 
@@ -476,7 +508,8 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
 
         environmentVariables.string = string
         environmentVariables.table = table
-        environmentVariables.math = math
+
+        environmentVariables.math = sm.scrapcomputers.table.clone(math)
         environmentVariables.math.pid = pid
         environmentVariables.math.createpid = createpid
         environmentVariables.math.removepid = removepid
@@ -500,7 +533,10 @@ function sm.scrapcomputers.environmentManager.createEnv(self, luaVM)
     end
 
     for _, environmentHook in pairs(sm.scrapcomputers.environmentManager.environmentHooks) do
-        environmentVariables = fastMerge(environmentVariables, environmentHook(self))
+        local hookVariables = environmentHook(self)
+        if type(hookVariables) == "table" then
+            environmentVariables = fastMerge(environmentVariables, hookVariables)
+        end
     end
 
     return environmentVariables

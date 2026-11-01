@@ -108,6 +108,9 @@ end
 ---@return string msg the formatted message
 function ErrorParser:generateError(data)
     local dataMessage = data.message:gsub("#", "##")
+    dataMessage = dataMessage:gsub("[^%w%s%p]", function(c)
+        return string.format("\\x%02x", string.byte(c))
+    end)
 
     if data.isParserError then
         return "#e74856ERROR: On parsing: " .. data.source.file .. ":" .. tostring(data.source.line) .. ": " .. dataMessage
@@ -170,6 +173,9 @@ end
 ---@return string msg the formatted message
 function ErrorParser:genShortErr(data)
     local dataMessage = data.messageNoNewlines:gsub("#", "##")
+    dataMessage = dataMessage:gsub("[^%w%s%p]", function(c)
+        return string.format("\\x%02x", string.byte(c))
+    end)
 
     if data.isParserError then
         return "#e74856ERROR: On parsing: " .. data.source.file .. ":" .. tostring(data.source.line) .. ": " .. dataMessage
@@ -187,7 +193,7 @@ function ErrorParser:genShortErr(data)
             break
         end
     end
-    
+
     return "#e74856ERROR: " .. errorFile .. " " .. dataMessage
 end
 

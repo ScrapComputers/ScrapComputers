@@ -9,7 +9,7 @@ sm.scrapcomputers.languageManager.lastLanguageUpdate = sm.game.getCurrentTick()
 
 -- Gets all loaded languages and returns them
 function sm.scrapcomputers.languageManager.getLanguages()
-    return sm.scrapcomputers.languageManager.languages
+    return sm.scrapcomputers.table.clone(sm.scrapcomputers.languageManager.languages)
 end
 
 -- Gets the total loaded languages and returns the amount

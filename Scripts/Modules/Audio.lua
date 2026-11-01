@@ -7,7 +7,6 @@ sm.scrapcomputers.audio = {}
 ---@return string[] fontNames All font names
 function sm.scrapcomputers.audio.getAudioNames()
     local output = {}
-
     for name, _ in pairs(audioData) do
         table.insert(output, name)
     end
@@ -40,7 +39,7 @@ function sm.scrapcomputers.audio.getAvailableParams(name)
 
     for audioName, audioContents in pairs(audioData) do
         if audioName == name then
-            return audioContents["Parameters"]
+            return sm.scrapcomputers.table.clone(audioContents["Parameters"])
         end
     end
 end
