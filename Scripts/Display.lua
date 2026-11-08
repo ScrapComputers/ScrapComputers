@@ -74,7 +74,9 @@ local rePos = sm_vec3_new(0, 0, -10000)
 
 local tableLimit = 15000
 local displayHidingCooldown = 0.5
-local optimiseCooldown = 1
+local optimiseIdleTime = 0.25
+local optimiseMaxInterval = 5
+local raycastRange = 7.5
 local pixelBorderMultiplier = 0.05
 local pixelEffect = "ScrapComputers - ShapeRenderablePixel"
 
@@ -149,7 +151,35 @@ local function splitTable(numbers, length)
         result[resultIndex] = currentTable
     end
 
-    return result  
+    return result
+end
+
+local function spliceTable(tbl, start, removeCount, insert)
+    local len = #tbl
+    local insertLen = #insert
+    local shift = insertLen - removeCount
+
+    if shift > 0 then
+        for i = len, start + removeCount + 1, -1 do
+            tbl[i + shift] = tbl[i]
+        end
+    elseif shift < 0 then
+        for i = start + removeCount + 1, len do
+            tbl[i + shift] = tbl[i]
+        end
+
+        for i = len + shift + 1, len do
+            tbl[i] = nil
+        end
+    end
+
+    for i = 1, insertLen do
+        tbl[start + i] = insert[i]
+    end
+end
+
+local function isSameValue(a, b)
+    return a == b and type(a) ~= "table"
 end
 
 local inv255 = 1 / 255
@@ -185,6 +215,55 @@ local function idToColor(colorID)
         g * inv255,
         b * inv255
     )
+end
+
+local effectColorCache = {}
+
+local function idToEffectColor(colorID)
+    local color = effectColorCache[colorID]
+
+    if not color then
+        color = idToColor(colorID)
+        effectColorCache[colorID] = color
+    end
+
+    return color
+end
+
+local dataCountLookup = {
+    [1] = 3,
+    [2] = 5,
+    [3] = 1,
+    [4] = 5,
+    [5] = 8,
+    [6] = 6,
+    [7] = 7,
+    [8] = 2,
+    [100] = 6,
+    [101] = 5
+}
+
+local glyphPixelCache = {}
+
+local function getGlyphPixels(glyph)
+    local pixels = glyphPixelCache[glyph]
+    if pixels then return pixels end
+
+    pixels = {}
+    local count = 0
+
+    for yPosition, row in pairs(glyph) do
+        for xPosition = 1, #row do
+            if string_byte(row, xPosition) == 35 then
+                pixels[count + 1] = xPosition - 1
+                pixels[count + 2] = yPosition - 1
+                count = count + 2
+            end
+        end
+    end
+
+    glyphPixelCache[glyph] = pixels
+    return pixels
 end
 
 local function areColorsSimilar(color1, color2, threshold)
@@ -874,27 +953,53 @@ function DisplayClass:server_onCreate()
         buffer = {
             data = {},
             network = {},
-            syncBuffer = {},
-            snapshotBuild = {}
+            syncBuffer = {}
         },
 
         snapshotTable = {},
-        totalPlayers = 1,
 
         lastBufferLen = 0,
-        lastBuffer = {}
+        lastBuffer = {},
+
+        sentBuffer = {},
+        sentLen = 0,
+        playerHasBase = {}
     }
 
     sm.scrapcomputers.powerManager.updatePowerInstance(self.shape.id, self.data.scale / 10)
 end
 
-function DisplayClass:sv_onPowerLoss()
-    local currBuffer = {3, colorToID(sm_color_new(0, 0, 0))} -- clear
+function DisplayClass:sv_replaceBuffer(tbl)
+    local self_sv = self.sv
+    local rawAdd = sm.scrapcomputers.backend.displayRawAdd[self.shape.id]
 
-    self.sv.buffer.data = currBuffer
-    self.sv.lastBuffer = currBuffer
-    self.sv.lastBufferLen = #currBuffer
-    self.sv.allowUpdate = true
+    if self_sv.resetBuffer and rawAdd then
+        self_sv.resetBuffer()
+        rawAdd(tbl)
+    else
+        local dataBuffer = self_sv.buffer.data
+
+        clearTable(dataBuffer)
+
+        for i = 1, #tbl do
+            dataBuffer[i] = tbl[i]
+        end
+    end
+end
+
+function DisplayClass:sv_onPowerLoss()
+    local self_sv = self.sv
+    local currBuffer = {3, colorToID(sm_color_new(0, 0, 0))} -- clear
+    local lastBuffer = self_sv.lastBuffer
+
+    self:sv_replaceBuffer(currBuffer)
+
+    clearTable(lastBuffer)
+    lastBuffer[1] = currBuffer[1]
+    lastBuffer[2] = currBuffer[2]
+
+    self_sv.lastBufferLen = #currBuffer
+    self_sv.allowUpdate = true
 end
 
 function DisplayClass:server_onDestroy()
@@ -933,32 +1038,57 @@ function DisplayClass:server_onFixedUpdate()
 
     if self_sv.allowUpdate or self_sv.autoUpdate then
         local dataBuffer = self_sv_buffer.data
+        local dataLen = #dataBuffer
+        local hostPlayerId = self_sv.hostPlayerId
+        local remotePlayers = {}
+        local remoteCount = 0
 
-        if self_sv.totalPlayers > 1 then
-            local dataChunks = splitTable(dataBuffer, tableLimit)
-            local len = #dataChunks
+        for _, player in pairs(sm_player_getAllPlayers()) do
+            if player.id == hostPlayerId then
+                local clientBuffer = self.cl.buffer.data
+                local clientLen = #clientBuffer
 
-            for i, chunk in pairs(dataChunks) do
-                sendToClients(self_network, "cl_buildData", {chunk, i == len})
+                for i = 1, dataLen do
+                    clientBuffer[clientLen + i] = dataBuffer[i]
+                end
+
+                self_network:sendToClient(player, "cl_pushData", true)
+            else
+                remoteCount = remoteCount + 1
+                remotePlayers[remoteCount] = player
             end
-        else
-            local clientBuffer = self.cl.buffer.data
-
-            for i = 1, #dataBuffer do
-                clientBuffer[i] = dataBuffer[i]
-            end
-
-            sendToClients(self_network, "cl_pushData", true)
         end
 
-        self_sv.resetBuffer()
+        if remoteCount > 0 then
+            local start, removeCount, slice = self:sv_diffSentBuffer(dataBuffer, dataLen)
+            local playerHasBase = self_sv.playerHasBase
+            local hasChanges = removeCount > 0 or #slice > 0
+
+            for i = 1, remoteCount do
+                local player = remotePlayers[i]
+
+                if not playerHasBase[player.id] then
+                    playerHasBase[player.id] = true
+                    self:sv_sendBuffer(player, self_sv.sentBuffer, {true})
+                elseif hasChanges then
+                    self:sv_sendBuffer(player, slice, {false, start, removeCount})
+                end
+            end
+        end
+
+        if self_sv.resetBuffer then
+            self_sv.resetBuffer()
+        else
+            clearTable(dataBuffer)
+        end
+
         self_sv.allowUpdate = false
     end
 
     if self_sv.synced and self_sv_buffer.syncBuffer then
         self_sv.synced = false
         self_sv.allowUpdate = true
-        self_sv_buffer.data = self_sv_buffer.syncBuffer
+        self:sv_replaceBuffer(self_sv_buffer.syncBuffer)
 
         sendToClients(self_network, "cl_setTouchState", self_sv_display.touchAllowed)
         sendToClients(self_network, "cl_setRenderDistance", self_sv_display.renderDistance)
@@ -983,21 +1113,6 @@ function DisplayClass:sv_mpScreenSync(data)
     end
 end
 
-function DisplayClass:sv_buildSnapshot(data)
-    local sv_dataTbl = data[1]
-    local snapshotTable = self.sv.buffer.snapshotBuild
-    local len = #snapshotTable
-
-    for i = 1, #sv_dataTbl do
-        len = len + 1
-        snapshotTable[len] = sv_dataTbl[i]
-    end
-
-    if not data[2] then return end
-
-    self.sv.snapshotTable = snapshotTable
-end
-
 function DisplayClass:sv_setTertiaryData(data)
     self.sv.backPanel = data.backPanel
     self.sv.display.touchAllowed = data.touchAllowed
@@ -1010,8 +1125,53 @@ function DisplayClass:sv_setTouchData(data)
     self.sv.display.touchData = data[1]
 end
 
-function DisplayClass:sv_setTotalPlayers(len)
-    self.sv.totalPlayers = len
+function DisplayClass:sv_diffSentBuffer(dataBuffer, dataLen)
+    local self_sv = self.sv
+    local sentBuffer = self_sv.sentBuffer
+    local sentLen = self_sv.sentLen
+    local maxShared = math_min(dataLen, sentLen)
+
+    local start = 0
+    while start < maxShared and isSameValue(dataBuffer[start + 1], sentBuffer[start + 1]) do
+        start = start + 1
+    end
+
+    local tail = 0
+    maxShared = maxShared - start
+    while tail < maxShared and isSameValue(dataBuffer[dataLen - tail], sentBuffer[sentLen - tail]) do
+        tail = tail + 1
+    end
+
+    local slice = {}
+    for i = start + 1, dataLen - tail do
+        slice[i - start] = dataBuffer[i]
+    end
+
+    for i = 1, dataLen do
+        sentBuffer[i] = dataBuffer[i]
+    end
+
+    for i = dataLen + 1, sentLen do
+        sentBuffer[i] = nil
+    end
+
+    self_sv.sentLen = dataLen
+
+    return start, sentLen - start - tail, slice
+end
+
+function DisplayClass:sv_sendBuffer(player, tbl, header)
+    local chunks = splitTable(tbl, tableLimit)
+    local len = #chunks
+
+    for i = 1, len do
+        self.network:sendToClient(player, "cl_buildData", {chunks[i], i == len, i == 1 and header or nil})
+    end
+end
+
+function DisplayClass:sv_requestFullBuffer(_, player)
+    self.sv.playerHasBase[player.id] = true
+    self:sv_sendBuffer(player, self.sv.sentBuffer, {true})
 end
 
 -- CLIENT --
@@ -1029,7 +1189,10 @@ function DisplayClass:client_onCreate()
             data = {},
             indexes = {},
             instructions = {},
-            tables = {}
+            tables = {},
+
+            mirror = {},
+            patch = {}
         },
 
         backPanel = {
@@ -1054,6 +1217,11 @@ function DisplayClass:client_onCreate()
         indexArray = {},
 
         newBuffer = {},
+        dataChange = {},
+        colorChange = {},
+
+        shownColor = {},
+
         fullBuffer = {},
         updatedPoints = {},
         offsetBuffer = {},
@@ -1076,6 +1244,7 @@ function DisplayClass:client_onCreate()
 
     self.cl.display.widthScale = widthScale
     self.cl.display.heightScale = heightScale
+    self.cl.display.raycastReach = raycastRange + math_max(widthScale, heightScale)
 
     local offset = 0.04
     local bgScale = sm_vec3_new(0, self.cl.display.heightScale - offset, self.cl.display.widthScale - offset)
@@ -1085,7 +1254,7 @@ function DisplayClass:client_onCreate()
     if not isAircraftDisplay then
         self.cl.backPanel.effect = sm_effect_createEffect(BACKPANEL_EFFECT_NAME, self.interactable)
 
-        effect_setParameter(self.cl.backPanel.effect,"color", idToColor(self.cl.backPanel.currentColor))
+        effect_setParameter(self.cl.backPanel.effect, "color", idToEffectColor(self.cl.backPanel.currentColor))
 
         effect_setOffsetPosition(self.cl.backPanel.effect, sm_vec3_new(self.data.panelOffset or 0.115, 0, 0))
         effect_setScale(self.cl.backPanel.effect, bgScale)
@@ -1119,10 +1288,9 @@ function DisplayClass:cl_setUserHidden(bool)
 end
 
 function DisplayClass:cl_takeSnapshot()
+    if not sm.isHost then return end
+
     local colorTbl = {}
-    local self_network = self.network
-    local sendToServer = self_network.sendToServer
-    
     local originToArray = self.cl.originToArray
     local colorArray = self.cl.colorArray
 
@@ -1130,32 +1298,60 @@ function DisplayClass:cl_takeSnapshot()
         colorTbl[index] = colorArray[originToArray[origin]]
     end
 
-    local lastPlayerLen = self.cl.lastLen
-
-    if lastPlayerLen and lastPlayerLen > 1 then
-        local chunks = splitTable(colorTbl, tableLimit)
-
-        for i, chunk in pairs(chunks) do
-            sendToServer(self_network, "sv_buildSnapshot", {chunk, i == len})
-        end
-    else
-        self.sv.snapshotTable = colorTbl
-    end
+    self.sv.snapshotTable = colorTbl
 end
 
 function DisplayClass:cl_buildData(data)
+    local self_cl = self.cl
+    local self_cl_buffer = self_cl.buffer
+    local patch = self_cl_buffer.patch
     local sv_dataTbl = data[1]
-    local dataTbl = self.cl.buffer.data
-    local len = #dataTbl
+
+    if data[3] then
+        self_cl.patchHeader = data[3]
+        clearTable(patch)
+    end
+
+    local len = #patch
 
     for i = 1, #sv_dataTbl do
         len = len + 1
-        dataTbl[len] = sv_dataTbl[i]
+        patch[len] = sv_dataTbl[i]
     end
 
-    if data[2] then 
-        self:cl_pushData()
+    if not data[2] then return end
+
+    local header = self_cl.patchHeader
+    local mirror = self_cl_buffer.mirror
+
+    if header[1] then
+        clearTable(mirror)
+
+        for i = 1, len do
+            mirror[i] = patch[i]
+        end
+
+        self_cl.hasBase = true
+        self_cl.requestedFull = false
+    elseif self_cl.hasBase then
+        spliceTable(mirror, header[2], header[3], patch)
+    else
+        if not self_cl.requestedFull then
+            self_cl.requestedFull = true
+            self.network:sendToServer("sv_requestFullBuffer")
+        end
+
+        return
     end
+
+    local dataTbl = self_cl_buffer.data
+    local dataLen = #dataTbl
+
+    for i = 1, #mirror do
+        dataTbl[dataLen + i] = mirror[i]
+    end
+
+    self:cl_pushData(true)
 end
 
 function DisplayClass:client_onFixedUpdate()
@@ -1182,7 +1378,7 @@ function DisplayClass:client_onFixedUpdate()
         self_cl_display.visTimer = clock
 
         local worldPosition = self_shape.worldPosition
-        local shouldHide = ignoreFlags
+        local shouldHide = false
 
         if sm_vec3_length(worldPosition - character.worldPosition) > self_cl_display.renderDistance then
             shouldHide = true
@@ -1206,6 +1402,12 @@ function DisplayClass:client_onFixedUpdate()
     end
 
     if sm.isHost then
+        local self_sv = self.sv
+
+        if self_sv and not self_sv.hostPlayerId then
+            self_sv.hostPlayerId = player.id
+        end
+
         local players = sm_player_getAllPlayers()
         local len = #players
 
@@ -1222,19 +1424,19 @@ function DisplayClass:client_onFixedUpdate()
 
                 for i = 1, self.cl.arrayIndex do
                     dataIndex = dataIndex + 1
-                    dataBuffer[dataIndex] = 6
+                    dataTbl[dataIndex] = 6
                     dataIndex = dataIndex + 1
-                    dataBuffer[dataIndex] = coordXArray[i]
+                    dataTbl[dataIndex] = coordXArray[i]
                     dataIndex = dataIndex + 1
-                    dataBuffer[dataIndex] = coordYArray[i]
+                    dataTbl[dataIndex] = coordYArray[i]
                     dataIndex = dataIndex + 1
-                    dataBuffer[dataIndex] = scaleXArray[i]
+                    dataTbl[dataIndex] = scaleXArray[i]
                     dataIndex = dataIndex + 1
-                    dataBuffer[dataIndex] = scaleYArray[i]
+                    dataTbl[dataIndex] = scaleYArray[i]
                     dataIndex = dataIndex + 1
-                    dataBuffer[dataIndex] = colorArray[i]
+                    dataTbl[dataIndex] = colorArray[i]
                     dataIndex = dataIndex + 1
-                    dataBuffer[dataIndex] = true
+                    dataTbl[dataIndex] = true
                 end
 
                 local self_network = self.network
@@ -1258,8 +1460,6 @@ function DisplayClass:client_onFixedUpdate()
             end
 
             self_cl.lastLen = len
-
-            self.network:sendToServer("sv_setTotalPlayers", len)
         end
     end
 
@@ -1302,8 +1502,13 @@ function DisplayClass:client_onFixedUpdate()
         self_cl.clearTick = nil
     end
 
-    if not self_cl.lastOptimise or self_cl.lastOptimise + optimiseCooldown <= clock then
-        if self_cl.hasUpdated then
+    if self_cl.hasUpdated then
+        self_cl.lastOptimise = self_cl.lastOptimise or clock
+
+        local isIdle = self_cl.lastPushClock + optimiseIdleTime <= clock
+        local isOverdue = self_cl.lastOptimise + optimiseMaxInterval <= clock
+
+        if isIdle or isOverdue then
             self_cl.lastOptimise = clock
             self_cl.hasUpdated = false
 
@@ -1316,9 +1521,14 @@ function DisplayClass:client_onUpdate(dt)
     local self_cl = self.cl
     local self_shape = self.shape
 
-    local interpolation = self.shape.worldPosition - self.shape:getInterpolatedWorldPosition()
-    local start = localPlayer.getRaycastStart() + interpolation
-    local hit, res = sm_physics_raycast(start, start + localPlayer.getDirection() * 7.5, nil, sm.physics.filter.dynamicBody + sm.physics.filter.staticBody)
+    local worldPosition = self_shape.worldPosition
+    local start = localPlayer.getRaycastStart()
+    local hit, res = false, nil
+
+    if sm_vec3_length(worldPosition - start) <= self_cl.display.raycastReach then
+        start = start + (worldPosition - self_shape:getInterpolatedWorldPosition())
+        hit, res = sm_physics_raycast(start, start + localPlayer.getDirection() * raycastRange, nil, sm.physics.filter.dynamicBody + sm.physics.filter.staticBody)
+    end
 
     if hit and res:getShape() == self_shape then
         self_cl.isRaycasted = true
@@ -1388,9 +1598,10 @@ function DisplayClass:client_canTinker()
 end
 
 function DisplayClass:cl_pushData(clearDataTable)
-    local newBuffer = {}
-    local hasCleared = false
     local self_cl = self.cl
+    local hasCleared = false
+
+    local newBuffer = {}
     local self_cl_backPanel = self_cl.backPanel
     local self_data = self.data
     local isAircraftDisplay = self_data.isAircraftDisplay
@@ -1405,7 +1616,7 @@ function DisplayClass:cl_pushData(clearDataTable)
 
     local function addPixel(x, y, color)
         if x > 0 and x <= width and y > 0 and y <= height then
-            index = (y - 1) * width + x
+            local index = (y - 1) * width + x
 
             newBuffer[index] = color
             updatedPoints[index] = true
@@ -1461,7 +1672,7 @@ function DisplayClass:cl_pushData(clearDataTable)
         
         if not isAircraftDisplay then
             if color and color ~= self_cl_backPanel.currentColor then
-                effect_setParameter(self_cl_backPanel.effect, "color", idToColor(color))
+                effect_setParameter(self_cl_backPanel.effect, "color", idToEffectColor(color))
                 self_cl_backPanel.currentColor = color
             end
         end
@@ -1576,18 +1787,19 @@ function DisplayClass:cl_pushData(clearDataTable)
 
     local function drawText(params_x, params_y, params_text, params_color, params_font, params_maxWidth, params_wordWrappingEnabled)
         local font, err = sm_scrapcomputers_fontManager_getFont(params_font)
+
+        if not font then
+            sm.log.error("Fatal error! Failed to get the font! Error message: "..tostring(err))
+            sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm_scrapcomputers_languageManager_translatable("scrapcomputers.display.failed_to_find_font"))
+
+            return
+        end
+
         local font_width = font.fontWidth
         local font_height = font.fontHeight
         local font_charset = font.charset
         local font_errorchar = font.errorChar
-    
-        if not font then
-            sm.log.error("Fatal error! Failed to get the font! Error message: "..err)
-            sm.gui.chatMessage("[#3A96DDS#3b78ffC#eeeeee]: " .. sm_scrapcomputers_languageManager_translatable("scrapcomputers.display.failed_to_find_font"))
-    
-            return
-        end
-    
+
         local xSpacing = 0
         local ySpacing = 0
     
@@ -1613,15 +1825,11 @@ function DisplayClass:cl_pushData(clearDataTable)
                     ySpacing = ySpacing + font_height
                 end
     
-                for yPosition, row in pairs(fontLetter) do
-                    for xPosition = 1, #row, 1 do
-                        if string_sub(row, xPosition, xPosition) == "#" then
-                            local x, y = params_x + xSpacing + (xPosition - 1), params_y + ySpacing + (yPosition - 1)
-    
-                            addPixel(x, y, params_color)
-                        end
-                    end
-    
+                local pixels = getGlyphPixels(fontLetter)
+                local originX, originY = params_x + xSpacing, params_y + ySpacing
+
+                for p = 1, #pixels, 2 do
+                    addPixel(originX + pixels[p], originY + pixels[p + 1], params_color)
                 end
     
                 xSpacing = xSpacing + font_width
@@ -1718,19 +1926,6 @@ function DisplayClass:cl_pushData(clearDataTable)
         end
     end
 
-    local dataCountLookup = {
-        [1] = 3,
-        [2] = 5,
-        [3] = 1,
-        [4] = 5,
-        [5] = 8,
-        [6] = 6,
-        [7] = 7,
-        [8] = 2,
-        [100] = 6,
-        [101] = 5
-    }
-
     local data = self_cl.buffer.data
     local totalLen = #data
     local searchIndex = 1
@@ -1819,8 +2014,11 @@ function DisplayClass:cl_pushData(clearDataTable)
 
     local stoppedIndex = self_cl.stoppedIndex
     local stoppedEffects = self_cl_pixel.stoppedEffects
-    local dataChange = {}
-    local colorChange = {}
+    local shownColor = self_cl.shownColor
+    local dataChange = self_cl.dataChange
+    local colorChange = self_cl.colorChange
+    clearTable(dataChange)
+    clearTable(colorChange)
     local isHidden = self_cl_display.isHidden
     local widthScale = self_cl_display.widthScale
     local heightScale = self_cl_display.heightScale
@@ -2302,6 +2500,7 @@ function DisplayClass:cl_pushData(clearDataTable)
             
             if sm_exists(effect) then
                 effect_destroy(effect)
+                shownColor[effect] = nil
             end
 
             effectArray[i] = nil
@@ -2321,6 +2520,7 @@ function DisplayClass:cl_pushData(clearDataTable)
             for _, effect in pairs(stoppedEffects) do
                 if not itterated[effect.id] then
                     effect_destroy(effect)
+                    shownColor[effect] = nil
                     itterated[effect.id] = true
                 end
             end
@@ -2337,6 +2537,7 @@ function DisplayClass:cl_pushData(clearDataTable)
         clearTable(updatedPoints)
     elseif hasUpdated then
         self_cl.hasUpdated = true
+        self_cl.lastPushClock = os.clock()
 
         if hasCleared then
             for i in pairs(updatedPoints) do
@@ -2367,6 +2568,8 @@ function DisplayClass:cl_pushData(clearDataTable)
 
                             updatedPoints[index] = nil
                             indexToOrigin[index] = nil
+
+                            x1 = x1 + 1
 
                             if x1 > mx then
                                 x1 = x
@@ -2418,6 +2621,10 @@ function DisplayClass:cl_pushData(clearDataTable)
                     dataChange[arrayIndex] = false
                     --colorChange[arrayIndex] = colNew
                 end
+
+                if not indexToOrigin[i] then
+                    updatedPoints[i] = nil
+                end
             end
         else
             for i, colNew in pairs(newBuffer) do
@@ -2447,6 +2654,8 @@ function DisplayClass:cl_pushData(clearDataTable)
 
                             updatedPoints[index] = nil
                             indexToOrigin[index] = nil
+
+                            x1 = x1 + 1
 
                             if x1 > mx then
                                 x1 = x
@@ -2527,7 +2736,8 @@ function DisplayClass:cl_pushData(clearDataTable)
             local xPos, yPos = pixelPosToShapePos(centerX, centerY, widthScale, heightScale, pixel_scale_y, pixel_scale_z)
             effect_setOffsetPosition(effect, sm_vec3_new(pixelDepth, yPos, xPos))
 
-            effect_setParameter(effect, "color", idToColor(color))
+            effect_setParameter(effect, "color", idToEffectColor(color))
+            shownColor[effect] = color
 
             if not isHidden then
                 effect_start(effect)
@@ -2541,7 +2751,8 @@ function DisplayClass:cl_pushData(clearDataTable)
             --     effect_stop(effect)
             -- end
 
-            effect_setParameter(effect, "color", idToColor(color))
+            effect_setParameter(effect, "color", idToEffectColor(color))
+            shownColor[effect] = color
 
             if not (isHidden or effect_isPlaying(effect)) then
                 effect_start(effect)
@@ -2579,6 +2790,7 @@ function DisplayClass:cl_optimiseDisplay()
     local effectArray = self_cl.effectArray
     local colorArray = self_cl.colorArray
     local indexArray = self_cl.indexArray
+    local shownColor = self_cl.shownColor
 
     local function createEffect()
         local effect
@@ -2608,7 +2820,8 @@ function DisplayClass:cl_optimiseDisplay()
 
         local xPos, yPos = pixelPosToShapePos(centerX, centerY, widthScale, heightScale, pixel_scale_y, pixel_scale_z)
         effect_setOffsetPosition(effect, sm_vec3_new(pixelDepth, yPos, xPos))
-        effect_setParameter(effect, "color", idToColor(color))
+        effect_setParameter(effect, "color", idToEffectColor(color))
+        shownColor[effect] = color
 
         if not (isHidden or effect_isPlaying(effect)) then
             effect_start(effect)
@@ -2663,14 +2876,11 @@ function DisplayClass:cl_optimiseDisplay()
         return mSx, y1 - y 
     end
 
-    for i = 1, arrayIndex do
-        local effect = effectArray[i]
-
-        stoppedIndex = stoppedIndex + 1
-        stoppedEffects[stoppedIndex] = effect
-        --effect_setOffsetPosition(effect, rePos)
-        effect_stop(effect)
-    end
+    local scaleXArray = self_cl.scaleXArray
+    local scaleYArray = self_cl.scaleYArray
+    local reused = {}
+    local pending = {}
+    local pendingCount = 0
 
     local newArrayIndex = 0
     local newEffectArray = {}
@@ -2692,12 +2902,28 @@ function DisplayClass:cl_optimiseDisplay()
             if arrayPointer then
                 local color = colorArray[arrayPointer]
                 local sx, sy = meshBuffer(testIndex, color)
-
-                local effect = createEffect()
                 local x, y = (testIndex - 1) % width + 1, math_floor((testIndex - 1) / width) + 1
 
                 newArrayIndex = newArrayIndex + 1
-                newEffectArray[newArrayIndex] = effect
+
+                local oldPointer = originToArray[testIndex]
+
+                if oldPointer and indexArray[oldPointer] == testIndex and not reused[oldPointer]
+                    and scaleXArray[oldPointer] == sx and scaleYArray[oldPointer] == sy and colorArray[oldPointer] == color then
+                    local effect = effectArray[oldPointer]
+
+                    reused[oldPointer] = true
+                    newEffectArray[newArrayIndex] = effect
+
+                    if shownColor[effect] ~= color then
+                        effect_setParameter(effect, "color", idToEffectColor(color))
+                        shownColor[effect] = color
+                    end
+                else
+                    pendingCount = pendingCount + 1
+                    pending[pendingCount] = newArrayIndex
+                end
+
                 newScaleXArray[newArrayIndex] = sx
                 newScaleYArray[newArrayIndex] = sy
                 newCoordXArray[newArrayIndex] = x
@@ -2719,14 +2945,31 @@ function DisplayClass:cl_optimiseDisplay()
                         end
                     end
                 end
-
-                setEffectParameters(effect, sx, sy, x, y, color)
             end
         end
     end
 
+    for i = 1, arrayIndex do
+        if not reused[i] then
+            local effect = effectArray[i]
+
+            stoppedIndex = stoppedIndex + 1
+            stoppedEffects[stoppedIndex] = effect
+            effect_stop(effect)
+        end
+    end
+
+    for i = 1, pendingCount do
+        local n = pending[i]
+        local effect = createEffect()
+
+        newEffectArray[n] = effect
+        setEffectParameters(effect, newScaleXArray[n], newScaleYArray[n], newCoordXArray[n], newCoordYArray[n], newColorArray[n])
+    end
+
     if stoppedIndex > 500 then
         for i = 501, stoppedIndex do
+            shownColor[stoppedEffects[i]] = nil
             effect_destroy(stoppedEffects[i])
             stoppedEffects[i] = nil
         end
