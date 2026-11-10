@@ -39,7 +39,12 @@ function sm.scrapcomputers.audio.getAvailableParams(name)
 
     for audioName, audioContents in pairs(audioData) do
         if audioName == name then
-            return sm.scrapcomputers.table.clone(audioContents["Parameters"])
+            local parameters = audioContents["Parameters"]
+            if not parameters then
+                return {}
+            end
+
+            return sm.scrapcomputers.table.clone(parameters)
         end
     end
 end
